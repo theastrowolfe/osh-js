@@ -13,8 +13,8 @@ var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
 });
  */
 OSH.UI.FFMPEGView = OSH.UI.View.extend({
-    initialize: function (divId, options) {
-        this._super(divId, [], options);
+    initialize: function (parentElement, options) {
+        this._super(parentElement, [], options);
 
         this.fps = 0;
         var width = "640";

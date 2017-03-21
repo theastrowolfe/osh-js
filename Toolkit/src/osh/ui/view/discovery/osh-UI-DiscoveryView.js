@@ -48,8 +48,8 @@ var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
     });
  */
 OSH.UI.DiscoveryView = OSH.UI.View.extend({
-    initialize: function (divId, properties) {
-        this._super(divId,[],properties);
+    initialize: function (parentElement, properties) {
+        this._super(parentElement,[],properties);
 
         this.swapId = "";
         if(typeof properties != "undefined") {
