@@ -19,7 +19,8 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
     beforeAddingItems: function (options) {
         // inits the map
         this.initMap(options);
-        this.initEvents();
+        if(!options.map)
+            this.initEvents();
     },
 
     /**
@@ -188,8 +189,18 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
 
         var baseLayers = this.getDefaultLayers();
 
+        //this.initLayers();
+        this.markers = {};
+        this.polylines = {};
+
         if (typeof(options) != "undefined") {
             var maxZoom = 19;
+
+            if(options.map) {
+                this.map = options.map;
+                return;
+            }
+
             if (options.maxZoom) {
                 maxZoom = options.maxZoom;
             }
@@ -289,10 +300,6 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
         });
 
         this.map.addInteraction(select_interaction);
-
-        //this.initLayers();
-        this.markers = {};
-        this.polylines = {};
     },
 
     /**
@@ -372,6 +379,67 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
         }
 
         return id;
+    },
+
+    /**
+     *
+     * @param properties
+     * @returns {string}
+     * @instance
+     * @memberof OSH.UI.OpenLayerView
+     */
+    createMarkerFromStyler: function (styler) {
+
+         if (!(styler.getId() in this.stylerToObj)) {
+
+              var properties = {
+                   lat: styler.location.y,
+                   lon: styler.location.x,
+                   orientation: styler.orientation.heading,
+                   color: styler.color,
+                   icon: styler.icon,
+                   name: this.names[styler.getId()]
+              }
+
+              //create marker
+              var marker = new ol.geom.Point(ol.proj.transform([properties.lon, properties.lat], 'EPSG:4326', 'EPSG:900913'));
+              var markerFeature = new ol.Feature({
+                   geometry: marker,
+                   name: 'Marker' //TODO
+              });
+
+              if (properties.icon != null) {
+                   var iconStyle = new ol.style.Style({
+                        image: new ol.style.Icon(({
+                             opacity: 0.75,
+                             src: properties.icon,
+                             rotation: properties.orientation * Math.PI / 180
+                        }))
+                   });
+                   markerFeature.setStyle(iconStyle);
+              }
+
+
+              //TODO:for selected marker event
+              //this.marker.on('click',this.onClick.bind(this));
+              //var vectorMarkerLayer =
+              //    new ol.layer.Vector({
+              //        title: properties.name,
+              //        source: new ol.source.Vector({
+              //            features: [markerFeature]
+              //        })
+              //    });
+
+              //this.map.addLayer(vectorMarkerLayer);
+
+              var id = "view-marker-" + OSH.Utils.randomUUID();
+              markerFeature.setId(id);
+              this.markers[id] = markerFeature;
+              this.stylerToObj[styler.getId()] = id;
+              return id;
+         } else {
+              return this.stylerToObj[styler.getId()];
+         }
     },
 
     /**
