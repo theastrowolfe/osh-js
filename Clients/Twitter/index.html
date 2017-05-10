@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Twitter Sensor</title>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+
+    <!-- START VENDOR -->
+    <!--
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/dist/vendor/all-in-one/vendor.css"/>
+    <script type="text/javascript" src="../../Toolkit/dist/vendor/all-in-one/vendor.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/dist/vendor/leaflet/leaflet.css"/>
+    <script type="text/javascript" src="../../Toolkit/dist/vendor/leaflet/leaflet.js"></script>
+    -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+    <!-- END VENDOR -->
+
+    <!-- OSH libs - ->
+    <link rel="stylesheet" type="text/css" href="css/noUISlider.css">
+    <script type="textjavascript" src="js/circleMenu.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Template.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-BaseClass.js"></script>
+
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Buffer.js"></script>
+
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Browser.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-EventManager.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceTwitter.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/dialog/osh-UI-MultiDialogView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-OpenLayerView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/osh-UI-Loading.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+
+    <script type="text/javascript" src="js/osh-config.js"></script>
+</head>
+
+<body onload="init()" id="body">
+    <nav class="navbar navbar-default navbar-inverse ">
+       <div class="container-fluid">
+          <div class="navbar-header">
+             <a class="navbar-brand" href="http://www.opensensorhub.org/">
+                 <img src="https://github.com/sensiasoft/sensorhub/wiki/images/sensorhub_logo_128.png"
+                         style="-webkit-animation-play-state: paused; -webkit-transition: none; transition: none; width:50px;height:50px;">
+                 OpenSensorHub</a>
+          </div>
+       </div>
+    </nav>
+    <div id="leafletOrientMap" style="height:100%;width:100%"></div>
+    <style>
+        .leaflet-container {
+            height: 100%;
+        }
+    </style>
+</body>
+</html>
