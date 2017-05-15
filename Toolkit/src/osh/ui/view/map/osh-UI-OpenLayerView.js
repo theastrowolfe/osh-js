@@ -21,8 +21,8 @@
  * @augments OSH.UI.View
  */
 OSH.UI.OpenLayerView = OSH.UI.View.extend({
-    initialize: function (parentElement, viewItems, options) {
-        this._super(parentElement, viewItems, options);
+    initialize: function (parentElementDivId, viewItems, options) {
+        this._super(parentElementDivId, viewItems, options);
         this.onResize();
     },
 
@@ -38,9 +38,8 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
         this.initMap(options);
 
         //events will NOT automatically be added to the map, if one is provided by the user
-        if(!options.map)
+        if(typeof(options) == "undefined" || !options.map)
             this.initEvents();
-
     },
 
 
