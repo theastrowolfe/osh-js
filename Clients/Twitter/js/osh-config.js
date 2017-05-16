@@ -1,11 +1,4 @@
 
-// Globals so I can inspect them with browser dev tools
-var tweets;
-var twitterDataSource;
-var entity;
-var leafletMapView;
-var dataSourceController;
-
 function init() {
 
   //---------------------------------------------------------------//
@@ -72,19 +65,16 @@ function init() {
   );
 
   twitterDataSource.onData = function(rec) {
-    console.log("DATA:");
-    console.log(rec.data);
-    console.log("---");
+    let marker = L.marker([rec.data.lat, rec.data.lon], {icon: twitterIcon})
+                  .addTo(leafletMapView.map)
+                  .bindPopup(rec.data.text); // TODO: This isn't working...
 
-    console.log(leafletMapView.map);
-    let marker = L.marker([rec.data.lat, rec.data.lon], {icon: twitterIcon}).addTo(leafletMapView.map).bindPopup(rec.data.text);
-    console.log(marker);
+    if(tweets.length >= 25) {
+      let oldTweet = tweets.shift();
+      oldTweet.marker.remove();
+    }
 
     tweets.push({marker: marker, data: rec.data});
-
-    if(tweets.length >= 1) {
-      twitterDataSource.disconnect();
-    }
   }
 
   twitterDataSource.connect();
