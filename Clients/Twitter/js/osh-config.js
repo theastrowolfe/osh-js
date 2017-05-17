@@ -1,4 +1,7 @@
 
+let tweets = L.markerClusterGroup();
+let tweetLayers = [];
+
 function init() {
 
   //---------------------------------------------------------------//
@@ -9,7 +12,7 @@ function init() {
   const ENTITY_ID = "twitter";
   const ENTITY_NAME = "Twitter Stream";
   const OFFERING_ID = "urn:sos:twitter";
-  tweets = []; //TODO: Queue that holds tweets and their markers.
+
 
   //--------------------------------------------------------------//
   //-------------------------  Map View  -------------------------//
@@ -28,7 +31,7 @@ function init() {
     }
   );
 
-  leafletMapView = new OSH.UI.LeafletView(
+  let leafletMapView = new OSH.UI.LeafletView(
     "leafletOrientMap",
     [],
     {
@@ -47,7 +50,7 @@ function init() {
   //---------------------------------------------------------------//
 
   // create data sources
-  twitterDataSource = new OSH.DataReceiver.DataSourceTwitter(
+  let twitterDataSource = new OSH.DataReceiver.DataSourceTwitter(
     "Twitter",
     {
       protocol : "ws",
@@ -66,16 +69,18 @@ function init() {
 
   twitterDataSource.onData = function(rec) {
     let marker = L.marker([rec.data.lat, rec.data.lon], {icon: twitterIcon})
-                  .addTo(leafletMapView.map)
-                  .bindPopup(rec.data.text); // TODO: This isn't working...
+                  .bindPopup(rec.data.text) // TODO: This isn't working...
 
-    if(tweets.length >= 25) {
-      let oldTweet = tweets.shift();
-      oldTweet.marker.remove();
+    if(tweetLayers.length >= 50000) {
+      let oldTweetLayer = tweetLayers.shift();
+      tweets.removeLayer(oldTweetLayer);
     }
 
-    tweets.push({marker: marker, data: rec.data});
+    tweets.addLayer(marker);
+    tweetLayers.push(marker);
   }
+
+  leafletMapView.map.addLayer(tweets);
 
   twitterDataSource.connect();
 }

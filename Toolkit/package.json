@@ -58,5 +58,8 @@
     "requirejs": "^2.3.2",
     "uglify-js": "^2.7.3",
     "yargs": "^6.6.0"
+  },
+  "dependencies": {
+    "leaflet.markercluster": "1.0.5"
   }
 }

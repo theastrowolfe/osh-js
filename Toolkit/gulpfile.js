@@ -94,6 +94,7 @@ gulp.task('vendor-js-src-all',false,function(){
     if(argv.leaflet) {
         jsSources.push('vendor/leaflet/dist/leaflet.js');
         jsSources.push('vendor/Leaflet.fullscreen/dist/Leaflet.fullscreen.min.js');
+        jsSources.push('vendor/Leaflet.markercluster/dist/Leaflet.markercluster.min.js');
     }
     if(argv.tree) {
         jsSources.push('vendor/tree/tree.js');
@@ -313,6 +314,7 @@ gulp.task('copy-vendor-leaflet',false, function () {
     var src = new Array();
     src.push('vendor/leaflet/dist/**');
     src.push('vendor/Leaflet.fullscreen/dist/**');
+    src.push('vendor/Leaflet.markercluster/dist/**');
 
     return gulp.src(src)
         .pipe(argv.leaflet ? gulp.dest('dist/vendor/leaflet') : noop());
@@ -343,6 +345,11 @@ gulp.task('vendor-css-all-copy-leaflet',false,['vendor-css-all-copy-leaflet-fs']
 
 gulp.task('vendor-css-all-copy-leaflet-fs',false,function(){
     return gulp.src('vendor/Leaflet.fullscreen/dist/*.png')
+        .pipe(argv.leaflet ? gulp.dest('dist/vendor/all-in-one/') : noop());
+});
+
+gulp.task('vendor-css-all-copy-leaflet-mc',false,function(){
+    return gulp.src('vendor/Leaflet.markercluster/dist/*.png')
         .pipe(argv.leaflet ? gulp.dest('dist/vendor/all-in-one/') : noop());
 });
 

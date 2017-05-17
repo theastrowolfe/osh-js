@@ -39,6 +39,7 @@
     "cesium":"https://github.com/sensiasoft/cesium.git#video-draping-1.31#a820f23889001357016765a6304726e61c7e66",
     "tree": "./vendor-local/tree",
     "Leaflet.fullscreen": "https://github.com/Leaflet/Leaflet.fullscreen.git#^1.0.2",
+    "Leaflet.markercluster": "https://github.com/Leaflet/Leaflet.markercluster.git#^1.0.5",
     "wnumb": "https://github.com/leongersen/wnumb.git#^1.0.4",
     "ol3-layerswitcher": "https://github.com/walkermatt/ol3-layerswitcher.git#^1.1.0",
     "yuvcanvas":"./vendor-local/yuvcanvas"
