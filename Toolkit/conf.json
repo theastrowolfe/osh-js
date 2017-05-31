@@ -27,17 +27,17 @@
 			"includePattern": ".+\\.js(doc)?$",
 			"excludePattern": "(^|\\/|\\\\)_"
 		},
-		"opts": {
-			"encoding": "utf8",
-			"recurse": true,
-			"private": false,
-			"lenient": true,
-			"destination": "./docs",
-			"template": "./node_modules/jaguarjs-jsdoc"
-		},
 		"default": {
 			"outputSourceFiles": true
 		}
+	},
+	"opts": {
+		"encoding": "utf8",
+		"recurse": true,
+		"private": false,
+		"lenient": true,
+		"destination": "./Documentation/jsdoc",
+		"template": "./Documentation/jsdoc/jaguarjs-jsdoc/"
 	},
 	"markdown": {
 		"parser": "gfm",
