@@ -18,7 +18,7 @@
  * @namespace {object} OSH
  */
 var OSH = {
-	version: 'dev'
+	version: '1.2'
 };
 
 window.OSH = OSH;
@@ -76,6 +76,8 @@ window.OSH.Utils = {};
  * @memberof OSH
  */
 window.OSH.DataSender = {};
+
+window.OSH.BASE_WORKER_URL = "js/workers";
 
 // HELPER FUNCTION
 function isUndefined(object) {
