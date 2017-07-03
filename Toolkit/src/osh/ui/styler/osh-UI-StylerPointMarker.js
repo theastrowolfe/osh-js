@@ -70,59 +70,59 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 		
 		this.options = {};
 		
-		if(typeof(properties.location) != "undefined"){
+		if(typeof(properties.location) !=="undefined"){
 			this.location = properties.location;
 		} 
 		
-		if(typeof(properties.orientation) != "undefined"){
+		if(typeof(properties.orientation) !=="undefined"){
 			this.orientation = properties.orientation;
 		} 
 		
-		if(typeof(properties.icon) != "undefined"){
+		if(typeof(properties.icon) !=="undefined"){
 			this.icon = properties.icon;
 		}
 		
-		if(typeof(properties.iconAnchor) != "undefined"){
+		if(typeof(properties.iconAnchor) !=="undefined"){
             this.iconAnchor = properties.iconAnchor;
         }
 		
-		if(typeof(properties.label) != "undefined"){
+		if(typeof(properties.label) !=="undefined"){
 			this.label = properties.label;
 		}
 		
-		if(typeof(properties.color) != "undefined"){
+		if(typeof(properties.color) !=="undefined"){
 			this.color = properties.color;
 		} 
 		
-		if(typeof(properties.locationFunc) != "undefined") {
+		if(typeof(properties.locationFunc) !=="undefined") {
 			var fn = function(rec,timeStamp,options) {
 				this.location = properties.locationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
 			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.orientationFunc) != "undefined") {
+		if(typeof(properties.orientationFunc) !=="undefined") {
 			var fn = function(rec,timeStamp,options) {
 				this.orientation = properties.orientationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
 			this.addFn(properties.orientationFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.iconFunc) != "undefined") {
+		if(typeof(properties.iconFunc) !=="undefined") {
 			var fn = function(rec,timeStamp,options) {
 				this.icon = properties.iconFunc.handler(rec,timeStamp,options);
 			}.bind(this);
 			this.addFn(properties.iconFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.labelFunc) != "undefined") {
+		if(typeof(properties.labelFunc) !=="undefined") {
 			var fn = function(rec,timeStamp,options) {
 				this.label = properties.labelFunc.handler(rec,timeStamp,options);
 			}.bind(this);
 			this.addFn(properties.labelFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.colorFunc) != "undefined") {
+		if(typeof(properties.colorFunc) !=="undefined") {
 			var fn = function(rec,timeStamp,options) {
 				this.color = properties.colorFunc.handler(rec,timeStamp,options);
 			}.bind(this);
@@ -132,21 +132,19 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @param view
 	 * @memberof OSH.UI.Styler.PointMarker
 	 * @instance
 	 */
 	init: function(view) {
 		this._super(view);
-		if(typeof(view) != "undefined" && this.location != null) {
+		if(typeof(view) !=="undefined" && this.location !==null) {
 			view.updateMarker(this,0,{});
 		}
 	},
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -156,7 +154,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
-			if (typeof(view) != "undefined" && this.location != null) {
+			if (typeof(view) !=="undefined" && this.location !==null) {
 				view.updateMarker(this, rec.timeStamp, options);
 			}
 		}
