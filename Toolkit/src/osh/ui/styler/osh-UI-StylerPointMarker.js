@@ -162,11 +162,10 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @memberof OSH.UI.Styler.PointMarker
 	 * @instance
 	 */
-	clear:function($super){
+	clear:function(){
 	}
 
 });
