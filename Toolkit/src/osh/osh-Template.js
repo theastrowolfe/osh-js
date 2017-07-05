@@ -87,3 +87,13 @@ function isUndefined(object) {
 function isUndefinedOrNull(object) {
 	return typeof(object) === "undefined" || object === null;
 }
+
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message; // Fallback
+    }
+}
