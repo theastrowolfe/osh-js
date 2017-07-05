@@ -29,9 +29,6 @@
 OSH.Server = BaseClass.extend({
     initialize: function (properties) {
         this.url = properties.url;
-        this.sos = (typeof properties.sos !== undefined) ?  properties.sos : 'sos';
-        this.sps = (typeof properties.sps !== undefined) ?  properties.sps : 'sps';
-        this.baseUrl = properties.baseUrl;
         this.id = "Server-" + OSH.Utils.randomUUID();
     },
 
@@ -43,7 +40,7 @@ OSH.Server = BaseClass.extend({
      * @memberof OSH.Server
      */
     getCapabilities: function (successCallback, errorCallback) {
-        var request = this.url + '/' + this.baseUrl + '/' + this.sos + '?service=SOS&version=2.0&request=GetCapabilities';
+        var request = this.url + '?service=SOS&version=2.0&request=GetCapabilities';
         this.executeGetRequest(request, successCallback, errorCallback);
     },
 
@@ -55,7 +52,7 @@ OSH.Server = BaseClass.extend({
      * @memberof OSH.Server
      */
     getFeatureOfInterest: function (successCallback, errorCallback) {
-        var request = this.url + '/' + this.baseUrl + '/' + this.sos + '?service=SOS&version=2.0&request=GetFeatureOfInterest';
+        var request = this.url + '?service=SOS&version=2.0&request=GetFeatureOfInterest';
         this.executeGetRequest(request, successCallback, errorCallback);
     },
 
@@ -68,12 +65,12 @@ OSH.Server = BaseClass.extend({
      * @memberof OSH.Server
      */
     getResultTemplate: function (offering, observedProperty,successCallback, errorCallback) {
-        var request = this.url + '/' + this.baseUrl + '/' + this.sos + '?service=SOS&version=2.0&request=GetResultTemplate&offering=' + offering + "&observedProperty=" + observedProperty;
+        var request = this.url + '?service=SOS&version=2.0&request=GetResultTemplate&offering=' + offering + "&observedProperty=" + observedProperty;
         this.executeGetRequest(request, successCallback, errorCallback);
     },
 
     getDescribeSensor:function(procedure, successCallback, errorCallback) {
-        var request = this.url + '/' + this.baseUrl + '/' + this.sos + '?service=SOS&version=2.0&request=DescribeSensor&procedure=' + procedure;
+        var request = this.url + '?service=SOS&version=2.0&request=DescribeSensor&procedure=' + procedure;
         this.executeGetRequest(request, successCallback, errorCallback);
     },
     /**
