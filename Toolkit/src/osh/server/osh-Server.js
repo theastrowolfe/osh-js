@@ -82,11 +82,11 @@ OSH.Server = BaseClass.extend({
     executeGetRequest: function (request, successCallback, errorCallback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var s = successCallback.bind(this);
                 var sweXmlParser = new OSH.SWEXmlParser(xhr.responseText);
                 s(sweXmlParser.toJson());
-            } else {
+            } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200){
                 errorCallback(xhr.responseText);
             }
         }.bind(this);
