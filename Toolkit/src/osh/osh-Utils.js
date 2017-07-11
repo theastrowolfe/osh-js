@@ -363,3 +363,7 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
   return value.substring(0,value.length-1);
 };
 
+OSH.Utils.copyProperties = function(firstObject,secondObject) {
+    for (var k in firstObject) secondObject[k] = firstObject[k];
+};
+
