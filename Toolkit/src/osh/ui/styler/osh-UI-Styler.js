@@ -125,10 +125,3 @@ OSH.UI.Styler = BaseClass.extend({
 	 */
 	init: function() {}
 });
-
-OSH.Styler.Type = {
-	MARKER: "marker",
-	POLYLINE: "polyline",
-	VIDEO: "video",
-	CURVE: "curve"
-};
