@@ -52,7 +52,6 @@
 .discovery-form*:focus {outline: none;}
 
 body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", sans-serif;}
-.discovery-form h2, .discovery-form label {font-family:Georgia, Times, "Times New Roman", serif;}
 .form_hint, .required_notification {font-size: 11px;}
 
 .discovery-form ul {
