@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/parsers/osh-SWEXmlParser.js"></script>
+    <script type="text/javascript" src="../../src/osh/server/osh-Server.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
+    <script type="text/javascript"
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerCurve.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
+    <style>
+        .leaflet-container {
+            height: calc(100% - 0px);
+        }
+
+        body {
+            margin: 0;
+            height: calc(100% - 20px);
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+
+        #leafletOrientEntityMap  {
+            height: calc(100% - 70px);
+        }
+
+        #discovery {
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);
+            height: calc(100% - 70px);
+        }
+
+        .video {
+            width: inherit;
+            height: 150px;;
+        }
+
+
+        .video-selected {
+            border-radius: 3px;
+            box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
+        }
+
+        .dialog {
+            width:350px !important;
+            height:200px !important;
+        }
+    </style>
+</head>
+
+<body id="body">
+<h2>Auto styler test</h2>
+
+<!-- function test1()
+<div id="leafletOrientEntityMap"></div>
+-->
+
+<!-- function test2() -->
+<div id="discovery">
+    <div id="discovery-container" style="height:100%;width:400px;overflow: auto;float: left;"></div>
+    <div id="dialog-container" style="width:375px;height:100%;overflow:auto"></div>
+</div>
+<script type="text/javascript">
+
+    function test1() {
+        //---------- DATASOURCE ------------//
+        var replayFactor = 3;
+        //--Android Phone orientation
+        var androidPhoneOrientationDataSource = new OSH.DataReceiver.JSON("android-Orientation", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/OrientationQuaternion",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: replayFactor + "",
+            syncMasterTime: true,
+            bufferingTime: 1000
+        });
+
+        //--Android Phone location
+        var androidPhoneGpsDataSource = new OSH.DataReceiver.JSON("android-GPS", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/Location",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: replayFactor + "",
+            syncMasterTime: true,
+            bufferingTime: 1000,
+            timeShift: -16000
+        });
+
+        var androidEntity = {
+            id: "entity-" + OSH.Utils.randomUUID(),
+            name: "Android Phone",
+            dataSources: [androidPhoneGpsDataSource, androidPhoneOrientationDataSource]
+        };
+
+        OSH.UI.Styler.Factory.createMarkerStyler([androidPhoneGpsDataSource, androidPhoneOrientationDataSource], function (styler) {
+            //------------ VIEW -----------------//
+            var leafletMapView = new OSH.UI.LeafletView("leafletOrientEntityMap",
+                [{
+                    styler: styler,
+                    entityId: androidEntity.id,
+                    name: "Android Phone GPS"
+                }]
+            );
+
+            //---------------------------------------------------------------//
+            //--------------------- Creates DataProvider --------------------//
+            //---------------------------------------------------------------//
+
+            var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+                replayFactor: replayFactor
+            });
+
+            // We can add a group of dataSources and set the options
+            dataProviderController.addEntity(androidEntity);
+
+
+            //---------------------------------------------------------------//
+            //---------------------------- Starts ---------------------------//
+            //---------------------------------------------------------------//
+
+            // starts streaming
+            dataProviderController.connectAll();
+        });
+    }
+
+
+    // test using discovery service
+    function test2() {
+        var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
+            dialogContainer: "dialog-container",
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"],
+            views: [{
+                name: 'Video dialog(H264)',
+                type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+            },{
+                name: 'Video dialog(MJPEG)',
+                type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+            },{
+                name: 'Chart dialog',
+                type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            }
+            ]
+        });
+    }
+
+    test2();
+</script>
+
+</body>
+</html>
