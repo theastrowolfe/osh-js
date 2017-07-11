@@ -227,33 +227,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var serverTag = document.getElementById(this.serviceSelectTagId);
         var option = serverTag.options[serverTag.selectedIndex];
 
-        // connect to server and get the list of offering
-        //var oshServer = new OSH.Server(option.value);
-
         this.removeAllFromSelect(this.offeringSelectTagId);
-       /* var onSuccessGetCapabilities = function(event) {
-            this.sensors = oshServer.sensors;
-            // remove existing
-            var startTimeInputTag = document.getElementById(this.startTimeTagId);
-            var endTimeInputTag = document.getElementById(this.endTimeTagId);
 
-            // add the new ones
-            for(var i = 0;i < this.sensors.length;i++) {
-                this.addValueToSelect(this.offeringSelectTagId,this.sensors[i].name,this.sensors[i],this.sensors[i]);
-            }
-        }.bind(this);
-
-        var onErrorGetCapabilities = function(event) {
-        };
-
-        oshServer.getCapabilities(onSuccessGetCapabilities,onErrorGetCapabilities);*/
-
-       //option.value
         this.oshServer = new OSH.Server({
-            sos:'sos', // TODO: allow to customize that value
-            sps:'sps', // TODO: allow to customize that value
-            url: OSH.Utils.removeLastCharIfExist(option.value,"/"),
-            baseUrl: 'sensorhub' // TODO: allow to customize that value
+            url: option.value
         });
 
         var onSuccessGetCapabilities = function(jsonObj) {
