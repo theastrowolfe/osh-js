@@ -53,10 +53,7 @@
     var jsonResult = document.getElementById("jsonDetails");
 
     var server = new OSH.Server({
-        url:"http://sensiasoft.net:8181",
-        sos: "sos",
-        sps: "sps",
-        baseUrl: "sensorhub"
+        url:"http://sensiasoft.net:8181/sensorhub/sos"
     });
 
     document.getElementById("getCapButton").onclick = function() {
