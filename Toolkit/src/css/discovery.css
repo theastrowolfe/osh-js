@@ -148,10 +148,6 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 }
 
-.discovery-form .input-text:focus { /* add this to the already existing style */
-    padding-right:10px;
-}
-
 .discovery-form .input-text, .discovery-form select { /* add this to the already existing style */
     -moz-transition: padding .25s;
     -webkit-transition: padding .25s;
@@ -161,6 +157,7 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 .discovery-form .input-text {
     padding-right: 5px;
+    width: calc(100% - 161px); /* width - label (140px + 6px padding) */
 }
 
 .discovery-form select {
@@ -189,8 +186,8 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     background: #d45252;
     border-radius: 3px 3px 3px 3px;
     color: white;
-    margin-left:8px;
-    margin-top:4px;
+    margin-left: calc(100% - 161px);
+    margin-top: -25px;
     padding: 1px 6px;
     z-index: 999; /* hints stay above all other elements */
     position: absolute; /* allows proper formatting if hint is two lines */
