@@ -13,7 +13,6 @@ function init() {
   const ENTITY_NAME = "Twitter Stream";
   const OFFERING_ID = "urn:sos:twitter";
 
-
   //--------------------------------------------------------------//
   //-------------------------  Map View  -------------------------//
   //--------------------------------------------------------------//
@@ -26,7 +25,7 @@ function init() {
     'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       attribution: '&copy; ' + esriLink + ', ' + esriWholink,
-      maxZoom: 22,
+      maxZoom: 20,
       maxNativeZoom: 19
     }
   );
@@ -68,13 +67,13 @@ function init() {
   );
 
   twitterDataSource.onData = function(rec) {
-    let marker = L.marker([rec.data.lat, rec.data.lon], {icon: twitterIcon})
-                  .bindPopup(rec.data.text) // TODO: This isn't working...
-
-    if(tweetLayers.length >= 50000) {
+    if(tweetLayers.length >= 100) {
       let oldTweetLayer = tweetLayers.shift();
       tweets.removeLayer(oldTweetLayer);
     }
+
+    let marker = L.marker([rec.data.lat, rec.data.lon], {icon: twitterIcon})
+                  .bindPopup(rec.data.text); // TODO: This isn't working...
 
     tweets.addLayer(marker);
     tweetLayers.push(marker);

@@ -8,18 +8,6 @@
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 
-    <!-- START VENDOR -->
-    <!--
-    <link rel="stylesheet" type="text/css" href="../../Toolkit/dist/vendor/all-in-one/vendor.css"/>
-    <script type="text/javascript" src="../../Toolkit/dist/vendor/all-in-one/vendor.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="../../Toolkit/dist/vendor/leaflet/leaflet.css"/>
-    <script type="text/javascript" src="../../Toolkit/dist/vendor/leaflet/leaflet.js"></script>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="">
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
-    -->
-
     <!-- VENDOR -->
     <link rel="stylesheet" href="../../Toolkit/dist/vendor/all-in-one/vendor.css"/>
     <script type="text/javascript" src="../../Toolkit/dist/vendor/all-in-one/vendor.js"></script>
@@ -52,6 +40,7 @@
     <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-Styler.js"></script>
     <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
     <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
     <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
 
     <!--
@@ -65,6 +54,11 @@
     -->
 
     <script type="text/javascript" src="js/osh-config.js"></script>
+    <style>
+        .leaflet-container {
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body onload="init()" id="body">
@@ -73,16 +67,11 @@
           <div class="navbar-header">
              <a class="navbar-brand" href="http://www.opensensorhub.org/">OpenSensorHub</a>
              <a href="http://www.opensensorhub.org/">
-               <img src="https://github.com/sensiasoft/sensorhub/wiki/images/sensorhub_logo_128.png" style="width:50px;height:50px;">
+               <img src="https://github.com/sensiasoft/sensorhub/wiki/images/sensorhub_logo_128.png" alt="Sensiasoft" style="width:50px;height:50px;">
              </a>
           </div>
        </div>
     </nav>
     <div id="leafletOrientMap" style="height:100%;width:100%"></div>
-    <style>
-        .leaflet-container {
-            height: 100%;
-        }
-    </style>
 </body>
 </html>
