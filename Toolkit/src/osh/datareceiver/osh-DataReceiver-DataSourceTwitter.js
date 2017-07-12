@@ -48,11 +48,11 @@ OSH.DataReceiver.DataSourceTwitter = OSH.DataReceiver.DataSource.extend({
     var tokens = rec.trim().split(",");
 
     var parsedData = {
-      timestamp: tokens[0],
-      lat: tokens[1],
-      lon: tokens[2],
-      user: tokens[3],
-      text: tokens[4]
+      timestamp: tokens.shift(),
+      lat: tokens.shift(),
+      lon: tokens.shift(),
+      user: tokens.pop(),
+      text: tokens.join(' ')
     };
 
     return parsedData;
