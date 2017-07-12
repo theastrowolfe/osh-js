@@ -21,72 +21,20 @@
  * @augments OSH.UI.View
  * @example
 var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
-    services: ["http://sensiasoft.net:8181/"],
-    views: [{
-        name: 'Video dialog(H264)',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
-    },{
-        name: 'Video dialog(MJPEG)',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
-    },{
-        name: 'Chart dialog',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
-    }
-    ]
+    services: ["http://sensiasoft.net:8181/"]
 });
 
 //------ More complex example
  var discoveryView = new OSH.UI.DiscoveryView("",{
-        services: ["http://sensiasoft.net:8181/"], // server list
-        css: "discovery-view",
-        dataReceiverController:dataProviderController, // add custom dataProviderController
-        swapId: "main-container", // add a divId to swap data for inner dialog
-        entities: [androidEntity], // add entities
-        views: [{
-            name: 'Leaflet 2D Map',
-            viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
-        }, {
-            name: 'Cesium 3D Globe',
-            viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
-        },{
-            name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
-        },{
-            name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
-        },{
-            name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
-        }
-        ]
+        services: ["http://sensiasoft.net:8181/"] // server list
     });
  */
 OSH.UI.DiscoveryView = OSH.UI.View.extend({
+
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
 
         this.dialogContainer = document.body.id;
-        this.swapId = "";
-        if(typeof properties !== "undefined") {
-            if(typeof properties.dataReceiverController !== "undefined") {
-                this.dataReceiverController = properties.dataReceiverController;
-            } else {
-                this.dataReceiverController = new OSH.DataReceiver.DataReceiverController({
-                    replayFactor : 1
-                });
-                this.dataReceiverController.connectAll();
-            }
-
-            if(typeof properties.swapId !== "undefined") {
-                this.swapId = properties.swapId;
-            }
-
-            if(typeof properties.dialogContainer !== "undefined") {
-                this.dialogContainer = properties.dialogContainer;
-            }
-        }
 
         this.formTagId = "form-"+OSH.Utils.randomUUID();
         this.serviceSelectTagId = "service-"+OSH.Utils.randomUUID();
@@ -196,6 +144,25 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(this.serviceSelectTagId,"change",this.onSelectedService.bind(this));
         OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
         OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
+
+        // definition mapping
+
+        this.definitionMap = {
+            "http://www.opengis.net/def/property/OGC/0/SensorLocation" : "json", //location
+            "http://sensorml.com/ont/swe/property/Location" : "json", //location
+            "http://sensorml.com/ont/swe/property/Latitude" : "json", //location
+            "http://sensorml.com/ont/swe/property/Longitude" : "json", //location
+            "http://sensorml.com/ont/swe/property/Altitude" : "json", //location
+            "http://sensorml.com/ont/swe/property/OrientationQuaternion" : "json", //orientation
+            "http://www.opengis.net/def/property/OGC/0/PlatformOrientation": "json", //orientation
+            "http://sensorml.com/ont/swe/property/OSH/0/GimbalOrientation" : "json", // orientation
+            "http://www.opengis.net/def/property/OGC/0/PlatformLocation" : "json", //location
+            "http://sensorml.com/ont/swe/property/Weather" : "json", //curve
+            "http://sensorml.com/ont/swe/property/WindSpeed" : "json", //curve
+            "http://sensorml.com/ont/swe/property/WindDirection" : "json",
+            "http://sensorml.com/ont/swe/property/VideoFrame": "video", //video
+            "http://sensorml.com/ont/swe/property/Image" : "video"
+        };
     },
 
     /**
@@ -260,25 +227,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 
         // feed observable properties
         for(var i = 0; i  < offering.observableProperty.length;i++) {
-            this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering);
-        }
-    },
-
-    /**
-     *
-     * @param event
-     * @memberof OSH.UI.DiscoveryView
-     * @instance
-     */
-    onSelectedType : function(event) {
-        var typeTag = document.getElementById(this.typeSelectTagId);
-        var tagValue = typeTag.value;
-        this.removeAllFromSelect(this.viewSelectTagId);
-        for(var i= 0;i  < this.views.length;i++) {
-            var currentView = this.views[i];
-            if(typeof currentView.type !== "undefined" && currentView.type === tagValue){
-                this.addValueToSelect(this.viewSelectTagId,currentView.name,undefined,currentView);
-            }
+            // check if obs if supported
+            var disable = false;
+            disable = !(offering.observableProperty[i] in this.definitionMap);
+            this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering,null,disable);
         }
     },
 
@@ -321,8 +273,12 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         endPointUrl = endPointUrl.replace('http://', '');
         var syncMasterTime = syncMasterTimeTag.checked;
 
+        var dsType = this.definitionMap.get(obsProp);
+
         return false;
     },
+
+    onAddHandler:function(datasource) {},
 
     /**
      *
@@ -370,19 +326,23 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @memberof OSH.UI.DiscoveryView
      * @instance
      */
-    addValueToSelect:function(tagId,value,parent,object) {
+    addValueToSelect:function(tagId,value,parent,object,disable) {
         var selectTag = document.getElementById(tagId);
         var option = document.createElement("option");
         option.text = value;
         option.value = value;
         option.parent = parent;
 
-        if(typeof object !== "undefined") {
+        if(typeof object !== "undefined" && object !== null) {
             option.object = object;
         }
 
         if(typeof parent !== "undefined") {
             option.parent = parent;
+        }
+        if(typeof disable !== "undefined" && disable) {
+            option.setAttribute("disabled","");
+            option.text += " (not supported)";
         }
         selectTag.add(option);
     },
