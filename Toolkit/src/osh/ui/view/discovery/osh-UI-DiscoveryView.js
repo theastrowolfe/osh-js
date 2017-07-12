@@ -48,6 +48,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         this.replaySpeedId = "resplaySpeed-"+OSH.Utils.randomUUID();
         this.responseFormatId = "responseFormat-"+OSH.Utils.randomUUID();
         this.bufferingId = "buffering-"+OSH.Utils.randomUUID();
+        this.timeShiftId = "timeShift-"+OSH.Utils.randomUUID();
 
         // add template
         var discoveryForm = document.createElement("form");
@@ -121,7 +122,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         strVar += "                     <\/li>";
         strVar += "                     <li>";
         strVar += "                         <label for=\"timeShift\">TimeShift (ms)<\/label>";
-        strVar += "                         <input id=\""+this.timeShiftId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeShift\" placeholder=\"e.g: -16000\"/>";
+        strVar += "                         <input id=\""+this.timeShiftId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeShift\" value=\"0\"/>";
         strVar += "                     <\/li>";
         strVar += "                 <\/div>";
         strVar += "             <\/div>";
@@ -262,9 +263,21 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         // sync master time
         var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
 
+        // replaySpeed
+        var replaySpeedTag = document.getElementById(this.replaySpeedId);
+
+        // buffering
+        var bufferingTag = document.getElementById(this.bufferingId);
+
+        // response format
+        var responseFormatTag = document.getElementById(this.responseFormatId);
+
+        // time shift
+        var timeShiftTag = document.getElementById(this.timeShiftId);
+
         // get values
         var name=offeringTagSelectedOption.parent.name;
-        var endPointUrl=serviceTagSelectedOption.value+"sensorhub/sos";
+        var endPointUrl=serviceTagSelectedOption.value;
         var offeringID=offeringTagSelectedOption.parent.identifier;
         var obsProp=observablePropertyTagSelectedOption.value;
         var startTime=startTimeInputTag.value;
@@ -273,8 +286,35 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         endPointUrl = endPointUrl.replace('http://', '');
         var syncMasterTime = syncMasterTimeTag.checked;
 
-        var dsType = this.definitionMap.get(obsProp);
+        var replaySpeed = replaySpeedTag.value;
+        var buffering = bufferingTag.value;
+        var responseFormat = responseFormatTag.value;
+        var timeShift = timeShiftTag.value;
 
+        var dsType = this.definitionMap[obsProp];
+
+        var properties = {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: endPointUrl,
+            offeringID: offeringID,
+            observedProperty: obsProp,
+            startTime: startTime,
+            endTime: endTime,
+            replaySpeed: replaySpeed,
+            syncMasterTime: syncMasterTime,
+            bufferingTime: Number(buffering),
+            timeShift: Number(timeShift),
+            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
+        };
+
+        if(dsType === "json") {
+            this.onAddHandler(this.createJSONDataSource(offeringTagSelectedOption,properties));
+        } else if(dsType === "video") {
+            this.createVideoDataSource(offeringTagSelectedOption,properties,function(ds){
+                this.onAddHandler(ds);
+            }.bind(this));
+        }
         return false;
     },
 
@@ -323,6 +363,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param value
      * @param parent
      * @param object
+     * @param disable indicate if the the option will be disabled
      * @memberof OSH.UI.DiscoveryView
      * @instance
      */
@@ -364,211 +405,46 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param viewId
-     * @param entityId
+     * @param properties the datasource properties
+     * @param callback callback function called when the datasource is created. The callback will returns undefined if no datasource matches.
      * @memberof OSH.UI.DiscoveryView
      * @instance
      */
-    createGPSMarker: function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,viewId,entityId) {
-        var gpsDataSource = new OSH.DataReceiver.LatLonAlt(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000,
-            timeShift: -16000
+    createVideoDataSource:function(name,properties,callback) {
+        var oshServer = new OSH.Server({
+            url: "http://"+properties.endpointUrl
         });
 
-        // create viewItem
-        var pointMarker = new OSH.UI.Styler.PointMarker({
-            locationFunc : {
-                dataSourceIds : [gpsDataSource.id],
-                handler : function(rec) {
-                    return {
-                        x : rec.lon,
-                        y : rec.lat,
-                        z : rec.alt
-                    };
-                }
-            },
-            icon : 'images/cameralook.png',
-            iconFunc : {
-                dataSourceIds: [gpsDataSource.getId()],
-                handler : function(rec,timeStamp,options) {
-                    if(options.selected) {
-                        return 'images/cameralook-selected.png'
-                    } else {
-                        return 'images/cameralook.png';
-                    }
+        oshServer.getResultTemplate(properties.offeringID,properties.observedProperty, function(jsonResp){
+            var resultEncodingArr = jsonResp.GetResultTemplateResponse.resultEncoding.member;
+            var compression = null;
+
+            for(var i=0;i < resultEncodingArr.length;i++) {
+                var elt = resultEncodingArr[i];
+                if('compression' in elt) {
+                    compression = elt.compression;
+                    break;
                 }
             }
+
+            if(compression === "JPEG") {
+                callback(new OSH.DataReceiver.VideoMjpeg(name, properties));
+            } else if(compression === "H264") {
+                callback(new OSH.DataReceiver.VideoH264(name, properties));
+            }
+        },function(error) {
+            callback();
         });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(gpsDataSource);
-
-        var viewItem = {
-            styler :  pointMarker,
-            name : name
-        };
-
-        if(typeof entityId !== "undefined") {
-            viewItem['entityId'] = entityId;
-        }
-
-        OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM,{viewItem:viewItem,viewId:viewId});
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[gpsDataSource.id]});
     },
 
     /**
      *
      * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param entityId
+     * @param properties the datasource properties
      * @memberof OSH.UI.DiscoveryView
      * @instance
      */
-    createMJPEGVideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var videoDataSource = new OSH.DataReceiver.VideoMjpeg(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
-        });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [videoDataSource.id],
-            swapId: this.swapId
-        });
-
-        var videoView = new OSH.UI.MjpegView(dialog.popContentDiv.id, {
-            dataSourceId: videoDataSource.id,
-            css: "video",
-            cssSelected: "video-selected",
-            name: "Android Video",
-            entityId : entityId,
-            keepRatio:true
-        });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(videoDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[videoDataSource.id]});
-    },
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param entityId
-     * @memberof OSH.UI.DiscoveryView
-     * @instance
-     */
-    createH264VideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var videoDataSource = new OSH.DataReceiver.VideoH264(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
-        });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [videoDataSource.id],
-            swapId: this.swapId,
-            keepRatio:true
-        });
-
-        var videoView = new OSH.UI.FFMPEGView(dialog.popContentDiv.id, {
-            dataSourceId: videoDataSource.getId(),
-            css: "video",
-            cssSelected: "video-selected",
-            name: "Android Video",
-            entityId : entityId,
-            useWorker:true,
-            useWebWorkerTransferableData:true
-        });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(videoDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[videoDataSource.id]});
-    },
-
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param replayFactor
-     * @param responseFormat
-     * @memberof OSH.UI.DiscoveryView
-     * @instance
-     */
-    createJSONDataSource:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,replayFactor,responseFormat,buffering) {
-        return new OSH.DataReceiver.JSON(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: replayFactor,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: buffering,
-            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
-        });
+    createJSONDataSource:function(name,properties) {
+        return new OSH.DataReceiver.JSON(name, properties);
     }
 });
