@@ -81,7 +81,7 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     float: right;
 }
 
-.discovery-form label {
+.discovery-form li > label {
     width:140px;
     margin-top: 3px;
     display:inline-block;
@@ -209,3 +209,58 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 .discovery-form .input-text:focus + .form_hint {display: inline;}
 .discovery-form .input-text:required:valid + .form_hint {background: #28921f;} /* change form hint color when valid */
 .discovery-form .input-text:required:valid + .form_hint::before {color:#28921f;} /* change form hint arrow color when valid */
+
+/** Advanced panel **/
+.discovery-form .advanced{
+
+}
+
+.discovery-form .details {
+    padding: 30px 0 0 15px;
+}
+
+.discovery-form .advanced > input[type=checkbox] {
+    display:none;
+}
+
+.discovery-form .advanced  > input[type=checkbox] +  label {
+    margin-left: 15px;
+    margin-top: 15px;
+    position: absolute;
+    margin-bottom: 20px;
+    z-index: 9999;
+}
+.discovery-form .advanced  > input[type=checkbox] +  label:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.discovery-form .advanced > input[type=checkbox] +  label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f196";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.discovery-form .advanced > input[type=checkbox]:checked + label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f147";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.discovery-form .advanced > input[type=checkbox] + label + .details {
+    display:none;
+}
+
+.discovery-form .advanced > input[type=checkbox]:checked + label + .details {
+    display:block;
+}
+
+.discovery-form .advanced > input[type=checkbox]:checked + label + .details > li:first-child {
+    border-bottom: 1px solid #eee;
+}

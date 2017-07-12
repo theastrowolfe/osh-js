@@ -97,8 +97,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         this.typeSelectTagId = "type-"+OSH.Utils.randomUUID();
         this.formButtonId = "submit-"+OSH.Utils.randomUUID();
         this.syncMasterTimeId = "syncMasterTime-"+OSH.Utils.randomUUID();
-        this.entitiesSelectTagId = "entities-"+OSH.Utils.randomUUID();
-        this.viewSelectTagId = "dialogSelect-"+OSH.Utils.randomUUID();
+        this.replaySpeedId = "resplaySpeed-"+OSH.Utils.randomUUID();
+        this.responseFormatId = "responseFormat-"+OSH.Utils.randomUUID();
+        this.bufferingId = "buffering-"+OSH.Utils.randomUUID();
 
         // add template
         var discoveryForm = document.createElement("form");
@@ -150,34 +151,32 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         strVar += "                <input id=\""+this.endTimeTagId+"\" type=\"text\" name=\"endTime\" class=\"input-text\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\"  required/>";
         strVar += "                <span class=\"form_hint\">YYYY-MM-DDTHH:mm:ssZ<\/span>";
         strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label for=\"syncMasterTime\">Sync master time:<\/label>";
-        strVar += "                <input id=\""+this.syncMasterTimeId+"\"  class=\"input-checkbox\" type=\"checkbox\" name=\syncMasterTime\" />";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Type:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.typeSelectTagId+"\" required>";
-        strVar += "                        <option value=\"\" disabled selected>Select a type<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Entities:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.entitiesSelectTagId+"\">";
-        strVar += "                        <option value=\"\" selected>None<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>View:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.viewSelectTagId+"\" required>";
-        strVar += "                        <option value=\"\" disabled selected>Select a view<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
+        strVar += "            <div class=\"advanced\">";
+        strVar += "                 <!--input type=\"checkbox\" class=\"advanced\"><i class=\"fa fa-plus-square-o details-button\" aria-hidden=\"true\"><\/i>&nbsp; Advanced <\/input-->";
+        strVar += "                 <input type=\"checkbox\" name=\"advanced\" id=\"advanced\"/><label for=\"advanced\"><i class=\"fa\"></i>Advanced</label>";
+        strVar += "                 <div class=\"details\">";
+        strVar += "                     <li>";
+        strVar += "                         <label for=\"syncMasterTime\">Sync master time:<\/label>";
+        strVar += "                         <input id=\""+this.syncMasterTimeId+"\"  class=\"input-checkbox\" type=\"checkbox\" name=\"syncMasterTime\" />";
+        strVar += "                     <\/li>";
+        strVar += "                     <li>";
+        strVar += "                         <label for=\"replaySpeed\">Replay factor:<\/label>";
+        strVar += "                         <input id=\""+this.replaySpeedId+"\"  class=\"input-text\" type=\"input-text\" name=\"replaySpeed\" value=\'1\' />";
+        strVar += "                     <\/li>";
+        strVar += "                     <li>";
+        strVar += "                         <label for=\"responseFormat\">Response format<\/label>";
+        strVar += "                         <input id=\""+this.responseFormatId+"\"  class=\"input-text\" type=\"input-text\" name=\"responseFormat\" placeholder='\e.g: mp4\'/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li>";
+        strVar += "                         <label for=\"buffering\">Buffering time (ms)<\/label>";
+        strVar += "                         <input id=\""+this.bufferingId+"\"  class=\"input-text\" type=\"input-text\" name=\"buffering\" value=\'1000\'/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li>";
+        strVar += "                         <label for=\"timeShift\">TimeShift (ms)<\/label>";
+        strVar += "                         <input id=\""+this.timeShiftId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeShift\" placeholder=\"e.g: -16000\"/>";
+        strVar += "                     <\/li>";
+        strVar += "                 <\/div>";
+        strVar += "             <\/div>";
         strVar += "            <li>";
         strVar += "                <button id=\""+this.formButtonId+"\" class=\"submit\" type=\"submit\">Add<\/button>";
         strVar += "            <\/li>";
@@ -186,34 +185,16 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         discoveryForm.innerHTML = strVar;
 
         // fill service from urls
-        if(typeof properties != "undefined") {
+        if(typeof properties !== "undefined") {
             // add services
-            if(typeof properties.services != "undefined"){
+            if(typeof properties.services !== "undefined"){
                 this.addValuesToSelect(this.serviceSelectTagId,properties.services);
             }
-
-            // add entities
-            if(typeof properties.entities != "undefined"){
-                this.addObjectsToSelect(this.entitiesSelectTagId,properties.entities);
-            }
-
-            // add views
-            if(typeof properties.views != "undefined"){
-                this.views = properties.views;
-            } else {
-                this.views = [];
-            }
-        }
-
-        // fill type
-        for(var type in  OSH.UI.DiscoveryView.Type) {
-            this.addValueToSelect(this.typeSelectTagId,OSH.UI.DiscoveryView.Type[type]);
         }
 
         // add listeners
         OSH.EventManager.observeDiv(this.serviceSelectTagId,"change",this.onSelectedService.bind(this));
         OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
-        OSH.EventManager.observeDiv(this.typeSelectTagId,"change",this.onSelectedType.bind(this));
         OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
     },
 
@@ -295,7 +276,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         this.removeAllFromSelect(this.viewSelectTagId);
         for(var i= 0;i  < this.views.length;i++) {
             var currentView = this.views[i];
-            if(typeof currentView.type != "undefined" && currentView.type == tagValue){
+            if(typeof currentView.type !== "undefined" && currentView.type === tagValue){
                 this.addValueToSelect(this.viewSelectTagId,currentView.name,undefined,currentView);
             }
         }
@@ -311,11 +292,11 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     onFormSubmit : function(event) {
         event.preventDefault();
         // service
-        var serviceTag = document.getElementById(this.serviceSelectTagId)
+        var serviceTag = document.getElementById(this.serviceSelectTagId);
         var serviceTagSelectedOption = serviceTag.options[serviceTag.selectedIndex];
 
         // offering
-        var offeringTag = document.getElementById(this.offeringSelectTagId)
+        var offeringTag = document.getElementById(this.offeringSelectTagId);
         var offeringTagSelectedOption = offeringTag.options[offeringTag.selectedIndex];
 
         // obs property
@@ -329,15 +310,6 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         // sync master time
         var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
 
-        // type & view
-        var typeTag = document.getElementById(this.typeSelectTagId);
-        var viewTag = document.getElementById(this.viewSelectTagId);
-        var viewTagOption = viewTag.options[viewTag.selectedIndex];
-
-        // entity
-        var entityTag = document.getElementById(this.entitiesSelectTagId);
-        var entityTagTagOption = entityTag.options[entityTag.selectedIndex];
-
         // get values
         var name=offeringTagSelectedOption.parent.name;
         var endPointUrl=serviceTagSelectedOption.value+"sensorhub/sos";
@@ -345,39 +317,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var obsProp=observablePropertyTagSelectedOption.value;
         var startTime=startTimeInputTag.value;
         var endTime=endTimeInputTag.value;
-        var viewId = viewTagOption.object.viewId;
-        var entityId = undefined;
-        if(typeof entityTagTagOption.object != "undefined"){
-            entityId = entityTagTagOption.object.id;
-        }
 
         endPointUrl = endPointUrl.replace('http://', '');
         var syncMasterTime = syncMasterTimeTag.checked;
 
-
-        switch(viewTagOption.object.type) {
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG:
-            {
-                this.createMJPEGVideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264:
-            {
-                this.createH264VideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            case OSH.UI.DiscoveryView.Type.MARKER_GPS:
-            {
-                this.createGPSMarker(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,viewTagOption.object.viewId,entityId);
-                break;
-            }
-            case OSH.UI.DiscoveryView.Type.DIALOG_CHART:
-            {
-                this.createChartDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            default : break;
-        }
         return false;
     },
 
@@ -434,11 +377,11 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         option.value = value;
         option.parent = parent;
 
-        if(typeof object != "undefined") {
+        if(typeof object !== "undefined") {
             option.object = object;
         }
 
-        if(typeof parent != "undefined") {
+        if(typeof parent !== "undefined") {
             option.parent = parent;
         }
         selectTag.add(option);
@@ -507,7 +450,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
                         return 'images/cameralook-selected.png'
                     } else {
                         return 'images/cameralook.png';
-                    };
+                    }
                 }
             }
         });
@@ -648,12 +591,13 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param startTime
      * @param endTime
      * @param syncMasterTime
-     * @param entityId
+     * @param replayFactor
+     * @param responseFormat
      * @memberof OSH.UI.DiscoveryView
      * @instance
      */
-    createChartDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var chartDataSource = new OSH.DataReceiver.Chart(name, {
+    createJSONDataSource:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,replayFactor,responseFormat,buffering) {
+        return new OSH.DataReceiver.JSON(name, {
             protocol: "ws",
             service: "SOS",
             endpointUrl: endPointUrl,
@@ -661,64 +605,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             observedProperty: obsProp,
             startTime: startTime,
             endTime: endTime,
-            replaySpeed: 1,
+            replaySpeed: replayFactor,
             syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
+            bufferingTime: buffering,
+            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
         });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [chartDataSource.id],
-            swapId: this.swapId
-        });
-
-        // Chart View
-        var chartView = new OSH.UI.Nvd3CurveChartView(dialog.popContentDiv.id,
-            [{
-                styler: new OSH.UI.Styler.Curve({
-                    valuesFunc: {
-                        dataSourceIds: [chartDataSource.getId()],
-                        handler: function (rec, timeStamp) {
-                            return {
-                                x: timeStamp,
-                                y: parseFloat(rec[2])
-                            };
-                        }
-                    }
-                })
-            }],
-            {
-                name: name,
-                yLabel: '',
-                xLabel: '',
-                css:"chart-view",
-                cssSelected: "video-selected",
-                maxPoints:30
-            }
-        );
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(chartDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[chartDataSource.id]});
     }
 });
-
-/**
- * The different type of discovery.
- * @type {{MARKER_GPS: string, DIALOG_VIDEO_H264: string, DIALOG_VIDEO_MJPEG: string, DIALOG_CHART: string}}
- * @memberof OSH.UI.DiscoveryView
- * @instance
- */
-OSH.UI.DiscoveryView.Type = {
-    MARKER_GPS : "Marker(GPS)",
-    DIALOG_VIDEO_H264 : "Video Dialog(H264)",
-    DIALOG_VIDEO_MJPEG: "Video Dialog(MJPEG)",
-    DIALOG_CHART : "Chart Dialog"
-};
