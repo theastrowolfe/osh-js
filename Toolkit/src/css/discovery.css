@@ -82,7 +82,7 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 }
 
 .discovery-form li > label {
-    width:140px;
+    width:146px;
     margin-top: 3px;
     display:inline-block;
     float:left;
@@ -157,7 +157,7 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 .discovery-form .input-text {
     padding-right: 5px;
-    width: calc(100% - 161px); /* width - label (140px + 6px padding) */
+    width: calc(100% - 146px); /* width - label (140px) */
 }
 
 .discovery-form select {
