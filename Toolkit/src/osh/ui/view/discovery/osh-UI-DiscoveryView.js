@@ -40,6 +40,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         this.serviceSelectTagId = "service-"+OSH.Utils.randomUUID();
         this.offeringSelectTagId = "offering-"+OSH.Utils.randomUUID();
         this.observablePropertyTagId = "obsProperty-"+OSH.Utils.randomUUID();
+        this.nameTagId = "name-"+OSH.Utils.randomUUID();
         this.startTimeTagId = "startTime-"+OSH.Utils.randomUUID();
         this.endTimeTagId = "endTime-"+OSH.Utils.randomUUID();
         this.typeSelectTagId = "type-"+OSH.Utils.randomUUID();
@@ -87,6 +88,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         strVar += "                         <option value=\"\" disabled selected>Select a property<\/option>";
         strVar += "                     <\/select>";
         strVar += "                <\/div>";
+        strVar += "            <\/li>";
+        strVar += "            <li>";
+        strVar += "                 <label for=\"name\">Name:<\/label>";
+        strVar += "                 <input id=\""+this.nameTagId+"\"  class=\"input-text\" type=\"input-text\" name=\"name\"/>";
         strVar += "            <\/li>";
         strVar += "            <li>";
         strVar += "                <label for=\"startTime\">Start time:<\/label>";
@@ -144,6 +149,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         // add listeners
         OSH.EventManager.observeDiv(this.serviceSelectTagId,"change",this.onSelectedService.bind(this));
         OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
+        OSH.EventManager.observeDiv(this.observablePropertyTagId,"change",this.onSelectedObsProperty.bind(this));
         OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
 
         // definition mapping
@@ -238,6 +244,28 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
+     * @memberof OSH.UI.DiscoveryView
+     * @instance
+     */
+    onSelectedObsProperty: function(event) {
+        var e = document.getElementById(this.observablePropertyTagId);
+        var option = e.options[e.selectedIndex];
+        var obsProp = option.value;
+
+        var split = obsProp.split("/");
+
+        var newNameValue = "";
+
+        if(typeof  split !== "undefined" && split !== null && split.length > 0) {
+            newNameValue = split[split.length-1];
+        }
+
+        document.getElementById(this.nameTagId).value = newNameValue;
+    },
+
+    /**
+     *
+     * @param event
      * @returns {boolean}
      * @memberof OSH.UI.DiscoveryView
      * @instance
@@ -255,6 +283,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         // obs property
         var observablePropertyTag = document.getElementById(this.observablePropertyTagId);
         var observablePropertyTagSelectedOption = observablePropertyTag.options[observablePropertyTag.selectedIndex];
+
+        // name
+        var nameTag = document.getElementById(this.nameTagId);
 
         // time
         var startTimeInputTag = document.getElementById(this.startTimeTagId);
@@ -309,9 +340,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         };
 
         if(dsType === "json") {
-            this.onAddHandler(this.createJSONDataSource(offeringTagSelectedOption,properties));
+            this.onAddHandler(this.createJSONDataSource(nameTag.value,properties));
         } else if(dsType === "video") {
-            this.createVideoDataSource(offeringTagSelectedOption,properties,function(ds){
+            this.createVideoDataSource(nameTag.value,properties,function(ds){
                 this.onAddHandler(ds);
             }.bind(this));
         }
