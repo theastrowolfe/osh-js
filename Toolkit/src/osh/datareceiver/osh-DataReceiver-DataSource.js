@@ -216,13 +216,13 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
 	  var endTime = properties.endTime;
 	  url += "temporalFilter=phenomenonTime,"+startTime+"/"+endTime+"&";
 	  
-	  if(properties.replaySpeed) {
+	  if(properties.replaySpeed && typeof(properties.replaySpeed) !== "undefined") {
 		  // adds replaySpeed
 		  url += "replaySpeed="+properties.replaySpeed;
 	  }
 	  
 	  // adds responseFormat (optional)
-	  if(properties.responseFormat) {
+	  if(properties.responseFormat && typeof(properties.responseFormat) !== "undefined" && properties.responseFormat !== "") {
 		  url += "&responseFormat="+properties.responseFormat;
 	  }
 
