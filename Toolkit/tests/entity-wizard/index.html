@@ -321,7 +321,7 @@
         </section>
 
         <section id="content2">
-            <button id="add-ds-button-id" class="submit" type="submit">Add</button>
+            <button id="add-ds-button-id" class="submit">Add</button>
         </section>
         <section id="content3">
         </section>
@@ -339,51 +339,90 @@
 
             this.formTag = document.getElementById("add-ds-button-id");
 
-            // init discovery view
-            var discoveryView = new OSH.UI.DiscoveryView("",{
-                services: ["http://sensiasoft.net:8181/sensorhub/sos"]
-            });
-
-            discoveryView.onAddHandler = this.addDataSource;
-
-            this.discoveryDialog = new OSH.UI.DialogView(document.body.id, {
-                draggable: true,
-                css: "dialog",
-                name: "Discovery",
-                show:false,
-                dockable: false,
-                closeable: true,
-                connectionIds : []
-            });
-
-            discoveryView.attachTo(this.discoveryDialog.popContentDiv.id);
-
+           this.nbDataSources = 0;
             // listeners
             OSH.EventManager.observeDiv(this.formTag.id,"click",this.onAddDataSource.bind(this));
         },
 
         onAddDataSource: function(event) {
-            this.discoveryDialog.show({
-                viewId : this.discoveryDialog.id
+            // init discovery view
+            var discoveryView = new OSH.UI.DiscoveryView("",{
+                services: ["http://sensiasoft.net:8181/sensorhub/sos"]
             });
+
+            discoveryView.onAddHandler = this.addDataSource.bind(this);
+
+            var discoveryDialog = new OSH.UI.DialogView(document.body.id, {
+                draggable: true,
+                css: "dialog",
+                name: "Discovery",
+                show:true,
+                dockable: false,
+                closeable: true,
+                connectionIds : [],
+                destroyOnClose:false
+            });
+
+            discoveryView.attachTo(discoveryDialog.popContentDiv.id);
         },
 
         addDataSource:function(dataSource) {
             var dsTabElt = document.getElementById("content2");
 
-            var strVar=dsTabElt.innerHTML;
-            strVar += "<div class=\"ds-line\" id=\""+dataSource.id+"\">";
-            strVar += "   <span>"+dataSource.name+"<\/span>";
+            var div = document.createElement('div');
+            div.setAttribute("id",dataSource.id);
+            div.setAttribute("class","ds-line");
+
+            var deleteId = OSH.Utils.randomUUID();
+            var editId = OSH.Utils.randomUUID();
+
+            var strVar = "   <span>"+dataSource.name+"<\/span>";
             strVar += "   <table class=\"control\">";
             strVar += "      <tr>";
-            strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\"><\/i><\/td>";
-            strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\"><\/i><\/td>";
+            strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
+            strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
             strVar += "      <\/tr>";
             strVar += "   <\/table>";
             strVar += "<\/div>";
 
-            dsTabElt.innerHTML = strVar;
+            div.innerHTML = strVar;
 
+            dsTabElt.appendChild(div);
+
+            // add listeners
+
+            OSH.EventManager.observeDiv(deleteId,"click",function(event) {
+                dsTabElt.removeChild(div);
+            });
+
+            var self = this;
+
+            OSH.EventManager.observeDiv(editId,"click",function(event) {
+                // init discovery view
+                var discoveryView = new OSH.UI.DiscoveryView("",{
+                    services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+                });
+
+                discoveryView.onAddHandler = self.addDataSource.bind(self);
+
+                var discoveryDialog = new OSH.UI.DialogView(document.body.id, {
+                    draggable: true,
+                    css: "dialog",
+                    name: "Discovery",
+                    show:true,
+                    dockable: false,
+                    closeable: true,
+                    connectionIds : [],
+                    destroyOnClose:false
+                });
+
+                discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+
+                // setup existing info
+                discoveryView.initDataSource(dataSource);
+
+                discoveryView.setButton("Edit");
+            });
         }
     });
 
