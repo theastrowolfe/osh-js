@@ -217,6 +217,11 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 
     },
 
+    setButton:function(name) {
+        var button = document.getElementById(this.formButtonId);
+        button.innerHTML = name;
+    },
+
     /**
      *
      * @param event
