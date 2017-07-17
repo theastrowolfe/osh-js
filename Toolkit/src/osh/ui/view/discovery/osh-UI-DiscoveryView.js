@@ -172,6 +172,51 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         };
     },
 
+    initDataSource:function(dataSource) {
+        var serverTag = document.getElementById(this.serviceSelectTagId);
+
+        this.removeAllFromSelect(this.offeringSelectTagId);
+        this.removeAllFromSelect(this.observablePropertyTagId);
+
+        var dataSourceEndPoint = dataSource.properties.endpointUrl;
+        if(!dataSourceEndPoint.startsWith("http")) {
+            dataSourceEndPoint = "http://"+dataSourceEndPoint;
+        }
+        for(var i=0; i < serverTag.options.length;i++) {
+            var currentOption = serverTag.options[i].value;
+            if(!currentOption.startsWith("http")) {
+                currentOption = "http://"+currentOption;
+            }
+            if(currentOption === dataSourceEndPoint) {
+                serverTag.options[i].setAttribute("selected","");
+                this.onSelectedService({dataSource:dataSource});
+                break;
+            }
+        }
+
+        // edit advanced values
+        // sync master time
+        var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
+        syncMasterTimeTag.checked = dataSource.syncMasterTime;
+
+        // replaySpeed
+        var replaySpeedTag = document.getElementById(this.replaySpeedId);
+        replaySpeedTag.value = dataSource.properties.replaySpeed;
+
+        // buffering
+        var bufferingTag = document.getElementById(this.bufferingId);
+        bufferingTag.value = dataSource.bufferingTime;
+
+        // response format
+        var responseFormatTag = document.getElementById(this.responseFormatId);
+        responseFormatTag.value = (!isUndefined(dataSource.properties.responseFormat)) ? dataSource.properties.responseFormat : "";
+
+        // time shift
+        var timeShiftTag = document.getElementById(this.timeShiftId);
+        timeShiftTag.value = dataSource.timeShift;
+
+    },
+
     /**
      *
      * @param event
@@ -194,9 +239,32 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 
             var offering=null;
 
+            var offeringMap = {};
+
+            // load content
             for(var i=0;i < jsonObj.Capabilities.contents.offering.length;i++) {
                 offering = jsonObj.Capabilities.contents.offering[i];
                 this.addValueToSelect(this.offeringSelectTagId,offering.name,offering);
+
+                offeringMap[offering.name] = offering;
+            }
+
+            // edit selected filter
+            if(!isUndefined(event.dataSource)) {
+                var offeringTag = document.getElementById(this.offeringSelectTagId);
+                var offeringId = event.dataSource.properties.offeringID;
+
+                for(var i=0; i < offeringTag.options.length;i++) {
+                    var currentOption = offeringTag.options[i].value;
+                    var currentOffering = offeringMap[offeringTag.options[i].value];
+
+                    if(!isUndefined(currentOffering) && currentOffering.identifier === offeringId) {
+                        offeringTag.options[i].setAttribute("selected","");
+                        this.onSelectedOffering({dataSource:event.dataSource});
+                        break;
+                    }
+                }
+
             }
         }.bind(this);
 
@@ -216,21 +284,11 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var e = document.getElementById(this.offeringSelectTagId);
         var option = e.options[e.selectedIndex];
         var offering = option.parent;
+
         this.removeAllFromSelect(this.observablePropertyTagId);
 
         var startTimeInputTag = document.getElementById(this.startTimeTagId);
         var endTimeInputTag = document.getElementById(this.endTimeTagId);
-
-        // set times
-        startTimeInputTag.value = offering.phenomenonTime.beginPosition;
-
-        if(typeof offering.phenomenonTime.endPosition.indeterminatePosition !== "undefined") {
-            var d = new Date();
-            d.setUTCFullYear(2055);
-            endTimeInputTag.value = d.toISOString();
-        } else {
-            endTimeInputTag.value = offering.phenomenonTime.endPosition;
-        }
 
         // feed observable properties
         for(var i = 0; i  < offering.observableProperty.length;i++) {
@@ -238,6 +296,36 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             var disable = false;
             disable = !(offering.observableProperty[i] in this.definitionMap);
             this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering,null,disable);
+        }
+
+        // edit selected filter
+        if(!isUndefined(event.dataSource)) {
+            var obsPropertyTag = document.getElementById(this.observablePropertyTagId);
+
+            for(var i=0; i < obsPropertyTag.options.length;i++) {
+                var currentOption = obsPropertyTag.options[i].value;
+
+                if(currentOption === event.dataSource.properties.observedProperty) {
+                    obsPropertyTag.options[i].setAttribute("selected","");
+                    this.onSelectedObsProperty({dataSource:event.dataSource});
+                    break;
+                }
+            }
+
+            // setup start/end time
+            startTimeInputTag.value = event.dataSource.properties.startTime;
+            endTimeInputTag.value = event.dataSource.properties.endTime;
+        } else {
+            // set times
+            startTimeInputTag.value = offering.phenomenonTime.beginPosition;
+
+            if(typeof offering.phenomenonTime.endPosition.indeterminatePosition !== "undefined") {
+                var d = new Date();
+                d.setUTCFullYear(2055);
+                endTimeInputTag.value = d.toISOString();
+            } else {
+                endTimeInputTag.value = offering.phenomenonTime.endPosition;
+            }
         }
     },
 
@@ -248,19 +336,26 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @instance
      */
     onSelectedObsProperty: function(event) {
-        var e = document.getElementById(this.observablePropertyTagId);
-        var option = e.options[e.selectedIndex];
-        var obsProp = option.value;
+        // edit filter
+        if(!isUndefined(event.dataSource)) {
+            // setup name
+            document.getElementById(this.nameTagId).value = event.dataSource.name;
 
-        var split = obsProp.split("/");
+        } else {
+            var e = document.getElementById(this.observablePropertyTagId);
+            var option = e.options[e.selectedIndex];
+            var obsProp = option.value;
 
-        var newNameValue = "";
+            var split = obsProp.split("/");
 
-        if(typeof  split !== "undefined" && split !== null && split.length > 0) {
-            newNameValue = split[split.length-1];
+            var newNameValue = "";
+
+            if(typeof  split !== "undefined" && split !== null && split.length > 0) {
+                newNameValue = split[split.length-1];
+            }
+
+            document.getElementById(this.nameTagId).value = newNameValue;
         }
-
-        document.getElementById(this.nameTagId).value = newNameValue;
     },
 
     /**
