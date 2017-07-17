@@ -54,34 +54,34 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.destroyOnClose = false;
 
         if(!isUndefined(options)){
-            if( typeof (options.swapId) != "undefined" && options.swapId != "") {
+            if(!isUndefined (options.swapId) && options.swapId != "") {
                 this.swapDivId = "dialog-exchange-" + OSH.Utils.randomUUID();
                 htmlVar += "<a id=\"" + this.swapDivId + "\"class=\"pop-exchange fa fa-exchange\" title=\"swap\"><\/a>";
                 this.divIdToSwap  = options.swapId;
             }
 
-            if( typeof (options.connectionIds) != "undefined" && typeof options.connectionIds != "undefined" && options.connectionIds.length > 0) {
+            if(!isUndefined(options.connectionIds) && !isUndefined(options.connectionIds) && options.connectionIds.length > 0) {
                 // add connected icon to disconnect/connect datasource
                 htmlVar += "<a id=\"" + this.connectDivId + "\"class=\"pop-connect\"><\/a>";
                 this.connected = true;
                 this.connectionIds = options.connectionIds;
             }
 
-            if( typeof (options.dockable) != "undefined" && options.dockable) {
+            if( !isUndefined(options.dockable) && options.dockable) {
                 htmlVar +=  "<a id=\""+this.pinDivId+"\"class=\"pop-pin\"><\/a>";
                 this.dockable = options.dockable;
             }
 
-            if(typeof (options.closeable) != "undefined" && options.closeable) {
+            if(!isUndefined(options.closeable) && options.closeable) {
                 htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\">x<\/a>";
                 this.closeable = options.closeable;
             }
 
-            if(typeof (options.draggable) != "undefined" && options.draggable) {
+            if(!isUndefined(options.draggable) && options.draggable) {
                 this.draggable = options.draggable;
             }
 
-            if(typeof (options.name) != "undefined") {
+            if(!isUndefined(options.name)) {
                 this.name = options.name;
             }
 
@@ -130,8 +130,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         // plugs it into the new draggable dialog
         this.rootTag.appendChild(this.flexDiv);
 
-        if(typeof (options) != "undefined") {
-            if(typeof (options.show) != "undefined" && !options.show) {
+        if(!isUndefined(options)) {
+            if(!isUndefined(options.show) && !options.show) {
                 this.rootTag.style.display = "none";
             } else {
                 this.initialWidth = this.rootTag.offsetWidth;
@@ -155,7 +155,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             document.getElementById(this.connectDivId).onclick = this.connect.bind(this);
         }
 
-        if(typeof  this.swapDivId != "undefined") {
+        if(!isUndefined(this.swapDivId)) {
             document.getElementById(this.swapDivId).onclick = this.swapClick.bind(this);
         }
 
@@ -167,10 +167,10 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         // observe events to update the dialog after disconnect/connect events handling
         OSH.EventManager.observe(OSH.EventManager.EVENT.CONNECT_DATASOURCE,function(event) {
             var dataSources = event.dataSourcesId;
-            if(dataSources.length == self.connectionIds.length) {
+            if(dataSources.length === self.connectionIds.length) {
                 if(dataSources.filter(function(n) {
-                        return self.connectionIds.indexOf(n) != -1;
-                    }).length == self.connectionIds.length) {
+                        return self.connectionIds.indexOf(n) !== -1;
+                    }).length === self.connectionIds.length) {
                     document.getElementById(self.connectDivId).setAttribute("class", "pop-connect");
                     self.connected = true;
                 }
@@ -179,10 +179,10 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE,function(event) {
             var dataSources = event.dataSourcesId;
-            if(dataSources.length == self.connectionIds.length) {
+            if(dataSources.length === self.connectionIds.length) {
                 if(dataSources.filter(function(n) {
-                        return self.connectionIds.indexOf(n) != -1;
-                    }).length == self.connectionIds.length) {
+                        return self.connectionIds.indexOf(n) !== -1;
+                    }).length === self.connectionIds.length) {
                     document.getElementById(self.connectDivId).setAttribute("class", "pop-disconnect");
                     self.connected = false;
                 }
@@ -190,7 +190,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         });
 
         OSH.EventManager.observe("swap-restore",function(event) {
-            if(self.swapped && event.exclude != self.id) {
+            if(self.swapped && event.exclude !== self.id) {
                 self.swap();
                 self.swapped = false;
             }
@@ -222,7 +222,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     swap:function() {
         // swap the child of the popContentDiv with the child contained in the the containerDiv
         var containerDivToSwap = document.getElementById(this.divIdToSwap);
-        if(containerDivToSwap != "undefined" && containerDivToSwap != null) {
+        if(!isUndefinedOrNull(containerDivToSwap)) {
             if(!this.swapped) {
                 // get
                 var popContent = this.popContentDiv.firstChild;
@@ -296,7 +296,6 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      *
-     * @param $super
      * @param properties
      * @instance
      * @memberof OSH.UI.DialogView
@@ -304,7 +303,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     show: function(properties) {
         if(properties.viewId.indexOf(this.getId()) > -1) {
             this.rootTag.style.display = "block";
-            if(typeof(this.initialWidth) == "undefined" ) {
+            if(!isUndefined(this.initialWidth)) {
                 this.initialWidth = this.rootTag.offsetWidth;
             }
         }
