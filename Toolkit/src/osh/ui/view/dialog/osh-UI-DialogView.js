@@ -28,7 +28,8 @@
         dockable: true,
         closeable: true,
         connectionIds : dataSources ,
-        swapId: "main-container"
+        swapId: "main-container",
+        destroyOnClose: true
     });
  */
 OSH.UI.DialogView = OSH.UI.View.extend({
@@ -50,6 +51,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.swapped = false;
         this.connectionIds = [];
         this.draggable = false;
+        this.destroyOnClose = false;
 
         if(!isUndefined(options)){
             if( typeof (options.swapId) != "undefined" && options.swapId != "") {
@@ -81,6 +83,10 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
             if(typeof (options.name) != "undefined") {
                 this.name = options.name;
+            }
+
+            if(!isUndefined(options.destroyOnClose)) {
+                this.destroyOnClose = options.destroyOnClose;
             }
 
         }
@@ -192,11 +198,11 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
         var p = this.rootTag.parentNode;
 
-        var testDiv = document.createElement("div");
-        testDiv.setAttribute("class","outer-dialog");
-        testDiv.appendChild(this.rootTag);
+        this.outer = document.createElement("div");
+        this.outer.setAttribute("class","outer-dialog");
+        this.outer.appendChild(this.rootTag);
 
-        p.appendChild(testDiv);
+        p.appendChild(this.outer);
     },
 
     /**
@@ -366,10 +372,13 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @memberof OSH.UI.DialogView
      */
     close: function () {
-       // this.rootTag.parentNode.removeChild(this.rootTag);
-        this.rootTag.style.display = "none";
-        if (this.onClose) {
-            this.onClose();
+        if(this.destroyOnClose) {
+            this.outer.parentNode.removeChild(this.outer);
+        } else {
+            this.rootTag.style.display = "none";
+            if (this.onClose) {
+                this.onClose();
+            }
         }
     },
 
