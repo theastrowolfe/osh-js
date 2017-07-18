@@ -73,7 +73,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             }
 
             if(!isUndefined(options.closeable) && options.closeable) {
-                htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\">x<\/a>";
+                htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\"><i class=\"fa fa-times\" aria-hidden=\"true\"></i><\/a>";
                 this.closeable = options.closeable;
             }
 
