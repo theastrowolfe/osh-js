@@ -367,3 +367,18 @@ OSH.Utils.copyProperties = function(firstObject,secondObject) {
     for (var k in firstObject) secondObject[k] = firstObject[k];
 };
 
+OSH.Utils.createHTMLTitledLine = function(title) {
+    var strVar="";
+    strVar += "<div style=\"width: 100%;display: table;padding-left: 10px;font-weight: bold;font-size: 15px;color: #545454;\">";
+    strVar += "   <div style=\"display: table-row\">";
+    strVar += "      <div style=\"width: 1px;display: table-cell;padding-right: 5px;\">";
+    strVar += "         <div>"+title+"<\/div>";
+    strVar += "      <\/div>";
+    strVar += "      <div style=\"display: table-cell;\">";
+    strVar += "         <div class=\"horizontal-line\"><\/div>";
+    strVar += "      <\/div>";
+    strVar += "   <\/div>";
+    strVar += "<\/div>";
+
+};
+
