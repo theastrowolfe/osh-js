@@ -18,6 +18,12 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
 
+        if(!isUndefined(properties) && !isUndefined(properties.viewContainer)) {
+            this.viewContainer = properties.viewContainer;
+        } else {
+            this.viewContainer = document.body.id;
+        }
+
         // add template
         var entityWizard = document.createElement("div");
         entityWizard.setAttribute("id","Entity-wizard-"+OSH.Utils.randomUUID());
@@ -85,6 +91,10 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         strVar += "      <\/div>";
         strVar += "      <button id=\"add-styler-button-id\" class=\"submit\">Add<\/button>";
         strVar += "      <div id=\"styler-container\"><\/div>";
+        strVar += "      <div class=\"horizontal-line\"><\/div>";
+        strVar += "      <div class=\"create\">";
+        strVar += "         <button id=\"create-button-id\" class=\"submit\" disabled>Create<\/button>";
+        strVar += "      </div>";
         strVar += "   <\/section>";
         strVar += "<\/main>";
 
@@ -102,6 +112,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv("add-ds-button-id","click",this.onAddDataSourceButtonClickHandler.bind(this));
         OSH.EventManager.observeDiv("add-view-button-id","click",this.addView.bind(this));
         OSH.EventManager.observeDiv("add-styler-button-id","click",this.addStyler.bind(this));
+        OSH.EventManager.observeDiv("create-button-id","click",this.createEntity.bind(this));
 
     },
 
@@ -113,20 +124,23 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
         discoveryView.onAddHandler = this.addDataSource.bind(this);
 
-        var discoveryDialog = new OSH.UI.DialogView(document.body.id, {
+        var discoveryDialog = new OSH.UI.DialogView("", {
             draggable: true,
-            css: "dialog",
+            css: "dialog-discovery",
             name: "Discovery",
             show:true,
             dockable: false,
             closeable: true,
             connectionIds : [],
-            destroyOnClose:false
+            destroyOnClose:false,
+            modal:true
         });
 
         discoveryView.attachTo(discoveryDialog.popContentDiv.id);
 
         this.nbDatasources = 0;
+        this.views = [];
+        this.stylers = [];
     },
 
     initViews: function() {
@@ -184,14 +198,15 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         var deleteId = OSH.Utils.randomUUID();
         var editId = OSH.Utils.randomUUID();
 
-        var strVar = "<span>"+dataSource.name+"<\/span>";
-        strVar += "   <table class=\"control\">";
+        var strVar = "<span class=\" line-left\">"+dataSource.name+"<\/span>";
+        strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
         strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
         strVar += "      <\/tr>";
         strVar += "   <\/table>";
         strVar += "<\/div>";
+        strVar += "<div style=\"clear: both;\"><\/div>";
 
         div.innerHTML = strVar;
 
@@ -219,15 +234,16 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
             discoveryView.onAddHandler = self.addDataSource.bind(self);
 
-            var discoveryDialog = new OSH.UI.DialogView(document.body.id, {
+            var discoveryDialog = new OSH.UI.DialogView("", {
                 draggable: true,
-                css: "dialog",
+                css: "dialog-discovery",
                 name: "Discovery",
                 show:true,
                 dockable: false,
                 closeable: true,
                 connectionIds : [],
-                destroyOnClose:false
+                destroyOnClose:false,
+                modal:true
             });
 
             discoveryView.attachTo(discoveryDialog.popContentDiv.id);
@@ -247,6 +263,9 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         if(viewName === "") {
             return;
         }
+
+        this.views.push(viewName);
+
         var div = document.createElement('div');
         div.setAttribute("id","View"+OSH.Utils.randomUUID());
         div.setAttribute("class","ds-line");
@@ -254,16 +273,15 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         var deleteId = OSH.Utils.randomUUID();
         var editId = OSH.Utils.randomUUID();
 
-
-
-        var strVar = "<span>"+viewName+"<\/span>";
-        strVar += "   <table class=\"control\">";
+        var strVar = "<span class=\"line-left\">"+viewName+"<\/span>";
+        strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
         strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
         strVar += "      <\/tr>";
         strVar += "   <\/table>";
         strVar += "<\/div>";
+        strVar += "<div style=\"clear: both;\"><\/div>";
 
         div.innerHTML = strVar;
 
@@ -281,6 +299,11 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             // disable styler part
             self.disableElt("selectStylerId");
             self.disableElt("add-styler-button-id");
+
+            // enable create button
+            self.disableElt("create-button-id");
+
+            self.views.clear();
         });
 
         OSH.EventManager.observeDiv(editId,"click",function(event) {
@@ -293,6 +316,9 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         this.enableElt("selectStylerId");
         this.enableElt("add-styler-button-id");
 
+        // enable create button
+        this.enableElt("create-button-id");
+
     },
 
     addStyler:function(event) {
@@ -303,6 +329,19 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         if(stylerName === "") {
             return;
         }
+
+        var dsArray = [];
+
+        for(var key in this.datasources) {
+            dsArray.push(this.datasources[key]);
+        }
+
+        if(stylerName === "Marker") {
+            OSH.UI.Styler.Factory.createMarkerStyler(dsArray,function(styler){
+                this.stylers.push(styler);
+            }.bind(this));
+        }
+
         var div = document.createElement('div');
         div.setAttribute("id","Styler"+OSH.Utils.randomUUID());
         div.setAttribute("class","ds-line");
@@ -312,14 +351,15 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
 
 
-        var strVar = "<span>"+stylerName+"<\/span>";
-        strVar += "   <table class=\"control\">";
+        var strVar = "<span class=\"line-left\">"+stylerName+"<\/span>";
+        strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
         strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
         strVar += "      <\/tr>";
         strVar += "   <\/table>";
         strVar += "<\/div>";
+        strVar += "<div style=\"clear: both;\"><\/div>";
 
         div.innerHTML = strVar;
 
@@ -335,6 +375,61 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(editId,"click",function(event) {
         });
     },
+
+    createEntity:function(event) {
+
+        // Get data sources + view + stylers
+
+        var dsArray = [];
+
+        for(var key in this.datasources) {
+            dsArray.push(this.datasources[key]);
+        }
+        // TBD: only one view for now
+        var viewName = this.views[0];
+
+        var newEntity = {
+            id : "entity-"+OSH.Utils.randomUUID(),
+            name: "TODO",
+            dataSources: dsArray
+        };
+
+        // create viewItems
+        var viewItems = [];
+
+        for(var key in this.stylers) {
+            viewItems.push({
+                styler: this.stylers[key],
+                entityId: newEntity.id,
+                name: newEntity.name //TBD
+            });
+        }
+
+
+        if(viewName === "Map 2D") {
+            var leafletMapView = new OSH.UI.LeafletView(this.viewContainer, viewItems);
+
+            //---------------------------------------------------------------//
+            //--------------------- Creates DataProvider --------------------//
+            //---------------------------------------------------------------//
+
+            var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+                replayFactor : 3
+            });
+
+            // We can add a group of dataSources and set the options
+            dataProviderController.addEntity(newEntity);
+
+
+            //---------------------------------------------------------------//
+            //---------------------------- Starts ---------------------------//
+            //---------------------------------------------------------------//
+
+            // starts streaming
+            dataProviderController.connectAll();
+        }
+    },
+
 
     removeAllFromSelect:function(tagId) {
         var i;
