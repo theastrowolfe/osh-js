@@ -29,7 +29,8 @@
         closeable: true,
         connectionIds : dataSources ,
         swapId: "main-container",
-        destroyOnClose: true
+        destroyOnClose: true,
+        modal: false
     });
  */
 OSH.UI.DialogView = OSH.UI.View.extend({
@@ -52,6 +53,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.connectionIds = [];
         this.draggable = false;
         this.destroyOnClose = false;
+        this.modal = false;
 
         if(!isUndefined(options)){
             if(!isUndefined (options.swapId) && options.swapId != "") {
@@ -89,6 +91,13 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 this.destroyOnClose = options.destroyOnClose;
             }
 
+            if(!isUndefined(options.modal)) {
+                this.modal = options.modal;
+            }
+        }
+
+        if(this.modal) {
+            this.closeable = true;
         }
 
         this.titleId = "dialog-title-"+OSH.Utils.randomUUID();
@@ -199,7 +208,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         var p = this.rootTag.parentNode;
 
         this.outer = document.createElement("div");
-        this.outer.setAttribute("class","outer-dialog");
+        this.outer.setAttribute("class",(this.modal) ? "dialog modalDialog" : "dialog");
         this.outer.appendChild(this.rootTag);
 
         p.appendChild(this.outer);
@@ -302,7 +311,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      */
     show: function(properties) {
         if(properties.viewId.indexOf(this.getId()) > -1) {
-            this.rootTag.style.display = "block";
+            OSH.Utils.removeCss(this.outer,"closed");
             if(!isUndefined(this.initialWidth)) {
                 this.initialWidth = this.rootTag.offsetWidth;
             }
@@ -374,7 +383,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         if(this.destroyOnClose) {
             this.outer.parentNode.removeChild(this.outer);
         } else {
-            this.rootTag.style.display = "none";
+            this.outer.setAttribute("class", this.outer.className +  " closed");
             if (this.onClose) {
                 this.onClose();
             }

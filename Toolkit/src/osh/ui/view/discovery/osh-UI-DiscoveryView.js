@@ -558,6 +558,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
                 }
             }
 
+            // store compression info
+            properties.compression = compression;
+
             if(compression === "JPEG") {
                 callback(new OSH.DataReceiver.VideoMjpeg(name, properties));
             } else if(compression === "H264") {

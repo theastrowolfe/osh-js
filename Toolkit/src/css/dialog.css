@@ -1,6 +1,6 @@
 @import "font-awesome-4.6.3/css/font-awesome.min.css";
 
-.pop-over {
+.dialog .pop-over {
     position: relative;
     background-color: rgba(5, 107, 166, 0.6);
     min-height: 190px;
@@ -11,15 +11,15 @@
     z-index: 1020;
     overflow:hidden;
     /*height:auto !important;*/
-    width:100%;
+    /*width:100%;*/
     text-align: left;
 }
 
-.pop-over-selected {
+.dialog .pop-over-selected {
     background-color: rgba(0, 160, 0, 0.6);
 }
 
-.pop-over h3 {
+.dialog .pop-over h3 {
     font-size: 14px;
     font-family: Tahoma, Sans;
     color: white;
@@ -27,17 +27,17 @@
     text-shadow: 0 0 10px rgba(255, 255, 255 .3);
 }
 
-.pop-over h3:hover {
+.dialog .pop-over h3:hover {
     cursor: default;
 }
 
-.pop-inner{
+.dialog .pop-inner{
     display: flex;
     flex-direction: column;
     width:100%;
 }
 
-.pop-content {
+.dialog .pop-content {
     width:inherit;
     position: static;
     margin-top:8px;
@@ -45,11 +45,11 @@
     flex:1;
 }
 
-.pop-footer {
+.dialog .pop-footer {
     height:45px;
 }
 
-.pop-close {
+.dialog .pop-close {
     position: absolute;
     top: 3px;
     right: 0;
@@ -66,12 +66,12 @@
     text-decoration: none;
 }
 
-.pop-close:hover {
+.dialog .pop-close:hover {
     color: #676767;
     cursor:pointer;
 }
 
-.pop-pin {
+.dialog .pop-pin {
     position: absolute;
     top: 7px;
     right: 25px;
@@ -88,19 +88,19 @@
     cursor: default;
 }
 
-.pop-pin:hover {
+.dialog .pop-pin:hover {
     background-image: url("../images/unpin-2.png");
 }
 
-.pop-pin-drag {
+.dialog .pop-pin-drag {
     background-image: url("../images/unpin-2.png");
 }
 
-.pop-pin-drag:hover {
+.dialog .pop-pin-drag:hover {
     background-image: url("../images/pin-2.png");
 }
 
-.pop-connect {
+.dialog .pop-connect {
     position: absolute;
     top: 7px;
     right: 48px;
@@ -117,15 +117,15 @@
     cursor: default;
 }
 
-.pop-connect:hover {
+.dialog .pop-connect:hover {
     background-image: url("../images/disconnected.png");
 }
 
-.pop-disconnect:hover {
+.dialog .pop-disconnect:hover {
     background-image: url("../images/connected.png");
 }
 
-.pop-disconnect {
+.dialog .pop-disconnect {
     position: absolute;
     top: 7px;
     right: 48px;
@@ -141,7 +141,7 @@
     background-image: url("../images/disconnected.png");
 }
 
-.pop-exchange {
+.dialog .pop-exchange {
     position: absolute;
     top: 5px;
     right: 72px;
@@ -155,57 +155,100 @@
     background: transparent;
 }
 
-.pop-exchange:hover {
+.dialog .pop-exchange:hover {
     text-decoration: none;
 }
 
-.resizable {
+.dialog .resizable {
     resize: both;   /* Options: horizontal, vertical, both */
     overflow: auto; /* fix for Safari */
 }
 
 
 /** HANDLE extra div **/
-.pop-extra {
+.dialog .pop-extra {
     position: static;
     margin-top:8px;
     margin-bottom:5px;
     flex: 2;
 }
 
-.pop-extra-el {
+.dialog .pop-extra-el {
     margin-left:5px;
     flex: 3;
 }
 
-.pop-extra-el .fa-2x {
+.dialog .pop-extra-el .fa-2x {
     font-size: 1.75em;
 }
 
-.pop-extra-el>i {
+.dialog .pop-extra-el>i {
     cursor: pointer;
     width:100%;
     padding-top:2px;
 }
 
-.pop-extra-collapse + div {
+.dialog .pop-extra-collapse + div {
     display:none !important;
 }
 
-.pop-extra-show + div {
+.dialog .pop-extra-show + div {
     display: block !important;
     margin-left: 25px;
 }
 
-.no-keep-ratio {
+.dialog .no-keep-ratio {
     height: calc(100% - 45px);
 }
 
-.keep-ratio-w {
+.dialog .keep-ratio-w {
     height:auto !important;
     width:100%;
 }
 
-.keep-ratio-h {
+.dialog .keep-ratio-h {
     width:auto !important;
+}
+
+/** Modal part **/
+.modalDialog {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 99999;
+    opacity:0.8;
+    -webkit-transition: opacity 4000ms ease-in;
+    -moz-transition: opacity 4000ms ease-in;
+    transition: opacity 4000ms ease-in;
+
+}
+
+.modalDialog:target {
+	opacity:1;
+	pointer-events: auto;
+}
+
+.modalDialog > div {
+    position: relative;
+    margin: 10% auto;
+    pointer-events: auto;
+}
+
+.modalDialog > .pop-over {
+    background-color: rgba(5, 107, 166,1);
+}
+
+html.modalDialog, body.modalDialog {
+    pointer-events: none;
+}
+
+.dialog.closed, .modalDialog.closed  {
+    display:none;
+}
+
+html.modalDialog.closed, body.modalDialog.closed  {
+    pointer-events: auto;
 }
