@@ -1,4 +1,4 @@
-@import "font-awesome-4.6.3/css/font-awesome.min.css";
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
 
 .osh .horizontal-line-titled {
     width: 100%;
@@ -243,4 +243,8 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     color: #aaa;
     opacity:1;
     cursor: auto;
+}
+
+.osh .hide {
+    display:none !important;
 }
