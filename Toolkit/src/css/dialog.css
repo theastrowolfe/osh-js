@@ -1,25 +1,26 @@
-@import "font-awesome-4.6.3/css/font-awesome.min.css";
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
 
-.dialog .pop-over {
+.osh.dialog .pop-over {
     position: relative;
     background-color: rgba(5, 107, 166, 0.6);
-    min-height: 190px;
+    min-height: 40px;
     min-width: 100px;
     border: 1px solid #bbbbbb;
     border-radius: 6px;
     box-shadow: 0 0 7px #000000;
     z-index: 1020;
     overflow:hidden;
+    height:auto;
     /*height:auto !important;*/
     /*width:100%;*/
     text-align: left;
 }
 
-.dialog .pop-over-selected {
+.osh.dialog .pop-over-selected {
     background-color: rgba(0, 160, 0, 0.6);
 }
 
-.dialog .pop-over h3 {
+.osh.dialog .pop-over h3 {
     font-size: 14px;
     font-family: Tahoma, Sans;
     color: white;
@@ -27,17 +28,17 @@
     text-shadow: 0 0 10px rgba(255, 255, 255 .3);
 }
 
-.dialog .pop-over h3:hover {
+.osh.dialog .pop-over h3:hover {
     cursor: default;
 }
 
-.dialog .pop-inner{
+.osh.dialog .pop-inner{
     display: flex;
     flex-direction: column;
     width:100%;
 }
 
-.dialog .pop-content {
+.osh.dialog .pop-content {
     width:inherit;
     position: static;
     margin-top:8px;
@@ -45,11 +46,11 @@
     flex:1;
 }
 
-.dialog .pop-footer {
+.osh.dialog .pop-footer {
     height:45px;
 }
 
-.dialog .pop-close {
+.osh.dialog .pop-close {
     position: absolute;
     top: 3px;
     right: 0;
@@ -66,12 +67,45 @@
     text-decoration: none;
 }
 
-.dialog .pop-close:hover {
+.osh.dialog .pop-close:hover, .osh.dialog .pop-min:hover,.osh.dialog .pop-max:hover {
     color: #676767;
     cursor:pointer;
 }
 
-.dialog .pop-pin {
+.osh.dialog .pop-min, .osh.dialog .pop-max {
+    position: absolute;
+    top: 0px;
+    right: 27px;
+    padding: 3px 4px 0 0;
+    text-align: center;
+    font: 16px/14px Tahoma, Verdana, sans-serif;
+    color: #c3c3c3;
+    text-decoration: none !important;
+    font-weight: bold;
+    background: transparent;
+    cursor: default;
+}
+
+.osh.dialog .pop-min > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f2d1";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+    cursor: pointer;
+}
+
+.osh.dialog .pop-max > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f2d2";
+    height: 16px;
+    width: 16px;
+    padding: 5px 0 0 0px;
+}
+
+.osh.dialog .pop-pin {
     position: absolute;
     top: 7px;
     right: 25px;
@@ -88,19 +122,19 @@
     cursor: default;
 }
 
-.dialog .pop-pin:hover {
+.osh.dialog .pop-pin:hover {
     background-image: url("../images/unpin-2.png");
 }
 
-.dialog .pop-pin-drag {
+.osh.dialog .pop-pin-drag {
     background-image: url("../images/unpin-2.png");
 }
 
-.dialog .pop-pin-drag:hover {
+.osh.dialog .pop-pin-drag:hover {
     background-image: url("../images/pin-2.png");
 }
 
-.dialog .pop-connect {
+.osh.dialog .pop-connect {
     position: absolute;
     top: 7px;
     right: 48px;
@@ -117,15 +151,15 @@
     cursor: default;
 }
 
-.dialog .pop-connect:hover {
+.osh.dialog .pop-connect:hover {
     background-image: url("../images/disconnected.png");
 }
 
-.dialog .pop-disconnect:hover {
+.osh.dialog .pop-disconnect:hover {
     background-image: url("../images/connected.png");
 }
 
-.dialog .pop-disconnect {
+.osh.dialog .pop-disconnect {
     position: absolute;
     top: 7px;
     right: 48px;
@@ -141,7 +175,7 @@
     background-image: url("../images/disconnected.png");
 }
 
-.dialog .pop-exchange {
+.osh.dialog .pop-exchange {
     position: absolute;
     top: 5px;
     right: 72px;
@@ -155,63 +189,63 @@
     background: transparent;
 }
 
-.dialog .pop-exchange:hover {
+.osh.dialog .pop-exchange:hover {
     text-decoration: none;
 }
 
-.dialog .resizable {
+.osh.dialog .resizable {
     resize: both;   /* Options: horizontal, vertical, both */
     overflow: auto; /* fix for Safari */
 }
 
 
 /** HANDLE extra div **/
-.dialog .pop-extra {
+.osh.dialog .pop-extra {
     position: static;
     margin-top:8px;
     margin-bottom:5px;
     flex: 2;
 }
 
-.dialog .pop-extra-el {
+.osh.dialog .pop-extra-el {
     margin-left:5px;
     flex: 3;
 }
 
-.dialog .pop-extra-el .fa-2x {
+.osh.dialog .pop-extra-el .fa-2x {
     font-size: 1.75em;
 }
 
-.dialog .pop-extra-el>i {
+.osh.dialog .pop-extra-el>i {
     cursor: pointer;
     width:100%;
     padding-top:2px;
 }
 
-.dialog .pop-extra-collapse + div {
+.osh.dialog .pop-extra-collapse + div {
     display:none !important;
 }
 
-.dialog .pop-extra-show + div {
+.osh.dialog .pop-extra-show + div {
     display: block !important;
     margin-left: 25px;
 }
 
-.dialog .no-keep-ratio {
+.osh.dialog .no-keep-ratio {
     height: calc(100% - 45px);
 }
 
-.dialog .keep-ratio-w {
+.osh.dialog .keep-ratio-w {
     height:auto !important;
     width:100%;
 }
 
-.dialog .keep-ratio-h {
+.osh.dialog .keep-ratio-h {
     width:auto !important;
 }
 
 /** Modal part **/
-.modalDialog {
+.osh.modalDialog {
     position: fixed;
     top: 0;
     right: 0;
@@ -226,7 +260,7 @@
 
 }
 
-.modalDialog:target {
+.osh.modalDialog:target {
 	opacity:1;
 	pointer-events: auto;
 }
@@ -237,23 +271,23 @@
     pointer-events: auto;
 }
 
-.modalDialog > .pop-over {
+.osh.modalDialog > .pop-over {
     background-color: #519fcc;
     opacity: 1;
 }
 
-html.modalDialog, body.modalDialog {
+html.osh.modalDialog, body.osh.modalDialog {
     pointer-events: none;
 }
 
-.dialog.closed, .modalDialog.closed  {
+.osh.dialog.closed, .osh.modalDialog.closed  {
     display:none;
 }
 
-html.modalDialog.closed, body.modalDialog.closed  {
+html.osh.modalDialog.closed, body.osh.modalDialog.closed  {
     pointer-events: auto;
 }
 
-.modalDialog .horizontal-line-titled {
+.osh.modalDialog .horizontal-line-titled {
     color:#b3b3b3;
 }

@@ -41,6 +41,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.pinDivId = "dialog-pin-" + OSH.Utils.randomUUID();
         var closeDivId = "dialog-close-" + OSH.Utils.randomUUID();
         this.connectDivId = "dialog-connect-" + OSH.Utils.randomUUID();
+        this.minimizeId = "dialog-min-"+OSH.Utils.randomUUID();
+
         this.name = "Untitled";
 
         var htmlVar = "";
@@ -55,6 +57,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.destroyOnClose = false;
         this.modal = false;
 
+        //var minimizeVar =  "<a id=\""+this.minimizeId+"\"class=\"pop-min\" title=\"min\"><i class=\"fa fa-minus\" aria-hidden=\"true\"></i><\/a>";
+        var minimizeVar =  "<a id=\""+this.minimizeId+"\"class=\"pop-min\" title=\"min\"><i class=\"fa\"></i><\/a>";
         if(!isUndefined(options)){
             if(!isUndefined (options.swapId) && options.swapId != "") {
                 this.swapDivId = "dialog-exchange-" + OSH.Utils.randomUUID();
@@ -73,6 +77,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 htmlVar +=  "<a id=\""+this.pinDivId+"\"class=\"pop-pin\"><\/a>";
                 this.dockable = options.dockable;
             }
+
+            htmlVar += minimizeVar;
 
             if(!isUndefined(options.closeable) && options.closeable) {
                 htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\"><i class=\"fa fa-times\" aria-hidden=\"true\"></i><\/a>";
@@ -168,6 +174,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             document.getElementById(this.swapDivId).onclick = this.swapClick.bind(this);
         }
 
+        document.getElementById(this.minimizeId).onclick = this.minClick.bind(this);
+
         // calls super handleEvents
         this.handleEvents();
 
@@ -208,7 +216,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         var p = this.rootTag.parentNode;
 
         this.outer = document.createElement("div");
-        this.outer.setAttribute("class",(this.modal) ? "dialog modalDialog" : "dialog");
+        this.outer.setAttribute("class",(this.modal) ? "osh dialog modalDialog " : "osh dialog ");
         this.outer.appendChild(this.rootTag);
 
         p.appendChild(this.outer);
@@ -222,6 +230,23 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     swapClick: function() {
         OSH.EventManager.fire("swap-restore",{exclude: this.id});
         this.swap();
+    },
+
+    /**
+     * Minify or restore the window
+     * @instance
+     * @memberof OSH.UI.DialogView
+     */
+    minClick:function() {
+        if(this.flexDiv.className.indexOf("hide") > -1) {
+            OSH.Utils.removeCss(this.flexDiv,"hide");
+            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-max");
+            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-min");
+        } else {
+            this.flexDiv.setAttribute("class", this.flexDiv.className + " hide");
+            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-min");
+            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-max");
+        }
     },
 
     /**
