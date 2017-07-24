@@ -1,4 +1,4 @@
-.entity-wizard {
+.osh .entity-wizard {
     /*margin: 0 auto; => center?*/
     /*background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);*/
     /*background-color: rgba(5, 107, 166, 0.6);*/
@@ -7,25 +7,25 @@
 }
 
 
-.osh .entity-wizard li {
+.osh .osh .entity-wizard li {
     border-bottom: 1px solid #eee;
 }
 
-.osh .entity-wizard li:last-child {
+.osh .osh .entity-wizard li:last-child {
     border-bottom:1px solid #777;
 }
 
-.entity-wizard > section {
+.osh .entity-wizard > section {
     display: none;
     padding: 20px 0 0;
     border-top: 1px solid #ddd;
 }
 
-.entity-wizard > input {
+.osh .entity-wizard > input {
     display: none;
 }
 
-.entity-wizard > label {
+.osh .entity-wizard > label {
     display: inline-block;
     margin: 0 0 -1px;
     padding: 15px 25px;
@@ -36,22 +36,22 @@
     border: 1px solid transparent;
 }
 
-.entity-wizard > label:before {
+.osh .entity-wizard > label:before {
     font-family: fontawesome;
     font-weight: normal;
     margin-right: 10px;
 }
 
-.entity-wizard > label:hover {
+.osh .entity-wizard > label:hover {
     color: #888;
     cursor: pointer;
 }
 
-.entity-wizard > input:disabled + label {
+.osh .entity-wizard > input:disabled + label {
     color: #dfdfdf;
 }
 
-.entity-wizard > input:checked + label {
+.osh .entity-wizard > input:checked + label {
     color: #000;
     border: 1px solid #ddd;
     border-top: 2px solid orange;
@@ -66,64 +66,64 @@
 }
 
 @media screen and (max-width: 650px) {
-    .entity-wizard > label {
+    .osh .entity-wizard > label {
         font-size: 0;
     }
-    .entity-wizard > label:before {
+    .osh .entity-wizard > label:before {
         margin: 0;
         font-size: 18px;
     }
 }
 
 @media screen and (max-width: 400px) {
-    .entity-wizard > label {
+    .osh .entity-wizard > label {
         padding: 15px;
     }
 }
 
 /** DataSource tab**/
-.entity-wizard .ds-line {
+.osh .entity-wizard .ds-line {
     width:100%;
 }
 
-.entity-wizard .ds-line > span{
+.osh .entity-wizard .ds-line > span{
     margin-left: 15px;
     font-size: 17px;
 }
 
-.entity-wizard .ds-line > .control {
+.osh .entity-wizard .ds-line > .control {
     margin-left:-15px;
     margin-top:-2px;
 }
 
-.entity-wizard .ds-line > .control .edit {
+.osh .entity-wizard .ds-line > .control .edit {
     padding-right: 15px;
 }
 
-.entity-wizard .ds-line > .control .edit:hover {
+.osh .entity-wizard .ds-line > .control .edit:hover {
     color: #056BA6;
     cursor:pointer;
 }
 
-.entity-wizard .ds-line > .control .delete {
+.osh .entity-wizard .ds-line > .control .delete {
     padding-right: 15px;
 }
 
-.entity-wizard .ds-line > .control .delete:hover {
+.osh .entity-wizard .ds-line > .control .delete:hover {
     color: #056BA6;
     cursor:pointer;
 }
 
-.entity-wizard .ds-line > .control .fa-2x {
+.osh .entity-wizard .ds-line > .control .fa-2x {
     font-size: 1.5em;
 }
 
-.entity-wizard #add-view-button-id {
+.osh .entity-wizard #add-view-button-id {
     margin-left: 15px;
 }
 
 /** create button **/
-.entity-wizard .create {
+.osh .entity-wizard .create {
     margin-top: 10px;
     margin-right: auto;
     margin-bottom: 0px;
@@ -132,10 +132,22 @@
 }
 
 /** line - left/right position **/
-.entity-wizard .line-left {
+.osh .entity-wizard .line-left {
     float:left;
 }
 
-.entity-wizard .line-right {
+.osh .entity-wizard .line-right {
     float:right;
+}
+
+.osh .entity-wizard #content3 > .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+
+.osh .entity-wizard #view-container {
+    clear: both;
 }
