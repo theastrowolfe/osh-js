@@ -238,7 +238,8 @@
 }
 
 .modalDialog > .pop-over {
-    background-color: rgba(5, 107, 166,1);
+    background-color: #519fcc;
+    opacity: 1;
 }
 
 html.modalDialog, body.modalDialog {
@@ -251,4 +252,8 @@ html.modalDialog, body.modalDialog {
 
 html.modalDialog.closed, body.modalDialog.closed  {
     pointer-events: auto;
+}
+
+.modalDialog .horizontal-line-titled {
+    color:#b3b3b3;
 }

@@ -6,6 +6,15 @@
     min-height: 300px;
 }
 
+
+.osh .entity-wizard li {
+    border-bottom: 1px solid #eee;
+}
+
+.osh .entity-wizard li:last-child {
+    border-bottom:1px solid #777;
+}
+
 .entity-wizard > section {
     display: none;
     padding: 20px 0 0;
@@ -72,89 +81,6 @@
     }
 }
 
-.entity-wizard .field label {
-    width: 140px;
-    margin-top: 3px;
-    display: inline-block;
-    float: left;
-    padding: 3px;
-}
-.entity-wizard .field {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    position: relative;
-}
-
-.entity-wizard .input-text {
-    transition: padding .25s;
-    border: 1px solid #aaa;
-    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
-    border-radius: 2px;
-    padding: 5px 8px;
-    width: 195px;
-    color: #656565;
-}
-
-.entity-wizard section > .field:first-child {
-    border-top: 1px solid #777;
-}
-
-.entity-wizard section > .field:last-child {
-    border-bottom: 1px solid #777;
-}
-
-/* Button Style */
-.entity-wizard button.submit {
-    margin-left:15px;
-    background-color: #056BA6;
-    background: -webkit-gradient(linear, left top, left bottom, from(#056BA6), to(#055690));
-    background: -webkit-linear-gradient(top, #056BA6, #055690);
-    background: -moz-linear-gradient(top, #056BA6, #055690);
-    background: -ms-linear-gradient(top, #056BA6, #055690);
-    background: -o-linear-gradient(top, #056BA6, #055690);
-    background: linear-gradient(top, #056BA6, #055690);
-    border: 1px solid #056BA6;
-    border-bottom: 1px solid #056BA6;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -o-border-radius: 3px;
-    box-shadow: inset 0 1px 0 0 #056BA6;
-    -webkit-box-shadow: 0 1px 0 0 #056BA6 inset ;
-    -moz-box-shadow: 0 1px 0 0 #056BA6 inset;
-    -ms-box-shadow: 0 1px 0 0 #056BA6 inset;
-    -o-box-shadow: 0 1px 0 0 #056BA6 inset;
-    color: white;
-    font-weight: bold;
-    padding: 6px 20px;
-    text-align: center;
-    text-shadow: 0 -1px 0 #056BA6;
-    display:table;
-    margin-bottom:10px;
-    /*margin:0px auto 0px auto; => CENTER?! */
-}
-.entity-wizard button.submit:hover {
-    opacity:.85;
-    cursor: pointer;
-}
-
-.entity-wizard button.submit:active {
-    border: 1px solid #056BA6;
-    box-shadow: 0 0 10px 5px #056BA6 inset;
-    -webkit-box-shadow:0 0 10px 5px #056BA6 inset ;
-    -moz-box-shadow: 0 0 10px 5px #056BA6 inset;
-    -ms-box-shadow: 0 0 10px 5px #056BA6 inset;
-    -o-box-shadow: 0 0 10px 5px #056BA6 inset;
-
-}
-
-.entity-wizard button.submit:disabled {
-    color: #aaa;
-    opacity:1;
-    cursor: auto;
-}
-
 /** DataSource tab**/
 .entity-wizard .ds-line {
     width:100%;
@@ -192,87 +118,8 @@
     font-size: 1.5em;
 }
 
-/* select box */
-/** Discovery Select box **/
-.entity-wizard .select-style {
-    padding: 0;
-    margin: 0;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    overflow: hidden;
-    background-color: #fff;
-    position: relative;
-    width: 200px;
-    float: left;
-    margin-right: 15px;
-    margin-left: 15px;
-}
-
-.entity-wizard .select-style:before {
-    font-family: FontAwesome;
-    content: "\f0d7";
-    font-size: 25px;
-    display: inline-block;
-    position: absolute;
-    pointer-events: none;
-    right: 5px;
-    color: #777;
-    top:4px;
-}
-
-.entity-wizard .select-style select {
-    padding: 5px 8px;
-    width: 100%;
-    background-color: transparent;
-    background-image: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border: 1px solid #aaa;
-    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
-    border-radius: 2px;
-}
-
-.entity-wizard .select-style select:focus {
-    outline: none;
-}
-
 .entity-wizard #add-view-button-id {
     margin-left: 15px;
-}
-
-.entity-wizard .horizontal-line-titled {
-    width: 100%;
-    display: table;
-    padding-left: 10px;
-    font-weight: bold;
-    font-size: 15px;
-    color: #545454;
-    padding-bottom: 12px;
-}
-
-.entity-wizard .horizontal-line-titled-table {
-    display: table-row
-}
-
-.entity-wizard .horizontal-line-titled-left {
-    width: 1px;
-    display: table-cell;
-    padding-right: 5px;
-}
-
-.entity-wizard .horizontal-line-titled-right {
-    display: table-cell;
-}
-
-.entity-wizard .horizontal-line {
-    border-bottom: 1px solid #c4c4c4;
-    padding: 12px;
-    margin-bottom: 2px;
-}
-
-.entity-wizard > #content3 {
-    padding-top:5px;
 }
 
 /** create button **/

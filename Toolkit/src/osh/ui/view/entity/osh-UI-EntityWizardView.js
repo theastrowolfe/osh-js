@@ -40,33 +40,25 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         strVar += "   <input id=\"tab3\" type=\"radio\" name=\"tabs\">";
         strVar += "   <label for=\"tab3\">Views<\/label>";
         strVar += "   <section id=\"content1\">";
-        strVar += "      <div class=\"field\">";
+        strVar += "     <ul>";
+        strVar += "      <li>";
         strVar += "         <label for=\"name\">Name:<\/label>";
         strVar += "         <input id=\"name\" type=\"text\" class=\"input-text\" value=\"My entity\">";
-        strVar += "      <\/div>";
-        strVar += "      <div class=\"field\">";
+        strVar += "      <\/li>";
+        strVar += "      <li>";
         strVar += "         <label for=\"icon\">Icon:<\/label>";
         strVar += "         <input id=\"icon\" type=\"text\" class=\"input-text\" value=\"images\/cameralook.png\">";
-        strVar += "      <\/div>";
-        strVar += "      <div class=\"field\">";
+        strVar += "      <\/li>";
+        strVar += "      <li>";
         strVar += "         <label for=\"description\">Description url:<\/label>";
         strVar += "         <input id=\"description\" type=\"text\" class=\"input-text\">";
-        strVar += "      <\/div>";
+        strVar += "      <\/li>";
+        strVar += "     <\/ul>";
         strVar += "   <\/section>";
         strVar += "   <section id=\"content2\">";
         strVar += "      <button id=\"add-ds-button-id\" class=\"submit\">Add<\/button>";
         strVar += "   <\/section>";
         strVar += "   <section id=\"content3\">";
-        strVar += "      <div class=\"horizontal-line-titled\">";
-        strVar += "         <div class=\"horizontal-line-titled-table\">";
-        strVar += "            <div class=\"horizontal-line-titled-left\">";
-        strVar += "               <div class=\"horizontal-line-title\">View<\/div>";
-        strVar += "            <\/div>";
-        strVar += "            <div class=\"horizontal-line-titled-right\">";
-        strVar += "               <div class=\"horizontal-line\"><\/div>";
-        strVar += "            <\/div>";
-        strVar += "         <\/div>";
-        strVar += "      <\/div>";
         strVar += "      <div class=\"select-style\">";
         strVar += "         <select id=\"selectViewId\">";
         strVar += "            <option value=\"\" disabled selected>Select a view<\/option>";
@@ -74,23 +66,6 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         strVar += "      <\/div>";
         strVar += "      <button id=\"add-view-button-id\" class=\"submit\">Add<\/button>";
         strVar += "      <div id=\"view-container\"><\/div>";
-        strVar += "      <div class=\"horizontal-line-titled\">";
-        strVar += "         <div class=\"horizontal-line-titled-table\">";
-        strVar += "            <div class=\"horizontal-line-titled-left\">";
-        strVar += "               <div class=\"horizontal-line-title\">Stylers<\/div>";
-        strVar += "            <\/div>";
-        strVar += "            <div class=\"horizontal-line-titled-right\">";
-        strVar += "               <div class=\"horizontal-line\"><\/div>";
-        strVar += "            <\/div>";
-        strVar += "         <\/div>";
-        strVar += "      <\/div>";
-        strVar += "      <div class=\"select-style\">";
-        strVar += "         <select id=\"selectStylerId\">";
-        strVar += "            <option value=\"\" disabled selected>Select a styler<\/option>";
-        strVar += "         <\/select>";
-        strVar += "      <\/div>";
-        strVar += "      <button id=\"add-styler-button-id\" class=\"submit\">Add<\/button>";
-        strVar += "      <div id=\"styler-container\"><\/div>";
         strVar += "      <div class=\"horizontal-line\"><\/div>";
         strVar += "      <div class=\"create\">";
         strVar += "         <button id=\"create-button-id\" class=\"submit\" disabled>Create<\/button>";
@@ -101,17 +76,14 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         entityWizard.innerHTML = strVar;
 
         this.datasources = {};
+        this.views = [];
 
         // inits views
         this.initViews();
 
-        // inits stylers
-        this.initStylers();
-
         // listeners
         OSH.EventManager.observeDiv("add-ds-button-id","click",this.onAddDataSourceButtonClickHandler.bind(this));
         OSH.EventManager.observeDiv("add-view-button-id","click",this.addView.bind(this));
-        OSH.EventManager.observeDiv("add-styler-button-id","click",this.addStyler.bind(this));
         OSH.EventManager.observeDiv("create-button-id","click",this.createEntity.bind(this));
 
     },
@@ -139,8 +111,6 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         discoveryView.attachTo(discoveryDialog.popContentDiv.id);
 
         this.nbDatasources = 0;
-        this.views = [];
-        this.stylers = [];
     },
 
     initViews: function() {
@@ -157,26 +127,6 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
             selectViewTag.add(option);
         }
-    },
-
-    initStylers:function() {
-        var views = ["Marker","Polyline", "Curve"];
-
-        var selectViewTag = document.getElementById("selectStylerId");
-        this.removeAllFromSelect("selectStylerId");
-
-        for(var key in views) {
-
-            var option = document.createElement("option");
-            option.text = views[key];
-            option.value = views[key];
-
-            selectViewTag.add(option);
-        }
-
-        this.disableElt("selectStylerId");
-        this.disableElt("add-styler-button-id");
-
     },
 
     editDataSource:function(dataSource) {
@@ -302,89 +252,44 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             self.enableElt("selectViewId");
             self.enableElt("add-view-button-id");
 
-            // disable styler part
-            self.disableElt("selectStylerId");
-            self.disableElt("add-styler-button-id");
-
             // enable create button
             self.disableElt("create-button-id");
 
-            self.views.clear();
+            self.views = [];
         });
 
-        OSH.EventManager.observeDiv(editId,"click",function(event) {
-        });
+        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this));
 
         // disable listbox
         this.disableElt("selectViewId");
         this.disableElt("add-view-button-id");
-
-        this.enableElt("selectStylerId");
-        this.enableElt("add-styler-button-id");
 
         // enable create button
         this.enableElt("create-button-id");
 
     },
 
-    addStyler:function(event) {
-        var dsTabElt = document.getElementById("styler-container");
-        var selectedStylerTag = document.getElementById("selectStylerId");
-        var stylerName = selectedStylerTag.options[selectedStylerTag.selectedIndex].value;
+    editView:function(event) {
+        var editView = new OSH.UI.EntityWizardEditView();
 
-        if(stylerName === "") {
-            return;
-        }
-
-        var dsArray = [];
-
-        for(var key in this.datasources) {
-            dsArray.push(this.datasources[key]);
-        }
-
-        if(stylerName === "Marker") {
-            OSH.UI.Styler.Factory.createMarkerStyler(dsArray,function(styler){
-                this.stylers.push(styler);
-            }.bind(this));
-        }
-
-        var div = document.createElement('div');
-        div.setAttribute("id","Styler"+OSH.Utils.randomUUID());
-        div.setAttribute("class","ds-line");
-
-        var deleteId = OSH.Utils.randomUUID();
-        var editId = OSH.Utils.randomUUID();
-
-
-
-        var strVar = "<span class=\"line-left\">"+stylerName+"<\/span>";
-        strVar += "   <table class=\"control line-right\">";
-        strVar += "      <tr>";
-        strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
-        strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
-        strVar += "      <\/tr>";
-        strVar += "   <\/table>";
-        strVar += "<\/div>";
-        strVar += "<div style=\"clear: both;\"><\/div>";
-
-        div.innerHTML = strVar;
-
-        dsTabElt.appendChild(div);
-
-        // add listeners
-        var self = this;
-
-        OSH.EventManager.observeDiv(deleteId,"click",function(event) {
-            dsTabElt.removeChild(div);
+        var editViewDialog = new OSH.UI.DialogView("", {
+            draggable: true,
+            css: "dialog-edit-view", //TODO: create unique class for all the views
+            name: "Edit View",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true
         });
 
-        OSH.EventManager.observeDiv(editId,"click",function(event) {
-        });
+        editView.attachTo(editViewDialog.popContentDiv.id);
     },
 
     createEntity:function(event) {
 
-        // Get data sources + view + stylers
+        // Get data sources + view
 
         var dsArray = [];
 
