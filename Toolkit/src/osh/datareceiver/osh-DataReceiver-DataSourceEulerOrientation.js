@@ -63,5 +63,5 @@ OSH.DataReceiver.EulerOrientation = OSH.DataReceiver.DataSource.extend({
       roll : roll,
       heading: yaw
     };
-  } 
+  }
 });
