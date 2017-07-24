@@ -399,12 +399,13 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     drag_start: function (event) {
         event.stopPropagation();
         // Grab all computed styles of the dragged object
-        var style = window.getComputedStyle(event.target, null);
-        // dataTransfer sets data that is being dragged. In this case, the current X and Y values (ex. "1257,104")
-        event.dataTransfer.effectAllowed = 'all';
-        event.dataTransfer.setData("text-" + this.rootTag.id,
-            (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
-
+        if(event.target instanceof  Element) {
+            var style = window.getComputedStyle(event.target, null);
+            // dataTransfer sets data that is being dragged. In this case, the current X and Y values (ex. "1257,104")
+            event.dataTransfer.effectAllowed = 'all';
+            event.dataTransfer.setData("text-" + this.rootTag.id,
+                (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
+        }
     },
 
     /**
