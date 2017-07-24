@@ -175,6 +175,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     initDataSource:function(dataSource) {
         var serverTag = document.getElementById(this.serviceSelectTagId);
 
+        serverTag.dataSourceId = dataSource.id;
+
         this.removeAllFromSelect(this.offeringSelectTagId);
         this.removeAllFromSelect(this.observablePropertyTagId);
 
@@ -439,16 +441,30 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
         };
 
+        var existingDSId = serviceTag.dataSourceId;
+
         if(dsType === "json") {
-            this.onAddHandler(this.createJSONDataSource(nameTag.value,properties));
+            var newDS = this.createJSONDataSource(nameTag.value,properties);
+            if(!isUndefined(existingDSId)) {
+                newDS.id = existingDSId;
+                this.onEditHandler(newDS);
+            } else {
+                this.onAddHandler(newDS);
+            }
         } else if(dsType === "video") {
             this.createVideoDataSource(nameTag.value,properties,function(ds){
-                this.onAddHandler(ds);
+                if(!isUndefined(existingDSId)) {
+                    ds.id = existingDSId;
+                    this.onEditHandler(ds);
+                } else {
+                    this.onAddHandler(ds);
+                }
             }.bind(this));
         }
         return false;
     },
 
+    onEditHandler:function(datasource) {},
     onAddHandler:function(datasource) {},
 
     /**
