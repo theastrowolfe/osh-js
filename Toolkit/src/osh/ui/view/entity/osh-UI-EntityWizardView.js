@@ -132,7 +132,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             dockable: false,
             closeable: true,
             connectionIds : [],
-            destroyOnClose:false,
+            destroyOnClose:true,
             modal:true
         });
 
@@ -179,6 +179,12 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
     },
 
+    editDataSource:function(dataSource) {
+        this.datasources[dataSource.id] = dataSource;
+
+        document.getElementById("ds-name-"+dataSource.id).innerHTML = dataSource.name;
+    },
+
     addDataSource:function(dataSource) {
 
         if(this.nbDatasources === 0) {
@@ -198,7 +204,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         var deleteId = OSH.Utils.randomUUID();
         var editId = OSH.Utils.randomUUID();
 
-        var strVar = "<span class=\" line-left\">"+dataSource.name+"<\/span>";
+        var strVar = "<span class=\" line-left\" id=\"ds-name-"+dataSource.id+"\">"+dataSource.name+"<\/span>";
         strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
@@ -232,7 +238,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
                 services: ["http://sensiasoft.net:8181/sensorhub/sos"]
             });
 
-            discoveryView.onAddHandler = self.addDataSource.bind(self);
+            discoveryView.onEditHandler = self.editDataSource.bind(self);
 
             var discoveryDialog = new OSH.UI.DialogView("", {
                 draggable: true,
@@ -242,7 +248,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
                 dockable: false,
                 closeable: true,
                 connectionIds : [],
-                destroyOnClose:false,
+                destroyOnClose:true,
                 modal:true
             });
 
