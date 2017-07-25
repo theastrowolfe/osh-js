@@ -25,7 +25,7 @@
         css: "dialog",
         name: title,
         show:false,
-        dockable: true,
+        pinContainerId: "pin-container",
         closeable: true,
         connectionIds : dataSources ,
         swapId: "main-container",
@@ -42,13 +42,14 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         var closeDivId = "dialog-close-" + OSH.Utils.randomUUID();
         this.connectDivId = "dialog-connect-" + OSH.Utils.randomUUID();
         this.minimizeId = "dialog-min-"+OSH.Utils.randomUUID();
+        this.titleId = "dialog-title-"+OSH.Utils.randomUUID();
 
         this.name = "Untitled";
 
-        var htmlVar = "";
-        htmlVar += "<div>";
+        var headerVar = "";
+        headerVar += "<div class=\"header\">";
 
-        this.dockable = false;
+        this.pinContainerId = null;
         this.closeable = false;
         this.connected = false;
         this.swapped = false;
@@ -57,40 +58,44 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.destroyOnClose = false;
         this.modal = false;
 
-        //var minimizeVar =  "<a id=\""+this.minimizeId+"\"class=\"pop-min\" title=\"min\"><i class=\"fa fa-minus\" aria-hidden=\"true\"></i><\/a>";
-        var minimizeVar =  "<a id=\""+this.minimizeId+"\"class=\"pop-min\" title=\"min\"><i class=\"fa\"></i><\/a>";
+
+        // build HEADER
+        if(!isUndefined(options) && !isUndefined(options.name)) {
+            this.name = options.name;
+        }
+
+        headerVar += "<span class=\" line-left\" id=\"" + this.titleId + "\">" + this.name + "<\/span>";
+        headerVar += "   <table class=\"line-right\">";
+        headerVar += "      <tr>";
+
         if(!isUndefined(options)){
-            if(!isUndefined (options.swapId) && options.swapId != "") {
+            if(!isUndefined (options.swapId) && options.swapId !== "") {
                 this.swapDivId = "dialog-exchange-" + OSH.Utils.randomUUID();
-                htmlVar += "<a id=\"" + this.swapDivId + "\"class=\"pop-exchange fa fa-exchange\" title=\"swap\"><\/a>";
+                headerVar += "<td><i id=\"" + this.swapDivId + "\" class=\"fa fa-fw pop-icon pop-icon-swap\" aria-hidden=\"true\"><\/i><\/td>";
                 this.divIdToSwap  = options.swapId;
             }
 
             if(!isUndefined(options.connectionIds) && !isUndefined(options.connectionIds) && options.connectionIds.length > 0) {
                 // add connected icon to disconnect/connect datasource
-                htmlVar += "<a id=\"" + this.connectDivId + "\"class=\"pop-connect\"><\/a>";
+                headerVar += "<td><i id=\"" + this.connectDivId + "\" class=\"fa  fa-fw pop-icon pop-icon-connect\" aria-hidden=\"true\"><\/i><\/td>";
                 this.connected = true;
                 this.connectionIds = options.connectionIds;
             }
 
-            if( !isUndefined(options.dockable) && options.dockable) {
-                htmlVar +=  "<a id=\""+this.pinDivId+"\"class=\"pop-pin\"><\/a>";
-                this.dockable = options.dockable;
+            if( !isUndefined(options.pinContainerId) && options.pinContainerId !== "") {
+                headerVar += "<td><i id=\"" + this.pinDivId + "\" class=\"fa fa-fw pop-icon pop-icon-unpin\" aria-hidden=\"true\"><\/i><\/td>";
+                this.pinContainerId = options.pinContainerId;
             }
 
-            htmlVar += minimizeVar;
+             headerVar += "<td><i id=\"" + this.minimizeId + "\" class=\"fa fa-fw pop-icon pop-icon-min\" aria-hidden=\"true\"><\/i><\/td>";
 
             if(!isUndefined(options.closeable) && options.closeable) {
-                htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\"><i class=\"fa fa-times\" aria-hidden=\"true\"></i><\/a>";
+                headerVar += "<td><i id=\"" + closeDivId + "\" class=\"fa fa-fw pop-icon pop-icon-close\" aria-hidden=\"true\"><\/i><\/td>";
                 this.closeable = options.closeable;
             }
 
             if(!isUndefined(options.draggable) && options.draggable) {
                 this.draggable = options.draggable;
-            }
-
-            if(!isUndefined(options.name)) {
-                this.name = options.name;
             }
 
             if(!isUndefined(options.destroyOnClose)) {
@@ -106,11 +111,13 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             this.closeable = true;
         }
 
-        this.titleId = "dialog-title-"+OSH.Utils.randomUUID();
-        htmlVar += "<h3 id=\""+this.titleId+"\">"+this.name+"<\/h3></div>";
+        headerVar += "      <\/tr>";
+        headerVar += "   <\/table>";
+        headerVar += "<\/div>";
+        headerVar += "<div style=\"clear: both;\"><\/div>";
 
         this.rootTag = document.getElementById(this.divId);
-        this.rootTag.innerHTML = htmlVar;
+        this.rootTag.innerHTML = headerVar;
 
         this.rootTag.setAttribute("class", "pop-over resizable");
         this.rootTag.setAttribute("draggable", this.draggable);
@@ -162,7 +169,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             document.getElementById(closeDivId).onclick = this.close.bind(this);
         }
 
-        if(this.dockable) {
+        if(this.pinContainerId !== null) {
             document.getElementById(this.pinDivId).onclick = this.unpin.bind(this);
         }
 
@@ -188,7 +195,9 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 if(dataSources.filter(function(n) {
                         return self.connectionIds.indexOf(n) !== -1;
                     }).length === self.connectionIds.length) {
-                    document.getElementById(self.connectDivId).setAttribute("class", "pop-connect");
+                    var eltDiv = document.getElementById(self.connectDivId);
+                    OSH.Utils.addCss(eltDiv,"pop-icon-connect");
+                    OSH.Utils.removeCss(eltDiv,"pop-icon-disconnect");
                     self.connected = true;
                 }
             }
@@ -200,7 +209,9 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 if(dataSources.filter(function(n) {
                         return self.connectionIds.indexOf(n) !== -1;
                     }).length === self.connectionIds.length) {
-                    document.getElementById(self.connectDivId).setAttribute("class", "pop-disconnect");
+                    var eltDiv = document.getElementById(self.connectDivId);
+                    OSH.Utils.removeCss(eltDiv,"pop-icon-connect");
+                    OSH.Utils.addCss(eltDiv,"pop-icon-disconnect");
                     self.connected = false;
                 }
             }
@@ -216,7 +227,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         var p = this.rootTag.parentNode;
 
         this.outer = document.createElement("div");
-        this.outer.setAttribute("class",(this.modal) ? "osh dialog modalDialog " : "osh dialog ");
+        this.outer.setAttribute("class",(this.modal) ? "osh dialog modal " : "osh dialog ");
         this.outer.appendChild(this.rootTag);
 
         p.appendChild(this.outer);
@@ -240,12 +251,15 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     minClick:function() {
         if(this.flexDiv.className.indexOf("hide") > -1) {
             OSH.Utils.removeCss(this.flexDiv,"hide");
-            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-max");
-            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-min");
+            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-icon-max");
+            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-icon-min");
+            OSH.Utils.addCss(this.rootTag,"resizable");
         } else {
             this.flexDiv.setAttribute("class", this.flexDiv.className + " hide");
-            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-min");
-            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-max");
+            OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-icon-min");
+            OSH.Utils.removeCss(this.rootTag,"resizable");
+
+            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-icon-max");
         }
     },
 
@@ -318,7 +332,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 }
             }
 
-            var everyChild = this.popContentDiv.querySelectorAll("div");
+            everyChild = this.popContentDiv.querySelectorAll("div");
             for (var i = 0; i<everyChild.length; i++) {
                 var id = everyChild[i].id;
                 if(id.startsWith("view-")) {
@@ -362,30 +376,38 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @memberof OSH.UI.DialogView
      */
     unpin: function() {
-        if (!this.draggable) {
+        var pinElt = document.getElementById(this.pinDivId);
+        if (pinElt.className.indexOf("pop-icon-unpin") <= -1 ) {
             var bodyRect = document.body.getBoundingClientRect(),
                 elemRect = this.rootTag.getBoundingClientRect(),
                 offsetTop = elemRect.top - bodyRect.top,
                 offsetLeft = elemRect.left - bodyRect.left;
 
             this.rootTag.setAttribute("draggable", true);
-            this.rootTag.parentNode.removeChild(this.rootTag);
-            document.body.appendChild(this.rootTag);
+            //this.rootTag.parentNode.removeChild(this.rootTag);
+            document.getElementById(this.pinContainerId).removeChild(this.rootTag.parentNode);
+            document.body.appendChild(this.rootTag.parentNode);
             this.rootTag.style.top = offsetTop;
             this.rootTag.style.left = offsetLeft;
             this.rootTag.style.position = "absolute";
             this.draggable = true;
 
-            document.getElementById(this.pinDivId).setAttribute("class", "pop-pin pop-pin-drag");
+            OSH.Utils.removeCss(pinElt,"pop-icon-pin");
+            OSH.Utils.addCss(pinElt,"pop-icon-unpin");
         } else {
             this.rootTag.style.top = 0;
             this.rootTag.style.left = 0 - (this.rootTag.offsetWidth - this.initialWidth);
             this.rootTag.style.position = "relative";
             this.rootTag.setAttribute("draggable", false);
-            document.body.removeChild(this.rootTag);
-            this.container.appendChild(this.rootTag);
+
+
+            document.body.removeChild(this.rootTag.parentNode);
+
+            document.getElementById(this.pinContainerId).appendChild(this.rootTag.parentNode);
             this.draggable = false;
-            document.getElementById(this.pinDivId).setAttribute("class", "pop-pin");
+
+            OSH.Utils.removeCss(pinElt,"pop-icon-unpin");
+            OSH.Utils.addCss(pinElt,"pop-icon-pin");
         }
     },
 

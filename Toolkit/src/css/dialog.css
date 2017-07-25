@@ -3,7 +3,7 @@
 .osh.dialog .pop-over {
     position: relative;
     background-color: rgba(5, 107, 166, 0.6);
-    min-height: 40px;
+    min-height: 30px;
     min-width: 100px;
     border: 1px solid #bbbbbb;
     border-radius: 6px;
@@ -18,18 +18,6 @@
 
 .osh.dialog .pop-over-selected {
     background-color: rgba(0, 160, 0, 0.6);
-}
-
-.osh.dialog .pop-over h3 {
-    font-size: 14px;
-    font-family: Tahoma, Sans;
-    color: white;
-    margin: 7px 3px 3px 15px;
-    text-shadow: 0 0 10px rgba(255, 255, 255 .3);
-}
-
-.osh.dialog .pop-over h3:hover {
-    cursor: default;
 }
 
 .osh.dialog .pop-inner{
@@ -48,149 +36,6 @@
 
 .osh.dialog .pop-footer {
     height:45px;
-}
-
-.osh.dialog .pop-close {
-    position: absolute;
-    top: 3px;
-    right: 0;
-    padding: 4px 4px 0 0;
-    text-align: center;
-    width: 18px;
-    height: 14px;
-    font: 18px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none !important;
-    font-weight: bold;
-    background: transparent;
-    cursor: default;
-    text-decoration: none;
-}
-
-.osh.dialog .pop-close:hover, .osh.dialog .pop-min:hover,.osh.dialog .pop-max:hover {
-    color: #676767;
-    cursor:pointer;
-}
-
-.osh.dialog .pop-min, .osh.dialog .pop-max {
-    position: absolute;
-    top: 0px;
-    right: 27px;
-    padding: 3px 4px 0 0;
-    text-align: center;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none !important;
-    font-weight: bold;
-    background: transparent;
-    cursor: default;
-}
-
-.osh.dialog .pop-min > i:before {
-    display:inline-block;
-    font-family: FontAwesome;
-    content:"\f2d1";
-    height: 16px;
-    width: 16px;
-    padding: 0 0 0 0px;
-    cursor: pointer;
-}
-
-.osh.dialog .pop-max > i:before {
-    display:inline-block;
-    font-family: FontAwesome;
-    content:"\f2d2";
-    height: 16px;
-    width: 16px;
-    padding: 5px 0 0 0px;
-}
-
-.osh.dialog .pop-pin {
-    position: absolute;
-    top: 7px;
-    right: 25px;
-    padding: 4px 4px 0 0;
-    text-align: center;
-    width: 16px;
-    height: 16px;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none;
-    font-weight: bold;
-    background: transparent;
-    background-image: url("../images/pin-2.png");
-    cursor: default;
-}
-
-.osh.dialog .pop-pin:hover {
-    background-image: url("../images/unpin-2.png");
-}
-
-.osh.dialog .pop-pin-drag {
-    background-image: url("../images/unpin-2.png");
-}
-
-.osh.dialog .pop-pin-drag:hover {
-    background-image: url("../images/pin-2.png");
-}
-
-.osh.dialog .pop-connect {
-    position: absolute;
-    top: 7px;
-    right: 48px;
-    padding: 0px 0px 0 0;
-    text-align: center;
-    width: 16px;
-    height: 16px;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none;
-    font-weight: bold;
-    background: transparent;
-    background-image: url("../images/connected.png");
-    cursor: default;
-}
-
-.osh.dialog .pop-connect:hover {
-    background-image: url("../images/disconnected.png");
-}
-
-.osh.dialog .pop-disconnect:hover {
-    background-image: url("../images/connected.png");
-}
-
-.osh.dialog .pop-disconnect {
-    position: absolute;
-    top: 7px;
-    right: 48px;
-    padding: 0px 0px 0 0;
-    text-align: center;
-    width: 16px;
-    height: 16px;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none;
-    font-weight: bold;
-    background: transparent;
-    background-image: url("../images/disconnected.png");
-}
-
-.osh.dialog .pop-exchange {
-    position: absolute;
-    top: 5px;
-    right: 72px;
-    padding: 4px 4px 0 0;
-    text-align: center;
-    width: 16px;
-    height: 16px;
-    color: #c3c3c3;
-    text-decoration: none;
-    font-weight: bold;
-    background: transparent;
-}
-
-.osh.dialog .pop-exchange:hover {
-    text-decoration: none;
 }
 
 .osh.dialog .resizable {
@@ -244,8 +89,88 @@
     width:auto !important;
 }
 
-/** Modal part **/
-.osh.modalDialog {
+
+/** line - left/right position **/
+.osh.dialog .header > .line-left {
+    float: left;
+    padding-left: 15px;
+    padding-top: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFF;
+}
+
+.osh.dialog .header > .line-right {
+    float:right;
+}
+
+.osh.dialog .header .pop-icon {
+    display:inline-block;
+    font-family: FontAwesome;
+    padding: 2px 2px 4px 6px;
+    margin: 0 0px 0 2px;
+    cursor: pointer;
+    color: #c3c3c3;
+}
+
+.osh.dialog .header .pop-icon:hover {
+    color: #676767;
+    cursor:pointer;
+}
+
+.osh.dialog .header .pop-icon-close:before {
+    content:"\f00d";
+}
+
+.osh.dialog .header .pop-icon.pop-icon-close {
+    font-size: 18px;
+}
+
+.osh.dialog .header .pop-icon-min:before {
+    content:"\f2d1";
+}
+
+.osh.dialog .header .pop-icon-max:before {
+    content:"\f2d2";
+}
+
+.osh.dialog .header .pop-icon-pin:before {
+    content:"\f08d";
+    color: #676767;
+}
+
+.osh.dialog .header .pop-icon-unpin:before {
+    content:"\f08d";
+}
+
+.osh.dialog .header .pop-icon-pin:hover:before {
+    color: #c3c3c3;
+}
+
+.osh.dialog .header .pop-icon-connect:before {
+    content:"\f1e6";
+    color:green;
+}
+
+.osh.dialog .header .pop-icon-connect:hover:before {
+    color:red;
+}
+
+.osh.dialog .header .pop-icon-disconnect:before {
+    content:"\f1e6";
+    color:red;
+}
+
+.osh.dialog .header .pop-icon-disconnect:hover:before {
+    color:green;
+}
+
+.osh.dialog .header .pop-icon-swap:before {
+    content:"\f0ec";
+}
+
+/** MODAL PART **/
+.osh.dialog.modal {
     position: fixed;
     top: 0;
     right: 0;
@@ -260,34 +185,30 @@
 
 }
 
-.osh.modalDialog:target {
-	opacity:1;
-	pointer-events: auto;
+.osh.dialog.modal :target {
+    opacity:1;
+    pointer-events: auto;
 }
 
-.modalDialog > div {
+.osh.dialog.modal > div {
     position: relative;
     margin: 10% auto;
     pointer-events: auto;
 }
 
-.osh.modalDialog > .pop-over {
+.osh.dialog.modal > .pop-over {
     background-color: #519fcc;
     opacity: 1;
 }
 
-html.osh.modalDialog, body.osh.modalDialog {
+html.osh.dialog.modal, body.osh.dialog.modal {
     pointer-events: none;
 }
 
-.osh.dialog.closed, .osh.modalDialog.closed  {
+.osh.dialog.modal.closed  {
     display:none;
 }
 
-html.osh.modalDialog.closed, body.osh.modalDialog.closed  {
+html.osh.dialog.modal.closed, body.osh.dialog.modal.closed  {
     pointer-events: auto;
-}
-
-.osh.modalDialog .horizontal-line-titled {
-    color:#b3b3b3;
 }
