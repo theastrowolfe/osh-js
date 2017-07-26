@@ -116,6 +116,12 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         headerVar += "<\/div>";
         headerVar += "<div style=\"clear: both;\"><\/div>";
 
+        if(parentElementDivId === "") {
+            this.parentElementDivId = document.body;
+        } else {
+            this.parentElementDivId = parentElementDivId;
+        }
+
         this.rootTag = document.getElementById(this.divId);
         this.rootTag.innerHTML = headerVar;
 
@@ -377,6 +383,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      */
     unpin: function() {
         var pinElt = document.getElementById(this.pinDivId);
+        var containerElt = document.getElementById(this.parentElementDivId);
+
         if (pinElt.className.indexOf("pop-icon-unpin") <= -1 ) {
             var bodyRect = document.body.getBoundingClientRect(),
                 elemRect = this.rootTag.getBoundingClientRect(),
@@ -386,7 +394,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             this.rootTag.setAttribute("draggable", true);
             //this.rootTag.parentNode.removeChild(this.rootTag);
             document.getElementById(this.pinContainerId).removeChild(this.rootTag.parentNode);
-            document.body.appendChild(this.rootTag.parentNode);
+            containerElt.appendChild(this.rootTag.parentNode);
             this.rootTag.style.top = offsetTop;
             this.rootTag.style.left = offsetLeft;
             this.rootTag.style.position = "absolute";
@@ -400,8 +408,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             this.rootTag.style.position = "relative";
             this.rootTag.setAttribute("draggable", false);
 
-
-            document.body.removeChild(this.rootTag.parentNode);
+            containerElt.removeChild(this.rootTag.parentNode);
 
             document.getElementById(this.pinContainerId).appendChild(this.rootTag.parentNode);
             this.draggable = false;
