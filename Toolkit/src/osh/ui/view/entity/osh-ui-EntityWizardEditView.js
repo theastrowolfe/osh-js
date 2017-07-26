@@ -29,10 +29,10 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
 
         var strVar="";
         strVar += OSH.Utils.createHTMLTitledLine("Container");
-        strVar += "<ul>";
-        strVar += "  <li>";
+        strVar += "<ul class=\"osh-ul\">";
+        strVar += "  <li class=\"osh-li\">";
         strVar += "    <label for=\"dialog\">Dialog:<\/label>";
-        strVar += "    <input id=\""+this.dialogOptionId+"\"  class=\"input-checkbox\" type=\"checkbox\" name=\"dialog\" />";
+        strVar += "    <input id=\""+this.dialogOptionId+"\"  class=\"input-checkbox \" type=\"checkbox\" name=\"dialog\" />";
         strVar += "  <\/li>";
         strVar += "<\/ul>";
 
