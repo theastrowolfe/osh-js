@@ -11,27 +11,28 @@
      -->
 
     <div id="tree-container" style="height:100%;width:210px;float:left"></div>
-    <div id="tree-inner"></div>
+    <div id="tree-inner" style="float:right;"></div>
     <style>
-        .dialog-from-tree {
-            width: 215px !important;
-            height: 150px !important;
+
+        #tree-inner {
+            width: calc(100% - 210px);
         }
-        .video {
+
+        #treeViewId .dialog-from-tree {
+            width: 215px;
+            height: 150px;
+        }
+
+        #treeViewId .video {
             width: inherit;
-            height: 150px;;
+            height: 100px;
         }
 
-
-        .video-selected {
+        #treeViewId .video-selected {
             border-radius: 3px;
             box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
         }
 
-        .dialog {
-            width:350px !important;
-            height:200px !important;
-        }
     </style>
     <script>
 
@@ -92,7 +93,6 @@
             css: "dialog-from-tree",
             name: "Dialog from tree",
             show:false,
-            dockable: false,
             closeable: true,
             connectionIds : [androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id]
         });
@@ -102,7 +102,6 @@
             css: "dialog-from-tree",
             name: "Dialog from tree",
             show:false,
-            dockable: false,
             closeable: true,
             connectionIds : [androidPhoneVideoDataSource.id]
         });
