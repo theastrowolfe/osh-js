@@ -128,6 +128,16 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.rootTag.setAttribute("class", "pop-over resizable");
         this.rootTag.setAttribute("draggable", this.draggable);
 
+
+        // set root parent
+        var p = this.rootTag.parentNode;
+
+        this.outer = document.createElement("div");
+        this.outer.setAttribute("class",(this.modal) ? "osh dialog modal " : "osh dialog ");
+        this.outer.appendChild(this.rootTag);
+
+        p.appendChild(this.outer);
+
         this.keepRatio = false;
 
         if(!isUndefined(options)) {
@@ -160,7 +170,10 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
         if(!isUndefined(options)) {
             if(!isUndefined(options.show) && !options.show) {
-                this.rootTag.style.display = "none";
+                OSH.Utils.addCss(this.outer,"hide");
+
+                // because the inherited class owns a show property as well, we have to remove that one
+                this.rootTag.style.display = "block";
             } else {
                 this.initialWidth = this.rootTag.offsetWidth;
             }
@@ -229,14 +242,6 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 self.swapped = false;
             }
         });
-
-        var p = this.rootTag.parentNode;
-
-        this.outer = document.createElement("div");
-        this.outer.setAttribute("class",(this.modal) ? "osh dialog modal " : "osh dialog ");
-        this.outer.appendChild(this.rootTag);
-
-        p.appendChild(this.outer);
     },
 
     /**
@@ -258,11 +263,14 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         if(this.flexDiv.className.indexOf("hide") > -1) {
             OSH.Utils.removeCss(this.flexDiv,"hide");
             OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-icon-max");
-            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-icon-min");
             OSH.Utils.addCss(this.rootTag,"resizable");
+            OSH.Utils.removeCss(this.rootTag,"minimized");
+
+            OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-icon-min");
         } else {
             this.flexDiv.setAttribute("class", this.flexDiv.className + " hide");
             OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-icon-min");
+            OSH.Utils.addCss(this.rootTag,"minimized");
             OSH.Utils.removeCss(this.rootTag,"resizable");
 
             OSH.Utils.addCss(document.getElementById(this.minimizeId),"pop-icon-max");
@@ -356,7 +364,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      */
     show: function(properties) {
         if(properties.viewId.indexOf(this.getId()) > -1) {
-            OSH.Utils.removeCss(this.outer,"closed");
+            OSH.Utils.removeCss(this.outer,"hide");
             if(!isUndefined(this.initialWidth)) {
                 this.initialWidth = this.rootTag.offsetWidth;
             }
