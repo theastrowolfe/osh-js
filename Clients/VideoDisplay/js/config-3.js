@@ -392,30 +392,7 @@ function init() {
     });
 
     var discoveryView = new OSH.UI.DiscoveryView("",{
-        services: ["http://localhost:8181/","http://sensiasoft.net:8181/"],
-        css: "discovery-view",
-        dataReceiverController:dataProviderController,
-        swapId: "center-container",
-        entities: [androidEntity],
-        views: [{
-            name: 'Leaflet 2D Map',
-            viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
-        }, {
-            name: 'Cesium 3D Globe',
-            viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
-        },{
-            name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
-        },{
-            name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
-        },{
-            name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
-        }
-        ]
+        services: ["http://localhost:8181/","http://sensiasoft.net:8181/"]
     });
 
     discoveryView.attachTo(discoveryDialog.popContentDiv.id);
@@ -462,7 +439,7 @@ function init() {
 function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
     var ptzDialog = new OSH.UI.MultiDialogView(containerDivId, {
         draggable: false,
-        css: "dialog",
+        css: "dialog-view",
         name: title,
         show:false,
         dockable: true,
@@ -484,7 +461,7 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
 function createDialog(containerDivId,dataSources,title,defaultShow) {
     return new OSH.UI.DialogView(containerDivId, {
         draggable: false,
-        css: "dialog",
+        css: "dialog-view",
         name: title,
         show:false,
         dockable: true,
