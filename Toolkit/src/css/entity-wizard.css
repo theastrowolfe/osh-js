@@ -7,11 +7,17 @@
 }
 
 
-.osh .osh .entity-wizard li {
+.osh .entity-wizard button.submit {
+    display: inline; /** display the data sources ADD button to the left **/
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.osh .entity-wizard li {
     border-bottom: 1px solid #eee;
 }
 
-.osh .osh .entity-wizard li:last-child {
+.osh .entity-wizard li:last-child {
     border-bottom:1px solid #777;
 }
 
