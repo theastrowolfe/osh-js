@@ -34,20 +34,27 @@
         }
     </style>
     <script>
+        // init discovery view
         var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
-            dialogContainer: "dialog-container",
-            services: ["http://sensiasoft.net:8181/"],
-            views: [{
-                name: 'Video dialog(H264)',
-                type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
-            },{
-                name: 'Video dialog(MJPEG)',
-                type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
-            },{
-                name: 'Chart dialog',
-                type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
-            }
-            ]
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
         });
+
+        discoveryView.onAddHandler = function(dataSource) {
+
+        }
+
+        var discoveryDialog = new OSH.UI.DialogView("", {
+            draggable: true,
+            css: "dialog-discovery",
+            name: "Discovery",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true
+        });
+
+
     </script>
 </div>
