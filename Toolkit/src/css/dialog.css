@@ -172,6 +172,10 @@
     content:"\f0ec";
 }
 
+.osh.dialog .header {
+    padding-right: 5px;
+}
+
 /** MODAL PART **/
 .osh.dialog.modal {
     position: fixed;
