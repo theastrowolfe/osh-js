@@ -59,6 +59,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../src/css/entity-wizard.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
     <style>
         body {
@@ -120,19 +121,27 @@
 
 <body id="body">
 <h1>Entity wizard</h1>
+<div id="dialog-container"></div>
 <div id="container"></div>
 <script type="text/javascript">
     var entityWizardView = new OSH.UI.EntityWizardView("",{
         viewContainer: "container"
     });
 
-    var entityWizardDialog    = new OSH.UI.DialogView("",{
+    var entityWizardDialog    = new OSH.UI.DialogView("dialog-container",{
+        /*  css: "dialog-entity",
+        name: "Entity",
+      show:true,
+        draggable:true,
+        dockable: false,
+        closeable: true,*/
+
+        draggable: false,
         css: "dialog-entity",
         name: "Entity",
         show:true,
-        draggable:true,
-        dockable: false,
-        closeable: true
+        pinContainerId: "dialog-container",
+        draggable:true
     });
 
     entityWizardView.attachTo(entityWizardDialog.popContentDiv.id);
