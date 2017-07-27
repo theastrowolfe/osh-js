@@ -1,27 +1,29 @@
 @import "font-awesome-4.7.0/css/font-awesome.min.css";
 
-.osh .horizontal-line-titled {
-    width: 100%;
-    display: table;
-    padding-left: 10px;
-    font-weight: bold;
+.osh .horizontal-titled-line {
+    overflow: hidden;
+    text-align: center;
+    color:#525252;
     font-size: 15px;
-    color: #545454;
-    padding-bottom: 12px;
 }
 
-.osh .horizontal-line-titled-table {
-    display: table-row
+.osh .horizontal-titled-line:before,
+.osh .horizontal-titled-line:after {
+    background-color: #c4c4c4;
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
 }
-
-.osh .horizontal-line-titled-left {
-    width: 1px;
-    display: table-cell;
-    padding-right: 5px;
+.osh .horizontal-titled-line:before {
+    right: 0.5em;
+    margin-left: -50%;
 }
-
-.osh .horizontal-line-titled-right {
-    display: table-cell;
+.osh .horizontal-titled-line:after {
+    left: 0.5em;
+    margin-right: -50%;
 }
 
 .osh .horizontal-line {
