@@ -28,6 +28,21 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
         this.dialogOptionId = OSH.Utils.randomUUID();
 
         var strVar="";
+        strVar += OSH.Utils.createHTMLTitledLine("Data Sources");
+        strVar += "<ul class=\"osh-ul\">";
+        strVar += "  <li class=\"osh-li\">";
+
+        // compute DS
+        strVar += "<div class=\"listbox-multiple\">";
+        for(var i=0;i <properties.datasources.length;i++) {
+            var id = OSH.Utils.randomUUID();
+            strVar += "<label for=\""+id+"\">"+properties.datasources[i].name+"<\/label>";
+            strVar += "<input type=\"checkbox\" name=\""+id+"\" id=\""+id+"\"/><br/>";
+        }
+
+        strVar += "<\/div>";
+        strVar += "  <\/li>";
+        strVar += "<\/ul>";
         strVar += OSH.Utils.createHTMLTitledLine("Container");
         strVar += "<ul class=\"osh-ul\">";
         strVar += "  <li class=\"osh-li\">";

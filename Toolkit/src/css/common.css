@@ -250,3 +250,18 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 .osh .hide {
     display:none !important;
 }
+
+.osh .listbox-multiple {
+    border: 1px solid #c4c4c4;
+    width: 100%;
+    max-height: 110px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+.osh .listbox-multiple > label {
+    min-width: 230px;
+    margin-top: 3px;
+    display: inline-block;
+    padding: 3px;
+}

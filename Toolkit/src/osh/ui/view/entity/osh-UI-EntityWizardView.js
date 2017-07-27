@@ -270,7 +270,13 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     },
 
     editView:function(event) {
-        var editView = new OSH.UI.EntityWizardEditView();
+        var dsArray = [];
+
+        for(var key in this.datasources) {
+            dsArray.push(this.datasources[key]);
+        }
+
+        var editView = new OSH.UI.EntityWizardEditView("",{datasources:dsArray});
 
         var editViewDialog = new OSH.UI.DialogView("", {
             draggable: true,
