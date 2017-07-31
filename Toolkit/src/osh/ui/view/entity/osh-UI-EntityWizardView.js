@@ -128,7 +128,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             selectViewTag.add(option);
         }
 
-        this.disableElt("tab3");
+        //this.disableElt("tab3");
     },
 
     editDataSource:function(dataSource) {
@@ -268,7 +268,6 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
         // enable create button
         this.enableElt("create-button-id");
-
     },
 
     editView:function(event) {
@@ -293,6 +292,10 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         });
 
         editView.attachTo(editViewDialog.popContentDiv.id);
+
+        editView.onEdit = function(jsonProperties) {
+            console.log(jsonProperties);
+        };
     },
 
     createEntity:function(event) {

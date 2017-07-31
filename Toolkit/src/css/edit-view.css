@@ -1,4 +1,89 @@
-.edit-view {
+.osh .edit-view {
 
 }
 
+/** create button **/
+.osh .edit-view .button-edit {
+    margin-top: 12px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    display: table;
+}
+
+.osh .edit-view button.submit {
+    display: inline; /** display the data sources ADD button to the left **/
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.osh .edit-view > .styler-section > .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 12px;
+    margin-bottom: 15px;
+}
+.osh .edit-view .styler-section {
+    padding-top:12px;
+}
+
+/** line - left/right position **/
+.osh .edit-view .line-left {
+    float:left;
+}
+
+.osh .edit-view .line-right {
+    float:right;
+}
+
+.osh .edit-view .ds-line {
+    width:100%;
+}
+
+.osh .edit-view .ds-line > span{
+    margin-left: 15px;
+    font-size: 17px;
+}
+
+.osh .edit-view .ds-line > .control {
+    margin-left:-15px;
+    margin-top:-2px;
+}
+
+.osh .edit-view .ds-line > .control .edit {
+    padding-right: 15px;
+}
+
+.osh .edit-view .ds-line > .control .edit:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .edit-view .ds-line > .control .delete {
+    padding-right: 15px;
+}
+
+.osh .edit-view .ds-line > .control .delete:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .edit-view .ds-line > .control .fa-2x {
+    font-size: 1.5em;
+}
+
+.osh .edit-view .styler-container {
+    height:78px;
+    overflow:auto;
+}
+
+
+.osh .edit-view .listbox-multiple > label {
+    padding: 0px;
+    font-size: 15px;
+}
+
+.osh .edit-view .listbox-multiple {
+    height: 90px;
+}
