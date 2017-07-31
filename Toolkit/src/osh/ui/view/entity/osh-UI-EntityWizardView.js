@@ -127,6 +127,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
             selectViewTag.add(option);
         }
+
+        this.disableElt("tab3");
     },
 
     editDataSource:function(dataSource) {
@@ -137,12 +139,12 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
     addDataSource:function(dataSource) {
 
-        if(this.nbDatasources === 0) {
+        this.nbDatasources++;
+
+        if(this.nbDatasources >= 0) {
             // activate view tab
             this.enableElt("tab3");
         }
-
-        this.nbDatasources++;
         this.datasources[dataSource.id] = dataSource;
 
         var dsTabElt = document.getElementById("content2");
