@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.EntityWizardEditStyler = OSH.UI.View.extend({
+OSH.UI.EntityWizardEditStylerView = OSH.UI.View.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId, [], properties);
         this.properties = properties;
@@ -60,5 +60,7 @@ OSH.UI.EntityWizardEditStyler = OSH.UI.View.extend({
         }
     },
 
-    onEdit:function(jsonProperties) {}
+    getProperties:function() {
+        return {};
+    }
 });

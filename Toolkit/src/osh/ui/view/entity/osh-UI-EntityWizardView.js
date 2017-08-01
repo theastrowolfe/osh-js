@@ -75,7 +75,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
         entityWizard.innerHTML = strVar;
 
-        this.datasources = {};
+        this.datasources = {}; //TODO: probably to remove
         this.views = [];
 
         // inits views
@@ -222,7 +222,14 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             return;
         }
 
-        this.views.push(viewName);
+        var view = {
+            name: viewName,
+            id: OSH.Utils.randomUUID(),
+            stylers:[],
+            container: ""
+        };
+
+        this.views.push(view);
 
         var div = document.createElement('div');
         div.setAttribute("id","View"+OSH.Utils.randomUUID());
@@ -257,10 +264,17 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             // enable create button
             self.disableElt("create-button-id");
 
-            self.views = [];
+            var newArr = [];
+
+            for(var i=0;i < self.views.length;i++) {
+                if(self.views[i].id !== view.id) {
+                    newArr.push(self.views[i]);
+                }
+            }
+            self.views = newArr;
         });
 
-        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this));
+        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view));
 
         // disable listbox
         this.disableElt("selectViewId");
@@ -270,16 +284,20 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         this.enableElt("create-button-id");
     },
 
-    editView:function(event) {
+    editView:function(view,event) {
         var dsArray = [];
 
         for(var key in this.datasources) {
             dsArray.push(this.datasources[key]);
         }
 
-        var editView = new OSH.UI.EntityWizardEditView("",{datasources:dsArray});
+        var editView = new OSH.UI.EntityWizardEditView("",{
+            datasources:dsArray,
+            stylers:view.stylers,
+            container:view.container
+        });
 
-        var editViewDialog = new OSH.UI.DialogView("", {
+        var editViewDialog = new OSH.UI.SaveDialogView("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
             name: "Edit View",
@@ -293,9 +311,12 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
         editView.attachTo(editViewDialog.popContentDiv.id);
 
-        editView.onEdit = function(jsonProperties) {
-            console.log(jsonProperties);
-        };
+        editViewDialog.onSave = function() {
+            var jsonProperties = editView.getProperties();
+            view.container = jsonProperties.container;
+            view.stylers = jsonProperties.stylers;
+            editViewDialog.close();
+        }.bind(this);
     },
 
     createEntity:function(event) {

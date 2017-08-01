@@ -368,19 +368,6 @@ OSH.Utils.copyProperties = function(firstObject,secondObject) {
 };
 
 OSH.Utils.createHTMLTitledLine = function(title) {
-  /*  var strVar="";
-    strVar += "<div class=\"horizontal-line-titled\">";
-    strVar += "  <div class=\"horizontal-line-titled-table\">";
-    strVar += "    <div class=\"horizontal-line-titled-left\">";
-    strVar += "      <div class=\"horizontal-line-title\">"+title+"<\/div>";
-    strVar += "    <\/div>";
-    strVar += "    <div class=\"horizontal-line-titled-right\">";
-    strVar += "      <div class=\"horizontal-line\"><\/div>";
-    strVar += "    <\/div>";
-    strVar += "  <\/div>";
-    strVar += "<\/div>";
-    return strVar;*/
-
   return "<div class=\"horizontal-titled-line\">"+title+"<\/div>";
 };
 

@@ -67,35 +67,24 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
         strVar += "<div class=\"styler-section\">";
         strVar += "  <div class=\"select-style\">";
         strVar += "    <select id=\""+this.stylerSelectDivId+"\">";
-        strVar += "      <option value=\"None\" selected>None<\/option>";
         strVar += "    <\/select>";
         strVar += "  <\/div>";
         strVar += "  <button id=\""+this.addStylerId+"\" class=\"submit\">Add<\/button>";
         strVar += "  <div id=\""+this.stylerContainerDivId+"\" class=\"styler-container\"><\/div>";
         strVar += "<\/div>";
 
-        strVar += "<div class=\"horizontal-line\"><\/div>";
-
-        strVar += "<div class=\"button-edit\">";
-        strVar += "  <button id=\""+this.editButton+"\" class=\"submit\">Ok<\/button>";
-        strVar += "</div>";
-
-
         editView.innerHTML = strVar;
 
         // inits
-        this.initStylers();
-        this.initContainer();
+        this.initStylers(this.properties.stylers);
+        this.initContainer(this.properties.container);
 
         // listeners
-        OSH.EventManager.observeDiv(this.editButton,"click",this.onClickButtonHandler.bind(this));
         OSH.EventManager.observeDiv(this.addStylerId,"click",this.addStyler.bind(this));
-
-        this.stylers = [];
 
     },
 
-    initContainer: function() {
+    initContainer: function(defaultContainer) {
         var containers = [];
 
         var selectContainerTag = document.getElementById(this.containerDivId);
@@ -106,11 +95,14 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
             option.text = containers[key];
             option.value = containers[key];
 
+            if(key === defaultContainer) {
+                option.setAttribute("selected","");
+            }
             selectContainerTag.add(option);
         }
     },
 
-    initStylers: function() {
+    initStylers: function(defaultStylerArr) {
         var stylers = ["Marker","Polyline", "Curve"];
 
         var selectStylerTag = document.getElementById(this.stylerSelectDivId);
@@ -122,6 +114,11 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
             option.value = stylers[key];
 
             selectStylerTag.add(option);
+        }
+
+        // inits from properties
+        for(var i =0;i < defaultStylerArr.length;i++) {
+            this.addStyler({styler:defaultStylerArr[i]});
         }
     },
 
@@ -135,8 +132,14 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
         }
 
         var styler = {};
-        styler.name = stylerName;
-        styler.id = OSH.Utils.randomUUID();
+
+        if(!isUndefined(event.styler)) {
+            styler = event.styler;
+        } else {
+            styler.name = stylerName;
+            styler.id = OSH.Utils.randomUUID();
+        }
+
         this.stylers.push(styler);
 
         var div = document.createElement('div');
@@ -179,9 +182,9 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
     },
 
     editStyler:function(event) {
-        var editStyler = new OSH.UI.EntityWizardEditStyler("",{datasources:this.properties.datasources});
+        var editStylerView = new OSH.UI.EntityWizardEditStylerView("",{datasources:this.properties.datasources});
 
-        var editViewDialog = new OSH.UI.DialogView("", {
+        var editViewDialog = new OSH.UI.SaveDialogView("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
             name: "Edit Styler",
@@ -193,24 +196,37 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
             modal:true
         });
 
-        editStyler.attachTo(editViewDialog.popContentDiv.id);
+        editStylerView.attachTo(editViewDialog.popContentDiv.id);
 
-        editStyler.onEdit = function(jsonProperties) {
-            console.log(jsonProperties);
-        };
+        editViewDialog.onSave = function() {
+            var jsonProperties = editStylerView.getProperties();
+            editViewDialog.close();
+        }.bind(this);
+
     },
 
     onClickButtonHandler:function(event) {
         var jsonProps = {};
 
         jsonProps.container = "";
-        jsonProps.stylers = {};
+        jsonProps.stylers = this.stylers;
+
+        // gets selected container
+        var eltContainer = document.getElementById(this.containerDivId);
+        jsonProps.container = eltContainer.options[eltContainer.selectedIndex].value;
+    },
+
+    getProperties:function() {
+        var jsonProps = {};
+
+        jsonProps.container = "";
+        jsonProps.stylers = this.stylers;
 
         // gets selected container
         var eltContainer = document.getElementById(this.containerDivId);
         jsonProps.container = eltContainer.options[eltContainer.selectedIndex].value;
 
-        this.onEdit(jsonProps);
+        return jsonProps;
     },
 
     getSelectedDS:function() {
@@ -225,7 +241,5 @@ OSH.UI.EntityWizardEditView = OSH.UI.View.extend({
             }
         }
         return res;
-    },
-
-    onEdit:function(jsonProperties) {}
+    }
 });
