@@ -26,24 +26,38 @@ OSH.UI.EntityWizardEditStyler = OSH.UI.View.extend({
 
         document.getElementById(this.divId).appendChild(editStyler);
 
+        this.dataSourceId = OSH.Utils.randomUUID();
+
         var strVar = "";
 
         strVar += OSH.Utils.createHTMLTitledLine("Data Sources");
         strVar += "<ul class=\"osh-ul\">";
         strVar += "  <li class=\"osh-li\">";
-
-        // compute DS
-        strVar += "<div class=\"listbox-multiple\">";
-        for(var i=0;i <properties.datasources.length;i++) {
-            var id = properties.datasources[i].id;
-            strVar += "<label for=\"edit-view-ds-"+id+"\">"+properties.datasources[i].name+"<\/label>";
-            strVar += "<input type=\"checkbox\" name=\"edit-view-ds-"+id+"\" id=\"edit-view-ds-"+id+"\"/><br/>";
-        }
-        strVar += "<\/div>";
+        strVar += "      <div class=\"select-style\">";
+        strVar += "         <select id=\""+this.dataSourceId+"\">";
+        strVar += "            <option value=\"\" selected disabled><\/option>";
+        strVar += "         <\/select>";
+        strVar += "      <\/div>";
         strVar += "  <\/li>";
         strVar += "<\/ul>";
 
         editStyler.innerHTML = strVar;
+
+        // inits
+        this.initDatasources(this.properties.datasources);
+    },
+
+    initDatasources: function(datasources) {
+        var selectTag = document.getElementById(this.dataSourceId);
+
+        for(var key in datasources) {
+
+            var option = document.createElement("option");
+            option.text = datasources[key].name;
+            option.value = datasources[key].name;
+
+            selectTag.add(option);
+        }
     },
 
     onEdit:function(jsonProperties) {}
