@@ -16,7 +16,7 @@
 }
 
 .osh.dialog .pop-over.minimized {
-    height:auto;
+    height:0px !important;
 }
 
 .osh.dialog .pop-over-selected {
