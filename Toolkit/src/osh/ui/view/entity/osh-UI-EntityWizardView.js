@@ -211,6 +211,18 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
             discoveryView.setButton("Edit");
         });
+
+        // get result template from datasource
+        var server = new OSH.Server({
+            url: "http://" + dataSource.properties.endpointUrl
+        });
+
+        // offering, observedProperty
+        server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
+            dataSource.resultTemplate = jsonResp;
+        },function(error) {
+            // do something
+        });
     },
 
     addView:function(event) {

@@ -35,7 +35,6 @@ OSH.UI.EntityWizardEditStylerView = OSH.UI.View.extend({
         strVar += "  <li class=\"osh-li\">";
         strVar += "      <div class=\"select-style\">";
         strVar += "         <select id=\""+this.dataSourceId+"\">";
-        strVar += "            <option value=\"\" selected disabled><\/option>";
         strVar += "         <\/select>";
         strVar += "      <\/div>";
         strVar += "  <\/li>";
