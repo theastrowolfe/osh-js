@@ -300,7 +300,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         var editViewDialog = new OSH.UI.SaveDialogView("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
-            name: "Edit View",
+            name: "Edit "+view.name+" View",
             show:true,
             dockable: false,
             closeable: true,
