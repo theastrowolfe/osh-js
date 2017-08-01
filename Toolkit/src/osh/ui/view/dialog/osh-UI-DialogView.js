@@ -153,6 +153,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             this.rootTag.setAttribute("class", css);
         }
 
+        // content
         this.flexDiv = document.createElement("div");
         this.flexDiv.setAttribute("class","pop-inner");
 
@@ -167,6 +168,16 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.flexDiv.appendChild(this.popContentDiv);
         // plugs it into the new draggable dialog
         this.rootTag.appendChild(this.flexDiv);
+
+        // footer
+        this.footer = document.createElement("div");
+        this.footer.setAttribute("class","footer");
+
+        this.footerContent = document.createElement("div");
+        this.footerContent.setAttribute("id","footer-id-"+OSH.Utils.randomUUID());
+
+        this.footer.appendChild(this.footerContent);
+        this.rootTag.appendChild(this.footer);
 
         if(!isUndefined(options)) {
             if(!isUndefined(options.show) && !options.show) {
