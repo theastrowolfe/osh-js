@@ -44,6 +44,7 @@
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerCurve.js"></script>
 
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-SaveDialogView.js"></script>
@@ -127,8 +128,11 @@
 <div id="dialog-container"></div>
 <div id="container"></div>
 <script type="text/javascript">
+    window.OSH.BASE_WORKER_URL = "js/sub/workers/";
+
     var entityWizardView = new OSH.UI.EntityWizardView("",{
-        viewContainer: "container"
+        viewContainer: "container",
+        services: ["http://sensiasoft.net:8181/sensorhub/sos"]
     });
 
     var entityWizardDialog    = new OSH.UI.DialogView("dialog-container",{
