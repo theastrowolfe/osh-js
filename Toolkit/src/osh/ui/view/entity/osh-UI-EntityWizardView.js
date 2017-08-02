@@ -18,10 +18,18 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
 
-        if(!isUndefined(properties) && !isUndefined(properties.viewContainer)) {
-            this.viewContainer = properties.viewContainer;
-        } else {
-            this.viewContainer = document.body.id;
+        // read properties
+        this.viewContainer = document.body.id;
+        this.services = [];
+
+        if(!isUndefinedOrNull(properties)){
+            if(!isUndefinedOrNull(properties.viewContainer)){
+                this.viewContainer = properties.viewContainer;
+            }
+
+            if(!isUndefinedOrNull(properties.services)) {
+                this.services = properties.services;
+            }
         }
 
         this.selectViewId = OSH.Utils.randomUUID();
@@ -97,7 +105,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     onAddDataSourceButtonClickHandler: function(event) {
         // init discovery view
         var discoveryView = new OSH.UI.DiscoveryView("",{
-            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+            services: this.services
         });
 
         discoveryView.onAddHandler = this.addDataSource.bind(this);
