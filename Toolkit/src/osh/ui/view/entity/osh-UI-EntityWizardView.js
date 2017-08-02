@@ -24,6 +24,12 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             this.viewContainer = document.body.id;
         }
 
+        this.selectViewId = OSH.Utils.randomUUID();
+        this.addViewButtonId = OSH.Utils.randomUUID();
+        this.viewContainer = OSH.Utils.randomUUID();
+        this.createButtonId = OSH.Utils.randomUUID();
+        this.addDsButtonId = OSH.Utils.randomUUID();
+
         // add template
         var entityWizard = document.createElement("div");
         entityWizard.setAttribute("id","Entity-wizard-"+OSH.Utils.randomUUID());
@@ -56,19 +62,19 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         strVar += "     <\/ul>";
         strVar += "   <\/section>";
         strVar += "   <section id=\"content2\">";
-        strVar += "      <button id=\"add-ds-button-id\" class=\"submit\">Add<\/button>";
+        strVar += "      <button id=\""+this.addDsButtonId+"\" class=\"submit\">Add<\/button>";
         strVar += "   <\/section>";
         strVar += "   <section id=\"content3\">";
         strVar += "      <div class=\"select-style\">";
-        strVar += "         <select id=\"selectViewId\">";
+        strVar += "         <select id=\""+this.selectViewId+"\">";
         strVar += "            <option value=\"\" disabled selected>Select a view<\/option>";
         strVar += "         <\/select>";
         strVar += "      <\/div>";
-        strVar += "      <button id=\"add-view-button-id\" class=\"submit\">Add<\/button>";
-        strVar += "      <div id=\"view-container\"><\/div>";
+        strVar += "      <button id=\""+this.addViewButtonId+"\" class=\"submit add-view-button\">Add<\/button>";
+        strVar += "      <div id=\""+this.viewContainer+"\" class=\"view-container\"><\/div>";
         strVar += "      <div class=\"horizontal-line\"><\/div>";
         strVar += "      <div class=\"create\">";
-        strVar += "         <button id=\"create-button-id\" class=\"submit\" disabled>Create<\/button>";
+        strVar += "         <button id=\""+this.createButtonId+"\" class=\"submit\" disabled>Create<\/button>";
         strVar += "      </div>";
         strVar += "   <\/section>";
         strVar += "<\/main>";
@@ -82,9 +88,9 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         this.initViews();
 
         // listeners
-        OSH.EventManager.observeDiv("add-ds-button-id","click",this.onAddDataSourceButtonClickHandler.bind(this));
-        OSH.EventManager.observeDiv("add-view-button-id","click",this.addView.bind(this));
-        OSH.EventManager.observeDiv("create-button-id","click",this.createEntity.bind(this));
+        OSH.EventManager.observeDiv(this.addDsButtonId,"click",this.onAddDataSourceButtonClickHandler.bind(this));
+        OSH.EventManager.observeDiv(this.addViewButtonId,"click",this.addView.bind(this));
+        OSH.EventManager.observeDiv(this.createButtonId,"click",this.createEntity.bind(this));
 
     },
 
@@ -116,8 +122,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     initViews: function() {
         var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
 
-        var selectViewTag = document.getElementById("selectViewId");
-        this.removeAllFromSelect("selectViewId");
+        var selectViewTag = document.getElementById(this.selectViewId);
+        this.removeAllFromSelect(this.selectViewId);
 
         for(var key in views) {
 
@@ -226,8 +232,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
     },
 
     addView:function(event) {
-        var dsTabElt = document.getElementById("view-container");
-        var selectedViewTag = document.getElementById("selectViewId");
+        var dsTabElt = document.getElementById(this.viewContainer);
+        var selectedViewTag = document.getElementById(this.selectViewId);
         var viewName = selectedViewTag.options[selectedViewTag.selectedIndex].value;
 
         if(viewName === "") {
@@ -270,11 +276,11 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
             dsTabElt.removeChild(div);
             // enable view select
-            self.enableElt("selectViewId");
-            self.enableElt("add-view-button-id");
+            self.enableElt(this.selectViewId);
+            self.enableElt(this.addViewButtonId);
 
             // enable create button
-            self.disableElt("create-button-id");
+            self.disableElt(this.createButtonId);
 
             var newArr = [];
 
@@ -289,11 +295,11 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view));
 
         // disable listbox
-        this.disableElt("selectViewId");
-        this.disableElt("add-view-button-id");
+        this.disableElt(this.selectViewId);
+        this.disableElt(this.addViewButtonId);
 
         // enable create button
-        this.enableElt("create-button-id");
+        this.enableElt(this.createButtonId);
     },
 
     editView:function(view,event) {
