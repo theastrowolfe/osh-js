@@ -59,7 +59,7 @@ OSH.UI.EntityWizardEditStylerView = OSH.UI.View.extend({
         }
     },
 
-    getProperties:function() {
+    getStyler:function() {
         return {};
     }
 });

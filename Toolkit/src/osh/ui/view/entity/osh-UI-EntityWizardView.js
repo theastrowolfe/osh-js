@@ -15,6 +15,7 @@
  ******************************* END LICENSE BLOCK ***************************/
 
 OSH.UI.EntityWizardView = OSH.UI.View.extend({
+
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
 
@@ -37,6 +38,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         this.viewContainer = OSH.Utils.randomUUID();
         this.createButtonId = OSH.Utils.randomUUID();
         this.addDsButtonId = OSH.Utils.randomUUID();
+        this.nameTagId = OSH.Utils.randomUUID();
 
         // add template
         var entityWizard = document.createElement("div");
@@ -56,8 +58,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         strVar += "   <section id=\"content1\">";
         strVar += "     <ul class=\"osh-ul\">";
         strVar += "      <li class=\"osh-li\">";
-        strVar += "         <label for=\"name\">Name:<\/label>";
-        strVar += "         <input id=\"name\" type=\"text\" class=\"input-text\" value=\"My entity\">";
+        strVar += "         <label for=\""+this.nameTagId+"\">Name:<\/label>";
+        strVar += "         <input id=\""+this.nameTagId+"\" type=\"text\" class=\"input-text\" value=\"My entity\">";
         strVar += "      <\/li>";
         strVar += "      <li class=\"osh-li\">";
         strVar += "         <label for=\"icon\">Icon:<\/label>";
@@ -143,6 +145,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         }
 
         //this.disableElt("tab3");
+
+        this.viewAndStyler = ["Map 2D","Globe 3D", "Curve"];
     },
 
     editDataSource:function(dataSource) {
@@ -201,7 +205,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(editId,"click",function(event) {
             // init discovery view
             var discoveryView = new OSH.UI.DiscoveryView("",{
-                services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+                services: this.services
             });
 
             discoveryView.onEditHandler = self.editDataSource.bind(self);
@@ -252,8 +256,14 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             name: viewName,
             id: OSH.Utils.randomUUID(),
             stylers:[],
-            container: ""
+            container: "",
+            datasource: null
         };
+
+        // check if view can handle stylers
+        if(this.viewAndStyler.indexOf(viewName) <= -1 ) {
+            view.stylers = null;
+        }
 
         this.views.push(view);
 
@@ -284,11 +294,11 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
             dsTabElt.removeChild(div);
             // enable view select
-            self.enableElt(this.selectViewId);
-            self.enableElt(this.addViewButtonId);
+            self.enableElt(self.selectViewId);
+            self.enableElt(self.addViewButtonId);
 
             // enable create button
-            self.disableElt(this.createButtonId);
+            self.disableElt(self.createButtonId);
 
             var newArr = [];
 
@@ -300,7 +310,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             self.views = newArr;
         });
 
-        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view));
+        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view.id));
 
         // disable listbox
         this.disableElt(this.selectViewId);
@@ -310,23 +320,34 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         this.enableElt(this.createButtonId);
     },
 
-    editView:function(view,event) {
+    editView:function(viewId,event) {
+        var currentView = null;
+        // finds the view instance and updates it
+        for(var i=0;i < this.views.length;i++) {
+            if (this.views[i].id === viewId) {
+                currentView = this.views[i];
+                break;
+            }
+        }
+
         var dsArray = [];
 
         for(var key in this.datasources) {
             dsArray.push(this.datasources[key]);
         }
 
+        var cloneView = {};
+        OSH.Utils.copyProperties(currentView,cloneView);
+
         var editView = new OSH.UI.EntityWizardEditView("",{
-            datasources:dsArray,
-            stylers:view.stylers,
-            container:view.container
+            view:cloneView,
+            datasources:dsArray
         });
 
         var editViewDialog = new OSH.UI.SaveDialogView("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
-            name: "Edit "+view.name+" View",
+            name: "Edit "+currentView.name+" View",
             show:true,
             dockable: false,
             closeable: true,
@@ -337,17 +358,25 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
         editView.attachTo(editViewDialog.popContentDiv.id);
 
+
         editViewDialog.onSave = function() {
-            var jsonProperties = editView.getProperties();
-            view.container = jsonProperties.container;
-            view.stylers = jsonProperties.stylers;
+            var editedView = editView.getView();
+
+            // finds the view instance and updates it
+            for(var i=0;i < this.views.length;i++) {
+                if (this.views[i].id === editedView.id) {
+                    this.views[i] = editedView;
+                    break;
+                }
+            }
+
             editViewDialog.close();
         }.bind(this);
     },
 
     createEntity:function(event) {
 
-        // Get data sources + view
+       /* // Get data sources + view
 
         var dsArray = [];
 
@@ -396,7 +425,74 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
             // starts streaming
             dataProviderController.connectAll();
-        }
+        }*/
+       var entityName = document.getElementById(this.nameTagId).value;
+
+
+       for(var i=0;i< this.views.length;i++) {
+           var currentView = this.views[i];
+
+           //var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
+           // gets view type
+           var viewInstanceType = null;
+           if(currentView.name === "Map 2D") {
+               viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.LEAFLET;
+           } else if(currentView.name === "Video (H264)") {
+               viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264;
+           }
+
+           // get default view properties
+           // get default view property
+           var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
+
+           if(currentView.stylers === null ) {
+
+               // creates new entity
+               var newEntity = {
+                   id : "entity-"+OSH.Utils.randomUUID(),
+                   name: entityName,
+                   dataSources: [currentView.datasource]
+               };
+
+                var viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType,defaultViewProperties,currentView.datasource,newEntity);
+
+               if(currentView.container.toLowerCase() === "dialog") {
+                   var viewDialog = new OSH.UI.DialogView("", {
+                       draggable: true,
+                       css: "dialog-edit-view", //TBD into edit view
+                       name: currentView.name,
+                       show:true,
+                       dockable: false,
+                       closeable: true,
+                       connectionIds : [currentView.datasource],
+                       destroyOnClose:true,
+                       modal:false
+                   });
+
+                   viewInstance.attachTo(viewDialog.popContentDiv.id);
+               }
+               //---------------------------------------------------------------//
+               //--------------------- Creates DataProvider --------------------//
+               //---------------------------------------------------------------//
+
+               var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+                   replayFactor : 1
+               });
+
+               // We can add a group of dataSources and set the options
+               dataProviderController.addEntity(newEntity);
+
+
+               //---------------------------------------------------------------//
+               //---------------------------- Starts ---------------------------//
+               //---------------------------------------------------------------//
+
+               // starts streaming
+               dataProviderController.connectAll();
+           } else {
+
+           }
+       }
     },
 
 

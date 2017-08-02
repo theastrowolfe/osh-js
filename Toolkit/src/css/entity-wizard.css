@@ -124,7 +124,7 @@
     font-size: 1.5em;
 }
 
-.osh .entity-wizard #add-view-button-id {
+.osh .entity-wizard .add-view-button {
     margin-left: 15px;
 }
 
@@ -154,6 +154,12 @@
     margin-bottom: 15px;
 }
 
-.osh .entity-wizard #view-container {
+.osh .entity-wizard .view-container {
     clear: both;
+    height: 158px;
+}
+
+.osh .entity-wizard #content3 .create button.submit {
+    margin-top: 8px;
+    margin-bottom: 0px;
 }

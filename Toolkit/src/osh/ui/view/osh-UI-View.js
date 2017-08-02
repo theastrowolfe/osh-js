@@ -248,11 +248,11 @@ OSH.UI.View = BaseClass.extend({
             (function(frozenDataSourceId) { // use a close here to no share the dataSourceId variable
 
                 OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
-                    
+
                     // skip data reset events for now
                     if (event.reset)
                         return;
-                    
+
                     // we check selected dataSource only when the selected entity is not set
                     var selected = false;
                     if (typeof self.selectedEntity !== "undefined") {
