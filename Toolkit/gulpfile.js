@@ -285,7 +285,7 @@ OSH_SRC.push('./src/osh/ui/view/video/osh-UI-Mp4View.js');
 
 var OSH_CSS = ["src/css/*.css"];
 var OSH_RESOURCES_DIR = {
-        "./src/css/font-awesome-4.6.3/" : "css/font-awesome-4.6.3/",
+        "./src/css/font-awesome-4.7.0/" : "css/font-awesome-4.7.0/",
         "./src/images/" : "images"
 };
 
