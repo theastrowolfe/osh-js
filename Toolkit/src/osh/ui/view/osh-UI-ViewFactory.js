@@ -71,7 +71,7 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
 
     switch (viewInstanceType) {
         case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264 : {
-            viewInstance = new OSH.UI.FFMPEGView("",viewProperties);
+            viewInstance = new OSH.UI.FFMPEGView("",cloneProperties);
         }
         break;
         default:break;

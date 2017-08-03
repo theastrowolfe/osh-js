@@ -205,7 +205,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(editId,"click",function(event) {
             // init discovery view
             var discoveryView = new OSH.UI.DiscoveryView("",{
-                services: this.services
+                services: self.services
             });
 
             discoveryView.onEditHandler = self.editDataSource.bind(self);
@@ -431,6 +431,15 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
        for(var i=0;i< this.views.length;i++) {
            var currentView = this.views[i];
+           // clone DataSource
+           var cloneDatasource = {};
+
+           OSH.Utils.copyProperties(currentView.datasource, cloneDatasource);
+
+           cloneDatasource.id = "DataSource-"+OSH.Utils.randomUUID();
+           cloneDatasource.reset();
+
+           currentView.datasource = cloneDatasource;
 
            //var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
            // gets view type
@@ -476,7 +485,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
                //---------------------------------------------------------------//
 
                var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-                   replayFactor : 1
+                   replayFactor : currentView.datasource.replaySpeed
                });
 
                // We can add a group of dataSources and set the options

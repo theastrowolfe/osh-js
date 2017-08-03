@@ -32,8 +32,6 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
     this.id = "DataSource-"+OSH.Utils.randomUUID();
     this.name = name;
     this.properties = properties;
-    this.timeShift = 0;
-    this.connected = false;
 
     this.initDataSource(properties);
   },
@@ -45,7 +43,9 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
    * @memberof OSH.DataReceiver.DataSource
    */
   initDataSource: function(properties) {
-    
+    this.timeShift = 0;
+    this.connected = false;
+
     if(typeof(properties.timeShift) != "undefined") {
         this.timeShift = properties.timeShift;
     }
@@ -227,5 +227,9 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
 	  }
 
 	  return url;
+  },
+
+  reset:function() {
+    this.initDataSource(this.properties);
   }
 });
