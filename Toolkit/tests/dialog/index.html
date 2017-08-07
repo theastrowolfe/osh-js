@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Dialog auto content</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/parsers/osh-SWEXmlParser.js"></script>
+    <script type="text/javascript" src="../../src/osh/server/osh-Server.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerCurve.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-SaveDialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardEditView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardEditStylerView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/entity-wizard.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog-save.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
+    <style>
+        body {
+            margin: 0;
+            height: calc(100% - 20px);
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+
+        *, *:before, *:after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        .osh.dialog .dialog-test {
+            width: 450px;
+            height: 350px;
+        }
+
+    </style>
+</head>
+
+<body id="body">
+<div id="FfmpegContainer"></div>
+<script type="text/javascript">
+
+    window.OSH.BASE_WORKER_URL = "js/sub/workers";
+
+    var replayFactor = 3;
+
+    //---------- DATASOURCE ------------//
+
+    var videoDataSource = new OSH.DataReceiver.VideoH264("FFMPEG h264 ", {
+        protocol: "ws",
+        service: "SOS",
+        endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+        offeringID: "urn:android:device:a0e0eac2fea3f614-sos",
+        observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+        startTime: "2016-08-11T20:17:30.402Z",
+        endTime: "2016-08-11T20:18:05.451Z",
+        syncMasterTime: false,
+        bufferingTime: 0,
+        replaySpeed:1
+    });
+
+    var androidPhoneVideoDataSource = new OSH.DataReceiver.VideoMjpeg("android-Video", {
+        protocol: "ws",
+        service: "SOS",
+        endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+        offeringID: "urn:android:device:060693280a28e015-sos",
+        observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+        startTime: "2015-02-16T07:58:00Z",
+        endTime: "2015-02-16T08:09:00Z",
+        replaySpeed: replayFactor+"",
+        syncMasterTime: false,
+        bufferingTime: 200
+    });
+
+    //------------ VIEW -----------------//
+
+    // Video 1 View
+    var videoView = new OSH.UI.FFMPEGView("", {
+        dataSourceId: videoDataSource.id,
+        css: "video-ffmpeg",
+        cssSelected: "video-selected",
+        name: "Android Video",
+        useWorker:true,
+        useWebWorkerTransferableData:true
+    });
+
+    var videoDialog    =  new OSH.UI.DialogView("FfmpegContainer", {
+        draggable: true,
+        css: "dialog-test",
+        name: "Dialog test",
+        show:true,
+        closeable: false,
+        keepRatio:true
+    });
+
+    videoView.attachTo(videoDialog.popContentDiv.id);
+
+    // Video 2 view
+    var videoMjpegView = new OSH.UI.MjpegView("", {
+        dataSourceId: androidPhoneVideoDataSource.id,
+        css: "video",
+        cssSelected: "video-selected",
+        name: "Android Video"
+    });
+
+    var videoMjpegDialog    =  new OSH.UI.DialogView("FfmpegContainer", {
+        draggable: true,
+        css: "dialog-test",
+        name: "Dialog test",
+        show:true,
+        closeable: false,
+        keepRatio:true
+    });
+
+    videoMjpegView.attachTo(videoMjpegDialog.popContentDiv.id);
+    //---------------------------------------------------------------//
+    //--------------------- Creates DataProvider --------------------//
+    //---------------------------------------------------------------//
+
+    var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor : 1
+    });
+
+    // We can add a group of dataSources and set the options
+    dataProviderController.addDataSource(videoDataSource);
+    dataProviderController.addDataSource(androidPhoneVideoDataSource);
+
+    //---------------------------------------------------------------//
+    //---------------------------- Starts ---------------------------//
+    //---------------------------------------------------------------//
+
+    // starts streaming
+   dataProviderController.connectAll();
+</script>
+
+</body>
+</html>

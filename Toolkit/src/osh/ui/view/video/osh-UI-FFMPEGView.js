@@ -98,8 +98,11 @@ OSH.UI.FFMPEGView = OSH.UI.View.extend({
 
         // create webGL canvas
         this.yuvCanvas = new YUVCanvas({width: width, height: height, contextOptions: {preserveDrawingBuffer: true}});
+        this.yuvCanvas.canvasElement.removeAttribute("width");
+        this.yuvCanvas.canvasElement.removeAttribute("height");
         var domNode = document.getElementById(this.divId);
         domNode.appendChild(this.yuvCanvas.canvasElement);
+        OSH.Utils.addCss(domNode,"video");
 
         // add selection listener
         var self = this;

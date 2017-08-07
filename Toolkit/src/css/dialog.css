@@ -35,6 +35,7 @@
     margin-top:8px;
     margin-bottom:5px;
     flex:1;
+    height: calc(100% - 8px);
 }
 
 .osh.dialog .pop-footer {
@@ -84,12 +85,30 @@
 }
 
 .osh.dialog .keep-ratio-w {
-    height:auto !important;
-    width:100%;
+    height: auto !important;
 }
 
 .osh.dialog .keep-ratio-h {
-    width:auto !important;
+}
+
+/** Adjust content without scroll + keep ratio **/
+.osh.dialog .pop-inner {
+    height: calc(100% - 30px);
+}
+
+.osh.dialog .pop-inner .video {
+    width: inherit;
+    height: inherit;
+}
+
+.osh.dialog .pop-inner .video > img {
+    width: inherit;
+    height: inherit;
+}
+
+.osh.dialog .pop-inner .video > canvas {
+    width: inherit;
+    height: inherit;
 }
 
 

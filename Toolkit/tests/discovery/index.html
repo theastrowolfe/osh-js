@@ -10,8 +10,6 @@
 
     <script type="text/javascript" src="../../vendor-local/x2js/x2js.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
-
     <!-- OSH Core -->
     <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
     <!-- OSH buffer sync lib -->
@@ -51,6 +49,8 @@
     <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
 
     <style>
@@ -67,7 +67,12 @@
 
         #discovery-container {
             width : 430px;
-            height: 500px;
+            height: 535px;
+            overflow:auto;
+        }
+
+        .osh .input-text {
+            width: calc(100% - 168px);
         }
 
         .video-main-container {

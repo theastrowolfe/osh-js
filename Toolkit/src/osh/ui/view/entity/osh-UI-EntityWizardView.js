@@ -121,7 +121,9 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
             closeable: true,
             connectionIds : [],
             destroyOnClose:true,
-            modal:true
+            modal:true,
+            keepRatio:false
+
         });
 
         discoveryView.attachTo(discoveryDialog.popContentDiv.id);
@@ -219,7 +221,8 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
                 closeable: true,
                 connectionIds : [],
                 destroyOnClose:true,
-                modal:true
+                modal:true,
+                keepRatio:false
             });
 
             discoveryView.attachTo(discoveryDialog.popContentDiv.id);
@@ -376,56 +379,6 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
 
     createEntity:function(event) {
 
-       /* // Get data sources + view
-
-        var dsArray = [];
-
-        for(var key in this.datasources) {
-            dsArray.push(this.datasources[key]);
-        }
-        // TBD: only one view for now
-        var viewName = this.views[0];
-
-        var newEntity = {
-            id : "entity-"+OSH.Utils.randomUUID(),
-            name: "TODO",
-            dataSources: dsArray
-        };
-
-        // create viewItems
-        var viewItems = [];
-
-        for(var key in this.stylers) {
-            viewItems.push({
-                styler: this.stylers[key],
-                entityId: newEntity.id,
-                name: newEntity.name //TBD
-            });
-        }
-
-
-        if(viewName === "Map 2D") {
-            var leafletMapView = new OSH.UI.LeafletView(this.viewContainer, viewItems);
-
-            //---------------------------------------------------------------//
-            //--------------------- Creates DataProvider --------------------//
-            //---------------------------------------------------------------//
-
-            var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-                replayFactor : 3
-            });
-
-            // We can add a group of dataSources and set the options
-            dataProviderController.addEntity(newEntity);
-
-
-            //---------------------------------------------------------------//
-            //---------------------------- Starts ---------------------------//
-            //---------------------------------------------------------------//
-
-            // starts streaming
-            dataProviderController.connectAll();
-        }*/
        var entityName = document.getElementById(this.nameTagId).value;
 
 
@@ -468,7 +421,7 @@ OSH.UI.EntityWizardView = OSH.UI.View.extend({
                if(currentView.container.toLowerCase() === "dialog") {
                    var viewDialog = new OSH.UI.DialogView("", {
                        draggable: true,
-                       css: "dialog-edit-view", //TBD into edit view
+                       css: "app-dialog", //TBD into edit view
                        name: currentView.name,
                        show:true,
                        dockable: false,

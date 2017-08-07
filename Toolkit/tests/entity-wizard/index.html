@@ -32,7 +32,6 @@
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
-    <script type="text/javascript"
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
@@ -95,15 +94,19 @@
             line-height: 1.5;
         }
 
+        .osh .entity-wizard, .osh.dialog .pop-over{
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+        }
+
         .dialog-entity {
             width:430px;
-            height:400px;
+            height:515px;
             margin-bottom:10px;
         }
 
         .dialog-discovery {
             width:430px;
-            height:480px;
+            height:515px;
             margin-bottom:10px;
         }
 
@@ -120,6 +123,16 @@
         .osh.dialog .dialog-edit-view .pop-inner{
             height: 377px;
         }
+
+        .osh.dialog .app-dialog {
+            width: 450px;
+            height: 350px;
+        }
+
+        .osh.dialog  .app-dialog .video > canvas{
+            width: 100%;
+            height: calc(100% - 161px);
+        }
     </style>
 </head>
 
@@ -128,7 +141,8 @@
 <div id="dialog-container"></div>
 <div id="container"></div>
 <script type="text/javascript">
-    window.OSH.BASE_WORKER_URL = "js/sub/workers/";
+
+    window.OSH.BASE_WORKER_URL = "js/sub/workers";
 
     var entityWizardView = new OSH.UI.EntityWizardView("",{
         viewContainer: "container",

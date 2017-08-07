@@ -188,8 +188,8 @@ OSH.UI.Styler.Factory.checkOrientation = function(datasource, resultTemplateProp
             }
         };
 
-        properties[orentiation] = orentiation;
-        properties[orientationFunc] = orientationFunc;
+        properties.orentiation = orentiation;
+        properties.orientationFunc = orientationFunc;
     }
 
     return properties;

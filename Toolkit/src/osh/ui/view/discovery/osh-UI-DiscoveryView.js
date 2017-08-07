@@ -50,6 +50,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         this.responseFormatId = "responseFormat-"+OSH.Utils.randomUUID();
         this.bufferingId = "buffering-"+OSH.Utils.randomUUID();
         this.timeShiftId = "timeShift-"+OSH.Utils.randomUUID();
+        this.timeoutId = "timeout-"+OSH.Utils.randomUUID();
 
         // add template
         var discoveryForm = document.createElement("form");
@@ -128,6 +129,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         strVar += "                     <li class=\"osh-li\">";
         strVar += "                         <label for=\"timeShift\">TimeShift (ms)<\/label>";
         strVar += "                         <input id=\""+this.timeShiftId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeShift\" value=\"0\"/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"timeout\">Timeout (ms)<\/label>";
+        strVar += "                         <input id=\""+this.timeoutId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeout\" value=\"1000\"/>";
         strVar += "                     <\/li>";
         strVar += "                 <\/div>";
         strVar += "             <\/div>";
@@ -408,6 +413,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         // time shift
         var timeShiftTag = document.getElementById(this.timeShiftId);
 
+        // timeout
+        var timeoutTag = document.getElementById(this.timeoutId);
+
         // get values
         var name=offeringTagSelectedOption.parent.name;
         var endPointUrl=serviceTagSelectedOption.value;
@@ -423,6 +431,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var buffering = bufferingTag.value;
         var responseFormat = responseFormatTag.value;
         var timeShift = timeShiftTag.value;
+        var timeout = timeoutTag.value;
 
         var dsType = this.definitionMap[obsProp];
 
@@ -438,6 +447,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             syncMasterTime: syncMasterTime,
             bufferingTime: Number(buffering),
             timeShift: Number(timeShift),
+            timeout: Number(timeout),
             responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
         };
 

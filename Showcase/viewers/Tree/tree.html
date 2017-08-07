@@ -10,22 +10,12 @@
         <script src="js/osh.js"></script>
      -->
 
-    <div id="tree-container" style="height:100%;width:210px;float:left"></div>
-    <div id="tree-inner" style="float:right;"></div>
+    <div id="tree-inner"></div>
     <style>
 
-        #tree-inner {
-            width: calc(100% - 210px);
-        }
-
         #treeViewId .dialog-from-tree {
-            width: 215px;
+            width: 250px;
             height: 150px;
-        }
-
-        #treeViewId .video {
-            width: inherit;
-            height: 100px;
         }
 
         #treeViewId .video-selected {
@@ -101,7 +91,7 @@
             draggable: true,
             css: "dialog-from-tree",
             name: "Dialog from tree",
-            show:false,
+            show:true,
             closeable: true,
             connectionIds : [androidPhoneVideoDataSource.id]
         });
@@ -232,17 +222,6 @@
 
         videoView.attachTo(videoDialog.popContentDiv.id);
 
-        var entityTreeView = new OSH.UI.EntityTreeView("tree-container",
-            [{
-                entity : androidEntity,
-                path: "Sensors/Toulouse",
-                treeIcon : "images/android_icon.png",
-                contextMenuId: stackContextMenuId
-            }],
-            {
-                css: "tree-container"
-            }
-        );
 
         //---------------------------------------------------------------//
         //--------------------- Creates DataProvider --------------------//
