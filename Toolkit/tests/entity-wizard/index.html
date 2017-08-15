@@ -53,15 +53,20 @@
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardEditView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityWizardEditStylerView.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/OSH-UI-Panel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/OSH-UI-TabPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/OSH-UI-IconPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityWizardPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/OSH-UI-StylerMarkerPanel.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../src/css/entity-wizard.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
-    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/dialog-save.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/panel.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
     <style>
         body {
@@ -94,13 +99,13 @@
             line-height: 1.5;
         }
 
-        .osh .entity-wizard, .osh.dialog .pop-over{
+        .osh.dialog .pop-over {
             background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
         }
 
         .dialog-entity {
             width:430px;
-            height:515px;
+            height:400px;
             margin-bottom:10px;
         }
 
@@ -120,19 +125,11 @@
             height: 100%;
         }
 
-        .osh.dialog .dialog-edit-view .pop-inner{
-            height: 377px;
-        }
-
         .osh.dialog .app-dialog {
             width: 450px;
             height: 350px;
         }
 
-        .osh.dialog  .app-dialog .video > canvas{
-            width: 100%;
-            height: calc(100% - 161px);
-        }
     </style>
 </head>
 
@@ -144,7 +141,7 @@
 
     window.OSH.BASE_WORKER_URL = "js/sub/workers";
 
-    var entityWizardView = new OSH.UI.EntityWizardView("",{
+    var entityWizardView = new OSH.UI.EntityWizardPanel("",{
         viewContainer: "container",
         services: ["http://sensiasoft.net:8181/sensorhub/sos"]
     });
@@ -157,7 +154,6 @@
         dockable: false,
         closeable: true,*/
 
-        draggable: false,
         css: "dialog-entity",
         name: "Entity",
         show:true,

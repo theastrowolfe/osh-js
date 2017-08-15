@@ -21,27 +21,26 @@ OSH.UI.SaveDialogView = OSH.UI.DialogView.extend({
         this.properties = properties;
 
         // add template
-        var saveDialog = document.createElement("div");
-        saveDialog.setAttribute("id","Save-dialog-"+OSH.Utils.randomUUID());
-        saveDialog.setAttribute("class","save");
+        var footerElt = document.createElement("div");
 
-        this.footerContent.appendChild(saveDialog);
+        this.footerContent.appendChild(footerElt);
 
         this.saveButtonId = OSH.Utils.randomUUID();
 
         var strVar="";
 
-
         strVar += "<div class=\"horizontal-line\"><\/div>";
 
         strVar += "<div class=\"button-edit\">";
-        strVar += "  <button id=\""+this.saveButtonId+"\" class=\"submit\">Save<\/button>";
+        strVar += "  <button id=\""+this.saveButtonId+"\" class=\"submit save\">Save<\/button>";
         strVar += "</div>";
 
 
-        saveDialog.innerHTML = strVar;
+        footerElt.innerHTML = strVar;
 
         OSH.EventManager.observeDiv(this.saveButtonId,"click",this.onSaveClickButtonHandler.bind(this));
+
+        OSH.Utils.addCss(this.elementDiv,"save-dialog");
 
     },
 

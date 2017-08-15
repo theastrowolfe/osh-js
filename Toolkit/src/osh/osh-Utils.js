@@ -367,7 +367,187 @@ OSH.Utils.copyProperties = function(firstObject,secondObject) {
     for (var k in firstObject) secondObject[k] = firstObject[k];
 };
 
-OSH.Utils.createHTMLTitledLine = function(title) {
-  return "<div class=\"horizontal-titled-line\">"+title+"<\/div>";
+OSH.Utils.addHTMLLine = function(div) {
+    div.innerHTML += OSH.Utils.createHTMLLine();
 };
 
+OSH.Utils.addHTMLTitledLine = function(div,title) {
+    div.innerHTML += OSH.Utils.createHTMLTitledLine(title);
+};
+
+OSH.Utils.createHTMLLine = function() {
+    return "<div class=\"horizontal-line\"><\/div>";
+};
+
+OSH.Utils.createHTMLTitledLine = function(title) {
+    return "<div class=\"horizontal-titled-line\">"+title+"<\/div>";
+};
+
+OSH.Utils.addHTMLListBox = function(div,label,values,defaultTitleOption,defaultSelectTagId) {
+    var ul = document.createElement("ul");
+    ul.setAttribute("class","osh-ul");
+
+    var strVar = "<li class=\"osh-li\">";
+
+    var selectTagId = OSH.Utils.randomUUID();
+    var divId = OSH.Utils.randomUUID();
+
+    if(!isUndefinedOrNull(defaultSelectTagId)) {
+        selectTagId = defaultSelectTagId;
+    }
+
+    if(!isUndefinedOrNull(label)) {
+      strVar += "    <label>"+label+"<\/label>";
+    }
+    strVar += "      <div class=\"select-style\" id=\""+divId+"\">";
+    strVar += "         <select id=\"" + selectTagId + "\">";
+
+    if(!isUndefinedOrNull(defaultTitleOption)) {
+        strVar += "            <option value=\"\" disabled selected>"+defaultTitleOption+"<\/option>";
+    }
+
+    if(!isUndefinedOrNull(values)) {
+        for(var key in values) {
+            strVar += "            <option value=\""+values[key]+"\">" + values[key] + "<\/option>";
+        }
+    }
+    strVar += "     <\/select><\/div><\/li>";
+    ul.innerHTML += strVar;
+
+    div.appendChild(ul);
+    return selectTagId;
+};
+
+OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInputDivId) {
+    var id = OSH.Utils.randomUUID();
+
+    if(!isUndefined(defaultInputDivId)) {
+      id = defaultInputDivId;
+    }
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var labelElt = document.createElement("label");
+    liElt.setAttribute("for","file-"+id);
+    labelElt.innerHTML = label;
+
+    var inputElt = document.createElement("input");
+    inputElt.setAttribute("class","input-file");
+    inputElt.setAttribute("id",id);
+    inputElt.setAttribute("type","file");
+    inputElt.setAttribute("name","file-"+id);
+
+    liElt.appendChild(labelElt);
+    liElt.appendChild(inputElt);
+    ulElt.appendChild(liElt);
+
+    if(!isUndefinedOrNull(createPreview) && createPreview) {
+        var prevId = OSH.Utils.randomUUID();
+
+        var divPrevElt =  document.createElement("div");
+        divPrevElt.setAttribute("class","preview");
+        divPrevElt.setAttribute("id",prevId);
+
+        inputElt.setAttribute("class",inputElt.className+" preview");
+
+        liElt.appendChild(divPrevElt);
+
+        // NOT working?!!!
+        inputElt.addEventListener('change', function() {
+            console.log("onchange");
+        }, false);
+
+        div.appendChild(ulElt);
+    } else {
+        div.appendChild(ulElt);
+    }
+
+
+    /*var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
+    strVar += "<label for=\"file-"+id+"\">"+label+"<\/label>";
+    if(!isUndefinedOrNull(createPreview) && createPreview) {
+        var prevId = OSH.Utils.randomUUID();
+        strVar += "<input id=\""+id+"\"  class=\"input-file preview\" type=\"file\" name=\"file-"+id+"\" onchange=\""+handleFileSelect()+ "\" />";
+        strVar += "<div id=\""+prevId+"\"class=\"preview\"/>";
+
+        function handleFileSelect(evt) {
+           console.log("ici");
+           /* var files = evt.target.files; // FileList object
+
+            // Loop through the FileList and render image files as thumbnails.
+            for (var i = 0, f; f = files[i]; i++) {
+
+                // Only process image files.
+                if (!f.type.match('image.*')) {
+                    continue;
+                }
+
+                var reader = new FileReader();
+
+                // Closure to capture the file information.
+                reader.onload = (function(theFile) {
+                    return function(e) {
+                        // Render thumbnail.
+                        var span = document.createElement('span');
+                        span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                            '" title="', escape(theFile.name), '"/>'].join('');
+
+                        OSH.Utils.removeAllNodes(document.getElementById('prevId'));
+                        document.getElementById('prevId').appendChild(span, null);
+                    };
+                })(f);
+
+                // Read in the image file as a data URL.
+                reader.readAsDataURL(f);
+            }
+        }
+
+        strVar += "<\/li><\/ul>";
+        // adds to div
+        div.innerHTML += strVar;
+
+        document.getElementById(id).addEventListener('change', handleFileSelect);
+    } else {
+        strVar += "<input id=\""+id+"\"  class=\"input-file\" type=\"file\" name=\""+id+"\" />";
+
+        strVar += "<\/li><\/ul>";
+        // adds to div
+        div.innerHTML += strVar;
+    }
+*/
+
+    return id;
+};
+
+OSH.Utils.addInputText = function(div, label,placeholder) {
+    var id = OSH.Utils.randomUUID();
+
+    var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
+    if(!isUndefinedOrNull(label)) {
+        strVar += "<label for=\"" + id + "\">" + label + "<\/label>";
+    }
+
+    if(!isUndefinedOrNull(placeholder)) {
+        strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" placeholder=\""+placeholder+"\"/>";
+    } else {
+        strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" />";
+    }
+    strVar += "<\/li><\/ul>";
+
+    // adds to div
+    div.innerHTML += strVar;
+
+    return id;
+};
+
+OSH.Utils.removeAllNodes = function(div) {
+  if(!isUndefinedOrNull(div)) {
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+  }
+};

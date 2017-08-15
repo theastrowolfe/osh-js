@@ -1,0 +1,73 @@
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        this.mainElt = document.createElement("main");
+        this.mainElt.setAttribute("class","tab-panel");
+
+        this.div.appendChild(this.mainElt);
+
+        this.sectionNb = 1;
+
+        this.sectionElts = [];
+        this.labelElt = [];
+    },
+
+    addTab: function(label, div) {
+        var id = OSH.Utils.randomUUID();
+
+        var inputElt = document.createElement("input");
+        inputElt.setAttribute("id","tab"+this.sectionNb);
+        inputElt.setAttribute("type","radio");
+        inputElt.setAttribute("name","tab"+this.sectionNb);
+
+        if(this.sectionNb === 1) {
+            inputElt.setAttribute("checked","");
+        }
+
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",id);
+        labelElt.innerHTML = label;
+
+        var sectionElt = document.createElement("section");
+        sectionElt.setAttribute("id","content"+(this.sectionNb++));
+
+
+        sectionElt.appendChild(div);
+        this.sectionElts.push(sectionElt);
+
+        this.labelElt.push({
+            label : labelElt,
+            input: inputElt
+        });
+
+        OSH.Utils.removeAllNodes(this.mainElt);
+
+        for(var key in this.labelElt) {
+            this.mainElt.appendChild(this.labelElt[key].input);
+            this.mainElt.appendChild(this.labelElt[key].label);
+        }
+
+        for(var key in this.sectionElts)  {
+            this.mainElt.appendChild(this.sectionElts[key]);
+        }
+    }
+});

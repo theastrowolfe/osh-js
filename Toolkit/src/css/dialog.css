@@ -94,6 +94,7 @@
 /** Adjust content without scroll + keep ratio **/
 .osh.dialog .pop-inner {
     height: calc(100% - 30px);
+    padding-right: 15px;
 }
 
 .osh.dialog .pop-inner .video {

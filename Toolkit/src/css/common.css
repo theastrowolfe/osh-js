@@ -28,7 +28,7 @@
 
 .osh .horizontal-line {
     border-bottom: 1px solid #c4c4c4;
-    padding: 12px;
+    padding: 4px;
     margin-bottom: 2px;
 }
 
@@ -212,7 +212,9 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 .osh .input-text:focus + .form_hint {display: inline;}
 .osh .input-text:required:valid + .form_hint {background: #28921f;} /* change form hint color when valid */
 .osh .input-text:required:valid + .form_hint::before {color:#28921f;} /* change form hint arrow color when valid */
-
+.osh .input-text::placeholder {
+    font-style: italic;
+}
 
 .osh .required_notification {
     color: #d45252;
@@ -262,4 +264,45 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     margin-top: 3px;
     display: inline-block;
     padding: 3px;
+}
+
+/** FILE CHOOSER INPUT **/
+
+.osh .input-file:not(.preview) {
+    padding:5px 8px;
+    width: calc(100% - 146px); /* width - label (140px) */
+}
+
+.osh .input-file.preview {
+    padding:5px 8px;
+    width: calc(100% - 185px); /* width - label (140px) */
+}
+
+.osh .input-file + .preview {
+    width: 32px;
+    height: 32px;
+    float: right;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.osh .input-file + .preview  > img{
+    max-width: 32px;
+    max-height: 32px;
+}
+
+.osh .input-file {
+    border:1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius:2px;
+    -moz-transition: padding .25s;
+    -webkit-transition: padding .25s;
+    -o-transition: padding .25s;
+    transition: padding .25s;
+}
+.osh .input-file:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
 }

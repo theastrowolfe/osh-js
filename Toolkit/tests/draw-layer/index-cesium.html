@@ -127,23 +127,23 @@
                         });
                     })(primitive);
                     /*(function (id) { // use a close here to no share the dataSourceId variable
-                        primitive.addListener('onEdited', function (event) {
-                            var updatedCesium = null;
+                     primitive.addListener('onEdited', function (event) {
+                     var updatedCesium = null;
 
-                            var type = "";
-                            if (primitive.isPolygon) {
-                                updatedCesium = new DrawHelper.PolygonPrimitive({
-                                    positions: event.positions
-                                    //material : Cesium.Material.fromType('Checkerboard')
-                                });
-                                type = "polygon";
-                                updatedCesium.id = id;
-                            }
+                     var type = "";
+                     if (primitive.isPolygon) {
+                     updatedCesium = new DrawHelper.PolygonPrimitive({
+                     positions: event.positions
+                     //material : Cesium.Material.fromType('Checkerboard')
+                     });
+                     type = "polygon";
+                     updatedCesium.id = id;
+                     }
 
-                            wfsService.writeTransactionAsCesiumPrimitives(null, updatedCesium, null, type, onSuccessWrite);
-                            refresh();
-                        });
-                    })(primitive.id); //passing the variable to freeze, creating a new closure*/
+                     wfsService.writeTransactionAsCesiumPrimitives(null, updatedCesium, null, type, onSuccessWrite);
+                     refresh();
+                     });
+                     })(primitive.id); //passing the variable to freeze, creating a new closure*/
                 } else if(primitive.isPoint) {
                     var b = new Cesium.BillboardCollection();
                     cesiumView.viewer._cesiumWidget.scene.primitives.add(b);
@@ -165,8 +165,8 @@
 
         function drawHelperMarkerCreatedListener(event) {
             // create one common billboard collection for all billboards
-           //cesiumView.viewer._cesiumWidget.scene.primitives.add(b);
-           // billboard.setEditable();
+            //cesiumView.viewer._cesiumWidget.scene.primitives.add(b);
+            billboard.setEditable();
             var point = {
                 show : true,
                 position : event.position,

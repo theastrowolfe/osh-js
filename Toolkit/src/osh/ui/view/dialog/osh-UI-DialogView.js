@@ -138,19 +138,19 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
         p.appendChild(this.outer);
 
-        this.keepRatio = true;
+        this.keepRatio = false;
         var css = this.rootTag.className;
 
-        var keepRatioCss = " keep-ratio-w";
+        var keepRatioCss = "";
 
         if(!isUndefined(options)) {
 
             if (options.css) {
                 css += " " + options.css;
             }
-            if(!isUndefined(options.keepRatio) && !options.keepRatio) {
-                this.keepRatio = false;
-                keepRatioCss = "";
+            if(!isUndefined(options.keepRatio) && options.keepRatio) {
+                this.keepRatio = true;
+                keepRatioCss = " keep-ratio-w";
             }
         }
         css += keepRatioCss;
