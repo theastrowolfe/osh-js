@@ -90,7 +90,12 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.extend({
         OSH.Utils.addHTMLTitledLine(this.content,"Data source");
 
         // data source
-        var dsListBoxId = OSH.Utils.addHTMLListBox(this.content, "Data Source", []);
+        var dsName = [];
+        for(var i=0;i < this.options.datasources.length;i++) {
+            dsName.push(this.options.datasources[i].name);
+        }
+
+        var dsListBoxId = OSH.Utils.addHTMLListBox(this.content, "Data Source", dsName);
         var observableListBoxId = OSH.Utils.addHTMLListBox(this.content, "Observable", []);
 
         // default

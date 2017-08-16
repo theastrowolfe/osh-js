@@ -551,3 +551,19 @@ OSH.Utils.removeAllNodes = function(div) {
     }
   }
 };
+
+OSH.Utils.traverse = function(o,func,params) {
+    for (var i in o) {
+        func.apply(this,[i,o[i],params]);
+        if (o[i] !== null && typeof(o[i])==="object") {
+            //going one step down in the object tree!!
+            params.level = params.level + 1;
+            OSH.Utils.traverse(o[i],func,params);
+            params.level = params.level - 1;
+        }
+    }
+};
+
+OSH.Utils.clone = function(object) {
+    return JSON.parse(JSON.stringify(object));
+};

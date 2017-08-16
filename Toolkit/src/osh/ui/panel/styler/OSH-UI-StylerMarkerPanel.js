@@ -17,6 +17,7 @@
 OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId, options);
+
     },
 
     initPanel:function() {
@@ -24,7 +25,7 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
         var tabPanel = new OSH.UI.Panel.TabPanel();
 
         // tab elements
-        this.iconPanel = new OSH.UI.Panel.IconPanel("",{});
+        this.iconPanel = new OSH.UI.Panel.IconPanel("",{datasources:this.options.datasources});
 
         tabPanel.addTab("Icon",this.iconPanel .div);
 
@@ -40,7 +41,6 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
 
         var styler = new OSH.UI.Styler.Factory.createMarkerStyler(properties);
 
-        console.log(styler);
         return styler;
     }
 });

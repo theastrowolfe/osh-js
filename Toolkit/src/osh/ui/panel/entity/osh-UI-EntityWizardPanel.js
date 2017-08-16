@@ -240,6 +240,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
         // offering, observedProperty
         server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
+            self.buildDSStructure(dataSource,jsonResp);
             dataSource.resultTemplate = jsonResp;
         },function(error) {
             // do something
@@ -473,5 +474,68 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
     disableElt:function(id) {
         document.getElementById(id).setAttribute("disabled","");
+    },
+
+    buildDSStructure:function(datasource,resultTemplate) {
+        var result = [];
+        console.log(resultTemplate);
+
+        var currentObj = null;
+
+        var group = null;
+
+        OSH.Utils.traverse(resultTemplate.GetResultTemplateResponse.resultStructure.field,function(key,value,params) {
+            if(params.defLevel !== null && params.level < params.defLevel) {
+                result.push(currentObj);
+                    currentObj = null;
+                params.defLevel = null;
+            }
+
+            if(group !== null && params.level < group.level  ) {
+                group = null;
+            }
+
+            if(typeof (value.definition) !== "undefined") {
+
+                var saveGroup = false;
+                if(currentObj !== null) {
+                    saveGroup = true;
+                    group = {
+                        path:currentObj.path,
+                        level:params.level,
+                        object: currentObj.object
+                    };
+                }
+
+                currentObj = {
+                    definition : value.definition,
+                    path:  null,
+                    object: value
+                };
+
+                params.defLevel = params.level+1;
+            }
+
+            if(params.defLevel !== null && params.level >= params.defLevel) {
+                if(key === "name") {
+                    if(currentObj.path === null) {
+                        if(group !== null) {
+                            currentObj.path = group.path + "."+value;
+                            currentObj.parentObject = group.object;
+                        } else {
+                            currentObj.path = value;
+                        }
+                    } else {
+                        currentObj.path = currentObj.path+"."+value;
+                    }
+                }
+            }
+        },{level:0,defLevel:null});
+
+        if(currentObj !== null) {
+            result.push(currentObj);
+        }
+        console.log(result);
+        return result;
     }
 });

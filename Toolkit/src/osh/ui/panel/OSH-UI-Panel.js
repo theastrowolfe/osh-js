@@ -16,8 +16,9 @@
 
 
 OSH.UI.Panel = BaseClass.extend({
-    initialize: function (parentElementDivId,properties) {
+    initialize: function (parentElementDivId,options) {
         this.divId = "panel-"+OSH.Utils.randomUUID();
+        this.options = options;
         this.div = document.createElement("div");
         this.div.setAttribute("class", " osh panel ");
         this.div.setAttribute("id", this.divId);
