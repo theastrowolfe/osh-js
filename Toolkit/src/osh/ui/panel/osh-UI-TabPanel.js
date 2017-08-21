@@ -37,19 +37,16 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
         var inputElt = document.createElement("input");
         inputElt.setAttribute("id","tab"+this.sectionNb);
         inputElt.setAttribute("type","radio");
-        inputElt.setAttribute("name","tab"+this.sectionNb);
-
-        if(this.sectionNb === 1) {
-            inputElt.setAttribute("checked","");
-        }
+        inputElt.setAttribute("name","tabs");
 
         var labelElt = document.createElement("label");
         labelElt.setAttribute("for",id);
+        labelElt.setAttribute("id","label-"+id);
         labelElt.innerHTML = label;
 
         var sectionElt = document.createElement("section");
-        sectionElt.setAttribute("id","content"+(this.sectionNb++));
-
+        sectionElt.setAttribute("id","content"+(this.sectionNb));
+        sectionElt.setAttribute("class","hide-tab");
 
         sectionElt.appendChild(div);
         this.sectionElts.push(sectionElt);
@@ -69,5 +66,29 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
         for(var key in this.sectionElts)  {
             this.mainElt.appendChild(this.sectionElts[key]);
         }
+
+        if(this.sectionNb++ === 1) {
+            this.setChecked(inputElt,sectionElt);
+        }
+
+        // listeners
+        OSH.EventManager.observeDiv(labelElt.id,"click",this.setChecked.bind(this,inputElt,sectionElt));
+    },
+
+    setChecked:function(inputElt,sectionElt,evt) {
+        if(!isUndefinedOrNull(this.currentSelectedInput)) {
+            this.currentSelectedInput.removeAttribute("checked");
+        }
+
+        if(!isUndefinedOrNull(this.currentSelectedSection)) {
+            OSH.Utils.replaceCss(this.currentSelectedSection,"show-tab","hide-tab");
+        }
+
+
+        inputElt.setAttribute("checked","");
+        OSH.Utils.replaceCss(sectionElt,"hide-tab","show-tab");
+
+        this.currentSelectedInput = inputElt;
+        this.currentSelectedSection = sectionElt
     }
 });

@@ -59,7 +59,7 @@ OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
  */
 OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,viewProperties, datasource, entity) {
     var cloneProperties = {};
-    OSH.Utils.copyProperties(viewProperties,cloneProperties);
+    cloneProperties = OSH.Utils.clone(viewProperties);
 
     cloneProperties.dataSourceId = datasource.id;
 
@@ -81,7 +81,21 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
 };
 
 OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultProperties, viewItems) {
+    var viewInstance = null;
 
+    switch (viewInstanceType) {
+        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264 : {
+
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : {
+            viewInstance = new OSH.UI.LeafletView("",viewItems,defaultProperties);
+        }
+            break;
+        default:
+            break;
+    }
+    return viewInstance;
 };
 
 OSH.UI.ViewFactory.ViewInstanceType = {

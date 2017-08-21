@@ -14,10 +14,9 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
+OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId, options);
-
     },
 
     initPanel:function() {
@@ -25,11 +24,17 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
         var tabPanel = new OSH.UI.Panel.TabPanel();
 
         // tab elements
+        this.locationPanel = new OSH.UI.Panel.LocationPanel("",{datasources:this.options.datasources});
         this.iconPanel = new OSH.UI.Panel.IconPanel("",{datasources:this.options.datasources});
 
+        tabPanel.addTab("Location",this.locationPanel .div);
         tabPanel.addTab("Icon",this.iconPanel .div);
 
         this.div.appendChild(tabPanel.div);
+    },
+
+    initStyler:function(styler){
+        //TODO: edit using existing values
     },
 
     getStyler:function() {
@@ -39,8 +44,9 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.extend({
         // copy properties from icon panel
         OSH.Utils.copyProperties(this.iconPanel.properties,properties.icon);
 
-        var styler = new OSH.UI.Styler.Factory.createMarkerStyler(properties);
-
-        return styler;
+        //var styler = new OSH.UI.Styler.Factory.createMarkerStyler(properties);
+        var stylerProps = OSH.UI.Styler.Factory.createMarkerStylerProperties(properties);
+        this.options.styler.initProperties(stylerProps);
+        return this.options.styler;
     }
 });

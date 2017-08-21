@@ -33,13 +33,6 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
             }
         }
 
-        this.selectViewId = OSH.Utils.randomUUID();
-        this.addViewButtonId = OSH.Utils.randomUUID();
-        this.viewContainer = OSH.Utils.randomUUID();
-        this.createButtonId = OSH.Utils.randomUUID();
-        this.addDsButtonId = OSH.Utils.randomUUID();
-        this.nameTagId = OSH.Utils.randomUUID();
-
         // add template
         var entityWizard = document.createElement("div");
         entityWizard.setAttribute("id","Entity-wizard-"+OSH.Utils.randomUUID());
@@ -47,17 +40,26 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
         document.getElementById(this.divId).appendChild(entityWizard);
 
-        var strVar="";
-        strVar += "<main class=\"entity-wizard\">";
-        strVar += "   <input id=\"tab1\" type=\"radio\" name=\"tabs\" checked>";
-        strVar += "   <label for=\"tab1\">Info<\/label>";
-        strVar += "   <input id=\"tab2\" type=\"radio\" name=\"tabs\">";
-        strVar += "   <label for=\"tab2\">Data Sources<\/label>";
-        strVar += "   <input id=\"tab3\" type=\"radio\" name=\"tabs\">";
-        strVar += "   <label for=\"tab3\">Views<\/label>";
-        strVar += "   <section id=\"content1\">";
-        strVar += "     <ul class=\"osh-ul\">";
-        strVar += "      <li class=\"osh-li\">";
+
+        var tabPanel = new OSH.UI.Panel.TabPanel();
+
+        tabPanel.addTab("Info",this.createInfoPanel());
+        tabPanel.addTab("Data Sources",this.createDSPanel());
+        tabPanel.addTab("Views",this.createViewPanel());
+        entityWizard.appendChild(tabPanel.div);
+
+        this.datasources = {}; //TODO: probably to remove
+        this.views = [];
+
+        // inits views
+        this.initViews();
+
+    },
+
+    createInfoPanel:function() {
+        this.nameTagId = OSH.Utils.randomUUID();
+
+        var strVar = "      <li class=\"osh-li\">";
         strVar += "         <label for=\""+this.nameTagId+"\">Name:<\/label>";
         strVar += "         <input id=\""+this.nameTagId+"\" type=\"text\" class=\"input-text\" value=\"My entity\">";
         strVar += "      <\/li>";
@@ -69,13 +71,34 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         strVar += "         <label for=\"description\">Description url:<\/label>";
         strVar += "         <input id=\"description\" type=\"text\" class=\"input-text\">";
         strVar += "      <\/li>";
-        strVar += "     <\/ul>";
-        strVar += "   <\/section>";
-        strVar += "   <section id=\"content2\">";
-        strVar += "      <button id=\""+this.addDsButtonId+"\" class=\"submit\">Add<\/button>";
-        strVar += "   <\/section>";
-        strVar += "   <section id=\"content3\">";
-        strVar += "      <div class=\"select-style\">";
+
+        var ulElt = document.createElement("ul");
+        ulElt.setAttribute("class","osh-ul");
+        ulElt.innerHTML = strVar;
+        return ulElt;
+    },
+
+    createDSPanel:function() {
+        this.addDsButtonId = OSH.Utils.randomUUID();
+
+        var buttonElt = document.createElement("button");
+        buttonElt.setAttribute("id",this.addDsButtonId);
+        buttonElt.setAttribute("class","submit");
+        buttonElt.innerHTML = "Add";
+
+        // listeners
+        OSH.EventManager.observeDiv(this.addDsButtonId,"click",this.onAddDataSourceButtonClickHandler.bind(this));
+
+        return buttonElt;
+    },
+
+    createViewPanel: function() {
+        this.selectViewId = OSH.Utils.randomUUID();
+        this.addViewButtonId = OSH.Utils.randomUUID();
+        this.viewContainer = OSH.Utils.randomUUID();
+        this.createButtonId = OSH.Utils.randomUUID();
+
+        var strVar = "      <div class=\"select-style\">";
         strVar += "         <select id=\""+this.selectViewId+"\">";
         strVar += "            <option value=\"\" disabled selected>Select a view<\/option>";
         strVar += "         <\/select>";
@@ -86,22 +109,15 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         strVar += "      <div class=\"create\">";
         strVar += "         <button id=\""+this.createButtonId+"\" class=\"submit\" disabled>Create<\/button>";
         strVar += "      </div>";
-        strVar += "   <\/section>";
-        strVar += "<\/main>";
 
-        entityWizard.innerHTML = strVar;
-
-        this.datasources = {}; //TODO: probably to remove
-        this.views = [];
-
-        // inits views
-        this.initViews();
+        var viewDiv = document.createElement("div");
+        viewDiv.innerHTML = strVar;
 
         // listeners
-        OSH.EventManager.observeDiv(this.addDsButtonId,"click",this.onAddDataSourceButtonClickHandler.bind(this));
         OSH.EventManager.observeDiv(this.addViewButtonId,"click",this.addView.bind(this));
         OSH.EventManager.observeDiv(this.createButtonId,"click",this.createEntity.bind(this));
 
+        return viewDiv;
     },
 
     onAddDataSourceButtonClickHandler: function(event) {
@@ -240,8 +256,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
         // offering, observedProperty
         server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
-            self.buildDSStructure(dataSource,jsonResp);
-            dataSource.resultTemplate = jsonResp;
+            dataSource.resultTemplate = self.buildDSStructure(dataSource,jsonResp);
         },function(error) {
             // do something
         });
@@ -382,18 +397,14 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
        var entityName = document.getElementById(this.nameTagId).value;
 
+       // get DS array
+        var datasourceArray = [];
+        for(var key in this.datasources) {
+            datasourceArray.push(this.datasources[key]);
+        }
 
        for(var i=0;i< this.views.length;i++) {
            var currentView = this.views[i];
-           // clone DataSource
-           var cloneDatasource = {};
-
-           OSH.Utils.copyProperties(currentView.datasource, cloneDatasource);
-
-           cloneDatasource.id = "DataSource-"+OSH.Utils.randomUUID();
-           cloneDatasource.reset();
-
-           currentView.datasource = cloneDatasource;
 
            //var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
            // gets view type
@@ -408,16 +419,25 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
            // get default view property
            var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
 
+           // creates new entity
+           var newEntity = {
+               id : "entity-"+OSH.Utils.randomUUID(),
+               name: entityName,
+               dataSources: datasourceArray
+           };
+
            if(currentView.stylers === null ) {
+               // clone DataSource
+               var cloneDatasource = {};
 
-               // creates new entity
-               var newEntity = {
-                   id : "entity-"+OSH.Utils.randomUUID(),
-                   name: entityName,
-                   dataSources: [currentView.datasource]
-               };
+               cloneDatasource = OSH.Utils.clone(currentView.datasource);
 
-                var viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType,defaultViewProperties,currentView.datasource,newEntity);
+               cloneDatasource.id = "DataSource-"+OSH.Utils.randomUUID();
+               cloneDatasource.reset();
+
+               currentView.datasource = cloneDatasource;
+
+               var viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType,defaultViewProperties,currentView.datasource,newEntity);
 
                if(currentView.container.toLowerCase() === "dialog") {
                    var viewDialog = new OSH.UI.DialogView("", {
@@ -454,7 +474,53 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
                // starts streaming
                dataProviderController.connectAll();
            } else {
+                // creates viewItems
+               var viewItems = [];
+               for(var j = 0;j < currentView.stylers.length;j++) {
+                   var currentStyler = currentView.stylers[j];
+                   viewItems.push({
+                       styler:currentStyler,
+                       entityId:newEntity.id,
+                       name:"some name"
+                   });
+               }
 
+               var viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType,defaultViewProperties,viewItems);
+
+               if(currentView.container.toLowerCase() === "dialog") {
+                   var viewDialog = new OSH.UI.DialogView("", {
+                       draggable: true,
+                       css: "app-dialog", //TBD into edit view
+                       name: currentView.name,
+                       show:true,
+                       dockable: false,
+                       closeable: true,
+                       connectionIds : [],//TODO
+                       destroyOnClose:true,
+                       modal:false,
+                       keepRatio:false
+                   });
+
+                   viewInstance.attachTo(viewDialog.popContentDiv.id);
+               }
+
+               //---------------------------------------------------------------//
+               //--------------------- Creates DataProvider --------------------//
+               //---------------------------------------------------------------//
+
+               var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+                   replayFactor : 1 //TODO:which datasource??!
+               });
+
+               // We can add a group of dataSources and set the options
+               dataProviderController.addEntity(newEntity);
+
+               //---------------------------------------------------------------//
+               //---------------------------- Starts ---------------------------//
+               //---------------------------------------------------------------//
+
+               // starts streaming
+               dataProviderController.connectAll();
            }
        }
     },
@@ -478,16 +544,13 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
     buildDSStructure:function(datasource,resultTemplate) {
         var result = [];
-        console.log(resultTemplate);
-
         var currentObj = null;
-
         var group = null;
 
         OSH.Utils.traverse(resultTemplate.GetResultTemplateResponse.resultStructure.field,function(key,value,params) {
             if(params.defLevel !== null && params.level < params.defLevel) {
                 result.push(currentObj);
-                    currentObj = null;
+                currentObj = null;
                 params.defLevel = null;
             }
 
@@ -495,7 +558,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
                 group = null;
             }
 
-            if(typeof (value.definition) !== "undefined") {
+            if(!isUndefinedOrNull (value.definition)) {
 
                 var saveGroup = false;
                 if(currentObj !== null) {
@@ -535,7 +598,18 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         if(currentObj !== null) {
             result.push(currentObj);
         }
-        console.log(result);
+
+        for(var key in result) {
+            var uiLabel = "no label/axisID/name defined";
+            if(!isUndefinedOrNull (result[key].object.label)) {
+                uiLabel = result[key].object.label;
+            } else if(!isUndefinedOrNull (result[key].object.axisID)) {
+                uiLabel = result[key].object.axisID;
+            } else if(!isUndefinedOrNull (result[key].object.name)) {
+                uiLabel = result[key].object.name;
+            }
+            result[key].uiLabel = uiLabel;
+        }
         return result;
     }
 });

@@ -247,6 +247,7 @@ OSH.UI.View = BaseClass.extend({
             var self = this;
             (function(frozenDataSourceId) { // use a close here to no share the dataSourceId variable
 
+                console.log("waiting listen on "+(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId));
                 OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
 
                     // skip data reset events for now

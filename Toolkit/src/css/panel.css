@@ -41,11 +41,12 @@
     border-bottom: 1px solid #fff;
 }
 
-#tab1:checked ~ #content1,
-#tab2:checked ~ #content2,
-#tab3:checked ~ #content3,
-#tab4:checked ~ #content4 {
-    display: block;
+.osh .panel .tab-panel .show-tab {
+    display:block;
+}
+
+.osh .panel .tab-panel .hide-tab {
+    display:none;
 }
 
 @media screen and (max-width: 650px) {
@@ -64,74 +65,12 @@
     }
 }
 
-/** DataSource tab**/
-.osh .panel .tab-panel .ds-line {
-    width:100%;
-}
-
-.osh .panel .tab-panel .ds-line > span{
-    margin-left: 15px;
-    font-size: 17px;
-}
-
-.osh .panel .tab-panel .ds-line > .control {
-    margin-left:-15px;
-    margin-top:-2px;
-}
-
-.osh .panel .tab-panel .ds-line > .control .edit {
-    padding-right: 15px;
-}
-
-.osh .panel .tab-panel .ds-line > .control .edit:hover {
-    color: #056BA6;
-    cursor:pointer;
-}
-
-.osh .panel .tab-panel .ds-line > .control .delete {
-    padding-right: 15px;
-}
-
-.osh .panel .tab-panel .ds-line > .control .delete:hover {
-    color: #056BA6;
-    cursor:pointer;
-}
-
-.osh .panel .tab-panel .ds-line > .control .fa-2x {
-    font-size: 1.5em;
-}
-
-.osh .panel .tab-panel .add-view-button {
-    margin-left: 15px;
-}
-
-/** create button **/
-.osh .panel .tab-panel .create {
-    margin-top: 10px;
-    margin-right: auto;
-    margin-bottom: 0px;
-    margin-left: auto;
-    display: table;
-}
-
 /** line - left/right position **/
-.osh .panel .tab-panel .line-left {
+.osh .panel .line-left {
     float:left;
 }
 
-.osh .panel .tab-panel .line-right {
+.osh .panel .line-right {
     float:right;
 }
 
-.osh .panel .tab-panel #content3 > .select-style {
-    width: 200px;
-    float: left;
-    margin-right: 15px;
-    margin-left: 15px;
-    margin-bottom: 15px;
-}
-
-.osh .panel .tab-panel .view-container {
-    clear: both;
-    height: 158px;
-}

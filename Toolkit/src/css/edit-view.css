@@ -87,3 +87,11 @@
 .osh .edit-view .listbox-multiple {
     height: 90px;
 }
+
+.osh .dialog-edit-view li.osh-li {
+    padding-top:0px;
+}
+
+.osh .dialog-edit-view .horizontal-titled-line {
+    padding-bottom:12px;
+}

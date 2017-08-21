@@ -266,6 +266,18 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     padding: 3px;
 }
 
+/** INPUT TEXT + UOM **/
+
+.osh .input-text.input-uom {
+    width: calc(100% - 185px);
+}
+
+.osh .input-text.input-uom + .uom {
+    width: 32px;
+    height: 32px;
+    float: right;
+    padding-top: 5px;
+}
 /** FILE CHOOSER INPUT **/
 
 .osh .input-file:not(.preview) {
@@ -306,3 +318,4 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     border:1px solid #555;
     box-shadow: 0 0 3px #aaa;
 }
+

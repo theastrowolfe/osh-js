@@ -640,6 +640,7 @@ OSH.Utils.removeAllFromSelect = function(tagId) {
 OSH.Utils.onDomReady = function(callback) {
     /*!
      * domready (c) Dustin Diaz 2014 - License MIT
+     * https://github.com/ded/domready
      */
     !function (name, definition) {
 
@@ -667,6 +668,8 @@ OSH.Utils.onDomReady = function(callback) {
             loaded ? setTimeout(fn, 0) : fns.push(fn)
         }
     });
+
+    // End domready(c)
 
     domready(callback);
 }

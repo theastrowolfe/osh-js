@@ -14,10 +14,9 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.Panel.IconPanel = OSH.UI.Panel.extend({
+OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId, options);
-        var self = this;
     },
 
     initPanel:function() {
@@ -85,7 +84,14 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.extend({
 
     addThreshold:function() {
 
-        this.properties.threshold = {};
+        this.properties.threshold = {
+             lowIcon:null,
+             highIcon:null,
+             defaultIcon:null,
+             selectedIcon:null,
+             datasource:null,
+             observableIdx:null
+        };
 
         OSH.Utils.addHTMLTitledLine(this.content,"Data source");
 
@@ -93,6 +99,10 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.extend({
         var dsName = [];
         for(var i=0;i < this.options.datasources.length;i++) {
             dsName.push(this.options.datasources[i].name);
+        }
+
+        if(this.options.datasources.length > 0) {
+            this.properties.threshold.datasource = this.options.datasources[0];
         }
 
         var dsListBoxId = OSH.Utils.addHTMLListBox(this.content, "Data Source", dsName);
@@ -112,62 +122,57 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.extend({
         var highIconInputId = OSH.Utils.addTitledFileChooser(this.content, "High icon",true);
 
         // threshold
-        var thresholdInputId = OSH.Utils.addInputText(this.content, "Threshold value", "12.0");
+        var thresholdInputId = OSH.Utils.addInputTextValueWithUOM(this.content, "Threshold value", "12.0","");
 
         OSH.Utils.addHTMLTitledLine(this.content,"Interactive");
 
         // selected icon
         var selectedIconInputId = OSH.Utils.addTitledFileChooser(this.content, "Selected icon",true);
 
+        this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId);
+        this.loadUom(observableListBoxId,thresholdInputId);
 
         var self = this;
 
         // adds listeners
+
         self.addListener(document.getElementById(dsListBoxId), "change", function () {
             self.properties.threshold.datasource = this.options[this.selectedIndex].value;
+
+            // updates observable listbox
+            self.loadObservable(dsListBoxId,observableListBoxId);
         });
 
         self.addListener(document.getElementById(observableListBoxId), "change", function () {
-            self.properties.threshold.observable = this.options[this.selectedIndex].value;
+            self.properties.threshold.observableIdx = this.selectedIndex;
+
+            // updates uom
+            self.loadUom(observableListBoxId,thresholdInputId);
         });
 
         var defaultIconInputElt = document.getElementById(defaultIconInputId);
-        self.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,self.properties.threshold.default));
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
+            self.properties.threshold.defaultIcon = result; // should be  result = { blob: someBlob }
+        }));
 
 
         var lowIconInputElt = document.getElementById(lowIconInputId);
-        self.addListener(lowIconInputElt, "change", this.inputFileHandler.bind(lowIconInputElt,self.properties.threshold.lowIcon));
+        this.addListener(lowIconInputElt, "change", this.inputFileHandler.bind(lowIconInputElt,function(result) {
+            self.properties.threshold.lowIcon = result; // should be  result = { blob: someBlob }
+        }));
 
         var highIconInputElt = document.getElementById(highIconInputId);
-        self.addListener(highIconInputElt, "change", this.inputFileHandler.bind(highIconInputElt,self.properties.threshold.highIcon));
+        this.addListener(highIconInputElt, "change", this.inputFileHandler.bind(highIconInputElt,function(result) {
+            self.properties.threshold.highIcon = result; // should be  result = { blob: someBlob }
+        }));
 
-        self.addListener(document.getElementById(thresholdInputId), "change", function () {
+        this.addListener(document.getElementById(thresholdInputId), "change", function () {
             self.properties.threshold.value = this.value;
         });
 
         var selectIconInputElt = document.getElementById(selectedIconInputId);
-        self.addListener(selectIconInputElt, "change", this.inputFileHandler.bind(selectIconInputElt,self.properties.threshold.selectedIcon));
-    },
-
-    inputFileHandler:function(property,evt) {
-        var file = evt.target.files[0];
-        var reader = new FileReader();
-
-        // Closure to capture the file information.
-        var inputElt = this;
-        reader.onload = (function(theFile) {
-            property.blob = theFile;
-            return function(e) {
-                var base64Image = e.target.result;
-                var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                sel.innerHTML = ['<img class="thumb" src="', e.target.result,
-                    '" title="', escape(theFile.name), '"/>'].join('');
-
-
-            };
-        })(file);
-
-        // Read in the image file as a data URL.
-        reader.readAsDataURL(file);
+        this.addListener(selectIconInputElt, "change", this.inputFileHandler.bind(selectIconInputElt,function(result) {
+            self.properties.threshold.selectedIcon = result; // should be  result = { blob: someBlob }
+        }));
     }
 });

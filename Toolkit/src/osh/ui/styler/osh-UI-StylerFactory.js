@@ -28,29 +28,51 @@ OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property
 /**
  *
  * @param properties
- * // type
- * properties.icon.type = ""
  *
  * // DS
- * properties.icon.threshold.datasource = "";
- * properties.icon.threshold.observable = "";
+ * properties.icon.threshold.datasource -> String;
+ * properties.icon.threshold.observableIdx -> Number;
  *
  * // default
- * properties.icon.threshold.default = "";
+ * properties.icon.threshold.defaultIcon -> Object -> {blob -> Blob object};
  *
  * // icon func
- * properties.icon.threshold.lowIcon = "";
- * properties.icon.threshold.highIcon = "";
- * properties.icon.threshold.value = "";
- * properties.icon.threshold.selectedIcon = "";
+ * properties.icon.threshold.lowIcon -> Object -> {blob -> Blob object};
+ * properties.icon.threshold.highIcon -> Object -> {blob -> Blob object};
+ * properties.icon.threshold.value -> Number;
+ * properties.icon.threshold.selectedIcon -> Object -> {blob -> Blob object};
  *
  * //icon fixed
- * properties.icon.fixed.fixedIcon = "";
+ * properties.icon.fixed.fixedIcon -> Object -> {blob -> Blob object};
  */
-OSH.UI.Styler.Factory.createMarkerStyler = function(properties) {
-    // check icon
+
+OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
     var resultProperties = {};
 
+    //-- LOCATION PART
+    resultProperties.location = {
+        x:0,
+        y:0,
+        z:0
+    };
+
+    var locationFnStr = "return {"+
+        "x: rec.location.lon,"+
+        "y: rec.location.lat,"+
+        "z: rec.location.alt"+
+    "}";
+
+    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+
+    // = new Function('locationHandlerFn',locationFnStr);
+
+    resultProperties.locationFunc = {
+        dataSourceIds:[properties.icon.threshold.datasource.id],
+        handler: locationTemplateHandlerFn
+    };
+
+    //-- ICON PART
     if(!isUndefinedOrNull(properties.icon)) {
         // check type
         if(!isUndefined(properties.icon.fixed)) {
@@ -59,9 +81,34 @@ OSH.UI.Styler.Factory.createMarkerStyler = function(properties) {
         }
 
         if(!isUndefined(properties.icon.threshold)) {
+            var iconTemplate = "";
+            if(!isUndefinedOrNull(properties.icon.selectedIcon)){
+                iconTemplate = "if (options.selected) {";
+                iconTemplate +="  return '"+properties.icon.threshold.selectedIcon.blob+"'";
+                iconTemplate +="} else {";
+                iconTemplate +="  return '"+properties.icon.threshold.defaultIcon.blob+"'";
+                iconTemplate +="}";
+            }
 
+            var path = properties.icon.threshold.datasource.resultTemplate[properties.icon.threshold.observableIdx].path;
+
+            iconTemplate += "if ("+path+" < "+ properties.icon.threshold.value+" ) { return '"+window.URL.createObjectURL(properties.icon.threshold.lowIcon.blob)+"'; }";
+            iconTemplate += "else { return '"+window.URL.createObjectURL(properties.icon.threshold.highIcon.blob)+"'; }";
+
+            var iconTemplateHandlerFn = new Function('iconHandlerFn',iconTemplate);
+
+            resultProperties.iconFunc = {
+                dataSourceIds:[properties.icon.threshold.datasource.id],
+                handler: iconTemplateHandlerFn
+            };
         }
     }
+
+    //TODO:check color
+    //TODO:check size
+    //TODO:check label
+
     // creates styler instance from tabs properties
-    return new OSH.UI.Styler.PointMarker(resultProperties);
+    //return new OSH.UI.Styler.PointMarker(resultProperties);
+    return resultProperties;
 };

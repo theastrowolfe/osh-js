@@ -6,85 +6,22 @@
     min-height: 300px;
 }
 
-
 .osh .entity-wizard button.submit {
-    display: inline; /** display the data sources ADD button to the left **/
     margin-bottom: 15px;
     margin-left: 15px;
 }
 
-.osh .entity-wizard li {
-    border-bottom: 1px solid #eee;
+.osh .entity-wizard .view-container {
+    clear: both;
+    height: 158px;
 }
 
-.osh .entity-wizard li:last-child {
-    border-bottom:1px solid #777;
-}
-
-.osh .entity-wizard > section {
-    display: none;
-    padding: 20px 0 0;
-    border-top: 1px solid #ddd;
-}
-
-.osh .entity-wizard > input {
-    display: none;
-}
-
-.osh .entity-wizard > label {
-    display: inline-block;
-    margin: 0 0 -1px;
-    padding: 15px 25px;
-    font-weight: 900;
-    font-size: 15px;
-    text-align: center;
-    color: #bbb;
-    border: 1px solid transparent;
-}
-
-.osh .entity-wizard > label:before {
-    font-family: fontawesome;
-    font-weight: normal;
-    margin-right: 10px;
-}
-
-.osh .entity-wizard > label:hover {
-    color: #888;
-    cursor: pointer;
-}
-
-.osh .entity-wizard > input:disabled + label {
-    color: #dfdfdf;
-}
-
-.osh .entity-wizard > input:checked + label {
-    color: #000;
-    border: 1px solid #ddd;
-    border-top: 2px solid orange;
-    border-bottom: 1px solid #fff;
-}
-
-#tab1:checked ~ #content1,
-#tab2:checked ~ #content2,
-#tab3:checked ~ #content3,
-#tab4:checked ~ #content4 {
-    display: block;
-}
-
-@media screen and (max-width: 650px) {
-    .osh .entity-wizard > label {
-        font-size: 0;
-    }
-    .osh .entity-wizard > label:before {
-        margin: 0;
-        font-size: 18px;
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .osh .entity-wizard > label {
-        padding: 15px;
-    }
+.osh .entity-wizard  section .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
 }
 
 /** DataSource tab**/
@@ -106,55 +43,33 @@
     padding-right: 15px;
 }
 
-.osh .entity-wizard .ds-line > .control .edit:hover {
+.osh .entity-wizard  .ds-line > .control .edit:hover {
     color: #056BA6;
     cursor:pointer;
 }
 
-.osh .entity-wizard .ds-line > .control .delete {
+.osh .entity-wizard  .ds-line > .control .delete {
     padding-right: 15px;
 }
 
-.osh .entity-wizard .ds-line > .control .delete:hover {
+.osh .entity-wizard  .ds-line > .control .delete:hover {
     color: #056BA6;
     cursor:pointer;
 }
 
-.osh .entity-wizard .ds-line > .control .fa-2x {
+.osh .entity-wizard  .ds-line > .control .fa-2x {
     font-size: 1.5em;
 }
 
-.osh .entity-wizard .add-view-button {
+.osh .entity-wizard  .add-view-button {
     margin-left: 15px;
 }
 
 /** create button **/
-.osh .entity-wizard .create {
+.osh .panel .entity-wizard .create {
     margin-top: 10px;
     margin-right: auto;
     margin-bottom: 0px;
     margin-left: auto;
     display: table;
-}
-
-/** line - left/right position **/
-.osh .entity-wizard .line-left {
-    float:left;
-}
-
-.osh .entity-wizard .line-right {
-    float:right;
-}
-
-.osh .entity-wizard #content3 > .select-style {
-    width: 200px;
-    float: left;
-    margin-right: 15px;
-    margin-left: 15px;
-    margin-bottom: 15px;
-}
-
-.osh .entity-wizard .view-container {
-    clear: both;
-    height: 158px;
 }

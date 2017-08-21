@@ -167,13 +167,17 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             return;
         }
 
-        var styler = {};
+
+        var styler = null;
 
         if(!isUndefined(event.styler)) {
             styler = event.styler;
         } else {
-            styler.name = stylerName;
-            styler.id = OSH.Utils.randomUUID();
+            switch (stylerName) {
+                case "Marker": styler = new OSH.UI.Styler.PointMarker({});break;
+                case "Polyline":break;
+                case "LinePlot":break;
+            }
         }
 
         var div = document.createElement('div');
@@ -183,7 +187,7 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         var deleteId = OSH.Utils.randomUUID();
         var editId = OSH.Utils.randomUUID();
 
-        var strVar = "<span class=\"line-left\">"+styler.name +"<\/span>";
+        var strVar = "<span class=\"line-left\">"+stylerName +"<\/span>";
         strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
@@ -212,14 +216,17 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             self.view.stylers = newArray;
         });
 
-        OSH.EventManager.observeDiv(editId,"click",this.editStyler.bind(this));
+        OSH.EventManager.observeDiv(editId,"click",this.editStyler.bind(this,styler));
 
         return styler;
     },
 
-    editStyler:function(event) {
+    editStyler:function(styler,event) {
         //var editStylerView = new OSH.UI.EntityEditStylerPanel("",{datasources:this.properties.datasources});
-        var editStylerView = new OSH.UI.Panel.StylerMarkerPanel("",{datasources:this.properties.datasources});
+        var editStylerView = new OSH.UI.Panel.StylerMarkerPanel("",{
+            datasources:this.properties.datasources,
+            styler: styler
+        });
 
         var editViewDialog = new OSH.UI.SaveDialogView("", {
             draggable: true,
@@ -233,10 +240,18 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             modal:true
         });
 
+        editStylerView.initStyler(styler);
         editStylerView.attachTo(editViewDialog.popContentDiv.id);
 
         editViewDialog.onSave = function() {
-            var jsonProperties = editStylerView.getStyler();
+            var styler = editStylerView.getStyler();
+
+            for(var key in this.view.stylers) {
+                if(this.view.stylers[key].id === styler.id) {
+                    this.view.stylers[key] = styler;
+                }
+            }
+
             editViewDialog.close();
         }.bind(this);
 
