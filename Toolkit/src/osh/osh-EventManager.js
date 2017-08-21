@@ -54,9 +54,11 @@ OSH.EventManager.observe = function(eventName, fnCallback) {
  * @memberof OSH.EventManager
  */
 OSH.EventManager.observeDiv = function(divId, eventName, fnCallback) {
-    elem = document.getElementById(divId);
-    // use native dom event listener
-    elem.addEventListener(eventName,fnCallback);
+   OSH.Utils.onDomReady(function() {
+        elem = document.getElementById(divId);
+        // use native dom event listener
+        elem.addEventListener(eventName, fnCallback);
+    });
 };
 
 /**

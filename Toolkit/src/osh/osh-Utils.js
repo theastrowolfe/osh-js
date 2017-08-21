@@ -343,6 +343,17 @@ OSH.Utils.removeCss = function(div,css) {
   div.className = css;
 };
 
+/**
+ * Replace a css class from a the div given as argument.
+ * @param div the div to replace the class from
+ * @param css the css class to replace
+ * @instance
+ * @memberof OSH.Utils
+ */
+OSH.Utils.replaceCss = function(div,oldCss,newCss) {
+    css = div.className.replace(oldCss,newCss);
+    div.className = css;
+};
 
 /**
  * Add a css class to a the div given as argument.
@@ -407,8 +418,14 @@ OSH.Utils.addHTMLListBox = function(div,label,values,defaultTitleOption,defaultS
     }
 
     if(!isUndefinedOrNull(values)) {
+        var first = true;
         for(var key in values) {
-            strVar += "            <option value=\""+values[key]+"\">" + values[key] + "<\/option>";
+            if(first) {
+                strVar += "            <option  selected value=\"" + values[key] + "\">" + values[key] + "<\/option>";
+                first = false;
+            } else {
+                strVar += "            <option value=\"" + values[key] + "\">" + values[key] + "<\/option>";
+            }
         }
     }
     strVar += "     <\/select><\/div><\/li>";
@@ -523,6 +540,29 @@ OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInput
     return id;
 };
 
+OSH.Utils.addInputTextValueWithUOM = function(div, label,placeholder,uom) {
+    var id = OSH.Utils.randomUUID();
+
+    var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
+    if(!isUndefinedOrNull(label)) {
+        strVar += "<label for=\"" + id + "\">" + label + "<\/label>";
+    }
+
+    if(!isUndefinedOrNull(placeholder)) {
+        strVar += "<input id=\"" + id + "\"  class=\"input-text  input-uom\" type=\"input-text\" name=\"" + id + "\" placeholder=\""+placeholder+"\"/>";
+    } else {
+        strVar += "<input id=\"" + id + "\"  class=\"input-text  input-uom\" type=\"input-text\" name=\"" + id + "\" />";
+    }
+
+    strVar += "<div class=\"uom\">"+uom+"</div>";
+    strVar += "<\/li><\/ul>";
+
+    // adds to div
+    div.innerHTML += strVar;
+
+    return id;
+};
+
 OSH.Utils.addInputText = function(div, label,placeholder) {
     var id = OSH.Utils.randomUUID();
 
@@ -567,3 +607,66 @@ OSH.Utils.traverse = function(o,func,params) {
 OSH.Utils.clone = function(object) {
     return JSON.parse(JSON.stringify(object));
 };
+
+OSH.Utils.getUOM = function(uomObject) {
+    var result;
+
+    var codeMap = {
+        "Cel": "&#x2103;",
+        "deg": "&#176;"
+    };
+
+    if(!isUndefinedOrNull(uomObject) && !isUndefinedOrNull(uomObject.code)) {
+        var code =  uomObject.code;
+
+        // check code list
+        // https://www.w3schools.com/charsets/ref_utf_letterlike.asp => symbol list
+        if(!isUndefinedOrNull(codeMap[uomObject.code])) {
+            code = codeMap[uomObject.code];
+        }
+        result = code;
+    }
+    return result;
+};
+
+OSH.Utils.removeAllFromSelect = function(tagId) {
+    var i;
+    var selectTag = document.getElementById(tagId);
+    for (i = selectTag.options.length - 1; i > 0; i--) {
+        selectTag.remove(i);
+    }
+};
+
+OSH.Utils.onDomReady = function(callback) {
+    /*!
+     * domready (c) Dustin Diaz 2014 - License MIT
+     */
+    !function (name, definition) {
+
+        if (typeof module != 'undefined') module.exports = definition()
+        else if (typeof define == 'function' && typeof define.amd == 'object') define(definition)
+        else this[name] = definition()
+
+    }('domready', function () {
+
+        var fns = [], listener
+            , doc = typeof document === 'object' && document
+            , hack = doc && doc.documentElement.doScroll
+            , domContentLoaded = 'DOMContentLoaded'
+            , loaded = doc && (hack ? /^loaded|^c/ : /^loaded|^i|^c/).test(doc.readyState)
+
+
+        if (!loaded && doc)
+            doc.addEventListener(domContentLoaded, listener = function () {
+                doc.removeEventListener(domContentLoaded, listener)
+                loaded = 1
+                while (listener = fns.shift()) listener()
+            })
+
+        return function (fn) {
+            loaded ? setTimeout(fn, 0) : fns.push(fn)
+        }
+    });
+
+    domready(callback);
+}
