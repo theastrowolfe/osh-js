@@ -97,5 +97,10 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
 
         // Read in the image file as a data URL.
         reader.readAsDataURL(file);
-    }
+    },
+
+    /**
+     * To be overridden
+     */
+    getProperties:function(){}
 });

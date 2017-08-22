@@ -28,7 +28,15 @@ OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property
 /**
  *
  * @param properties
+ * //-- LOCATION
+ * properties.location.default.x -> Number
+ * properties.location.default.y -> Number
+ * properties.location.default.z -> Number
+ * properties.location.mappingIdx.x -> Number (index into DS)
+ * properties.location.mappingIdx.y -> Number (index into DS)
+ * properties.location.mappingIdx.z -> Number (index into DS)
  *
+ * //-- ICON
  * // DS
  * properties.icon.threshold.datasource -> String;
  * properties.icon.threshold.observableIdx -> Number;
@@ -50,27 +58,29 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
     var resultProperties = {};
 
     //-- LOCATION PART
-    resultProperties.location = {
-        x:0,
-        y:0,
-        z:0
-    };
+    if(!isUndefinedOrNull(properties.location)) {
 
-    var locationFnStr = "return {"+
-        "x: rec.location.lon,"+
-        "y: rec.location.lat,"+
-        "z: rec.location.alt"+
-    "}";
+        resultProperties.location = {
+            x:properties.location.default.x,
+            y:properties.location.default.y,
+            z:properties.location.default.z
+        };
 
-    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
-    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+        var locationFnStr = "return {"+
+            "x: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.x].path+","+
+            "y: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.y].path+","+
+            "z: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.z].path+","+
+            "}";
 
-    // = new Function('locationHandlerFn',locationFnStr);
+        var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+        var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
 
-    resultProperties.locationFunc = {
-        dataSourceIds:[properties.icon.threshold.datasource.id],
-        handler: locationTemplateHandlerFn
-    };
+        resultProperties.locationFunc = {
+            dataSourceIds:[properties.location.datasource.id],
+            handler: locationTemplateHandlerFn
+        };
+    }
+
 
     //-- ICON PART
     if(!isUndefinedOrNull(properties.icon)) {

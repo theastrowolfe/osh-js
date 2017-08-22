@@ -174,5 +174,9 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         this.addListener(selectIconInputElt, "change", this.inputFileHandler.bind(selectIconInputElt,function(result) {
             self.properties.threshold.selectedIcon = result; // should be  result = { blob: someBlob }
         }));
+    },
+
+    getProperties:function() {
+        return this.properties;
     }
 });

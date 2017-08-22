@@ -27,7 +27,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         this.properties = {};
 
-        this.properties.location = {
+        this.properties = {
             datasource:null,
             default:{
                 x:0.0,
@@ -43,9 +43,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         OSH.Utils.addHTMLTitledLine(this.content,"Default location");
 
-        var xInputId = OSH.Utils.addInputText(this.content, "X", "0.0");
-        var yInputId = OSH.Utils.addInputText(this.content, "Y", "0.0");
-        var zInputId = OSH.Utils.addInputText(this.content, "Z", "0.0");
+        this.xDefaultInputId = OSH.Utils.addInputText(this.content, "X", "0.0");
+        this.yDefaultInputId = OSH.Utils.addInputText(this.content, "Y", "0.0");
+        this.zDefaultInputId = OSH.Utils.addInputText(this.content, "Z", "0.0");
 
         OSH.Utils.addHTMLTitledLine(this.content,"Mapping");
 
@@ -57,27 +57,27 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         var dsListBoxId = OSH.Utils.addHTMLListBox(this.content, "Data Source", dsName);
 
-        var xInputMappingId = OSH.Utils.addHTMLListBox(this.content, "X", []);
-        var yInputMappingId = OSH.Utils.addHTMLListBox(this.content, "Y", []);
-        var zInputMappingId = OSH.Utils.addHTMLListBox(this.content, "Z", []);
+        this.xInputMappingId = OSH.Utils.addHTMLListBox(this.content, "X", []);
+        this.yInputMappingId = OSH.Utils.addHTMLListBox(this.content, "Y", []);
+        this.zInputMappingId = OSH.Utils.addHTMLListBox(this.content, "Z", []);
 
 
         // adds default values
         if(this.options.datasources.length > 0) {
-            this.properties.location.datasource = this.options.datasources[0];
+            this.properties.datasource = this.options.datasources[0];
 
             // updates observables { x,y,z} listbox
             var observables = self.getObservable(dsListBoxId);
-            this.loadMapLocation(observables,xInputMappingId,yInputMappingId,zInputMappingId);
+            this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
         }
 
         // adds listeners
         this.addListener(document.getElementById(dsListBoxId), "change", function () {
-            self.properties.location.datasource = this.options[this.selectedIndex].value;
+            self.properties.datasource = this.options[this.selectedIndex].value;
 
             // updates observables { x,y,z} listbox
             var observables = self.getObservable(dsListBoxId);
-            self.loadMapLocation(observables,xInputMappingId,yInputMappingId,zInputMappingId);
+            self.loadMapLocation(observables,self.xInputMappingId,self.yInputMappingId,self.zInputMappingId);
         });
     },
 
@@ -91,33 +91,49 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Utils.removeAllFromSelect(zInputMappingId);
 
         if(!isUndefinedOrNull(observableArr)) {
-            for (var key in observableArr) {
+            for (var i=0;i < observableArr.length;i++) {
 
                 // x
                 var option = document.createElement("option");
-                option.text = observableArr[key].uiLabel;
-                option.value = observableArr[key].uiLabel;
-                option.object = observableArr[key].object;
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+                option.object = observableArr[i].object;
 
                 xInputTag.add(option);
 
                 // y
                 option = document.createElement("option");
-                option.text = observableArr[key].uiLabel;
-                option.value = observableArr[key].uiLabel;
-                option.object = observableArr[key].object;
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+                option.object = observableArr[i].object;
 
                 yInputTag.add(option);
 
                 // z
                 option = document.createElement("option");
-                option.text = observableArr[key].uiLabel;
-                option.value = observableArr[key].uiLabel;
-                option.object = observableArr[key].object;
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+                option.object = observableArr[i].object;
 
                 zInputTag.add(option);
             }
         }
-    }
+    },
 
+    getProperties:function() {
+
+        this.properties.default = {
+            x:document.getElementById(this.xDefaultInputId).value,
+            y:document.getElementById(this.yDefaultInputId).value,
+            z:document.getElementById(this.zDefaultInputId).value
+        };
+
+        this.properties.mappingIdx = {
+            x:document.getElementById(this.xInputMappingId).selectedIndex,
+            y:document.getElementById(this.yInputMappingId).selectedIndex,
+            z:document.getElementById(this.zInputMappingId).selectedIndex
+        };
+
+        return this.properties;
+    }
 });
