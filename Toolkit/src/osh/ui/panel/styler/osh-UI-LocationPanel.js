@@ -79,6 +79,17 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             var observables = self.getObservable(dsListBoxId);
             self.loadMapLocation(observables,self.xInputMappingId,self.yInputMappingId,self.zInputMappingId);
         });
+
+        // load existing values if any
+        if(!isUndefinedOrNull(this.options.styler) && !isUndefinedOrNull(this.options.styler.location)) {
+                document.getElementById(this.xDefaultInputId).value = this.options.styler.location.x;
+                document.getElementById(this.yDefaultInputId).value = this.options.styler.location.y;
+                document.getElementById(this.zDefaultInputId).value = this.options.styler.location.z;
+
+                //if(!isUndefined(this.options.styler.location.mappingIdx)) {
+
+                //}
+        }
     },
 
     loadMapLocation:function(observableArr,xInputMappingId,yInputMappingId,zInputMappingId) {

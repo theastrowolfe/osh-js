@@ -66,19 +66,21 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
             z:properties.location.default.z
         };
 
-        var locationFnStr = "return {"+
-            "x: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.x].path+","+
-            "y: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.y].path+","+
-            "z: rec."+properties.location.datasource.resultTemplate[properties.location.mappingIdx.z].path+","+
-            "}";
+        if(!isUndefinedOrNull(properties.location.datasource)) {
+            var locationFnStr = "return {" +
+                "x: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.x].path + "," +
+                "y: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.y].path + "," +
+                "z: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.z].path + "," +
+                "}";
 
-        var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
-        var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+            var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+            var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
 
-        resultProperties.locationFunc = {
-            dataSourceIds:[properties.location.datasource.id],
-            handler: locationTemplateHandlerFn
-        };
+            resultProperties.locationFunc = {
+                dataSourceIds: [properties.location.datasource.id],
+                handler: locationTemplateHandlerFn
+            };
+        }
     }
 
 

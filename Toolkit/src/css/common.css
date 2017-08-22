@@ -41,6 +41,8 @@
     overflow: hidden;
     background-color: #fff;
     position: relative;
+    min-width: 30px;
+    margin-top: -1px;
 }
 
 .osh .select-style:before {
@@ -57,6 +59,7 @@
 
 .osh .select-style select {
     padding: 5px 8px;
+    padding-right: 25px;
     width: 100%;
     background-color: transparent;
     background-image: none;
@@ -160,15 +163,16 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 .osh .input-text {
     padding-right: 5px;
-    width: calc(100% - 146px); /* width - label (140px) */
+    /*width: calc(100% - 146px);*/ /* width - label (140px) */
+    width:150px;
 }
 
 .osh select {
-    padding-right: 21px;
+    padding-right: 25px;
 }
 
 .osh select:focus  {
-    padding-right: 21px;
+    padding-right: 25px;
 }
 
 .osh .input-text:required {

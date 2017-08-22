@@ -73,3 +73,27 @@
     margin-left: auto;
     display: table;
 }
+
+.osh .entity-wizard .info .input-text {
+    width:200px;
+}
+
+.osh .entity-wizard .datasource {}
+
+.osh .entity-wizard .views {}
+
+.osh .dialog-edit-view .view-item-line  > input{
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px
+}
+
+.osh .dialog-edit-view .view-item-line  > .select-style {
+    float:right;
+}
+
+.osh .dialog-edit-view .viewItem-container {
+    height: 160px;
+    overflow: auto;
+}

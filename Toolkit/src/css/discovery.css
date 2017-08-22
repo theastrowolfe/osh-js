@@ -70,3 +70,7 @@
 .osh .discovery-form .advanced > input[type=checkbox]:checked + label + .details > li:first-child {
     border-bottom: 1px solid #eee;
 }
+
+.osh .discovery-form .input-text {
+    width: calc(100% - 146px)
+}

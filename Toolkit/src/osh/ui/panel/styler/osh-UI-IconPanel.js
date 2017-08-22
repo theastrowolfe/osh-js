@@ -78,7 +78,12 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // fixed icon
         var fixedIconInputElt = document.getElementById(fixedIconInputId);
-        this.addListener(fixedIconInputElt, "change", this.inputFileHandler.bind(fixedIconInputElt,this.properties.fixed));
+
+        var self = this;
+
+        this.addListener(fixedIconInputElt, "change", this.inputFileHandler.bind(fixedIconInputElt,function(result) {
+            self.properties.fixed = result; // should be  result = { blob: someBlob }
+        }));
 
     },
 
@@ -151,9 +156,6 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         });
 
         var defaultIconInputElt = document.getElementById(defaultIconInputId);
-        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
-            self.properties.threshold.defaultIcon = result; // should be  result = { blob: someBlob }
-        }));
 
 
         var lowIconInputElt = document.getElementById(lowIconInputId);

@@ -24,11 +24,11 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
         var tabPanel = new OSH.UI.Panel.TabPanel();
 
         // tab elements
-        this.locationPanel = new OSH.UI.Panel.LocationPanel("",{datasources:this.options.datasources});
-        this.iconPanel = new OSH.UI.Panel.IconPanel("",{datasources:this.options.datasources});
+        this.locationPanel = new OSH.UI.Panel.LocationPanel("",{datasources:this.options.datasources, styler:this.options.styler});
+        this.iconPanel = new OSH.UI.Panel.IconPanel("",{datasources:this.options.datasources,styler:this.options.styler});
 
-        tabPanel.addTab("Location",this.locationPanel .div);
-        tabPanel.addTab("Icon",this.iconPanel .div);
+        tabPanel.addTab("Location",this.locationPanel.div);
+        tabPanel.addTab("Icon",this.iconPanel.div);
 
         this.div.appendChild(tabPanel.div);
     },
@@ -41,11 +41,10 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
         // concats properties from all tabs
         var properties = { icon: {}, location:{}};
 
-        // copy properties from icon panel
+        // copy properties from panels
         OSH.Utils.copyProperties(this.iconPanel.getProperties(),properties.icon);
         OSH.Utils.copyProperties(this.locationPanel.getProperties(),properties.location);
 
-        //var styler = new OSH.UI.Styler.Factory.createMarkerStyler(properties);
         var stylerProps = OSH.UI.Styler.Factory.createMarkerStylerProperties(properties);
         this.options.styler.initProperties(stylerProps);
         return this.options.styler;

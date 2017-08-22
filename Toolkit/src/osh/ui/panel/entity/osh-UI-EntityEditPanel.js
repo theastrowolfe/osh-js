@@ -27,17 +27,15 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         document.getElementById(this.divId).appendChild(editView);
 
         this.containerDivId = OSH.Utils.randomUUID();
-        this.stylerSelectDivId = OSH.Utils.randomUUID();
-        this.editButton = OSH.Utils.randomUUID();
-        this.stylerContainerDivId = OSH.Utils.randomUUID();
-        this.addStylerId = OSH.Utils.randomUUID();
+        this.viewItemsContainerDivId = OSH.Utils.randomUUID();
+        this.addViewItemId = OSH.Utils.randomUUID();
         this.dataSourceId = OSH.Utils.randomUUID();
 
         var strVar="";
 
         this.view = properties.view;
 
-        var displayStyler = (properties.view.stylers !== null);
+        var displayViewItem= (!isUndefinedOrNull(properties.view.viewItems));
 
         // container part
         strVar += OSH.Utils.createHTMLTitledLine("View properties");
@@ -46,7 +44,7 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         strVar += "  <\/li>";
         strVar += "<\/ul>";
 
-        if(!displayStyler) {
+        if(!displayViewItem) {
             // datasource part
             strVar += OSH.Utils.createHTMLTitledLine("Data Sources");
             strVar += "<ul class=\"osh-ul\">";
@@ -72,26 +70,23 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         strVar += "  <\/li>";
         strVar += "<\/ul>";
 
-        if(displayStyler) {
+        if(displayViewItem) {
             // styler part
-            strVar += OSH.Utils.createHTMLTitledLine("Styler");
-            strVar += "<div class=\"styler-section\">";
-            strVar += "  <div class=\"select-style\">";
-            strVar += "    <select id=\"" + this.stylerSelectDivId + "\">";
-            strVar += "    <\/select>";
-            strVar += "  <\/div>";
-            strVar += "  <button id=\"" + this.addStylerId + "\" class=\"submit\">Add<\/button>";
-            strVar += "  <div id=\"" + this.stylerContainerDivId + "\" class=\"styler-container\"><\/div>";
+            strVar += OSH.Utils.createHTMLTitledLine("View items");
+            strVar += "<div class=\"viewItem-section\">";
+            strVar += "  <button id=\"" + this.addViewItemId + "\" class=\"submit\">Add<\/button>";
+            strVar += "  <div id=\"" + this.viewItemsContainerDivId + "\" class=\"viewItem-container\"><\/div>";
             strVar += "<\/div>";
         }
 
         editView.innerHTML = strVar;
 
         // inits
-        if(displayStyler) {
-            this.initStylers(this.view.stylers);
+        if(displayViewItem) {
+            this.initViewItems(this.view.viewItems);
+
             // listeners
-            OSH.EventManager.observeDiv(this.addStylerId,"click",this.onClickStylerButton.bind(this));
+            OSH.EventManager.observeDiv(this.addViewItemId,"click",this.onClickViewItemButton.bind(this));
         } else {
             this.initDataSources(this.properties.datasources);
             OSH.EventManager.observeDiv(this.dataSourceId,"change",this.onChangeDataSource.bind(this));
@@ -138,56 +133,52 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         }
     },
 
-    initStylers: function(defaultStylerArr) {
-        var stylers = ["Marker","Polyline", "Curve"];
-
-        var selectStylerTag = document.getElementById(this.stylerSelectDivId);
-
-        for(var key in stylers) {
-
-            var option = document.createElement("option");
-            option.text = stylers[key];
-            option.value = stylers[key];
-
-            selectStylerTag.add(option);
-        }
-
+    initViewItems: function(defaultViewItemArr) {
         // inits from properties
-        for(var i =0;i < defaultStylerArr.length;i++) {
-            this.addStyler({styler:defaultStylerArr[i]});
+        for(var i =0;i < defaultViewItemArr.length;i++) {
+            this.addViewItem({viewItem:defaultViewItemArr[i]});
         }
     },
 
-    addStyler:function(event) {
-        var dsTabElt = document.getElementById(this.stylerContainerDivId);
-        var selectedViewTag = document.getElementById(this.stylerSelectDivId);
-        var stylerName = selectedViewTag.options[selectedViewTag.selectedIndex].value;
+    addViewItem:function(event) {
+        var viewItemsContainerElt = document.getElementById(this.viewItemsContainerDivId);
 
-        if(stylerName === "") {
-            return;
-        }
-
-
-        var styler = null;
-
-        if(!isUndefined(event.styler)) {
-            styler = event.styler;
-        } else {
-            switch (stylerName) {
-                case "Marker": styler = new OSH.UI.Styler.PointMarker({});break;
-                case "Polyline":break;
-                case "LinePlot":break;
-            }
-        }
+        var id = OSH.Utils.randomUUID();
+        var stylerSelectDivId = "styler-"+id;
 
         var div = document.createElement('div');
-        div.setAttribute("id","View"+OSH.Utils.randomUUID());
+        div.setAttribute("id","viewItem-"+id);
         div.setAttribute("class","ds-line");
 
-        var deleteId = OSH.Utils.randomUUID();
-        var editId = OSH.Utils.randomUUID();
+        var deleteId = "delete-"+id;
+        var editId = "edit-"+id;
 
-        var strVar = "<span class=\"line-left\">"+stylerName +"<\/span>";
+        var viewItem = null;
+        var styler = null;
+
+        if(!isUndefined(event.viewItem)) {
+            viewItem = event.viewItem;
+            styler = viewItem.styler;
+        } else {
+            viewItem = {
+                id: "view-item-"+OSH.Utils.randomUUID(),
+                name:"View item #"+this.view.viewItems.length,
+                styler: new OSH.UI.Styler.PointMarker({})
+            };
+            this.view.viewItems.push(viewItem);
+        }
+
+        var strVar = "<div class=\"line-left view-item-line\">";
+        strVar += "     <input name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\">";
+        strVar += "     <div class=\"select-style\">";
+        strVar += "         <select id=\"" + stylerSelectDivId + "\">";
+        strVar += "             <option  selected value=\"Marker\">Marker<\/option>";
+        strVar += "             <option  value=\"Polyline\">Polyline<\/option>";
+        strVar += "             <option  value=\"LinePlot\">LinePlot<\/option>";
+        strVar += "         <\/select>";
+        strVar += "     <\/div>";
+        strVar += "  <\/div>";
+
         strVar += "   <table class=\"control line-right\">";
         strVar += "      <tr>";
         strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
@@ -199,33 +190,31 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
 
         div.innerHTML = strVar;
 
-        dsTabElt.appendChild(div);
+        viewItemsContainerElt.appendChild(div);
 
-        // add listeners
         var self = this;
 
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
-            dsTabElt.removeChild(div);
+            viewItemsContainerElt.removeChild(div);
             var newArray = [];
-            for(var i=0;i < self.view.stylers.length;i++) {
-                if(self.view.stylers[i].id !== styler.id) {
-                    newArray.push(self.view.stylers[i]);
+
+            for(var i=0;i < self.view.viewItems.length;i++) {
+                if(self.view.viewItems[i].id !== viewItem.id) {
+                    newArray.push(self.view.viewItems[i]);
                 }
             }
 
-            self.view.stylers = newArray;
+            self.view.viewItems = newArray;
         });
 
-        OSH.EventManager.observeDiv(editId,"click",this.editStyler.bind(this,styler));
-
-        return styler;
+        OSH.EventManager.observeDiv(editId,"click",this.editStyler.bind(this,viewItem));
     },
 
-    editStyler:function(styler,event) {
+    editStyler:function(viewItem,event) {
         //var editStylerView = new OSH.UI.EntityEditStylerPanel("",{datasources:this.properties.datasources});
         var editStylerView = new OSH.UI.Panel.StylerMarkerPanel("",{
             datasources:this.properties.datasources,
-            styler: styler
+            styler: viewItem.styler
         });
 
         var editViewDialog = new OSH.UI.SaveDialogView("", {
@@ -240,15 +229,16 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             modal:true
         });
 
-        editStylerView.initStyler(styler);
+        editStylerView.initStyler(viewItem.styler);
         editStylerView.attachTo(editViewDialog.popContentDiv.id);
 
         editViewDialog.onSave = function() {
             var styler = editStylerView.getStyler();
 
-            for(var key in this.view.stylers) {
-                if(this.view.stylers[key].id === styler.id) {
-                    this.view.stylers[key] = styler;
+            // updates the styler of this viewItem
+            for(var key in this.view.viewItems) {
+                if(this.view.viewItems[key].id === viewItem.id) {
+                    this.view.viewItems[key].styler = styler;
                 }
             }
 
@@ -269,9 +259,8 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         this.view.container = eltContainer.options[eltContainer.selectedIndex].value;
     },
 
-    onClickStylerButton:function(event) {
-        var newStyler = this.addStyler(event);
-        this.view.stylers.push(newStyler);
+    onClickViewItemButton:function(event) {
+        var newStyler = this.addViewItem(event);
     },
 
     getView:function() {

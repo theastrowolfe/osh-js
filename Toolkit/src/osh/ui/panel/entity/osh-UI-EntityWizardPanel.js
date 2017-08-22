@@ -73,7 +73,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         strVar += "      <\/li>";
 
         var ulElt = document.createElement("ul");
-        ulElt.setAttribute("class","osh-ul");
+        ulElt.setAttribute("class","osh-ul info");
         ulElt.innerHTML = strVar;
         return ulElt;
     },
@@ -83,7 +83,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
 
         var buttonElt = document.createElement("button");
         buttonElt.setAttribute("id",this.addDsButtonId);
-        buttonElt.setAttribute("class","submit");
+        buttonElt.setAttribute("class","submit datasource");
         buttonElt.innerHTML = "Add";
 
         // listeners
@@ -113,6 +113,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         var viewDiv = document.createElement("div");
         viewDiv.innerHTML = strVar;
 
+        viewDiv.setAttribute("class","views");
         // listeners
         OSH.EventManager.observeDiv(this.addViewButtonId,"click",this.addView.bind(this));
         OSH.EventManager.observeDiv(this.createButtonId,"click",this.createEntity.bind(this));
@@ -274,7 +275,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         var view = {
             name: viewName,
             id: OSH.Utils.randomUUID(),
-            stylers:[],
+            viewItems:[],
             container: "",
             datasource: null
         };
