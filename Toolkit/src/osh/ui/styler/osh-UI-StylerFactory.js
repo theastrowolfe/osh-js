@@ -95,24 +95,34 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
         if(!isUndefined(properties.icon.threshold)) {
             var iconTemplate = "";
             if(!isUndefinedOrNull(properties.icon.selectedIcon)){
+                var blob = new Blob([new Uint8Array(properties.icon.selectedIcon.arrayBuffer)]);
+                var blobURL = window.URL.createObjectURL(blob);
+
                 iconTemplate = "if (options.selected) {";
-                iconTemplate +="  return '"+properties.icon.threshold.selectedIcon.blob+"'";
+                iconTemplate +="  return '"+blobURL+"'";
                 iconTemplate +="} else {";
-                iconTemplate +="  return '"+properties.icon.threshold.defaultIcon.blob+"'";
+                iconTemplate +="  return '"+blobURL+"'";
                 iconTemplate +="}";
             }
 
-            var path = properties.icon.threshold.datasource.resultTemplate[properties.icon.threshold.observableIdx].path;
+            if(!isUndefinedOrNull(properties.icon.datasource)) {
+                var path = properties.icon.threshold.datasource.resultTemplate[properties.icon.threshold.observableIdx].path;
 
-            iconTemplate += "if ("+path+" < "+ properties.icon.threshold.value+" ) { return '"+window.URL.createObjectURL(properties.icon.threshold.lowIcon.blob)+"'; }";
-            iconTemplate += "else { return '"+window.URL.createObjectURL(properties.icon.threshold.highIcon.blob)+"'; }";
+                var blob = new Blob([new Uint8Array(properties.icon.threshold.lowIcon.arrayBuffer)]);
+                var blobURL = window.URL.createObjectURL(blob);
+                iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
 
-            var iconTemplateHandlerFn = new Function('iconHandlerFn',iconTemplate);
+                blob = new Blob([new Uint8Array(properties.icon.threshold.highIcon.arrayBuffer)]);
+                blobURL = window.URL.createObjectURL(blob);
+                iconTemplate += "else { return '" + blobURL + "'; }";
 
-            resultProperties.iconFunc = {
-                dataSourceIds:[properties.icon.threshold.datasource.id],
-                handler: iconTemplateHandlerFn
-            };
+                var iconTemplateHandlerFn = new Function('iconHandlerFn', iconTemplate);
+
+                resultProperties.iconFunc = {
+                    dataSourceIds: [properties.icon.threshold.datasource.id],
+                    handler: iconTemplateHandlerFn
+                };
+            }
         }
     }
 

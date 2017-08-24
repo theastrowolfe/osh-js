@@ -21,7 +21,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initPanel:function() {
         // type
-        var typeInputId = OSH.Utils.addHTMLListBox(this.div,"Icon type", [
+        this.typeInputId = OSH.Utils.addHTMLListBox(this.div,"Icon type", [
             "None",
             "Fixed",
             "Threshold",
@@ -35,7 +35,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // adds listeners
         var self = this;
-        var typeInputElt = document.getElementById(typeInputId);
+        var typeInputElt = document.getElementById(this.typeInputId);
 
         typeInputElt.addEventListener("change", function () {
             var currentValue = (this.options[this.selectedIndex].value);
@@ -64,6 +64,22 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
     removeProps:function() {
         delete this.properties.fixed;
         delete this.properties.threshold;
+    },
+
+    loadData:function(defautlProperties) {
+        //-- sets icon type
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        console.log(defautlProperties);
+        if(!isUndefinedOrNull(defautlProperties.fixed)) {
+            // loads fixed
+            typeInputElt.options.selectedIndex = 0;
+
+            //this.setInputFileValue(document.getElementById(fixedIconInputId),defautlProperties.fixed.blob);
+        } else if(!isUndefinedOrNull(defautlProperties.threshold)) {
+            // loads threshold
+            typeInputElt.options.selectedIndex = 1;
+        }
     },
 
     addNone:function() {
@@ -157,6 +173,9 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         var defaultIconInputElt = document.getElementById(defaultIconInputId);
 
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
+            self.properties.threshold.defaultIcon = result; // should be  result = { blob: someBlob }
+        }));
 
         var lowIconInputElt = document.getElementById(lowIconInputId);
         this.addListener(lowIconInputElt, "change", this.inputFileHandler.bind(lowIconInputElt,function(result) {

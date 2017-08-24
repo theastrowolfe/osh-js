@@ -272,11 +272,11 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 /** INPUT TEXT + UOM **/
 
-.osh .input-text.input-uom {
+.osh .input-file-text.input-uom {
     width: calc(100% - 185px);
 }
 
-.osh .input-text.input-uom + .uom {
+.osh .input-file-text.input-uom + .uom {
     width: 32px;
     height: 32px;
     float: right;
@@ -284,31 +284,31 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 }
 /** FILE CHOOSER INPUT **/
 
-.osh .input-file:not(.preview) {
+.osh .input-file-text:not(.preview) {
     padding:5px 8px;
     width: calc(100% - 146px); /* width - label (140px) */
 }
 
-.osh .input-file.preview {
+.osh .input-file-text.preview {
     padding:5px 8px;
-    width: calc(100% - 185px); /* width - label (140px) */
+    width: calc(100% - 210px); /* width - label (140px) */
 }
 
-.osh .input-file + .preview {
-    width: 32px;
-    height: 32px;
-    float: right;
-    display: table-cell;
+.osh .input-file-text + .preview {
+    max-width: 27px;
+    max-height: 24px;
+    display: inline-block;
     vertical-align: middle;
     text-align: center;
+    margin-left: 5px;
 }
 
-.osh .input-file + .preview  > img{
-    max-width: 32px;
-    max-height: 32px;
+.osh .input-file-text + .preview  > img{
+    max-width: 27px;
+    max-height: 24px;
 }
 
-.osh .input-file {
+.osh .input-file-text {
     border:1px solid #aaa;
     box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
     border-radius:2px;
@@ -317,9 +317,31 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     -o-transition: padding .25s;
     transition: padding .25s;
 }
-.osh .input-file:focus {
+.osh .input-file-text:focus {
     background: #fff;
     border:1px solid #555;
     box-shadow: 0 0 3px #aaa;
+}
+
+.osh .input-file {
+    display :none;
+}
+
+.osh label.input-file-label-for {
+    width: 16px !important;
+    height: 16px;
+    bottom: 0;
+    margin-right: 14px;
+}
+
+.osh .input-file-i:hover {
+    color:#056BA6;
+}
+.osh .input-file-i:before {
+    content: "\f0c6";
+    font-size:1.85em;
+}
+.osh .input-file-i {
+    margin-top: -4px;
 }
 

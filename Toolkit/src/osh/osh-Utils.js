@@ -449,19 +449,46 @@ OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInput
     liElt.setAttribute("class","osh-li");
 
     var labelElt = document.createElement("label");
-    liElt.setAttribute("for","file-"+id);
     labelElt.innerHTML = label;
 
-    var inputElt = document.createElement("input");
-    inputElt.setAttribute("class","input-file");
-    inputElt.setAttribute("id",id);
-    inputElt.setAttribute("type","file");
-    inputElt.setAttribute("name","file-"+id);
+    var labelForElt = document.createElement("label");
+    labelForElt.setAttribute("class","input-file-label-for");
+    labelForElt.setAttribute("for",id);
 
+    var iElt = document.createElement("i");
+    iElt.setAttribute("class","fa input-file-i");
+    iElt.setAttribute("aria-hidden","true");
+
+    labelForElt.appendChild(iElt);
+
+    var inputTextElt = document.createElement("input");
+    inputTextElt.setAttribute("class","input-file-text");
+    inputTextElt.setAttribute("id","text-"+id);
+    inputTextElt.setAttribute("type","text");
+    inputTextElt.setAttribute("name","file-text-"+id);
+
+    var inputFileElt = document.createElement("input");
+    inputFileElt.setAttribute("class","input-file");
+    inputFileElt.setAttribute("id",id);
+    inputFileElt.setAttribute("type","file");
+    inputFileElt.setAttribute("name","file-"+id);
+
+    // appends label
     liElt.appendChild(labelElt);
-    liElt.appendChild(inputElt);
+
+    // appends label for
+    liElt.appendChild(labelForElt);
+
+    // appends input file
+    liElt.appendChild(inputFileElt);
+
+    // appends input text
+    liElt.appendChild(inputTextElt);
+
+    // appends li to ul
     ulElt.appendChild(liElt);
 
+    // appends preview if any
     if(!isUndefinedOrNull(createPreview) && createPreview) {
         var prevId = OSH.Utils.randomUUID();
 
@@ -469,12 +496,13 @@ OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInput
         divPrevElt.setAttribute("class","preview");
         divPrevElt.setAttribute("id",prevId);
 
-        inputElt.setAttribute("class",inputElt.className+" preview");
+        OSH.Utils.addCss(inputFileElt,"preview");
+        OSH.Utils.addCss(inputTextElt,"preview");
 
         liElt.appendChild(divPrevElt);
 
         // NOT working?!!!
-        inputElt.addEventListener('change', function() {
+        inputFileElt.addEventListener('change', function() {
             console.log("onchange");
         }, false);
 

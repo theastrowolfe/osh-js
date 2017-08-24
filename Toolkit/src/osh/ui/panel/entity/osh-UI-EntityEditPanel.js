@@ -160,9 +160,12 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             viewItem = event.viewItem;
             styler = viewItem.styler;
         } else {
+            if(isUndefinedOrNull(this.nbViewItems)) {
+                this.nbViewItems = 0;
+            }
             viewItem = {
                 id: "view-item-"+OSH.Utils.randomUUID(),
-                name:"View item #"+this.view.viewItems.length,
+                name:"View item #"+this.nbViewItems++,
                 styler: new OSH.UI.Styler.PointMarker({})
             };
             this.view.viewItems.push(viewItem);
@@ -229,7 +232,7 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             modal:true
         });
 
-        editStylerView.initStyler(viewItem.styler);
+        editStylerView.loadStyler(viewItem.styler);
         editStylerView.attachTo(editViewDialog.popContentDiv.id);
 
         editViewDialog.onSave = function() {

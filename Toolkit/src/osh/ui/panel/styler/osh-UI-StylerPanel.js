@@ -86,21 +86,38 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
         var inputElt = this;
 
         reader.onload = (function(theFile) {
-            callbackFn({blob:theFile});
+            inputElt.nextSibling.text = theFile.name;
+            inputElt.nextSibling.value = theFile.name;
             return function(e) {
-                var base64Image = e.target.result;
+                var arrayBuffer = e.target.result;
+                var blob = new Blob([new Uint8Array(arrayBuffer)]);
+
                 var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                sel.innerHTML = ['<img class="thumb" src="', e.target.result,
+                sel.innerHTML = ['<img class="thumb" src="', URL.createObjectURL(blob),
                     '" title="', escape(theFile.name), '"/>'].join('');
+
+                callbackFn({arraybuffer:arrayBuffer,name:theFile.name,type:theFile.type});
             };
         })(file);
 
         // Read in the image file as a data URL.
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
+    },
+
+    setInputFileValue:function(inputElt,props) {
+        var blob = new Blob([new Uint8Array(props.arrayBuffer)]);
+
+        var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+        sel.innerHTML = ['<img class="thumb" src="', URL.createObjectURL(blob),
+            '" title="', escape(props.name), '"/>'].join('');
+
     },
 
     /**
      * To be overridden
      */
-    getProperties:function(){}
+    getProperties:function(){},
+
+    loadData:function(data){}
+
 });
