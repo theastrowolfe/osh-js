@@ -45,6 +45,7 @@
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-CesiumView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-SaveDialogView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
@@ -142,6 +143,7 @@
 <script type="text/javascript">
 
     window.OSH.BASE_WORKER_URL = "js/sub/workers";
+    window.CESIUM_BASE_URL = 'vendor/';
 
     var entityWizardView = new OSH.UI.EntityWizardPanel("",{
         viewContainer: "container",

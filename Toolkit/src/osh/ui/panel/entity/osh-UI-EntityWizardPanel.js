@@ -333,8 +333,8 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view.id));
 
         // disable listbox
-        this.disableElt(this.selectViewId);
-        this.disableElt(this.addViewButtonId);
+        //this.disableElt(this.selectViewId);
+        //this.disableElt(this.addViewButtonId);
 
         // enable create button
         this.enableElt(this.createButtonId);
@@ -404,6 +404,13 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
             datasourceArray.push(this.datasources[key]);
         }
 
+        // creates new entity
+        var newEntity = {
+            id : "entity-"+OSH.Utils.randomUUID(),
+            name: entityName,
+            dataSources: datasourceArray
+        };
+
        for(var i=0;i< this.views.length;i++) {
            var currentView = this.views[i];
 
@@ -412,6 +419,8 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
            var viewInstanceType = null;
            if(currentView.name === "Map 2D") {
                viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.LEAFLET;
+           } else if(currentView.name === "Globe 3D") {
+               viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.CESIUM;
            } else if(currentView.name === "Video (H264)") {
                viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264;
            }
@@ -419,13 +428,6 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
            // get default view properties
            // get default view property
            var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
-
-           // creates new entity
-           var newEntity = {
-               id : "entity-"+OSH.Utils.randomUUID(),
-               name: entityName,
-               dataSources: datasourceArray
-           };
 
            if(currentView.stylers === null ) {
                // clone DataSource
@@ -475,18 +477,13 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
                // starts streaming
                dataProviderController.connectAll();
            } else {
-                // creates viewItems
                var viewItems = [];
-               for(var j = 0;j < currentView.stylers.length;j++) {
-                   var currentStyler = currentView.stylers[j];
-                   viewItems.push({
-                       styler:currentStyler,
-                       entityId:newEntity.id,
-                       name:"some name"
-                   });
+
+               for(var j = 0;j < currentView.viewItems.length;j++) {
+                   currentView.viewItems[j].entityId = newEntity.id;
                }
 
-               var viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType,defaultViewProperties,viewItems);
+               var viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType,defaultViewProperties,currentView.viewItems);
 
                if(currentView.container.toLowerCase() === "dialog") {
                    var viewDialog = new OSH.UI.DialogView("", {

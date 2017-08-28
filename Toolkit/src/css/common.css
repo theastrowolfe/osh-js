@@ -1,5 +1,12 @@
 @import "font-awesome-4.7.0/css/font-awesome.min.css";
 
+.osh {}
+
+.osh .view {
+    width:100%;
+    height: 100%;
+}
+
 .osh .horizontal-titled-line {
     overflow: hidden;
     text-align: center;
@@ -272,11 +279,11 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 
 /** INPUT TEXT + UOM **/
 
-.osh .input-file-text.input-uom {
+.osh .input-text.input-uom {
     width: calc(100% - 185px);
 }
 
-.osh .input-file-text.input-uom + .uom {
+.osh .input-text.input-uom + .uom {
     width: 32px;
     height: 32px;
     float: right;

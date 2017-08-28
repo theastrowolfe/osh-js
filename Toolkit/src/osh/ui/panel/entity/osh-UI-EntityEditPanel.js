@@ -171,8 +171,10 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             this.view.viewItems.push(viewItem);
         }
 
+        var inputEltId = OSH.Utils.randomUUID();
+
         var strVar = "<div class=\"line-left view-item-line\">";
-        strVar += "     <input name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\">";
+        strVar += "     <input id=\""+inputEltId+"\" name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\">";
         strVar += "     <div class=\"select-style\">";
         strVar += "         <select id=\"" + stylerSelectDivId + "\">";
         strVar += "             <option  selected value=\"Marker\">Marker<\/option>";
@@ -196,6 +198,10 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         viewItemsContainerElt.appendChild(div);
 
         var self = this;
+
+        OSH.EventManager.observeDiv(inputEltId,"change",function(event) {
+            viewItem.name = document.getElementById(inputEltId).value;
+        });
 
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
             viewItemsContainerElt.removeChild(div);

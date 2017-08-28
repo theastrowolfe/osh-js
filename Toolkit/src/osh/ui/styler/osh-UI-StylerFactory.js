@@ -38,88 +38,101 @@ OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property
  *
  * //-- ICON
  * // DS
- * properties.icon.threshold.datasource -> String;
+ * properties.icon.threshold.datasourceIdx -> Number;
  * properties.icon.threshold.observableIdx -> Number;
  *
- * // default
- * properties.icon.threshold.defaultIcon -> Object -> {blob -> Blob object};
- *
  * // icon func
- * properties.icon.threshold.lowIcon -> Object -> {blob -> Blob object};
- * properties.icon.threshold.highIcon -> Object -> {blob -> Blob object};
+ * properties.icon.threshold.lowIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
+ * properties.icon.threshold.highIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
  * properties.icon.threshold.value -> Number;
- * properties.icon.threshold.selectedIcon -> Object -> {blob -> Blob object};
+ * properties.icon.threshold.selectedIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
  *
- * //icon fixed
- * properties.icon.fixed.fixedIcon -> Object -> {blob -> Blob object};
+ * // icon fixed
+ * properties.icon.fixed.defaultIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
+ * properties.icon.fixed.selectedIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
  */
 
 OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
     var resultProperties = {};
 
+    var datasources = properties.datasources;
+
     //-- LOCATION PART
     if(!isUndefinedOrNull(properties.location)) {
 
         resultProperties.location = {
-            x:properties.location.default.x,
-            y:properties.location.default.y,
-            z:properties.location.default.z
+            x:Number(properties.location.default.x),
+            y:Number(properties.location.default.y),
+            z:Number(properties.location.default.z)
         };
 
-        if(!isUndefinedOrNull(properties.location.datasource)) {
+        if(!isUndefinedOrNull(properties.location.datasourceIdx)) {
+            var ds = datasources[properties.location.datasourceIdx];
             var locationFnStr = "return {" +
-                "x: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.x].path + "," +
-                "y: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.y].path + "," +
-                "z: rec." + properties.location.datasource.resultTemplate[properties.location.mappingIdx.z].path + "," +
+                "x: rec." + ds.resultTemplate[properties.location.mappingIdx.x].path + "," +
+                "y: rec." + ds.resultTemplate[properties.location.mappingIdx.y].path + "," +
+                "z: rec." + ds.resultTemplate[properties.location.mappingIdx.z].path + "," +
                 "}";
 
             var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
             var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
 
             resultProperties.locationFunc = {
-                dataSourceIds: [properties.location.datasource.id],
+                dataSourceIds: [ds.id],
                 handler: locationTemplateHandlerFn
             };
         }
     }
 
-
     //-- ICON PART
     if(!isUndefinedOrNull(properties.icon)) {
         // check type
-        if(!isUndefined(properties.icon.fixed)) {
-           resultProperties.fixedIcon = { blob : properties.icon.fixed.blob};
-           resultProperties.icon =  window.URL.createObjectURL(resultProperties.fixedIcon.blob);
-        }
-
-        if(!isUndefined(properties.icon.threshold)) {
-            var iconTemplate = "";
-            if(!isUndefinedOrNull(properties.icon.selectedIcon)){
-                var blob = new Blob([new Uint8Array(properties.icon.selectedIcon.arrayBuffer)]);
-                var blobURL = window.URL.createObjectURL(blob);
-
-                iconTemplate = "if (options.selected) {";
-                iconTemplate +="  return '"+blobURL+"'";
-                iconTemplate +="} else {";
-                iconTemplate +="  return '"+blobURL+"'";
-                iconTemplate +="}";
+        if(!isUndefinedOrNull(properties.icon.fixed)) {
+            var defaultUrl;
+            if(!isUndefinedOrNull(properties.icon.fixed.defaultIcon)) {
+                defaultUrl = OSH.Utils.arrayBufferToImageDataURL(properties.icon.fixed.defaultIcon.arraybuffer);
+                resultProperties.icon = defaultUrl;
             }
 
-            if(!isUndefinedOrNull(properties.icon.datasource)) {
-                var path = properties.icon.threshold.datasource.resultTemplate[properties.icon.threshold.observableIdx].path;
+            if(!isUndefinedOrNull(properties.icon.fixed.selectedIcon)) {
+                var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.fixed.selectedIcon.arraybuffer);
 
-                var blob = new Blob([new Uint8Array(properties.icon.threshold.lowIcon.arrayBuffer)]);
-                var blobURL = window.URL.createObjectURL(blob);
-                iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
+                iconTemplate = "if (options.selected) {";
+                iconTemplate +="  return '"+selectedBlobURL+"'";
+                iconTemplate +="} else {";
+                iconTemplate +="  return '"+defaultUrl+"'";
+                iconTemplate +="}";
 
-                blob = new Blob([new Uint8Array(properties.icon.threshold.highIcon.arrayBuffer)]);
-                blobURL = window.URL.createObjectURL(blob);
-                iconTemplate += "else { return '" + blobURL + "'; }";
-
-                var iconTemplateHandlerFn = new Function('iconHandlerFn', iconTemplate);
+                var argsIconTemplateHandlerFn = ['rec', 'timeStamp','options', iconTemplate];
+                var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
 
                 resultProperties.iconFunc = {
-                    dataSourceIds: [properties.icon.threshold.datasource.id],
+                    dataSourceIds: [ds.id],
+                    handler: iconTemplateHandlerFn
+                };
+            }
+        }
+
+        var iconTemplate = "";
+        var blobURL = "";
+
+        if(!isUndefinedOrNull(properties.icon.threshold)) {
+            if(!isUndefinedOrNull(properties.icon.threshold.datasourceIdx)) {
+                var ds = datasources[properties.icon.threshold.datasourceIdx];
+
+                var path = ds.resultTemplate[properties.icon.threshold.observableIdx].path;
+
+                blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.lowIcon.arraybuffer);
+                iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
+
+                blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.highIcon.arraybuffer);
+                iconTemplate += "else { return '" + blobURL + "'; }";
+
+                var argsIconTemplateHandlerFn = ['rec', 'timeStamp' ,'options', iconTemplate];
+                var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+                resultProperties.iconFunc = {
+                    dataSourceIds: [ds.id],
                     handler: iconTemplateHandlerFn
                 };
             }

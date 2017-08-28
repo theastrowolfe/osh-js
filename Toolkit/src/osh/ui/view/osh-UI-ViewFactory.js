@@ -92,6 +92,11 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
             viewInstance = new OSH.UI.LeafletView("",viewItems,defaultProperties);
         }
             break;
+        case OSH.UI.ViewFactory.ViewInstanceType.CESIUM : {
+            viewInstance = new OSH.UI.CesiumView("",viewItems,defaultProperties);
+        }
+            break;
+
         default:
             break;
     }
@@ -100,5 +105,6 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
 
 OSH.UI.ViewFactory.ViewInstanceType = {
     LEAFLET: "leaflet",
-    VIDEO_H264:"video_h264"
+    VIDEO_H264:"video_h264",
+    CESIUM: "cesium"
 };

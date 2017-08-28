@@ -28,7 +28,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         this.properties = {};
 
         this.properties = {
-            datasource:null,
+            datasourceIdx:null,
             default:{
                 x:0.0,
                 y:0.0,
@@ -64,7 +64,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // adds default values
         if(this.options.datasources.length > 0) {
-            this.properties.datasource = this.options.datasources[0];
+            this.properties.datasourceIdx = 0;
 
             // updates observables { x,y,z} listbox
             var observables = self.getObservable(dsListBoxId);
@@ -73,7 +73,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // adds listeners
         this.addListener(document.getElementById(dsListBoxId), "change", function () {
-            self.properties.datasource = this.options[this.selectedIndex].value;
+            self.properties.datasourceIdx = this.selectedIndex;
 
             // updates observables { x,y,z} listbox
             var observables = self.getObservable(dsListBoxId);
@@ -86,9 +86,11 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 document.getElementById(this.yDefaultInputId).value = this.options.styler.location.y;
                 document.getElementById(this.zDefaultInputId).value = this.options.styler.location.z;
 
-                //if(!isUndefined(this.options.styler.location.mappingIdx)) {
-
-                //}
+                if(!isUndefined(this.options.styler.properties.ui.location.mappingIdx)) {
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.options.styler.properties.ui.location.mappingIdx.x;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.options.styler.properties.ui.location.mappingIdx.y;
+                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.options.styler.properties.ui.location.mappingIdx.z;
+                }
         }
     },
 

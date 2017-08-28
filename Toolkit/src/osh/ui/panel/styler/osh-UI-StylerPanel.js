@@ -90,10 +90,10 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
             inputElt.nextSibling.value = theFile.name;
             return function(e) {
                 var arrayBuffer = e.target.result;
-                var blob = new Blob([new Uint8Array(arrayBuffer)]);
+                var url = OSH.Utils.arrayBufferToImageDataURL(arrayBuffer);
 
                 var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                sel.innerHTML = ['<img class="thumb" src="', URL.createObjectURL(blob),
+                sel.innerHTML = ['<img class="thumb" src="', url,
                     '" title="', escape(theFile.name), '"/>'].join('');
 
                 callbackFn({arraybuffer:arrayBuffer,name:theFile.name,type:theFile.type});
@@ -104,13 +104,17 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
         reader.readAsArrayBuffer(file);
     },
 
-    setInputFileValue:function(inputElt,props) {
-        var blob = new Blob([new Uint8Array(props.arrayBuffer)]);
+    setInputFileValue:function(inputElt,props /** name,arraybuffer,type **/) {
+        if(!isUndefinedOrNull(props)) {
+            var url = OSH.Utils.arrayBufferToImageDataURL(props.arraybuffer);
 
-        var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-        sel.innerHTML = ['<img class="thumb" src="', URL.createObjectURL(blob),
-            '" title="', escape(props.name), '"/>'].join('');
+            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+            sel.innerHTML = ['<img class="thumb" src="', url,
+                '" title="', escape(props.name), '"/>'].join('');
 
+            inputElt.nextSibling.text = props.name;
+            inputElt.nextSibling.value = props.name;
+        }
     },
 
     /**

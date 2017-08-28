@@ -48,7 +48,7 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
 
     getStyler:function() {
         // concats properties from all tabs
-        var uiProperties = { icon: {}, location:{}};
+        var uiProperties = { datasources: this.options.datasources, icon: {}, location:{}};
 
         // copy properties from panels
         OSH.Utils.copyProperties(this.iconPanel.getProperties(),uiProperties.icon);

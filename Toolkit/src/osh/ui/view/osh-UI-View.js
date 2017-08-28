@@ -73,7 +73,7 @@ OSH.UI.View = BaseClass.extend({
     init:function(parentElementDivId,viewItems,options) {
         this.elementDiv = document.createElement("div");
         this.elementDiv.setAttribute("id", this.id);
-        this.elementDiv.setAttribute("class", this.css+" osh");
+        this.elementDiv.setAttribute("class", this.css+" osh view");
         this.divId = this.id;
 
         var div = document.getElementById(parentElementDivId);
