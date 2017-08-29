@@ -407,7 +407,7 @@ OSH.Utils.addHTMLListBox = function(div,label,values,defaultTitleOption,defaultS
         selectTagId = defaultSelectTagId;
     }
 
-    if(!isUndefinedOrNull(label)) {
+    if(!isUndefinedOrNull(label) && label !== "") {
       strVar += "    <label>"+label+"<\/label>";
     }
     strVar += "      <div class=\"select-style\" id=\""+divId+"\">";
@@ -591,19 +591,26 @@ OSH.Utils.addInputTextValueWithUOM = function(div, label,placeholder,uom) {
     return id;
 };
 
-OSH.Utils.addInputText = function(div, label,placeholder) {
+OSH.Utils.addInputText = function(div, label,defaultValue,placeholder) {
     var id = OSH.Utils.randomUUID();
 
     var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
     if(!isUndefinedOrNull(label)) {
-        strVar += "<label for=\"" + id + "\">" + label + "<\/label>";
+        strVar += "<label for=\"" + id + "\">" + label + ":<\/label>";
+    }
+
+    var extraAttrs = "";
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue !== "") {
+        extraAttrs += "value=\""+defaultValue+"\"";
     }
 
     if(!isUndefinedOrNull(placeholder)) {
-        strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" placeholder=\""+placeholder+"\"/>";
-    } else {
-        strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" />";
+        extraAttrs += "placeholder=\""+placeholder+"\"";
     }
+
+    strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" "+extraAttrs+" />";
+
     strVar += "<\/li><\/ul>";
 
     // adds to div
@@ -632,8 +639,39 @@ OSH.Utils.traverse = function(o,func,params) {
     }
 };
 
-OSH.Utils.clone = function(object) {
-    return JSON.parse(JSON.stringify(object));
+OSH.Utils.clone = function(o) {
+    const gdcc = "__getDeepCircularCopy__";
+    if (o !== Object(o)) {
+        return o; // primitive value
+    }
+
+    var set = gdcc in o,
+        cache = o[gdcc],
+        result;
+    if (set && typeof cache == "function") {
+        return cache();
+    }
+    // else
+    o[gdcc] = function() { return result; }; // overwrite
+    if (o instanceof Array) {
+        result = [];
+        for (var i=0; i<o.length; i++) {
+            result[i] = OSH.Utils.clone(o[i]);
+        }
+    } else {
+        result = {};
+        for (var prop in o)
+            if (prop != gdcc)
+                result[prop] = OSH.Utils.clone(o[prop]);
+            else if (set)
+                result[prop] = OSH.Utils.clone(cache);
+    }
+    if (set) {
+        o[gdcc] = cache; // reset
+    } else {
+        delete o[gdcc]; // unset again
+    }
+    return result;
 };
 
 OSH.Utils.getUOM = function(uomObject) {
@@ -660,7 +698,7 @@ OSH.Utils.getUOM = function(uomObject) {
 OSH.Utils.removeAllFromSelect = function(tagId) {
     var i;
     var selectTag = document.getElementById(tagId);
-    for (i = selectTag.options.length - 1; i > 0; i--) {
+    for (i = selectTag.options.length - 1; i >= 0; i--) {
         selectTag.remove(i);
     }
 };

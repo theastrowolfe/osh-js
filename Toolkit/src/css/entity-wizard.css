@@ -97,3 +97,7 @@
     height: 160px;
     overflow: auto;
 }
+
+.osh .dialog-edit-view .edit-view .input-text {
+     width: calc(100% - 146px);
+}

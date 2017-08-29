@@ -149,7 +149,22 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
     },
 
     initViews: function() {
-        var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
+        var views = [{
+            name: "Map 2D",
+            showViewItems: true
+        },{
+            name: "Globe 3D",
+            showViewItems: true
+        },{
+            name: "Curve",
+            showViewItems: true
+        },{
+            name: "Video (H264)",
+            showViewItems: false
+        },{
+            name: "Video (MJPEG)",
+            showViewItems: false
+        }];
 
         var selectViewTag = document.getElementById(this.selectViewId);
         this.removeAllFromSelect(this.selectViewId);
@@ -157,8 +172,9 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         for(var key in views) {
 
             var option = document.createElement("option");
-            option.text = views[key];
-            option.value = views[key];
+            option.text = views[key].name;
+            option.value = views[key].name;
+            option.showViewItems = views[key].showViewItems;
 
             selectViewTag.add(option);
         }
@@ -272,12 +288,16 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
             return;
         }
 
+        var lineDivId = "LineView"+OSH.Utils.randomUUID();
+
         var view = {
             name: viewName,
             id: OSH.Utils.randomUUID(),
-            viewItems:[],
+            viewItems:(selectedViewTag.options[selectedViewTag.selectedIndex].showViewItems) ? [] : null,
             container: "",
-            datasource: null
+            datasource: null,
+            lineDivId:lineDivId,
+            type:viewName
         };
 
         // check if view can handle stylers
@@ -288,7 +308,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         this.views.push(view);
 
         var div = document.createElement('div');
-        div.setAttribute("id","View"+OSH.Utils.randomUUID());
+        div.setAttribute("id",lineDivId);
         div.setAttribute("class","ds-line");
 
         var deleteId = OSH.Utils.randomUUID();
@@ -353,7 +373,8 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         var dsArray = [];
 
         for(var key in this.datasources) {
-            dsArray.push(this.datasources[key]);
+            var dsClone = this.datasources[key];
+            dsArray.push(dsClone);
         }
 
         var cloneView = {};
@@ -382,6 +403,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
         editViewDialog.onSave = function() {
             var editedView = editView.getView();
 
+            document.getElementById(editedView.lineDivId).querySelector("span.line-left").innerHTML = editedView.name;
             // finds the view instance and updates it
             for(var i=0;i < this.views.length;i++) {
                 if (this.views[i].id === editedView.id) {
@@ -417,12 +439,14 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
            //var views = ["Map 2D","Globe 3D", "Curve", "Video (H264)","Video (MJPEG)", "Video (MP4)"];
            // gets view type
            var viewInstanceType = null;
-           if(currentView.name === "Map 2D") {
+           if(currentView.type === "Map 2D") {
                viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.LEAFLET;
-           } else if(currentView.name === "Globe 3D") {
+           } else if(currentView.type === "Globe 3D") {
                viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.CESIUM;
-           } else if(currentView.name === "Video (H264)") {
+           } else if(currentView.type === "Video (H264)") {
                viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264;
+           } else if(currentView.type === "Video (MJPEG)") {
+               viewInstanceType = OSH.UI.ViewFactory.ViewInstanceType.VIDEO_MJPEG;
            }
 
            // get default view properties
@@ -430,15 +454,6 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
            var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
 
            if(currentView.stylers === null ) {
-               // clone DataSource
-               var cloneDatasource = {};
-
-               cloneDatasource = OSH.Utils.clone(currentView.datasource);
-
-               cloneDatasource.id = "DataSource-"+OSH.Utils.randomUUID();
-               cloneDatasource.reset();
-
-               currentView.datasource = cloneDatasource;
 
                var viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType,defaultViewProperties,currentView.datasource,newEntity);
 
@@ -450,7 +465,7 @@ OSH.UI.EntityWizardPanel = OSH.UI.Panel.extend({
                        show:true,
                        dockable: false,
                        closeable: true,
-                       connectionIds : [currentView.datasource],
+                       connectionIds : [currentView.datasource.id],
                        destroyOnClose:true,
                        modal:false,
                        keepRatio:true

@@ -47,12 +47,12 @@ OSH.UI.View = BaseClass.extend({
         if(typeof(options) !== "undefined" && typeof(options.entityId) !== "undefined") {
             this.entityId = options.entityId;
         }
-        this.css = "";
+        this.css = "osh view ";
 
         this.cssSelected = "";
 
         if(typeof(options) !== "undefined" && typeof(options.css) !== "undefined") {
-            this.css = options.css;
+            this.css += options.css;
         }
 
         if(typeof(options) !== "undefined" && typeof(options.cssSelected) !== "undefined") {
@@ -73,7 +73,7 @@ OSH.UI.View = BaseClass.extend({
     init:function(parentElementDivId,viewItems,options) {
         this.elementDiv = document.createElement("div");
         this.elementDiv.setAttribute("id", this.id);
-        this.elementDiv.setAttribute("class", this.css+" osh view");
+        this.elementDiv.setAttribute("class", this.css);
         this.divId = this.id;
 
         var div = document.getElementById(parentElementDivId);

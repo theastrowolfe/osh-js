@@ -43,9 +43,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         OSH.Utils.addHTMLTitledLine(this.content,"Default location");
 
-        this.xDefaultInputId = OSH.Utils.addInputText(this.content, "X", "0.0");
-        this.yDefaultInputId = OSH.Utils.addInputText(this.content, "Y", "0.0");
-        this.zDefaultInputId = OSH.Utils.addInputText(this.content, "Z", "0.0");
+        this.xDefaultInputId = OSH.Utils.addInputText(this.content, "X", "","0.0");
+        this.yDefaultInputId = OSH.Utils.addInputText(this.content, "Y", "","0.0");
+        this.zDefaultInputId = OSH.Utils.addInputText(this.content, "Z", "","0.0");
 
         OSH.Utils.addHTMLTitledLine(this.content,"Mapping");
 

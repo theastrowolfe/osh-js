@@ -443,7 +443,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             observedProperty: obsProp,
             startTime: startTime,
             endTime: endTime,
-            replaySpeed: replaySpeed,
+            replaySpeed: Number(replaySpeed),
             syncMasterTime: syncMasterTime,
             bufferingTime: Number(buffering),
             timeShift: Number(timeShift),

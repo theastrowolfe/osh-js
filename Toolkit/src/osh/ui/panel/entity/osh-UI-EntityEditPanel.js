@@ -20,11 +20,11 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
 
         this.properties = properties;
         // add template
-        var editView = document.createElement("div");
-        editView.setAttribute("id","Edit-view-"+OSH.Utils.randomUUID());
-        editView.setAttribute("class",'edit-view');
+        var editViewElt = document.createElement("div");
+        editViewElt.setAttribute("id","Edit-view-"+OSH.Utils.randomUUID());
+        editViewElt.setAttribute("class",'edit-view');
 
-        document.getElementById(this.divId).appendChild(editView);
+        document.getElementById(this.divId).appendChild(editViewElt);
 
         this.containerDivId = OSH.Utils.randomUUID();
         this.viewItemsContainerDivId = OSH.Utils.randomUUID();
@@ -38,48 +38,40 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
         var displayViewItem= (!isUndefinedOrNull(properties.view.viewItems));
 
         // container part
-        strVar += OSH.Utils.createHTMLTitledLine("View properties");
-        strVar += "<ul class=\"osh-ul\">";
-        strVar += "  <li class=\"osh-li\">";
-        strVar += "  <\/li>";
-        strVar += "<\/ul>";
+        OSH.Utils.addHTMLTitledLine(editViewElt,"View properties");
+
+        this.inputViewNameId = OSH.Utils.addInputText(editViewElt,"Name",this.view.name);
 
         if(!displayViewItem) {
-            // datasource part
-            strVar += OSH.Utils.createHTMLTitledLine("Data Sources");
-            strVar += "<ul class=\"osh-ul\">";
-            strVar += "  <li class=\"osh-li\">";
-            strVar += "      <div class=\"select-style\">";
-            strVar += "         <select id=\""+this.dataSourceId+"\">";
-            strVar += "            <option value=\"\" selected disabled><\/option>";
-            strVar += "         <\/select>";
-            strVar += "      <\/div>";
-            strVar += "  <\/li>";
-            strVar += "<\/ul>";
+           OSH.Utils.addHTMLTitledLine(editViewElt,"Data Sources");
+           this.dataSourceId = OSH.Utils.addHTMLListBox(editViewElt,"",[]);
         }
 
         // container part
-        strVar += OSH.Utils.createHTMLTitledLine("Container");
-        strVar += "<ul class=\"osh-ul\">";
-        strVar += "  <li class=\"osh-li\">";
-        strVar += "      <div class=\"select-style\">";
-        strVar += "         <select id=\""+this.containerDivId+"\">";
-        strVar += "            <option value=\"\" selected disabled><\/option>";
-        strVar += "         <\/select>";
-        strVar += "      <\/div>";
-        strVar += "  <\/li>";
-        strVar += "<\/ul>";
+        OSH.Utils.addHTMLTitledLine(editViewElt,"Container");
+        this.containerDivId = OSH.Utils.addHTMLListBox(editViewElt,"",["","Dialog"]);
 
         if(displayViewItem) {
             // styler part
-            strVar += OSH.Utils.createHTMLTitledLine("View items");
-            strVar += "<div class=\"viewItem-section\">";
-            strVar += "  <button id=\"" + this.addViewItemId + "\" class=\"submit\">Add<\/button>";
-            strVar += "  <div id=\"" + this.viewItemsContainerDivId + "\" class=\"viewItem-container\"><\/div>";
-            strVar += "<\/div>";
-        }
+            OSH.Utils.addHTMLTitledLine(editViewElt,"View items");
 
-        editView.innerHTML = strVar;
+            var viewItemsDivElt = document.createElement("div");
+            viewItemsDivElt.setAttribute("class","viewItem-section");
+
+            var addViewItemButtonElt = document.createElement("button");
+            addViewItemButtonElt.setAttribute("id",this.addViewItemId );
+            addViewItemButtonElt.setAttribute("class","submit");
+            addViewItemButtonElt.innerHTML = "Add";
+
+            var viewItemsContainerElt = document.createElement("div");
+            viewItemsContainerElt.setAttribute("id",this.viewItemsContainerDivId);
+            viewItemsContainerElt.setAttribute("class","viewItem-container");
+
+            viewItemsDivElt.appendChild(addViewItemButtonElt);
+            viewItemsDivElt.appendChild(viewItemsContainerElt);
+
+            editViewElt.appendChild(viewItemsDivElt);
+        }
 
         // inits
         if(displayViewItem) {
@@ -92,28 +84,12 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
             OSH.EventManager.observeDiv(this.dataSourceId,"change",this.onChangeDataSource.bind(this));
         }
 
-        this.initContainer(this.view.container);
-
         OSH.EventManager.observeDiv(this.containerDivId,"change",this.onChangeContainer.bind(this));
-    },
 
-    initContainer: function(defaultContainer) {
-        var containers = ["Dialog"];
-
-        var selectContainerTag = document.getElementById(this.containerDivId);
-
-        for(var key in containers) {
-
-            var option = document.createElement("option");
-            option.text = containers[key];
-            option.value = containers[key];
-
-            if(containers[key] === defaultContainer) {
-                option.setAttribute("selected","");
-            }
-            selectContainerTag.add(option);
-        }
-
+        var self = this;
+        OSH.EventManager.observeDiv(this.inputViewNameId,"change",function(event){
+            self.view.name = this.value;
+        });
     },
 
     initDataSources:function(datasources) {
@@ -130,6 +106,10 @@ OSH.UI.EntityEditPanel = OSH.UI.Panel.extend({
                 option.setAttribute("selected","");
             }
             selectTag.add(option);
+        }
+
+        if(this.view.datasource === null && datasources.length > 0) {
+            this.view.datasource  = datasources[0]; // default select the first one
         }
     },
 

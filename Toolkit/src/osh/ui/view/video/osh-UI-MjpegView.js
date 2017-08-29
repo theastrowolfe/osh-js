@@ -87,9 +87,9 @@ OSH.UI.MjpegView = OSH.UI.View.extend({
    */
   selectDataView: function(dataSourceIds,entityId) {
     if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-      document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
+      document.getElementById(this.divId).setAttribute("class","video " + this.css+" "+this.cssSelected);
     } else {
-      document.getElementById(this.divId).setAttribute("class",this.css);
+      document.getElementById(this.divId).setAttribute("class","video "+this.css);
     }
   },
 

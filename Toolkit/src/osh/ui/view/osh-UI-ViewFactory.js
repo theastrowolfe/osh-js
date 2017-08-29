@@ -74,6 +74,10 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
             viewInstance = new OSH.UI.FFMPEGView("",cloneProperties);
         }
         break;
+        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_MJPEG : {
+            viewInstance = new OSH.UI.MjpegView("",cloneProperties);
+        }
+            break;
         default:break;
     }
 
@@ -106,5 +110,6 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
 OSH.UI.ViewFactory.ViewInstanceType = {
     LEAFLET: "leaflet",
     VIDEO_H264:"video_h264",
-    CESIUM: "cesium"
+    CESIUM: "cesium",
+    VIDEO_MJPEG: "video_mjpeg"
 };

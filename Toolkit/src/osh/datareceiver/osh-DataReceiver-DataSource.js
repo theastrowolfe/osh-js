@@ -46,24 +46,28 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
     this.timeShift = 0;
     this.connected = false;
 
-    if(typeof(properties.timeShift) != "undefined") {
+    if(!isUndefinedOrNull(properties.timeShift)) {
         this.timeShift = properties.timeShift;
     }
 
-    if(typeof properties.syncMasterTime != "undefined") {
+    if(!isUndefinedOrNull(properties.syncMasterTime)) {
       this.syncMasterTime = properties.syncMasterTime;
     } else {
       this.syncMasterTime = false;
     }
 
-    if(typeof properties.bufferingTime != "undefined") {
+    if(!isUndefinedOrNull(properties.bufferingTime)) {
       this.bufferingTime = properties.bufferingTime;
     }
 
-    if(typeof properties.timeOut != "undefined") {
+    if(!isUndefinedOrNull(properties.timeOut)) {
       this.timeOut = properties.timeOut;
     }
-    
+
+    if(!isUndefinedOrNull(properties.replaySpeed)) {
+        this.replaySpeed = properties.replaySpeed;
+    }
+
     // checks if type is WebSocket
     if(properties.protocol == "ws") {
       this.connector = new OSH.DataConnector.WebSocketDataConnector(this.buildUrl(properties));
@@ -231,5 +235,7 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
 
   reset:function() {
     this.initDataSource(this.properties);
-  }
+  },
+
+  clone:function() {}
 });

@@ -61,6 +61,12 @@ OSH.DataReceiver.VideoH264 = OSH.DataReceiver.DataSource.extend({
      */
     parseData: function (data) {
         return new Uint8Array(data, 12, data.byteLength - 12); // H264 NAL unit starts at offset 12 after 8-bytes time stamp and 4-bytes frame length
+    },
+
+    clone:function() {
+        var cloneProperties = {};
+        OSH.Utils.copyProperties(this.properties,cloneProperties);
+        return new OSH.DataReceiver.VideoH264(this.name, cloneProperties);
     }
 });
 
