@@ -76,7 +76,7 @@ OSH.UI.Styler = BaseClass.extend({
 	addFn : function(dataSourceIds, fn) {
 		for (var i = 0; i < dataSourceIds.length; i++) {
 			var dataSourceId = dataSourceIds[i];
-			if (typeof (this.dataSourceToStylerMap[dataSourceId]) === "undefined") {
+			if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
 				this.dataSourceToStylerMap[dataSourceId] = [];
 			}
 
