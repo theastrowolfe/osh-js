@@ -30,42 +30,45 @@ OSH.UI.Styler.Curve = OSH.UI.Styler.extend({
 		this.x = 0;
 		this.y = [];
 		
-		if(typeof(properties.stroke) != "undefined"){
+		if(!isUndefinedOrNull(properties.stroke)){
 			this.stroke = properties.stroke;
 		} 
 		
-		if(typeof(properties.color) != "undefined"){
+		if(!isUndefinedOrNull(properties.color)){
 			this.color = properties.color;
 		} 
 		
-		if(typeof(properties.x) != "undefined"){
+		if(!isUndefinedOrNull(properties.x)){
 			this.x = properties.x;
 		} 
 		
-		if(typeof(properties.y) != "undefined"){
+		if(!isUndefinedOrNull(properties.y)){
 			this.y = properties.y;
 		} 
 		
-		if(typeof(properties.strokeFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.strokeFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.stroke = properties.strokeFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "stroke";
 			this.addFn(properties.strokeFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.colorFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.colorFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.color = properties.colorFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "color";
 			this.addFn(properties.colorFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.valuesFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.valuesFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				var values = properties.valuesFunc.handler(rec,timeStamp,options);
 				this.x = values.x;
 				this.y = values.y;
 			}.bind(this);
+            fn.fnName = "values";
 			this.addFn(properties.valuesFunc.dataSourceIds,fn);
 		}
 	},

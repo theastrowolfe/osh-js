@@ -94,16 +94,17 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
                 resultProperties.icon = defaultUrl;
             }
 
-            if(!isUndefinedOrNull(properties.icon.fixed.selectedIcon)) {
+            if(!isUndefinedOrNull(properties.icon.fixed.selectedIcon) && !isUndefinedOrNull(properties.location.datasourceIdx)) {
+                var ds = datasources[properties.location.datasourceIdx];
                 var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.fixed.selectedIcon.arraybuffer);
 
                 iconTemplate = "if (options.selected) {";
-                iconTemplate +="  return '"+selectedBlobURL+"'";
-                iconTemplate +="} else {";
-                iconTemplate +="  return '"+defaultUrl+"'";
-                iconTemplate +="}";
+                iconTemplate += "  return '" + selectedBlobURL + "'";
+                iconTemplate += "} else {";
+                iconTemplate += "  return '" + defaultUrl + "'";
+                iconTemplate += "}";
 
-                var argsIconTemplateHandlerFn = ['rec', 'timeStamp','options', iconTemplate];
+                var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
                 var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
 
                 resultProperties.iconFunc = {
@@ -116,26 +117,24 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
         var iconTemplate = "";
         var blobURL = "";
 
-        if(!isUndefinedOrNull(properties.icon.threshold)) {
-            if(!isUndefinedOrNull(properties.icon.threshold.datasourceIdx)) {
-                var ds = datasources[properties.icon.threshold.datasourceIdx];
+        if(!isUndefinedOrNull(properties.icon.threshold) && !isUndefinedOrNull(properties.icon.threshold.datasourceIdx)) {
+            var ds = datasources[properties.icon.threshold.datasourceIdx];
 
-                var path = ds.resultTemplate[properties.icon.threshold.observableIdx].path;
+            var path = ds.resultTemplate[properties.icon.threshold.observableIdx].path;
 
-                blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.lowIcon.arraybuffer);
-                iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
+            blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.lowIcon.arraybuffer);
+            iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
 
-                blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.highIcon.arraybuffer);
-                iconTemplate += "else { return '" + blobURL + "'; }";
+            blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.highIcon.arraybuffer);
+            iconTemplate += "else { return '" + blobURL + "'; }";
 
-                var argsIconTemplateHandlerFn = ['rec', 'timeStamp' ,'options', iconTemplate];
-                var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+            var argsIconTemplateHandlerFn = ['rec', 'timeStamp' ,'options', iconTemplate];
+            var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
 
-                resultProperties.iconFunc = {
-                    dataSourceIds: [ds.id],
-                    handler: iconTemplateHandlerFn
-                };
-            }
+            resultProperties.iconFunc = {
+                dataSourceIds: [ds.id],
+                handler: iconTemplateHandlerFn
+            };
         }
     }
 

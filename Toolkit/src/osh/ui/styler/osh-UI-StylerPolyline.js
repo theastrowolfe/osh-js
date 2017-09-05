@@ -49,27 +49,27 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 		this.smoothFactor = 1;
 		this.maxPoints = 10;
 		
-		if(typeof(properties.color) != "undefined"){
+		if(!isUndefinedOrNull(properties.color)){
 			this.color = properties.color;
 		} 
 		
-		if(typeof(properties.weight) != "undefined"){
+		if(!isUndefinedOrNull(properties.weight)){
 			this.weight = properties.weight;
 		} 
 		
-		if(typeof(properties.opacity) != "undefined"){
+		if(!isUndefinedOrNull(properties.opacity)){
 			this.opacity = properties.opacity;
 		} 
 		
-		if(typeof(properties.smoothFactor) != "undefined"){
+		if(!isUndefinedOrNull(properties.smoothFactor)){
 			this.smoothFactor = properties.smoothFactor;
 		} 
 		
-		if(typeof(properties.maxPoints) != "undefined"){
+		if(!isUndefinedOrNull(properties.maxPoints)){
 			this.maxPoints = properties.maxPoints;
 		} 
 		
-		if(typeof(properties.locationFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.locationFunc)) {
 			var fn = function(rec) {
 				var loc = properties.locationFunc.handler(rec);
 				this.locations.push(loc);
@@ -77,41 +77,45 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 					this.locations.shift();
 				}
 			}.bind(this);
+            fn.fnName = "location";
 			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.colorFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.colorFunc)) {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "color";
 			this.addFn(properties.colorFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.weightFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.weightFunc)) {
 			var fn = function(rec) {
 				this.weight = properties.weightFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "weight";
 			this.addFn(properties.weightFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.opacityFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.opacityFunc)) {
 			var fn = function(rec) {
 				this.opacity = properties.opacityFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "opacity";
 			this.addFn(properties.opacityFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.smoothFactorFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.smoothFactorFunc)) {
 			var fn = function(rec) {
 				this.smoothFactor = properties.smoothFactorFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "smoothFactor";
 			this.addFn(properties.smoothFactorFunc.dataSourceIds,fn);
 		}
 	},
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -121,7 +125,7 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
-			if(typeof(view) != "undefined" && typeof view.updatePolyline === 'function'){
+			if(!isUndefinedOrNull(view) && typeof view.updatePolyline === 'function'){
 				view.updatePolyline(this);
 			}
 		}

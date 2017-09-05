@@ -33,55 +33,60 @@ OSH.UI.Styler.ImageDraping = OSH.UI.Styler.extend({
 		
 		this.options = {};
 		
-		if (typeof(properties.platformLocation) != "undefined"){
+		if (!isUndefinedOrNull(properties.platformLocation)){
 			this.platformLocation = properties.platformLocation;
 		} 
 		
-		if (typeof(properties.platformOrientation) != "undefined"){
+		if (!isUndefinedOrNull(properties.platformOrientation)){
 			this.platformOrientation = properties.platformOrientation;
 		} 
 		
-		if (typeof(properties.gimbalOrientation) != "undefined"){
+		if (!isUndefinedOrNull(properties.gimbalOrientation)){
 			this.gimbalOrientation = properties.gimbalOrientation;
 		} 
 		
-		if (typeof(properties.cameraModel) != "undefined"){
+		if (!isUndefinedOrNull(properties.cameraModel)){
 			this.cameraModel = properties.cameraModel;
 		}
 		
-		if (typeof(properties.imageSrc) != "undefined"){
+		if (!isUndefinedOrNull(properties.imageSrc)){
 			this.imageSrc = properties.imageSrc;
 		} 
 		
-		if (typeof(properties.platformLocationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.platformLocationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.platformLocation = properties.platformLocationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "platformLocation";
 			this.addFn(properties.platformLocationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.platformOrientationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.platformOrientationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.platformOrientation = properties.platformOrientationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "platformOrientation";
 			this.addFn(properties.platformOrientationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.gimbalOrientationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.gimbalOrientationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.gimbalOrientation = properties.gimbalOrientationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "gimbalOrientation";
 			this.addFn(properties.gimbalOrientationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.cameraModelFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.cameraModelFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.cameraModel = properties.cameraModelFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "cameraModel";
 			this.addFn(properties.cameraModelFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.snapshotFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.snapshotFunc)) {
+            fn.fnName = "snapshot";
 			this.snapshotFunc = properties.snapshotFunc;
 		}
 	},

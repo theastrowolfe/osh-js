@@ -79,7 +79,19 @@ OSH.UI.Styler = BaseClass.extend({
 			if (typeof (this.dataSourceToStylerMap[dataSourceId]) === "undefined") {
 				this.dataSourceToStylerMap[dataSourceId] = [];
 			}
-			this.dataSourceToStylerMap[dataSourceId].push(fn);
+
+			// check if the Fn exist for this DS
+			var exist = false;
+			for(var key in this.dataSourceToStylerMap[dataSourceId]) {
+				if(!isUndefinedOrNull(fn.fnName) && this.dataSourceToStylerMap[dataSourceId][key].fnName === fn.fnName) {
+                    this.dataSourceToStylerMap[dataSourceId][key] = fn;
+                    exist = true;
+                    break;
+				}
+			}
+			if(!exist) {
+                this.dataSourceToStylerMap[dataSourceId].push(fn);
+            }
 		}
 	},
 

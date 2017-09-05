@@ -29,25 +29,27 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 		
 		this.options = {};
 		
-		if (typeof(properties.location) != "undefined"){
+		if (!isUndefinedOrNull(properties.location)){
 			this.location = properties.location;
 		}  
 		
-		if (typeof(properties.radialData) != "undefined"){
+		if (!isUndefinedOrNull(properties.radialData)){
 			this.radialData = properties.radialData;
 		} 
 		
-		if (typeof(properties.locationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.locationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.location = properties.locationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "location";
 			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.radialDataFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.radialDataFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.radialData = properties.radialDataFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "radialData";
 			this.addFn(properties.radialDataFunc.dataSourceIds,fn);
 		}
 		
@@ -83,7 +85,6 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @param view
 	 * @instance
 	 * @memberof OSH.UI.Styler.Nexrad
@@ -94,7 +95,6 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -104,7 +104,7 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if (this._super(dataSourceId,rec,view,options)) {
-			if (typeof(view) != "undefined") {
+			if (!isUndefinedOrNull(view)) {
 				
 				var DTR = Math.PI/180;
 				
@@ -140,7 +140,7 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 				}
 				
 				this.radialCount++;
-				if (this.radialCount == 100)
+				if (this.radialCount === 100)
 			    {
 					view.viewer.scene.primitives.add(this.pointCollection);
 					this.pointCollection = new Cesium.PointPrimitiveCollection();

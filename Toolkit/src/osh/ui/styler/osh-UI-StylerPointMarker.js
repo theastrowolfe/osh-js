@@ -64,7 +64,6 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	},
 
 	initProperties:function(properties) {
-        this.properties = properties;
         this.location = null;
         this.orientation = {heading:0};
         this.icon = null;
@@ -73,6 +72,12 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
         this.color = "#000000";
 
         this.options = {};
+
+        this.updateProperties(properties);
+	},
+
+	updateProperties:function(properties) {
+	    OSH.Utils.copyProperties(properties,this.properties);
 
         if(!isUndefinedOrNull(properties.location)){
             this.location = properties.location;
@@ -102,6 +107,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
             var fn = function(rec,timeStamp,options) {
                 this.location = properties.locationFunc.handler(rec,timeStamp,options);
             }.bind(this);
+            fn.fnName = "location";
             this.addFn(properties.locationFunc.dataSourceIds,fn);
         }
 
@@ -109,6 +115,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
             var fn = function(rec,timeStamp,options) {
                 this.orientation = properties.orientationFunc.handler(rec,timeStamp,options);
             }.bind(this);
+            fn.fnName = "orientation";
             this.addFn(properties.orientationFunc.dataSourceIds,fn);
         }
 
@@ -116,6 +123,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
             var fn = function(rec,timeStamp,options) {
                 this.icon = properties.iconFunc.handler(rec,timeStamp,options);
             }.bind(this);
+            fn.fnName = "icon";
             this.addFn(properties.iconFunc.dataSourceIds,fn);
         }
 
@@ -123,6 +131,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
             var fn = function(rec,timeStamp,options) {
                 this.label = properties.labelFunc.handler(rec,timeStamp,options);
             }.bind(this);
+            fn.fnName = "label";
             this.addFn(properties.labelFunc.dataSourceIds,fn);
         }
 
@@ -130,9 +139,11 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
             var fn = function(rec,timeStamp,options) {
                 this.color = properties.colorFunc.handler(rec,timeStamp,options);
             }.bind(this);
+            fn.fnName = "color";
             this.addFn(properties.colorFunc.dataSourceIds,fn);
         }
-	},
+    },
+
 	/**
 	 *
 	 * @param view
