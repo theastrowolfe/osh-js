@@ -20,7 +20,7 @@
  * @type {OSH.UI.Style}
  * @augments OSH.UI.Styler
  */
-OSH.UI.Styler.Curve = OSH.UI.Styler.extend({
+OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 	initialize : function(properties) {
 		this._super(properties);
 		this.xLabel = "";
