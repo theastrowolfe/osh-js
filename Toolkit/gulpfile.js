@@ -234,15 +234,22 @@ OSH_SRC.push('./src/osh/datasender/osh-DataSender-UavMapTasking.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSenderController.js');
 OSH_SRC.push('./src/osh/discovery/osh-Sensor.js');
 OSH_SRC.push('./src/osh/discovery/osh-Server.js');
+OSH_SRC.push('./src/osh/ui/panel/osh-UI-Panel.js');
+OSH_SRC.push('./src/osh/ui/panel/osh-UI-TabPanel.js');
 OSH_SRC.push('./src/osh/log/osh-Log.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-View.js');
+OSH_SRC.push('./src/osh/ui/view/osh-UI-ViewFactory.js');
+OSH_SRC.push('./src/osh/ui/view/chart/osh-ui-ChartView.js');
+OSH_SRC.push('./src/osh/ui/view/map/osh-ui-MapView.js');
+OSH_SRC.push('./src/osh/ui/view/tasking/osh-ui-TaskingView.js');
+OSH_SRC.push('./src/osh/ui/view/video/osh-ui-VideoView.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-CssMenu.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-CircularMenu.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-StackMenu.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-Styler.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerImageDraping.js');
-OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerCurve.js');
+OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerLinePlot.js');
 
 if(argv.cesium) {
     OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerNexrad.js');
@@ -250,7 +257,7 @@ if(argv.cesium) {
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerPolyline.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerPointMarker.js');
 if(argv.nvd3) {
-    OSH_SRC.push('./src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js');
+    OSH_SRC.push('./src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js');
 }
 OSH_SRC.push('./src/osh/ui/view/discovery/osh-UI-DiscoveryView.js');
 if(argv.tree) {
@@ -265,8 +272,8 @@ if(argv.leaflet) {
 if(argv.ol3) {
     OSH_SRC.push('./src/osh/ui/view/map/osh-UI-OpenLayerView.js');
 }
-OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-DialogView.js');
-OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-MultiDialogView.js');
+OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-DialogPanel.js');
+OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-MultiDialogPanel.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-Loading.js');
 if(argv.nouislider) {
     OSH_SRC.push('./src/osh/ui/view/osh-UI-RangeSlider.js');
