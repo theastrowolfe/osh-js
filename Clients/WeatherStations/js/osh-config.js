@@ -37,7 +37,7 @@ function init() {
     //--------------------------------------------------------------//
     //------------------------- Tree View  -------------------------//
     //--------------------------------------------------------------//
-    var entityTreeDialog = new OSH.UI.DialogView(document.body.id, {
+    var entityTreeDialog = new OSH.UI.DialogPanel(document.body.id, {
         css: "tree-dialog",
         name: "Entities",
         show: true,
@@ -67,7 +67,7 @@ function init() {
     //--------------------------------------------------------------//
     cssCircleMenu('.js-menu');
     
-    var discoveryDialog    = new OSH.UI.DialogView(document.body.id,{
+    var discoveryDialog    = new OSH.UI.DialogPanel(document.body.id,{
         css: "discovery-dialog",
         name: "Discovery",
         show:false,
@@ -181,7 +181,7 @@ function init() {
         });
 
         // pressure chart view        
-        var pressureChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var pressureChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Pressure",
@@ -215,7 +215,7 @@ function init() {
         });
 
         // temperature chart view        
-        var tempChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var tempChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Temp",
@@ -249,7 +249,7 @@ function init() {
         });
 
         // rel humidity chart view        
-        var humidChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var humidChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Rel Hum",
@@ -283,7 +283,7 @@ function init() {
         });
 
         // rain accum chart view        
-        var rainChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var rainChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Rain",
@@ -317,7 +317,7 @@ function init() {
         });
 
         // wind speed chart view        
-        var windSpeedChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var windSpeedChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Wind Speed",
@@ -351,7 +351,7 @@ function init() {
         });
 
         // wind dir chart view        
-        var windDirChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+        var windDirChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
             draggable: false,
             css: "video-dialog",
             name: entityName + " - Wind Dir",
