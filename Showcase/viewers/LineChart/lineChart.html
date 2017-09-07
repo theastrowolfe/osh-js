@@ -1,4 +1,4 @@
-<div id="curveChartViewId">
+<div id="lineChartViewId">
     <!-- Vendor all-in-one was built with:
 
         gulp build --broadway --cesium --ffmpeg --x2js --leaflet --nouislider --nvd3 --ol3 --tree
@@ -10,7 +10,7 @@
         <script src="js/osh.js"></script>
      -->
 
-    <div id="curve-container" style="height:100%;width:100%"></div>
+    <div id="linechart-container" style="height:100%;width:100%"></div>
     <style>
     </style>
     <script>
@@ -28,9 +28,9 @@
         });
 
 
-        var windSpeedChartView = new OSH.UI.Nvd3CurveChartView("curve-container",
+        var windSpeedChartView = new OSH.UI.Nvd3LineChartView("linechart-container",
             [{
-                styler: new OSH.UI.Styler.Curve({
+                styler: new OSH.UI.Styler.LinePlot({
                     valuesFunc: {
                         dataSourceIds: [weatherDataSource.id],
                         handler: function (rec, timeStamp) {

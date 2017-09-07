@@ -3940,7 +3940,7 @@ OSH.Log = BaseClass.extend({
         this.first = true;
         // appends <div> tag to <body>
         document.observe("dom:loaded", function() {
-            var dialog = new OSH.UI.DialogView({
+            var dialog = new OSH.UI.DialogPanel({
                 title: "Logging console"
             });
             /*dialog.appendContent(this.logDiv);
@@ -6332,7 +6332,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             bufferingTime: 1000
         });
 
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
+        var dialog    =  new OSH.UI.DialogPanel(this.dialogContainer, {
             draggable: true,
             css: "dialog",
             name: name,
@@ -6386,7 +6386,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             bufferingTime: 1000
         });
 
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
+        var dialog    =  new OSH.UI.DialogPanel(this.dialogContainer, {
             draggable: true,
             css: "dialog",
             name: name,
@@ -6442,7 +6442,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             bufferingTime: 1000
         });
 
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
+        var dialog    =  new OSH.UI.DialogPanel(this.dialogContainer, {
             draggable: true,
             css: "dialog",
             name: name,
@@ -8051,7 +8051,7 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var dialogView new OSH.UI.DialogView(containerDivId, {
+ var dialogView new OSH.UI.DialogPanel(containerDivId, {
         draggable: false,
         css: "dialog",
         name: title,
@@ -8062,7 +8062,7 @@ OSH.UI.OpenLayerView = OSH.UI.View.extend({
         swapId: "main-container"
     });
  */
-OSH.UI.DialogView = OSH.UI.View.extend({
+OSH.UI.DialogPanel = OSH.UI.View.extend({
     initialize: function (divId, options) {
         this._super(divId,[],options);
         // creates HTML eflement
@@ -8173,7 +8173,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         }
 
         if(this.dockable) {
-            document.getElementById(this.pinDivId).onclick = this.unpin.bind(this);
+            document.getElementById(this.pinDivId).onclick = this.pin.bind(this);
         }
 
         if(this.connectionIds.length > 0) {
@@ -8233,7 +8233,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     /**
      * Swap the current div with the div given as parameter
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     swapClick: function() {
         OSH.EventManager.fire("swap-restore",{exclude: this.id});
@@ -8242,7 +8242,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     swap:function() {
         // swap the child of the popContentDiv with the child contained in the the containerDiv
@@ -8324,7 +8324,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @param $super
      * @param properties
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     show: function(properties) {
         if(properties.viewId.indexOf(this.getId()) > -1) {
@@ -8337,7 +8337,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     connect: function() {
         if(!this.swapped) {
@@ -8351,9 +8351,9 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
-    unpin: function() {
+    pin: function() {
         if (!this.draggable) {
             var bodyRect = document.body.getBoundingClientRect(),
                 elemRect = this.rootTag.getBoundingClientRect(),
@@ -8386,7 +8386,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      *
      * @param callback
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     onClose: function (callback) {
         this.onClose = callback;
@@ -8394,7 +8394,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     close: function () {
        // this.rootTag.parentNode.removeChild(this.rootTag);
@@ -8408,7 +8408,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      *
      * @param event
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drag_start: function (event) {
         event.stopPropagation();
@@ -8426,7 +8426,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @param event
      * @returns {boolean}
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drag_over: function (event) {
         event.stopPropagation();
@@ -8439,7 +8439,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @param event
      * @returns {boolean}
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drop: function (event) {
         event.stopPropagation();
@@ -8473,7 +8473,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
  * @type {OSH.UI.Dialog}
  * @augments OSH.UI.Dialog
  */
-OSH.UI.MultiDialogView = OSH.UI.DialogView.extend({
+OSH.UI.MultiDialogPanel = OSH.UI.DialogPanel.extend({
 
     initialize:function(divId, options) {
         this._super(divId,options);
@@ -8489,7 +8489,7 @@ OSH.UI.MultiDialogView = OSH.UI.DialogView.extend({
      * Appends a new view to the existing dialog.
      * @param divId
      * @instance
-     * @memberof OSH.UI.MultiDialogView
+     * @memberof OSH.UI.MultiDialogPanel
      */
     appendView:function(divId,properties) {
         //console.log(this.popContentDiv);

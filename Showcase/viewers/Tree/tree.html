@@ -78,7 +78,7 @@
             dataSources: [androidPhoneGpsDataSource, androidPhoneOrientationDataSource,androidPhoneVideoDataSource]
         };
 
-        var mapDialog    =  new OSH.UI.DialogView("tree-inner", {
+        var mapDialog    =  new OSH.UI.DialogPanel("tree-inner", {
             draggable: true,
             css: "dialog-from-tree",
             name: "Dialog from tree",
@@ -87,12 +87,13 @@
             connectionIds : [androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id]
         });
 
-        var videoDialog    =  new OSH.UI.DialogView("tree-inner", {
+        var videoDialog    =  new OSH.UI.DialogPanel("tree-inner", {
             draggable: true,
             css: "dialog-from-tree",
             name: "Dialog from tree",
             show:true,
             closeable: true,
+            keepRatio:true,
             connectionIds : [androidPhoneVideoDataSource.id]
         });
 
