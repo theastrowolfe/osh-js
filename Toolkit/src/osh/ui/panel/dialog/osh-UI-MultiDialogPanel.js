@@ -17,10 +17,10 @@
 /**
  * @classdesc Display a dialog with multiple view attach to it.
  * @class
- * @type {OSH.UI.Dialog}
- * @augments OSH.UI.Dialog
+ * @type {OSH.UI.DialogPanel}
+ * @augments OSH.UI.DialogPanel
  */
-OSH.UI.MultiDialogView = OSH.UI.DialogView.extend({
+OSH.UI.MultiDialogPanel = OSH.UI.DialogPanel.extend({
 
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId,options);
@@ -36,7 +36,7 @@ OSH.UI.MultiDialogView = OSH.UI.DialogView.extend({
      * Appends a new view to the existing dialog.
      * @param parentElement
      * @instance
-     * @memberof OSH.UI.MultiDialogView
+     * @memberof OSH.UI.MultiDialogPanel
      */
     appendView:function(parentElement,properties) {
         //console.log(this.popContentDiv);

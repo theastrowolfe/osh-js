@@ -21,15 +21,16 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initPanel:function() {
         // type
-        this.typeInputId = OSH.Utils.addHTMLListBox(this.div,"Icon type", [
+        this.typeInputId = OSH.Utils.addHTMLListBox(this.divElt,"Icon type", [
             "None",
             "Fixed",
             "Threshold",
-            "Map"
+            "Map",
+            "Custom"
         ]);
 
         this.content = document.createElement("div");
-        this.div.appendChild(this.content);
+        this.divElt.appendChild(this.content);
 
         this.properties = {};
 
@@ -51,6 +52,9 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 case "Fixed" :
                     self.addFixed();
                     break;
+                case "Custom" :
+                    self.addCustom();
+                    break;
                 case "None" :
                     self.addNone();
                     break;
@@ -58,33 +62,45 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                     break;
             }
         });
+
+        this.initDefaultValues();
     },
 
+
+    initDefaultValues:function(){
+        // load existing values if any
+        // load UI settings
+        //-- sets icon type
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        if(!isUndefinedOrNull(this.styler.ui)) {
+            if (!isUndefinedOrNull(this.styler.ui.icon)) {
+                if (!isUndefinedOrNull(this.styler.ui.icon.fixed)) {
+                    // loads fixed
+                    typeInputElt.options.selectedIndex = 1;
+                    this.addFixed(this.styler.ui.icon.fixed);
+                } else if (!isUndefinedOrNull(this.styler.ui.icon.threshold)) {
+                    typeInputElt.options.selectedIndex = 2;
+                    this.addThreshold(this.styler.ui.icon);
+                } else if (!isUndefinedOrNull(this.styler.ui.icon.custom)) {
+                    typeInputElt.options.selectedIndex = 4;
+                    this.addCustom(this.styler.ui.icon);
+                }
+
+                this.properties = this.styler.ui.icon;
+            }
+        } else if(!isUndefinedOrNull(this.styler.properties) && !isUndefinedOrNull(this.styler.properties.iconFunc)) {
+            typeInputElt.options.selectedIndex = 4;
+            this.addCustom({custom :{iconFuncStr:this.styler.properties.iconFunc.handler.toSource()}});
+        }
+    },
 
     removeProps:function() {
         delete this.properties.fixed;
         delete this.properties.threshold;
     },
 
-    loadData:function(defaultProperties) {
-        //-- sets icon type
-        var typeInputElt = document.getElementById(this.typeInputId);
-
-        if(!isUndefinedOrNull(defaultProperties.fixed)) {
-            // loads fixed
-            typeInputElt.options.selectedIndex = 1;
-
-            this.addFixed(defaultProperties);
-        } else if(!isUndefinedOrNull(defaultProperties.threshold)) {
-            // loads threshold
-            typeInputElt.options.selectedIndex = 2;
-
-            this.addThreshold(defaultProperties);
-        }
-    },
-
-    addNone:function() {
-    },
+    addNone:function() {},
 
     addFixed : function(defaultProperties) {
 
@@ -116,11 +132,9 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // edit values
         if(!isUndefinedOrNull(defaultProperties)){
-            this.properties = defaultProperties;
-            this.setInputFileValue(defaultIconInputElt,defaultProperties.fixed.defaultIcon);
-            this.setInputFileValue(selectedIconInputElt,defaultProperties.fixed.selectedIcon);
+            this.setInputFileValue(defaultIconInputElt,defaultProperties.defaultIcon);
+            this.setInputFileValue(selectedIconInputElt,defaultProperties.selectedIcon);
         }
-
     },
 
     addThreshold:function(defaultProperties) {
@@ -201,15 +215,63 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // edit values
         if(!isUndefinedOrNull(defaultProperties)) {
-            this.properties = defaultProperties;
-
             this.setInputFileValue(lowIconInputElt,defaultProperties.threshold.lowIcon);
             this.setInputFileValue(highIconInputElt,defaultProperties.threshold.highIcon);
             document.getElementById(thresholdInputId).value = defaultProperties.threshold.value;
         }
     },
 
+    addCustom:function(properties) {
+        var defaultValue = "";
+        if(!isUndefinedOrNull(properties)) {
+            defaultValue = properties.custom.iconFuncStr;
+        }
+        this.textareaId = OSH.Utils.addHTMLTextArea(this.content, defaultValue);
+    },
+
     getProperties:function() {
-        return this.properties;
+        var stylerProperties = {};
+
+        if(!isUndefinedOrNull(this.properties.fixed)) {
+            // save ui properties
+            if(isUndefinedOrNull(this.styler.ui)) {
+                this.styler.ui = {};
+            }
+
+            this.styler.ui.icon = {
+                fixed: {}
+            };
+
+            if(!isUndefinedOrNull(this.properties.fixed.defaultIcon)) {
+                var defaultIconProps = OSH.UI.Styler.Factory.getFixedIcon(this.properties.fixed.defaultIcon.arraybuffer);
+
+                OSH.Utils.copyProperties(defaultIconProps,stylerProperties);
+
+                // save ui properties
+                this.styler.ui.icon.fixed.defaultIcon = this.properties.fixed.defaultIcon;
+            }
+
+            if(!isUndefinedOrNull(this.properties.fixed.selectedIcon)) {
+                //TODO: var ds = datasources[properties.location.datasourceIdx];
+                var dsIdsArray = [];
+
+                for(var key in this.options.datasources) {
+                    dsIdsArray.push(this.options.datasources[key].id);
+                }
+
+                var selectedIconProps = OSH.UI.Styler.Factory.getSelectedIconFunc(
+                    dsIdsArray,
+                    this.properties.fixed.defaultIcon.arraybuffer,
+                    this.properties.fixed.selectedIcon.arraybuffer
+                );
+
+                OSH.Utils.copyProperties(selectedIconProps,stylerProperties);
+
+                // save ui properties
+                this.styler.ui.icon.fixed.selectedIcon = this.properties.fixed.selectedIcon;
+            }
+        }
+
+        return stylerProperties;
     }
 });

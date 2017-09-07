@@ -16,6 +16,7 @@
 
 OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
     initialize: function (parentElementDivId, options) {
+        this.styler = options.styler;
         this._super(parentElementDivId, options);
     },
 
@@ -122,6 +123,8 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
      */
     getProperties:function(){},
 
-    loadData:function(data){}
+    loadData:function(data){},
+
+    loadStyler:function(styler){}
 
 });

@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
+OSH.UI.Panel.StylerPolylinePanel = OSH.UI.Panel.StylerPanel.extend({
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId, options);
     },
@@ -25,10 +25,8 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // tab elements
         this.locationPanel = new OSH.UI.Panel.LocationPanel("",this.options);
-        this.iconPanel = new OSH.UI.Panel.IconPanel("",this.options);
 
         tabPanel.addTab("Location",this.locationPanel.divElt);
-        tabPanel.addTab("Icon",this.iconPanel.divElt);
 
         this.divElt.appendChild(tabPanel.divElt);
     },
@@ -38,15 +36,12 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // gets properties from panels
         var locationPanelProperties = this.locationPanel.getProperties();
-        var iconPanelProperties = this.iconPanel.getProperties();
 
         // copies properties
         OSH.Utils.copyProperties(locationPanelProperties.ui,uiProperties);
-        OSH.Utils.copyProperties(iconPanelProperties.ui,uiProperties);
 
         // updates styler with properties
         this.options.styler.updateProperties(locationPanelProperties);
-        this.options.styler.updateProperties(iconPanelProperties);
 
         // saves UI properties into styler object to be reloaded
         OSH.Utils.copyProperties(uiProperties,this.options.styler.ui);

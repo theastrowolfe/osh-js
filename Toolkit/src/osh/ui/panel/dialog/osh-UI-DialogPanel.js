@@ -17,10 +17,10 @@
 /**
  * @classdesc
  * @class
- * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @type {OSH.UI.Panel}
+ * @augments OSH.UI.Panel
  * @example
- var dialogView new OSH.UI.DialogView(containerDivId, {
+ var dialogPanel =  new OSH.UI.DialogPanel(containerDivId, {
         draggable: false,
         css: "dialog",
         name: title,
@@ -33,9 +33,9 @@
         modal: false
     });
  */
-OSH.UI.DialogView = OSH.UI.View.extend({
+OSH.UI.DialogPanel = OSH.UI.Panel.extend({
     initialize: function (parentElementDivId, options) {
-        this._super(parentElementDivId,[],options);
+        this._super(parentElementDivId,options);
         // creates HTML eflement
         this.dialogId = "dialog-" + OSH.Utils.randomUUID();
         this.pinDivId = "dialog-pin-" + OSH.Utils.randomUUID();
@@ -43,6 +43,8 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         this.connectDivId = "dialog-connect-" + OSH.Utils.randomUUID();
         this.minimizeId = "dialog-min-"+OSH.Utils.randomUUID();
         this.titleId = "dialog-title-"+OSH.Utils.randomUUID();
+        // mapping to allow dialog receiving view EVENT
+        this.id = this.dialogId;
 
         this.name = "Untitled";
 
@@ -203,7 +205,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
         }
 
         if(this.pinContainerId !== null) {
-            document.getElementById(this.pinDivId).onclick = this.unpin.bind(this);
+            document.getElementById(this.pinDivId).onclick = this.pin.bind(this);
         }
 
         if(this.connectionIds.length > 0) {
@@ -214,10 +216,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             document.getElementById(this.swapDivId).onclick = this.swapClick.bind(this);
         }
 
-        document.getElementById(this.minimizeId).onclick = this.minClick.bind(this);
-
-        // calls super handleEvents
-        this.handleEvents();
+        document.getElementById(this.minimizeId).onclick = this.minimize.bind(this);
 
         var self = this;
 
@@ -256,12 +255,18 @@ OSH.UI.DialogView = OSH.UI.View.extend({
                 self.swapped = false;
             }
         });
+
+        // observes the SHOW event
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
+            this.show(event);
+        }.bind(this));
+
     },
 
     /**
      * Swap the current div with the div given as parameter
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     swapClick: function() {
         OSH.EventManager.fire("swap-restore",{exclude: this.id});
@@ -271,9 +276,9 @@ OSH.UI.DialogView = OSH.UI.View.extend({
     /**
      * Minify or restore the window
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
-    minClick:function() {
+    minimize:function() {
         if(this.flexDiv.className.indexOf("hide") > -1) {
             OSH.Utils.removeCss(this.flexDiv,"hide");
             OSH.Utils.removeCss(document.getElementById(this.minimizeId),"pop-icon-max");
@@ -293,7 +298,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     swap:function() {
         // swap the child of the popContentDiv with the child contained in the the containerDiv
@@ -361,7 +366,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
             }
 
             everyChild = this.popContentDiv.querySelectorAll("div");
-            for (var i = 0; i<everyChild.length; i++) {
+            for (var i = 0; i < everyChild.length; i++) {
                 var id = everyChild[i].id;
                 if(id.startsWith("view-")) {
                     OSH.EventManager.fire(OSH.EventManager.EVENT.RESIZE+"-"+id);
@@ -374,10 +379,10 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      *
      * @param properties
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     show: function(properties) {
-        if(properties.viewId.indexOf(this.getId()) > -1) {
+        if(!isUndefinedOrNull(this.contentId) && properties.viewId.indexOf(this.contentId) > -1) {
             OSH.Utils.removeCss(this.outer,"hide");
             if(!isUndefined(this.initialWidth)) {
                 this.initialWidth = this.rootTag.offsetWidth;
@@ -387,7 +392,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     connect: function() {
         if(!this.swapped) {
@@ -401,9 +406,9 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
-    unpin: function() {
+    pin: function() {
         var pinElt = document.getElementById(this.pinDivId);
         var containerElt = document.getElementById(this.parentElementDivId);
 
@@ -445,7 +450,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      *
      * @param callback
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     onClose: function (callback) {
         this.onClose = callback;
@@ -453,7 +458,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     close: function () {
         if(this.destroyOnClose) {
@@ -470,7 +475,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      *
      * @param event
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drag_start: function (event) {
         event.stopPropagation();
@@ -489,7 +494,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @param event
      * @returns {boolean}
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drag_over: function (event) {
         event.stopPropagation();
@@ -502,7 +507,7 @@ OSH.UI.DialogView = OSH.UI.View.extend({
      * @param event
      * @returns {boolean}
      * @instance
-     * @memberof OSH.UI.DialogView
+     * @memberof OSH.UI.DialogPanel
      */
     drop: function (event) {
         event.stopPropagation();

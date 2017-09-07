@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.SaveDialogView = OSH.UI.DialogView.extend({
+OSH.UI.SaveDialogPanel = OSH.UI.DialogPanel.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId, properties);
 
@@ -40,7 +40,7 @@ OSH.UI.SaveDialogView = OSH.UI.DialogView.extend({
 
         OSH.EventManager.observeDiv(this.saveButtonId,"click",this.onSaveClickButtonHandler.bind(this));
 
-        OSH.Utils.addCss(this.elementDiv,"save-dialog");
+        OSH.Utils.addCss(this.divElt,"save-dialog");
 
     },
 

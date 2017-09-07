@@ -19,14 +19,14 @@ OSH.UI.Panel = BaseClass.extend({
     initialize: function (parentElementDivId,options) {
         this.divId = "panel-"+OSH.Utils.randomUUID();
         this.options = options;
-        this.div = document.createElement("div");
-        this.div.setAttribute("class", " osh panel ");
-        this.div.setAttribute("id", this.divId);
+        this.divElt = document.createElement("div");
+        this.divElt.setAttribute("class", " osh panel ");
+        this.divElt.setAttribute("id", this.divId);
 
         if(!isUndefinedOrNull(parentElementDivId) && parentElementDivId !== "") {
-            document.getElementById(parentElementDivId).appendChild(this.div);
+            document.getElementById(parentElementDivId).appendChild(this.divElt);
         } else {
-            document.body.appendChild(this.div);
+            document.body.appendChild(this.divElt);
         }
 
         this.componentListeners = [];
@@ -53,7 +53,7 @@ OSH.UI.Panel = BaseClass.extend({
     },
 
     getAsHTML:function() {
-        return this.div.outerHTML;
+        return this.divElt.outerHTML;
     },
 
     /**
@@ -63,11 +63,11 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     attachTo : function(divId) {
-        if(typeof this.div.parentNode !== "undefined") {
+        if(typeof this.divElt.parentNode !== "undefined") {
             // detach from its parent
-            this.div.parentNode.removeChild(this.div);
+            this.divElt.parentNode.removeChild(this.divElt);
         }
-        document.getElementById(divId).appendChild(this.div);
+        document.getElementById(divId).appendChild(this.divElt);
 
         this.onResize();
     },
