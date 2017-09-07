@@ -146,3 +146,68 @@ OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
     //return new OSH.UI.Styler.PointMarker(resultProperties);
     return resultProperties;
 };
+
+OSH.UI.Styler.Factory.getLocation = function(x,y,z) {
+  return {
+      location: {
+          x: x,
+          y: y,
+          z: z
+      }
+  };
+};
+
+
+//---- LOCATION ----//
+OSH.UI.Styler.Factory.getLocationFunc = function(datasource,xIdx,yIdx,zIdx) {
+    var locationFnStr = "return {" +
+        "x: rec." + datasource.resultTemplate[xIdx].path + "," +
+        "y: rec." + datasource.resultTemplate[yIdx].path + "," +
+        "z: rec." + datasource.resultTemplate[zIdx].path + "," +
+        "}";
+
+    return OSH.UI.Styler.Factory.getCustomLocationFunc([datasource.id],locationFnStr);
+};
+
+OSH.UI.Styler.Factory.getCustomLocationFunc = function(dataSourceIdsArray,locationFnStr) {
+    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+
+    return {
+        locationFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: locationTemplateHandlerFn
+        }
+    };
+};
+
+//----- ICON ----//
+OSH.UI.Styler.Factory.getFixedIcon = function(iconArraybuffer) {
+    return  {
+        icon: OSH.Utils.arrayBufferToImageDataURL(iconArraybuffer)
+    };
+};
+
+OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultIconArraybuffer,selectedIconArraybuffer) {
+    var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(selectedIconArraybuffer);
+    var defaultBlobURL  = OSH.Utils.arrayBufferToImageDataURL(defaultIconArraybuffer);
+
+    var iconTemplate = "";
+    var blobURL = "";
+
+    iconTemplate = "if (options.selected) {";
+    iconTemplate += "  return '" + selectedBlobURL + "'";
+    iconTemplate += "} else {";
+    iconTemplate += "  return '" + defaultBlobURL + "'";
+    iconTemplate += "}";
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    return {
+        iconFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: iconTemplateHandlerFn
+        }
+    };
+};
