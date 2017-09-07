@@ -435,6 +435,47 @@ OSH.Utils.addHTMLListBox = function(div,label,values,defaultTitleOption,defaultS
     return selectTagId;
 };
 
+OSH.Utils.HTMLListBoxSetSelected = function(listboxElt, defaultValue) {
+
+    if(isUndefinedOrNull(defaultValue) || defaultValue === "") {
+        return;
+    }
+
+    for(var i=0; i < listboxElt.options.length;i++) {
+        var currentOption = listboxElt.options[i].value;
+
+        if(currentOption === defaultValue) {
+            listboxElt.options[i].setAttribute("selected","");
+            break;
+        }
+    }
+};
+
+OSH.Utils.addHTMLTextArea = function(parentElt,content) {
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var textareaId = OSH.Utils.randomUUID();
+    var textAreaElt = document.createElement("textarea");
+    textAreaElt.setAttribute("class","text-area");
+    textAreaElt.setAttribute("id",textareaId);
+
+    textAreaElt.value = content;
+
+    // appends textarea
+    liElt.appendChild(textAreaElt);
+
+    // appends li to ul
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return textareaId;
+};
+
 OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInputDivId) {
     var id = OSH.Utils.randomUUID();
 
@@ -640,38 +681,8 @@ OSH.Utils.traverse = function(o,func,params) {
 };
 
 OSH.Utils.clone = function(o) {
-    const gdcc = "__getDeepCircularCopy__";
-    if (o !== Object(o)) {
-        return o; // primitive value
-    }
-
-    var set = gdcc in o,
-        cache = o[gdcc],
-        result;
-    if (set && typeof cache == "function") {
-        return cache();
-    }
-    // else
-    o[gdcc] = function() { return result; }; // overwrite
-    if (o instanceof Array) {
-        result = [];
-        for (var i=0; i<o.length; i++) {
-            result[i] = OSH.Utils.clone(o[i]);
-        }
-    } else {
-        result = {};
-        for (var prop in o)
-            if (prop != gdcc)
-                result[prop] = OSH.Utils.clone(o[prop]);
-            else if (set)
-                result[prop] = OSH.Utils.clone(cache);
-    }
-    if (set) {
-        o[gdcc] = cache; // reset
-    } else {
-        delete o[gdcc]; // unset again
-    }
-    return result;
+    // From clone lib: https://github.com/pvorb/clone
+    return clone(o);
 };
 
 OSH.Utils.getUOM = function(uomObject) {
@@ -744,3 +755,4 @@ OSH.Utils.arrayBufferToImageDataURL = function(arraybuffer) {
     var blob = new Blob([new Uint8Array(arraybuffer)]);
     return URL.createObjectURL(blob);
 };
+
