@@ -33,7 +33,7 @@ OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
 
     switch (viewInstanceType) {
         case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : break;
-        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264 : {
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
             props = {
                 css: "video",
                 cssSelected: "video-selected",
@@ -70,16 +70,18 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
     var viewInstance = null;
 
     switch (viewInstanceType) {
-        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264 : {
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
             viewInstance = new OSH.UI.FFMPEGView("",cloneProperties);
         }
         break;
-        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_MJPEG : {
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
             viewInstance = new OSH.UI.MjpegView("",cloneProperties);
         }
             break;
         default:break;
     }
+
+    viewInstance.id = viewProperties.id;
 
     return viewInstance;
 };
@@ -88,7 +90,7 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
     var viewInstance = null;
 
     switch (viewInstanceType) {
-        case OSH.UI.ViewFactory.ViewInstanceType.VIDEO_H264 : {
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
 
         }
             break;
@@ -100,7 +102,10 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
             viewInstance = new OSH.UI.CesiumView("",viewItems,defaultProperties);
         }
             break;
-
+        case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
+            viewInstance = new OSH.UI.Nvd3LineChartView("",viewItems,defaultProperties);
+        }
+            break;
         default:
             break;
     }
@@ -109,7 +114,8 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
 
 OSH.UI.ViewFactory.ViewInstanceType = {
     LEAFLET: "leaflet",
-    VIDEO_H264:"video_h264",
+    FFMPEG:"video_h264",
     CESIUM: "cesium",
-    VIDEO_MJPEG: "video_mjpeg"
+    MJPEG: "video_mjpeg",
+    NVD3_LINE_CHART: "line_chart"
 };

@@ -18,9 +18,9 @@
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.MapView
  */
-OSH.UI.OpenLayerView = OSH.UI.View.extend({
+OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
         this.onResize();

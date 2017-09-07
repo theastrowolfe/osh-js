@@ -18,7 +18,7 @@
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.MapView
  * @example
  var leafletMapView = new OSH.UI.LeafletView("",
  [{
@@ -50,7 +50,7 @@
  }]
  );
  */
-OSH.UI.LeafletView = OSH.UI.View.extend({
+OSH.UI.LeafletView = OSH.UI.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
 

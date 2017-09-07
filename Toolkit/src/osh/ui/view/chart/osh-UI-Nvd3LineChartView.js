@@ -18,7 +18,7 @@
  * @classdesc
  * @class OSH.UI.Nvd3CurveChartView
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.ChartView
  * @example
 // Chart View
 var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv.id, [{
@@ -42,7 +42,7 @@ var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv
     maxPoints: 30
 });
  */
-OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
+OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 	initialize : function(parentElementDivId,viewItems, options) {
 		this._super(parentElementDivId,viewItems,options);
 

@@ -134,5 +134,9 @@ OSH.UI.EntityTreeView = OSH.UI.View.extend({
                     
             }
         }
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.ENTITY_TREE;
     }
 });

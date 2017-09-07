@@ -65,20 +65,20 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 		this.dataCount = 0;
 		this.refreshRate = 10;
 
-		if(typeof options != "undefined") {
-			if(typeof options.startTime != "undefined") {
+		if(!isUndefinedOrNull(options)) {
+			if(!isUndefinedOrNull(options.startTime)) {
 				startTime = new Date(options.startTime).getTime();
 				//slider.removeAttribute('disabled');
 			}
 
-			if(typeof options.endTime != "undefined") {
+			if(!isUndefinedOrNull(options.endTime)) {
 				this.endTime = new Date(options.endTime).getTime();
 			}
 
-			if(typeof options.dataSourcesId != "undefined") {
+			if(!isUndefinedOrNull(options.dataSourcesId)) {
 				this.dataSourcesId = options.dataSourcesId;
 			}
-			if(typeof options.refreshRate != "undefined") {
+			if(!isUndefinedOrNull(options.refreshRate)) {
 				this.refreshRate = options.refreshRate;
 			}
 
@@ -172,5 +172,9 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 	activate: function() {
 		this.slider.removeAttribute('disabled');
 		this.lock = true;
-	}
+	},
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.RANGE_SLIDER;
+    }
 });

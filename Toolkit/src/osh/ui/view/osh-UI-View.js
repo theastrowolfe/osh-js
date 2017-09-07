@@ -14,6 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
+
 /**
  * @classdesc The abstract object to represent a view.
  * @class
@@ -37,15 +38,23 @@ OSH.UI.View = BaseClass.extend({
 
         //this.divId = divId;
         this.id = "view-" + OSH.Utils.randomUUID();
+        this.name = this.id;
 
         this.dataSourceId = -1;
-        // sets dataSourceId
-        if(typeof(options) !== "undefined" && typeof(options.dataSourceId) !== "undefined") {
-            this.dataSourceId = options.dataSourceId;
-        }
 
-        if(typeof(options) !== "undefined" && typeof(options.entityId) !== "undefined") {
-            this.entityId = options.entityId;
+        if(!isUndefinedOrNull(options)) {
+            // sets dataSourceId
+            if(!isUndefinedOrNull(options.dataSourceId)) {
+                this.dataSourceId = options.dataSourceId;
+            }
+
+            if(!isUndefinedOrNull(options.entityId)) {
+                this.entityId = options.entityId;
+            }
+
+            if(!isUndefinedOrNull(options.name)) {
+                this.name = options.name;
+            }
         }
         this.css = "osh view ";
 
@@ -61,6 +70,8 @@ OSH.UI.View = BaseClass.extend({
 
         // inits the view before adding the viewItem
         this.init(parentElementDivId,viewItems,options);
+
+        this.type = this.getType();
     },
 
     /**
@@ -305,14 +316,36 @@ OSH.UI.View = BaseClass.extend({
             this.show(event);
         }.bind(this));
 
+        // deprecated
         OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM,function(event){
             if(typeof event.viewId !== "undefined" && event.viewId === this.id) {
                 this.addViewItem(event.viewItem);
             }
         }.bind(this));
 
+        // new version including the id inside the event id
+        OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM+"-"+this.id,function(event){
+            var exist = false;
+
+            for(var key in this.viewItems) {
+                if(this.viewItems[key].id === event.viewItem.id) {
+                    exist = true;
+                }
+            }
+            if(!exist) {
+                this.addViewItem(event.viewItem);
+            }
+        }.bind(this));
+
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
             this.onResize();
+        }.bind(this));
+
+        var self = this;
+        OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT+"-"+this.divId,function(event){
+            OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,{
+               object: self
+            });
         }.bind(this));
     },
 
@@ -365,5 +398,20 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     reset: function() {
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.UNDEFINED;
     }
 });
+
+OSH.UI.View.ViewType = {
+    MAP: "map",
+    VIDEO: "video",
+    CHART: "chart",
+    ENTITY_TREE:"entity_tree",
+    DISCOVERY : "discovery",
+    TASKING: "tasking",
+    RANGE_SLIDER:"rangeSlider",
+    UNDEFINED: "undefined"
+};

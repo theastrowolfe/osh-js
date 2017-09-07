@@ -606,5 +606,9 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      */
     createJSONDataSource:function(name,properties) {
         return new OSH.DataReceiver.JSON(name, properties);
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.DISCOVERY;
     }
 });

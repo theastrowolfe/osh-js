@@ -19,7 +19,7 @@
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.MapView
  * @example
  var cesiumMapView = new OSH.UI.CesiumView("",
  [{
@@ -51,7 +51,7 @@
  }]
  );
  */
-OSH.UI.CesiumView = OSH.UI.View.extend({
+OSH.UI.CesiumView = OSH.UI.MapView.extend({
 	
 	initialize : function(parentElementDivId,viewItems, properties) {
 		this._super(parentElementDivId,viewItems,properties);

@@ -27,9 +27,9 @@
     name: "Video"
  });
  */
-OSH.UI.Mp4View = OSH.UI.View.extend({
+OSH.UI.Mp4View = OSH.UI.VideoView.extend({
   initialize: function(parentElementDivId,options) {
-    this._super(parentElementDivId,[],options);
+    this._super(parentElementDivId,options);
 
     var width = "640";
     var height = "480";
