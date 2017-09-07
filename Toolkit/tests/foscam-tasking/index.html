@@ -40,8 +40,8 @@
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/tasking/osh-UI-PtzTaskingView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-MultiDialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-MultiDialogPanel.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../src/css/tasking.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
@@ -121,7 +121,7 @@
         height:720
     });
 
-    var videoDialog    =  new OSH.UI.MultiDialogView(document.body.id, {
+    var videoDialog    =  new OSH.UI.MultiDialogPanel(document.body.id, {
         draggable: true,
         css: "dialog-multidialog",
         name: "Multi dialog",

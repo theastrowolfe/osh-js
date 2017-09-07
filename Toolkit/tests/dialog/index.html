@@ -40,21 +40,21 @@
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerCurve.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerLinePlot.js"></script>
 
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-SaveDialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-SaveDialogPanel.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3CurveChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityWizardPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditorPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditViewPanel.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/entity/osh-UI-EntityEditStylerPanel.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../src/css/entity-wizard.css"/>
@@ -139,7 +139,7 @@
         useWebWorkerTransferableData:true
     });
 
-    var videoDialog    =  new OSH.UI.DialogView("FfmpegContainer", {
+    var videoDialog    =  new OSH.UI.DialogPanel("FfmpegContainer", {
         draggable: true,
         css: "dialog-test",
         name: "Dialog test",
@@ -158,7 +158,7 @@
         name: "Android Video"
     });
 
-    var videoMjpegDialog    =  new OSH.UI.DialogView("FfmpegContainer", {
+    var videoMjpegDialog    =  new OSH.UI.DialogPanel("FfmpegContainer", {
         draggable: true,
         css: "dialog-test",
         name: "Dialog test",

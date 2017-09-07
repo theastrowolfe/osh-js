@@ -28,7 +28,7 @@ OSH.Log = BaseClass.extend({
         this.first = true;
         // appends <div> tag to <body>
         document.observe("dom:loaded", function() {
-            var dialog = new OSH.UI.DialogView({
+            var dialog = new OSH.UI.DialogPanel({
                 title: "Logging console"
             });
             /*dialog.appendContent(this.logDiv);
