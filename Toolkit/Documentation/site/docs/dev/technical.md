@@ -330,7 +330,7 @@ values instead of relative rpan/rzoom/rtilt values.
 The dialog window is an useful tool to display your view into floating dialog. The toolkit provides a simple and nice way to create/interact with your dialog:
 
 ```javascript
-var someDialog    = new OSH.UI.DialogView(<dialog layout div id>,{
+var someDialog    = new OSH.UI.DialogPanel(<dialog layout div id>,{
     css: <your css dialog>,
     name: "DialogName",
     show:false, // default show the dialog
@@ -363,7 +363,7 @@ When you click onto the disconnect button, the list of data source contains in t
 To set a view into a dialog, you can specify the div id of the dialog as argument div view Id such as:
 
 ```javascript
-var someDialog    = new OSH.UI.DialogView(<dialog layout div id>,{
+var someDialog    = new OSH.UI.DialogPanel(<dialog layout div id>,{
     css: <your css dialog>,
     name: "DialogName",
     show:false, // default show the dialog
@@ -380,7 +380,7 @@ var someView = new OSH.UI.SomeView(someDialog.popContentDiv.id, [{...}],{...});
 Thus the view will be automatically attached to the popContentDiv which is the dialog content. The best way to do that is to use the `attachTo()` function:
 
 ```javascript
-var someDialog    = new OSH.UI.DialogView(<dialog layout div id>,{
+var someDialog    = new OSH.UI.DialogPanel(<dialog layout div id>,{
     css: <your css dialog>,
     name: "DialogName",
     show:false, // default show the dialog
@@ -409,12 +409,12 @@ window.OSH.BASE_WORKER_URL = "a/b/c/d/workers";
 
 Thus you have to put the workers files into the `a/b/c/d/workers` directories.
 
-### MultiDialogView
+### MultiDialogPanel
 
 The multi dialog view is an extension of the Dialog view. It allows one to append div to an existing dialog:
 
 ```javascript
-var multiDialog    =  new OSH.UI.MultiDialogView("<some container>", {
+var multiDialog    =  new OSH.UI.MultiDialogPanel("<some container>", {
             draggable: true,
             css: "dialog-multidialog",
             name: "Multi dialog",

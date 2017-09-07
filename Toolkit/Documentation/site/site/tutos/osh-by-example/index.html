@@ -359,7 +359,7 @@ You have to choose the corresponding data receivers and the corresponding views:
 <p>CesiumView =&gt; 3D map </p>
 </li>
 <li>
-<p>DialogView =&gt; encapsulates video + chart viewers</p>
+<p>DialogPanel =&gt; encapsulates video + chart viewers</p>
 </li>
 <li>
 <p>RangeSlider =&gt; control time</p>
@@ -748,7 +748,7 @@ dataSourceController.connectAll();
 
 <p>If you want to decorate a view, you have to put the viewId into the dialog:</p>
 <pre><code class="javascript">// video view    
-var soloVideoDialog = new OSH.UI.DialogView(&quot;dialog-main-container&quot;, { // put the dialog to the main container
+var soloVideoDialog = new OSH.UI.DialogPanel(&quot;dialog-main-container&quot;, { // put the dialog to the main container
     draggable: false,
     css: &quot;video-dialog&quot;,
     name: &quot;UAV Video&quot;,
@@ -770,7 +770,7 @@ var soloVideoView = new OSH.UI.FFMPEGView(soloVideoDialog.popContentDiv.id, { //
 });
 
 // chart view
-var altChartDialog = new OSH.UI.DialogView(&quot;dialog-main-container&quot;, {
+var altChartDialog = new OSH.UI.DialogPanel(&quot;dialog-main-container&quot;, {
     draggable: false,
     css: &quot;dialog&quot;,
     name: &quot;Solo Altitude&quot;,
@@ -842,7 +842,7 @@ var markerMenu = new OSH.UI.ContextMenu.CircularMenu({
 associated data receivers. It has a stack menu to perform actions and inherit from the <code>OSH.UI.View</code>.
 Moreover, you can render the tree into a Dialog:</p>
 <pre><code class="javascript"> // tree view
-var entityTreeDialog = new OSH.UI.DialogView(document.body.id, {
+var entityTreeDialog = new OSH.UI.DialogPanel(document.body.id, {
     css: &quot;tree-dialog&quot;,
     name: &quot;Entities&quot;,
     show: true,

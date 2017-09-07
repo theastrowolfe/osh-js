@@ -114,7 +114,7 @@ You have to choose the corresponding data receivers and the corresponding views:
  
  * CesiumView => 3D map 
 
- * DialogView => encapsulates video + chart viewers
+ * DialogPanel => encapsulates video + chart viewers
 
  * RangeSlider => control time
 
@@ -533,7 +533,7 @@ If you want to decorate a view, you have to put the viewId into the dialog:
 
 ```javascript
 // video view    
-var soloVideoDialog = new OSH.UI.DialogView("dialog-main-container", { // put the dialog to the main container
+var soloVideoDialog = new OSH.UI.DialogPanel("dialog-main-container", { // put the dialog to the main container
     draggable: false,
     css: "video-dialog",
     name: "UAV Video",
@@ -555,7 +555,7 @@ var soloVideoView = new OSH.UI.FFMPEGView(soloVideoDialog.popContentDiv.id, { //
 });
 
 // chart view
-var altChartDialog = new OSH.UI.DialogView("dialog-main-container", {
+var altChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
     draggable: false,
     css: "dialog",
     name: "Solo Altitude",
@@ -636,7 +636,7 @@ Moreover, you can render the tree into a Dialog:
 
 ```javascript
  // tree view
-var entityTreeDialog = new OSH.UI.DialogView(document.body.id, {
+var entityTreeDialog = new OSH.UI.DialogPanel(document.body.id, {
     css: "tree-dialog",
     name: "Entities",
     show: true,

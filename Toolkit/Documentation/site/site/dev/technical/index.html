@@ -520,7 +520,7 @@ inherit from the <code>OSH.DataSender.PtzTasking</code> and override the getComm
 values instead of relative rpan/rzoom/rtilt values.</p>
 <h2 id="dialog">Dialog</h2>
 <p>The dialog window is an useful tool to display your view into floating dialog. The toolkit provides a simple and nice way to create/interact with your dialog:</p>
-<pre><code class="javascript">var someDialog    = new OSH.UI.DialogView(&lt;dialog layout div id&gt;,{
+<pre><code class="javascript">var someDialog    = new OSH.UI.DialogPanel(&lt;dialog layout div id&gt;,{
     css: &lt;your css dialog&gt;,
     name: &quot;DialogName&quot;,
     show:false, // default show the dialog
@@ -561,7 +561,7 @@ When you click onto the disconnect button, the list of data source contains in t
 </li>
 </ul>
 <p>To set a view into a dialog, you can specify the div id of the dialog as argument div view Id such as:</p>
-<pre><code class="javascript">var someDialog    = new OSH.UI.DialogView(&lt;dialog layout div id&gt;,{
+<pre><code class="javascript">var someDialog    = new OSH.UI.DialogPanel(&lt;dialog layout div id&gt;,{
     css: &lt;your css dialog&gt;,
     name: &quot;DialogName&quot;,
     show:false, // default show the dialog
@@ -576,7 +576,7 @@ var someView = new OSH.UI.SomeView(someDialog.popContentDiv.id, [{...}],{...});
 </code></pre>
 
 <p>Thus the view will be automatically attached to the popContentDiv which is the dialog content. The best way to do that is to use the <code>attachTo()</code> function:</p>
-<pre><code class="javascript">var someDialog    = new OSH.UI.DialogView(&lt;dialog layout div id&gt;,{
+<pre><code class="javascript">var someDialog    = new OSH.UI.DialogPanel(&lt;dialog layout div id&gt;,{
     css: &lt;your css dialog&gt;,
     name: &quot;DialogName&quot;,
     show:false, // default show the dialog
@@ -599,9 +599,9 @@ someView.attachTo(someDialog.popContentDiv.id);
 </code></pre>
 
 <p>Thus you have to put the workers files into the <code>a/b/c/d/workers</code> directories.</p>
-<h3 id="multidialogview">MultiDialogView</h3>
+<h3 id="multidialogview">MultiDialogPanel</h3>
 <p>The multi dialog view is an extension of the Dialog view. It allows one to append div to an existing dialog:</p>
-<pre><code class="javascript">var multiDialog    =  new OSH.UI.MultiDialogView(&quot;&lt;some container&gt;&quot;, {
+<pre><code class="javascript">var multiDialog    =  new OSH.UI.MultiDialogPanel(&quot;&lt;some container&gt;&quot;, {
             draggable: true,
             css: &quot;dialog-multidialog&quot;,
             name: &quot;Multi dialog&quot;,
