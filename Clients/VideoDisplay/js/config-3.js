@@ -97,7 +97,7 @@ function init() {
     // var chartDialog         = createDialog("dialog-main-container",[weatherDataSource.id],"Chart Weather",true);
     var leafletMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Leaflet 2D",true);
     var cesiumMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Cesium 3D",true);
-    var entityTreeDialog    = new OSH.UI.DialogView(document.body.id,{
+    var entityTreeDialog    = new OSH.UI.DialogPanel(document.body.id,{
         css: "tree-dialog",
         name: "Entities",
         show:true,
@@ -382,7 +382,7 @@ function init() {
             }]
     );
 
-    var discoveryDialog    = new OSH.UI.DialogView(document.body.id,{
+    var discoveryDialog    = new OSH.UI.DialogPanel(document.body.id,{
         css: "discovery-dialog",
         name: "Discovery",
         show:false,
@@ -437,7 +437,7 @@ function init() {
 }
 
 function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
-    var ptzDialog = new OSH.UI.MultiDialogView(containerDivId, {
+    var ptzDialog = new OSH.UI.MultiDialogPanel(containerDivId, {
         draggable: false,
         css: "dialog-view",
         name: title,
@@ -459,7 +459,7 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
 }
 
 function createDialog(containerDivId,dataSources,title,defaultShow) {
-    return new OSH.UI.DialogView(containerDivId, {
+    return new OSH.UI.DialogPanel(containerDivId, {
         draggable: false,
         css: "dialog-view",
         name: title,
