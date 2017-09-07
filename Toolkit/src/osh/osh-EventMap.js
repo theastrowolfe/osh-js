@@ -21,7 +21,7 @@ OSH.EventMap = BaseClass.extend({
     },
 
     observe:function(eventName, fnCallback) {
-        if(typeof(eventName) == "undefined" || typeof(fnCallback) == "undefined") {
+        if(isUndefinedOrNull(eventName) || isUndefinedOrNull(fnCallback)) {
             return;
         }
         if(!(eventName in this.eventMap)) {
@@ -31,7 +31,7 @@ OSH.EventMap = BaseClass.extend({
     },
 
     fire: function(eventName, properties) {
-        if(typeof(eventName) == "undefined") {
+        if(isUndefinedOrNull(eventName)) {
             return;
         }
         if(eventName in this.eventMap) {
@@ -41,5 +41,13 @@ OSH.EventMap = BaseClass.extend({
                 fnCallbackArr[i](properties);
             }
         }
+    },
+
+    remove: function(eventName) {
+        if(isUndefinedOrNull(eventName)) {
+            return;
+        }
+
+        delete this.eventMap[eventName];
     }
 });
