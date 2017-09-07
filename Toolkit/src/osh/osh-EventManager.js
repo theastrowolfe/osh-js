@@ -29,8 +29,12 @@ var eventMap = new OSH.EventMap();
  * @memberof OSH.EventManager
  */
 OSH.EventManager.fire = function(eventName, properties) {
-    properties.name = eventName;
-    eventMap.fire('osh:'+eventName,properties);
+    if(!isUndefinedOrNull(properties)) {
+        properties.name = eventName;
+        eventMap.fire('osh:'+eventName,properties);
+    } else {
+        eventMap.fire('osh:'+eventName,{name:eventName});
+    }
 };
 
 /**
@@ -45,6 +49,9 @@ OSH.EventManager.observe = function(eventName, fnCallback) {
     eventMap.observe('osh:'+eventName,fnCallback);
 };
 
+OSH.EventManager.remove = function(eventName) {
+    eventMap.remove('osh:'+eventName);
+};
 /**
  *
  * @param divId
@@ -72,6 +79,8 @@ OSH.EventManager.EVENT = {
     SELECT_VIEW : "selectView",
     CONTEXT_MENU : "contextMenu",
     SHOW_VIEW : "showView",
+    GET_OBJECT: "getObject",
+    SEND_OBJECT: "sendObject",
     CONNECT_DATASOURCE : "connectDataSource",
     DISCONNECT_DATASOURCE : "disconnectDataSource",
     DATASOURCE_UPDATE_TIME: "updateDataSourceTime",
