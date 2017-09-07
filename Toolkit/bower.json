@@ -44,6 +44,7 @@
     "yuvcanvas":"./vendor-local/yuvcanvas",
     "Leaflet.draw":"https://github.com/Leaflet/Leaflet.draw.git#^0.4.9",
     "cesium-wfst":"./vendor-local/cesium-wfst",
-    "cesium-draw-helper":"./vendor-local/cesium-draw-helper"
+    "cesium-draw-helper":"./vendor-local/cesium-draw-helper",
+    "js-beautify":"https://github.com/beautify-web/js-beautify.git#^1.6.14"
   }
 }

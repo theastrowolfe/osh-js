@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.Panel.StylerPolylinePanel = OSH.UI.Panel.StylerPanel.extend({
+OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId, options);
     },
@@ -24,6 +24,11 @@ OSH.UI.Panel.StylerPolylinePanel = OSH.UI.Panel.StylerPanel.extend({
         var tabPanel = new OSH.UI.Panel.TabPanel();
 
         // tab elements
+        this.xyPanel = new OSH.UI.Panel.XYPanel("",this.options);
+
+        tabPanel.addTab("Values",this.xyPanel.divElt);
+
+        this.divElt.appendChild(tabPanel.divElt);
     },
 
     getStyler:function() {

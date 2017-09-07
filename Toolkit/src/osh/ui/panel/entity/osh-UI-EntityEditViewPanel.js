@@ -32,16 +32,13 @@ OSH.UI.EntityEditViewPanel = OSH.UI.Panel.extend({
 
         var containerArr = this.getContainers();
         if(this.view.container !== "") {
-            containerArr = this.getContainers().concat(this.view.container);
+            containerArr = this.getContainers().concat(this.view.container).filter(function(value, index, self) {
+                return self.indexOf(value) === index;
+            });
         }
         this.buildContainer(containerArr);
 
         this.buildContent();
-
-        // disable container for existing div
-        if(!isUndefinedOrNull(this.view.instance)) {
-            document.getElementById(this.containerDivId).setAttribute("disabled","");
-        }
     },
 
     buildViewProperties: function() {

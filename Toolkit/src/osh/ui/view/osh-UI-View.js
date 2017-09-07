@@ -325,16 +325,7 @@ OSH.UI.View = BaseClass.extend({
 
         // new version including the id inside the event id
         OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM+"-"+this.id,function(event){
-            var exist = false;
-
-            for(var key in this.viewItems) {
-                if(this.viewItems[key].id === event.viewItem.id) {
-                    exist = true;
-                }
-            }
-            if(!exist) {
-                this.addViewItem(event.viewItem);
-            }
+            this.addViewItem(event.viewItem);
         }.bind(this));
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){

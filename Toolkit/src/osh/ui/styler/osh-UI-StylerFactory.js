@@ -188,6 +188,18 @@ OSH.UI.Styler.Factory.getFixedIcon = function(iconArraybuffer) {
     };
 };
 
+OSH.UI.Styler.Factory.getCustomIconFunc = function(dataSourceIdsArray,iconFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        iconFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
+        }
+    };
+};
+
 OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultIconArraybuffer,selectedIconArraybuffer) {
     var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(selectedIconArraybuffer);
     var defaultBlobURL  = OSH.Utils.arrayBufferToImageDataURL(defaultIconArraybuffer);

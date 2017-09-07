@@ -756,3 +756,6 @@ OSH.Utils.arrayBufferToImageDataURL = function(arraybuffer) {
     return URL.createObjectURL(blob);
 };
 
+OSH.Utils.createJSEditor = function(parentElt,content) {
+    return OSH.Utils.addHTMLTextArea(parentElt, js_beautify(content));
+};

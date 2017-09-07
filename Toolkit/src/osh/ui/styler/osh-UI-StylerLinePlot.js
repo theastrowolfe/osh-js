@@ -16,7 +16,7 @@
 
 /**
  * @classdesc
- * @class OSH.UI.Styler.Curve
+ * @class OSH.UI.Styler.LinePlot
  * @type {OSH.UI.Style}
  * @augments OSH.UI.Styler
  */

@@ -73,25 +73,27 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         //-- sets icon type
         var typeInputElt = document.getElementById(this.typeInputId);
 
-        if(!isUndefinedOrNull(this.styler.ui)) {
-            if (!isUndefinedOrNull(this.styler.ui.icon)) {
-                if (!isUndefinedOrNull(this.styler.ui.icon.fixed)) {
-                    // loads fixed
-                    typeInputElt.options.selectedIndex = 1;
-                    this.addFixed(this.styler.ui.icon.fixed);
-                } else if (!isUndefinedOrNull(this.styler.ui.icon.threshold)) {
-                    typeInputElt.options.selectedIndex = 2;
-                    this.addThreshold(this.styler.ui.icon);
-                } else if (!isUndefinedOrNull(this.styler.ui.icon.custom)) {
-                    typeInputElt.options.selectedIndex = 4;
-                    this.addCustom(this.styler.ui.icon);
-                }
-
-                this.properties = this.styler.ui.icon;
+        if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.icon)) {
+            if (!isUndefinedOrNull(this.styler.ui.icon.fixed)) {
+                // loads fixed
+                typeInputElt.options.selectedIndex = 1;
+                this.addFixed(this.styler.ui.icon.fixed);
+            } else if (!isUndefinedOrNull(this.styler.ui.icon.threshold)) {
+                typeInputElt.options.selectedIndex = 2;
+                this.addThreshold(this.styler.ui.icon);
+            } else if (!isUndefinedOrNull(this.styler.ui.icon.custom)) {
+                typeInputElt.options.selectedIndex = 4;
+                this.addCustom(this.styler.ui.icon);
             }
+
+            this.properties = this.styler.ui.icon;
         } else if(!isUndefinedOrNull(this.styler.properties) && !isUndefinedOrNull(this.styler.properties.iconFunc)) {
             typeInputElt.options.selectedIndex = 4;
             this.addCustom({custom :{iconFuncStr:this.styler.properties.iconFunc.handler.toSource()}});
+
+            this.properties.custom = {
+                iconFunc : this.styler.properties.iconFunc,
+            };
         }
     },
 
@@ -225,12 +227,21 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         var defaultValue = "";
         if(!isUndefinedOrNull(properties)) {
             defaultValue = properties.custom.iconFuncStr;
+        } else if(!isUndefinedOrNull(this.styler.properties) && !isUndefinedOrNull(this.styler.properties.iconFunc)) {
+            defaultValue = this.styler.properties.iconFunc.handler.toSource();
         }
-        this.textareaId = OSH.Utils.addHTMLTextArea(this.content, defaultValue);
+        this.textareaId = OSH.Utils.createJSEditor(this.content,defaultValue);
     },
 
     getProperties:function() {
         var stylerProperties = {};
+
+        //TODO: var ds = datasources[properties.location.datasourceIdx];
+        var dsIdsArray = [];
+
+        for(var key in this.options.datasources) {
+            dsIdsArray.push(this.options.datasources[key].id);
+        }
 
         if(!isUndefinedOrNull(this.properties.fixed)) {
             // save ui properties
@@ -252,12 +263,6 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             }
 
             if(!isUndefinedOrNull(this.properties.fixed.selectedIcon)) {
-                //TODO: var ds = datasources[properties.location.datasourceIdx];
-                var dsIdsArray = [];
-
-                for(var key in this.options.datasources) {
-                    dsIdsArray.push(this.options.datasources[key].id);
-                }
 
                 var selectedIconProps = OSH.UI.Styler.Factory.getSelectedIconFunc(
                     dsIdsArray,
@@ -270,6 +275,13 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 // save ui properties
                 this.styler.ui.icon.fixed.selectedIcon = this.properties.fixed.selectedIcon;
             }
+        } else if(!isUndefinedOrNull(this.properties.custom)) {
+            var iconFuncProps = OSH.UI.Styler.Factory.getCustomIconFunc(
+                dsIdsArray, // ds array ids
+                document.getElementById(this.textareaId).value //iconFnStr
+            );
+
+            OSH.Utils.copyProperties(iconFuncProps,stylerProperties);
         }
 
         return stylerProperties;

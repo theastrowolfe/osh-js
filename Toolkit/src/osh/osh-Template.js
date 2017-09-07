@@ -85,7 +85,7 @@ function isUndefined(object) {
 }
 
 function isUndefinedOrNull(object) {
-	return typeof(object) === "undefined" || object === null;
+	return typeof(object) === "undefined" || object === null ;
 }
 
 function assert(condition, message) {

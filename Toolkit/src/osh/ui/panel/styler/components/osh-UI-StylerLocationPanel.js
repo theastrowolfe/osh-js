@@ -27,15 +27,33 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         OSH.Utils.addHTMLTitledLine(this.contentElt,"Default location");
 
-        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", "","0.0");
-        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", "","0.0");
-        this.zDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Z", "","0.0");
+
+        var xDefaultValue = "0.0";
+        var yDefaultValue = "0.0";
+        var zDefaultValue = "0.0";
+
+        // inits default values
+        if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.location)) {
+
+            // default location
+            if (!isUndefinedOrNull(this.styler.ui.location.default)) {
+                xDefaultValue = this.styler.ui.location.default.x;
+                yDefaultValue = this.styler.ui.location.default.y;
+                zDefaultValue = this.styler.ui.location.default.z;
+            }
+        }
+
+        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", "",xDefaultValue);
+        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", "",yDefaultValue);
+        this.zDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Z", "",zDefaultValue);
 
         OSH.Utils.addHTMLTitledLine(this.contentElt,"Mapping");
 
         // load existing values if any
         // load UI settings
-        if(!isUndefinedOrNull(this.styler.ui)) {
+        if(!isUndefinedOrNull(this.styler.ui) &&
+            !isUndefinedOrNull(this.styler.ui.location) &&
+            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
             this.initMappingFunctionUI();
         } else {
             this.initCustomFunctionUI();
@@ -67,16 +85,14 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             var observables = self.getObservable(this.dsListBoxId);
             this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
 
-            if(!isUndefinedOrNull(this.styler.ui.locationFunc)) {
-                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.locationFunc.x;
-                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.locationFunc.y;
-                document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.locationFunc.z;
-            }  else {
-                this.styler.ui.locationFunc = {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                };
+            if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.location)) {
+
+                // location function
+                if(!isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.x;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.y;
+                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.z;
+                }
             }
         }
     },
@@ -121,7 +137,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
     },
 
     initCustomFunctionUI:function() {
-        this.textareaId = OSH.Utils.addHTMLTextArea(this.contentElt, this.styler.properties.locationFunc.handler.toSource());
+        this.textareaId = OSH.Utils.createJSEditor(this.contentElt,this.styler.properties.locationFunc.handler.toSource());
     },
 
     getProperties:function() {
@@ -138,7 +154,10 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         var locationFuncProps;
 
-        if(!isUndefinedOrNull(this.styler.ui)) {
+        if(!isUndefinedOrNull(this.styler.ui) &&
+            !isUndefinedOrNull(this.styler.ui.location) &&
+            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
+
             if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
                 var xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
                 var yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
@@ -149,12 +168,20 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                     xIdx,yIdx,zIdx);
 
                 // update ui property
-                stylerProperties.ui = {
-                    locationFunc: {
+                if(isUndefinedOrNull(this.styler.ui)) {
+                    this.styler.ui = {
+                        location: {}
+                    };
+                }
+
+                if(isUndefinedOrNull(this.styler.ui.location)) {
+                    this.styler.ui.location = {};
+                }
+
+                this.styler.ui.location.locationFunc = {
                         x: xIdx,
                         y: yIdx,
                         z: zIdx
-                    }
                 };
             }
         } else {
@@ -167,6 +194,20 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         if(!isUndefinedOrNull(locationFuncProps)) {
             OSH.Utils.copyProperties(locationFuncProps,stylerProperties);
         }
+
+
+        // update ui property
+        if(isUndefinedOrNull(this.styler.ui)) {
+            this.styler.ui = {
+                location: {}
+            };
+        }
+
+        this.styler.ui.location.default = {
+            x:document.getElementById(this.xDefaultInputId).value,
+            y:document.getElementById(this.yDefaultInputId).value,
+            z:document.getElementById(this.zDefaultInputId).value
+        };
 
         return stylerProperties;
     }

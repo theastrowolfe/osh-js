@@ -18,12 +18,12 @@ OSH.UI.EntityChartEditPanel = OSH.UI.EntityViewItemsEditPanel.extend({
 
     getNewStylerInstance:function(type) {
         if(type === "LinePlot") {
-            return new OSH.UI.Styler.Curve({});
+            return new OSH.UI.Styler.LinePlot({});
         }
     },
 
     getTypeFromStylerInstance:function(stylerInstance) {
-        if(stylerInstance instanceof OSH.UI.Styler.Curve){
+        if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
             return "LinePlot";
         }
     },
@@ -33,6 +33,6 @@ OSH.UI.EntityChartEditPanel = OSH.UI.EntityViewItemsEditPanel.extend({
     },
 
     getStylerPanelInstance:function(properties) {
-        return new OSH.UI.Panel.StylerCurveChartPanel("",properties);
+        return new OSH.UI.Panel.StylerLinePlotPanel("",properties);
     }
 });

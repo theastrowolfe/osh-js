@@ -37,6 +37,13 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
             }
         }
 
+        if(isUndefinedOrNull(this.entity)) {
+            // creates new entity
+            this.entity = {
+                id: "entity-" + OSH.Utils.randomUUID()
+            };
+        }
+
         // add template
         var entityWizard = document.createElement("div");
         entityWizard.setAttribute("id","Entity-wizard-"+OSH.Utils.randomUUID());
@@ -57,6 +64,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
         // inits views
         this.initViews();
+
         this.initDatasources();
 
     },
@@ -113,7 +121,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         this.createButtonId = OSH.Utils.randomUUID();
 
         var buttonName = "Create";
-        if(!isUndefinedOrNull(this.entity)) {
+        if(!isUndefinedOrNull(this.entity.datacontroller)) {
             buttonName = "Edit";
         }
 
@@ -253,7 +261,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     initDatasources: function() {
-        if(!isUndefinedOrNull(this.entity) && !isUndefinedOrNull(this.entity.datacontroller)) {
+        if(!isUndefinedOrNull(this.entity.datacontroller)) {
             for(var key in this.entity.dataSources){
                 var ds = this.entity.datacontroller.getDataSource(this.entity.dataSources[key]);
                 this.addDataSource(ds);
@@ -472,11 +480,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         OSH.Utils.copyProperties(currentView,cloneView);
 
         var editView = null;
-        var entityId;
-
-        if(!isUndefinedOrNull(this.entity)) {
-            entityId = this.entity.id;
-        }
+        var entityId = this.entity.id;
 
         var viewProps = {
             view:cloneView,
@@ -518,6 +522,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
              }
 
              editViewDialog.close();
+             editView = null;
         }.bind(this);
 
         /* var currentView = null;
@@ -596,26 +601,20 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
             replayFactor = this.datasources[key].replaySpeed;
         }
 
-        if(isUndefinedOrNull(this.entity)) {
-            // creates new entity
-            this.entity = {
-                id: "entity-" + OSH.Utils.randomUUID(),
-                dataSources : datasourceArray,
-                datacontroller: new OSH.DataReceiver.DataReceiverController({
-                    replayFactor : replayFactor
-                })
-            };
-
-            this.entity.datacontroller.addEntity(this.entity);
-            // starts streaming
-            this.entity.datacontroller.connectAll();
-        }
-
         // updates name & data sources
         this.entity.name = entityName;
 
         //TODO: make the diff between exsiting ones and the ones which have been removed/added
         this.entity.dataSources = datasourceArray;
+
+        if(isUndefinedOrNull(this.entity.datacontroller)) {
+             this.entity.datacontroller = new OSH.DataReceiver.DataReceiverController({
+                    replayFactor : replayFactor
+             });
+            this.entity.datacontroller.addEntity(this.entity);
+            // starts streaming
+            this.entity.datacontroller.connectAll();
+        }
 
        for(var i=0;i< this.views.length;i++) {
            var currentView = this.views[i];
@@ -641,7 +640,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                    }
 
                    viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties, currentView.viewItems);
-                   this.createViewViewItems(currentView, viewInstance, this.entity);
+                   this.createViewItems(currentView, viewInstance, this.entity);
                }
 
                this.views[i].instance = viewInstance;
@@ -652,12 +651,31 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
            //TODO: check container and switch if currentView.container != view.divElt.parentNode.id
 
            // updates/add view item
-           if(!isUndefinedOrNull(currentView.instance.viewItems)) {
-                for(var key in currentView.instance.viewItems){
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id,{
-                        viewItem: currentView.instance.viewItems[key]
+           if(!isUndefinedOrNull(currentView.viewItemsToAdd)) {
+                for(var j=0;j < currentView.viewItemsToAdd.length;j++){
+                   /* switch(currentView.viewItemsToAdd[i].action) {
+                        case "add": {
+                            var viewItemToAdd = currentView.viewItemsToAdd[i];
+                            //currentView.instance.viewItems.splice(i, 1);
+
+                            OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
+                                viewItem: viewItemToAdd
+                            });
+                        }
+                            break;
+                        case "update":
+                            break; //TODO: update a viewItem
+                        case "remove":
+                            break; //TODO: remove a viewItem
+                    }*/
+
+                    var viewItemToAdd = currentView.viewItemsToAdd[j];
+
+                    OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
+                        viewItem: viewItemToAdd
                     });
                 }
+               currentView.viewItemsToAdd = [];
            }
        }
 
@@ -785,7 +803,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         dataProviderController.connectAll();
     },
 
-    createViewViewItems:function(currentView,viewInstance,newEntity) {
+    createViewItems:function(currentView,viewInstance,newEntity) {
         if (currentView.container.toLowerCase() === "dialog") {
             var viewDialog = new OSH.UI.DialogPanel("", {
                 draggable: true,

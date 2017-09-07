@@ -20,7 +20,16 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
     },
 
     buildContent:function() {
-        this.buildViewItems(this.view.viewItems);
+        var viewItems = [];
+        if(!isUndefinedOrNull(this.view.viewItems) && this.view.viewItems.length > 0) {
+            viewItems = this.view.viewItems;
+        }
+
+        if(!isUndefinedOrNull(this.view.viewItemsToAdd) && this.view.viewItemsToAdd.length > 0) {
+            viewItems = viewItems.concat(this.view.viewItemsToAdd);
+        }
+
+        this.buildViewItems(viewItems);
     },
 
     buildViewItems:function(defaultViewItemArr) {
@@ -111,7 +120,14 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
                 name:"View item #"+this.nbViewItems++,
                 styler: stylerUI
             };
-            this.view.viewItems.push(viewItem);
+
+            if(!isUndefinedOrNull(this.entityId)) {
+                viewItem.entityId = this.entityId;
+            }
+            if(isUndefinedOrNull(this.view.viewItemsToAdd)) {
+                this.view.viewItemsToAdd = [];
+            }
+            this.view.viewItemsToAdd.push(viewItem);
         }
 
         var inputEltId = OSH.Utils.randomUUID();
@@ -242,6 +258,15 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
                 break;
             }
         }
+        if(result === null) {
+            for(var key in this.view.viewItemsToAdd) {
+                if(this.view.viewItemsToAdd[key].id === id) {
+                    result = this.view.viewItemsToAdd[key];
+                    break;
+                }
+            }
+        }
+
         return result;
     }
 });
