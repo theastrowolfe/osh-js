@@ -4,7 +4,7 @@
 
 .osh .view {
     width:100%;
-    height: 100%;
+    height: inherit;
 }
 
 .osh .horizontal-titled-line {
@@ -350,5 +350,12 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
 }
 .osh .input-file-i {
     margin-top: -4px;
+}
+
+.osh .text-area {
+    width: calc(100% - 10px);
+    height: 100px;
+    overflow: auto;
+    padding: 5px;
 }
 

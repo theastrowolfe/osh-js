@@ -16,6 +16,12 @@
     height: 158px;
 }
 
+.osh .entity-wizard .datasource-container {
+    clear: both;
+    height: 230px;
+    overflow: auto;
+}
+
 .osh .entity-wizard  section .select-style {
     width: 200px;
     float: left;
