@@ -24,6 +24,12 @@ var OSH = {
 window.OSH = OSH;
 
 /**
+ * @namespace {object} OSH.Exception
+ * @memberof OSH
+ */
+window.OSH.Exception = {};
+
+/**
  * @namespace {object} OSH.Video
  * @memberof OSH
  */
@@ -109,3 +115,14 @@ Function.prototype.toSource = function() {
     return body;*/
     return this.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'').trim();
 };
+
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        } else {
+            throw message; // Fallback
+        }
+    }
+}

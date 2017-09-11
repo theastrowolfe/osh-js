@@ -41,16 +41,19 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     connect: function () {
+        var ENABLED = false; // disable webworker
+
         if (!this.init) {
             //creates Web Socket
-            if (OSH.Utils.isWebWorker()){
+            if (OSH.Utils.isWebWorker() && ENABLED) {
                 var url = this.getUrl();
                 var blobURL = URL.createObjectURL(new Blob(['(',
 
                         function () {
                             var ws = null;
+
                             self.onmessage = function (e) {
-                                if(e.data == "close") {
+                                if (e.data === "close") {
                                     close();
                                 } else {
                                     // is URL
@@ -64,12 +67,13 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                                 ws.onmessage = function (event) {
                                     //callback data on message received
                                     if (event.data.byteLength > 0) {
-                                       self.postMessage(event.data,[event.data]);
+                                        self.postMessage(event.data, [event.data]);
                                     }
                                 }
 
-                                ws.onerror = function(event) {
+                                ws.onerror = function (event) {
                                     ws.close();
+                                    self.onerror(event);
                                 };
                             }
 
@@ -86,6 +90,9 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                     this.onMessage(e.data);
                 }.bind(this);
 
+                this.worker.onerror = function(error) {
+                    this.onError(error);
+                }.bind(this);
                 // Won't be needing this anymore
                 URL.revokeObjectURL(blobURL);
             } else {
@@ -99,8 +106,60 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                 }.bind(this);
 
                 // closes socket if any errors occur
-                this.ws.onerror = function(event) {
-                    this.ws.close();
+                this.ws.onerror = function (event) {
+                    this.close();
+                };
+
+                this.ws.onclose = function(e) {
+                    var reason = 'Unknown error';
+                    switch(e.code) {
+                        case 1000:
+                            reason = 'Normal closure';
+                            break;
+                        case 1001:
+                            reason = 'An endpoint is going away';
+                            break;
+                        case 1002:
+                            reason = 'An endpoint is terminating the connection due to a protocol error.';
+                            break;
+                        case 1003:
+                            reason = 'An endpoint is terminating the connection because it has received a type of data it cannot accept';
+                            break;
+                        case 1004:
+                            reason = 'Reserved. The specific meaning might be defined in the future.';
+                            break;
+                        case 1005:
+                            reason = 'No status code was actually present';
+                            break;
+                        case 1006:
+                            reason = 'The connection was closed abnormally';
+                            break;
+                        case 1007:
+                            reason = 'The endpoint is terminating the connection because a message was received that contained inconsistent data';
+                            break;
+                        case 1008:
+                            reason = 'The endpoint is terminating the connection because it received a message that violates its policy';
+                            break;
+                        case 1009:
+                            reason = 'The endpoint is terminating the connection because a data frame was received that is too large';
+                            break;
+                        case 1010:
+                            reason = 'The client is terminating the connection because it expected the server to negotiate one or more extension, but the server didn\'t.';
+                            break;
+                        case 1011:
+                            reason = 'The server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.';
+                            break;
+                        case 1012:
+                            reason = 'The server is terminating the connection because it is restarting';
+                            break;
+                        case 1013:
+                            reason = 'The server is terminating the connection due to a temporary condition';
+                            break;
+                        case 1015:
+                            reason = 'The connection was closed due to a failure to perform a TLS handshake';
+                            break;
+                    }
+                    throw new OSH.Exception.Exception("Cannot connect to the datasource ["+reason+"]: "+this.getUrl(),event);
                 }.bind(this);
             }
             this.init = true;
@@ -130,6 +189,10 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     onMessage: function (data) {
+    },
+
+    onError:function(error) {
+        throw new OSH.Exception.Exception("Cannot connect to the datasource "+this.getUrl(), error);
     },
 
     /**
