@@ -24,6 +24,12 @@ var OSH = {
 window.OSH = OSH;
 
 /**
+ * @namespace {object} OSH.Exception
+ * @memberof OSH
+ */
+window.OSH.Exception = {};
+
+/**
  * @namespace {object} OSH.Video
  * @memberof OSH
  */
@@ -86,4 +92,15 @@ function isUndefined(object) {
 
 function isUndefinedOrNull(object) {
 	return typeof(object) === "undefined" || object === null;
+}
+
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        } else {
+            throw message; // Fallback
+        }
+    }
 }
