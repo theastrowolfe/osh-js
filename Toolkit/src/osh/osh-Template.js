@@ -87,7 +87,7 @@ window.OSH.BASE_WORKER_URL = "js/workers";
 
 // HELPER FUNCTION
 function isUndefined(object) {
-	return typeof(object) == "undefined";
+	return typeof(object) === "undefined";
 }
 
 function isUndefinedOrNull(object) {
@@ -115,14 +115,3 @@ Function.prototype.toSource = function() {
     return body;*/
     return this.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'').trim();
 };
-
-function assert(condition, message) {
-    if (!condition) {
-        message = message || "Assertion failed";
-        if (typeof Error !== "undefined") {
-            throw new Error(message);
-        } else {
-            throw message; // Fallback
-        }
-    }
-}
