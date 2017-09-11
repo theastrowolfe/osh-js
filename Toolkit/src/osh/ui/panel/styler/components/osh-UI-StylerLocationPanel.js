@@ -51,9 +51,10 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // load existing values if any
         // load UI settings
-        if(!isUndefinedOrNull(this.styler.ui) &&
+        if((!isUndefinedOrNull(this.styler.ui) &&
             !isUndefinedOrNull(this.styler.ui.location) &&
-            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
+            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) ||
+            isUndefinedOrNull(this.styler.properties.locationFunc)) {
             this.initMappingFunctionUI();
         } else {
             this.initCustomFunctionUI();
@@ -143,72 +144,75 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
     getProperties:function() {
         var stylerProperties = {};
 
-        var locationProps = OSH.UI.Styler.Factory.getLocation(
-            Number(document.getElementById(this.xDefaultInputId).value),
-            Number(document.getElementById(this.yDefaultInputId).value),
-            Number(document.getElementById(this.zDefaultInputId).value)
-        );
+        try {
+            var locationProps = OSH.UI.Styler.Factory.getLocation(
+                Number(document.getElementById(this.xDefaultInputId).value),
+                Number(document.getElementById(this.yDefaultInputId).value),
+                Number(document.getElementById(this.zDefaultInputId).value)
+            );
 
 
-        OSH.Utils.copyProperties(locationProps,stylerProperties);
+            OSH.Utils.copyProperties(locationProps, stylerProperties);
 
-        var locationFuncProps;
+            var locationFuncProps;
 
-        if(!isUndefinedOrNull(this.styler.ui) &&
-            !isUndefinedOrNull(this.styler.ui.location) &&
-            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
+            if (!isUndefinedOrNull(this.styler.ui) &&
+                !isUndefinedOrNull(this.styler.ui.location) &&
+                !isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
 
-            if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
-                var xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
-                var yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
-                var zIdx = document.getElementById(this.zInputMappingId).selectedIndex;
+                if (!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
+                    var xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
+                    var yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
+                    var zIdx = document.getElementById(this.zInputMappingId).selectedIndex;
 
-                locationFuncProps = OSH.UI.Styler.Factory.getLocationFunc(
-                    this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
-                    xIdx,yIdx,zIdx);
+                    locationFuncProps = OSH.UI.Styler.Factory.getLocationFunc(
+                        this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
+                        xIdx, yIdx, zIdx);
 
-                // update ui property
-                if(isUndefinedOrNull(this.styler.ui)) {
-                    this.styler.ui = {
-                        location: {}
-                    };
-                }
+                    // update ui property
+                    if (isUndefinedOrNull(this.styler.ui)) {
+                        this.styler.ui = {
+                            location: {}
+                        };
+                    }
 
-                if(isUndefinedOrNull(this.styler.ui.location)) {
-                    this.styler.ui.location = {};
-                }
+                    if (isUndefinedOrNull(this.styler.ui.location)) {
+                        this.styler.ui.location = {};
+                    }
 
-                this.styler.ui.location.locationFunc = {
+                    this.styler.ui.location.locationFunc = {
                         x: xIdx,
                         y: yIdx,
                         z: zIdx
+                    };
+                }
+            } else {
+                locationFuncProps = OSH.UI.Styler.Factory.getCustomLocationFunc(
+                    this.styler.properties.locationFunc.dataSourceIds, //datasource array
+                    document.getElementById(this.textareaId).value //locationFnStr
+                );
+            }
+
+            if (!isUndefinedOrNull(locationFuncProps)) {
+                OSH.Utils.copyProperties(locationFuncProps, stylerProperties);
+            }
+
+            // update ui property
+            if (isUndefinedOrNull(this.styler.ui)) {
+                this.styler.ui = {
+                    location: {}
                 };
             }
-        } else {
-            locationFuncProps = OSH.UI.Styler.Factory.getCustomLocationFunc(
-                this.styler.properties.locationFunc.dataSourceIds, //datasource array
-                document.getElementById(this.textareaId).value //locationFnStr
-            );
-        }
 
-        if(!isUndefinedOrNull(locationFuncProps)) {
-            OSH.Utils.copyProperties(locationFuncProps,stylerProperties);
-        }
-
-
-        // update ui property
-        if(isUndefinedOrNull(this.styler.ui)) {
-            this.styler.ui = {
-                location: {}
+            this.styler.ui.location.default = {
+                x: document.getElementById(this.xDefaultInputId).value,
+                y: document.getElementById(this.yDefaultInputId).value,
+                z: document.getElementById(this.zDefaultInputId).value
             };
+
+        } catch(exception) {
+            console.log(exception);
         }
-
-        this.styler.ui.location.default = {
-            x:document.getElementById(this.xDefaultInputId).value,
-            y:document.getElementById(this.yDefaultInputId).value,
-            z:document.getElementById(this.zDefaultInputId).value
-        };
-
         return stylerProperties;
     }
 });
