@@ -59,14 +59,10 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
         // inits from properties
         // check if the current view items are part of the current entity
         for(var i =0;i < defaultViewItemArr.length;i++) {
-            var disabled;
             if(!isUndefinedOrNull(defaultViewItemArr[i].entityId) &&
                 defaultViewItemArr[i].entityId === this.entityId) {
-                disabled = false;
-            } else {
-                disabled = true;
+                this.addViewItem({viewItem: defaultViewItemArr[i]});
             }
-            this.addViewItem({viewItem: defaultViewItemArr[i]},disabled);
         }
 
         // listeners
@@ -78,7 +74,7 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
     },
 
     // ACTION FUNCTIONS
-    addViewItem:function(event,disabled) {
+    addViewItem:function(event) {
         var viewItemsContainerElt = document.getElementById(this.viewItemsContainerDivId);
 
         var id = OSH.Utils.randomUUID();
@@ -132,15 +128,10 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
 
         var inputEltId = OSH.Utils.randomUUID();
 
-        var disabledValue = "";
-        if(!isUndefinedOrNull(disabled) && disabled) {
-            disabledValue = "disabled";
-        }
-
         var strVar = "<div class=\"line-left view-item-line\">";
-        strVar += "     <input id=\""+inputEltId+"\" name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\" "+disabledValue+">";
+        strVar += "     <input id=\""+inputEltId+"\" name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\">";
         strVar += "     <div class=\"select-style\">";
-        strVar += "         <select id=\"" + stylerSelectDivId + "\" "+disabledValue+">";
+        strVar += "         <select id=\"" + stylerSelectDivId + "\">";
 
         for(var i=0;i < stylerList.length;i++) {
             if(stylerList[i] === selectedStylerName) {
@@ -154,15 +145,13 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
         strVar += "     <\/div>";
         strVar += "  <\/div>";
 
-        if(isUndefinedOrNull(disabled) || !disabled) {
-            strVar += "   <table class=\"control line-right\">";
-            strVar += "      <tr>";
-            strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\"" + editId + "\"><\/i><\/td>";
-            strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\"" + deleteId + "\"><\/i><\/td>";
-            strVar += "      <\/tr>";
-            strVar += "   <\/table>";
-            strVar += "<\/div>";
-        }
+        strVar += "   <table class=\"control line-right\">";
+        strVar += "      <tr>";
+        strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\"" + editId + "\"><\/i><\/td>";
+        strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\"" + deleteId + "\"><\/i><\/td>";
+        strVar += "      <\/tr>";
+        strVar += "   <\/table>";
+        strVar += "<\/div>";
         strVar += "<div style=\"clear: both;\"><\/div>";
 
         div.innerHTML = strVar;
@@ -171,31 +160,29 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
 
         var self = this;
 
-        if(isUndefinedOrNull(disabled) || !disabled) {
-            OSH.EventManager.observeDiv(inputEltId, "change", function (event) {
-                viewItem.name = document.getElementById(inputEltId).value;
-            });
+        OSH.EventManager.observeDiv(inputEltId, "change", function (event) {
+            viewItem.name = document.getElementById(inputEltId).value;
+        });
 
-            OSH.EventManager.observeDiv(deleteId, "click", function (event) {
-                viewItemsContainerElt.removeChild(div);
-                var newArray = [];
+        OSH.EventManager.observeDiv(deleteId, "click", function (event) {
+            viewItemsContainerElt.removeChild(div);
+            var newArray = [];
 
-                for (var i = 0; i < self.view.viewItems.length; i++) {
-                    if (self.view.viewItems[i].id !== viewItem.id) {
-                        newArray.push(self.view.viewItems[i]);
-                    }
+            for (var i = 0; i < self.view.viewItems.length; i++) {
+                if (self.view.viewItems[i].id !== viewItem.id) {
+                    newArray.push(self.view.viewItems[i]);
                 }
+            }
 
-                self.view.viewItems = newArray;
-            });
+            self.view.viewItems = newArray;
+        });
 
-            OSH.EventManager.observeDiv(editId, "click", this.editStyler.bind(this, viewItem));
+        OSH.EventManager.observeDiv(editId, "click", this.editStyler.bind(this, viewItem));
 
-            OSH.EventManager.observeDiv(stylerSelectDivId, "change", function (event) {
-                var vItem = self.getViewItemById(viewItem.id);
-                vItem.styler = self.getNewStylerInstance(this.options[this.selectedIndex].value);
-            });
-        }
+        OSH.EventManager.observeDiv(stylerSelectDivId, "change", function (event) {
+            var vItem = self.getViewItemById(viewItem.id);
+            vItem.styler = self.getNewStylerInstance(this.options[this.selectedIndex].value);
+        });
     },
 
     editStyler:function(viewItem,event) {
