@@ -105,13 +105,9 @@ function assert(condition, message) {
 }
 
 String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
+    return this.replace(new RegExp(search, 'g'), replacement);
 };
 
 Function.prototype.toSource = function() {
-    /*var entire = this.toString();
-    var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-    return body;*/
     return this.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'').trim();
 };
