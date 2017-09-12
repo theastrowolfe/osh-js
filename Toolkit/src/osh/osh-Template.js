@@ -104,6 +104,12 @@ function assert(condition, message) {
     }
 }
 
+/**
+ * This method replaces each substring of this string that matches the given regular expression with the given replacement.
+ * @param search the pattern to search
+ * @param replacement the string which would replace found expression
+ * @return {string} This method returns the resulting String.
+ */
 String.prototype.replaceAll = function(search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };

@@ -20,3 +20,18 @@
  * @constructor
  */
 OSH.Asserts = function() {};
+
+OSH.Asserts.checkIsDefineOrNotNull = function(object,errorMessageTemplate) {
+
+    if(isUndefinedOrNull(object)) {
+        throw new OSH.Exception.Exception(errorMessageTemplate);
+    }
+    return object;
+};
+
+OSH.Asserts.checkObjectPropertyPath = function(object,path,errorMessageTemplate) {
+    if(!OSH.Utils.hasOwnNestedProperty(object,path)){
+        throw new OSH.Exception.Exception(errorMessageTemplate);
+    }
+    return object;
+};
