@@ -41,11 +41,11 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     connect: function () {
-        var ENABLED = false; // disable webworker
+        this.ENABLED = false; // disable webworker
 
         if (!this.init) {
             //creates Web Socket
-            if (OSH.Utils.isWebWorker() && ENABLED) {
+            if (OSH.Utils.isWebWorker() && this.ENABLED) {
                 var url = this.getUrl();
                 var blobURL = URL.createObjectURL(new Blob(['(',
 
@@ -159,7 +159,12 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                             reason = 'The connection was closed due to a failure to perform a TLS handshake';
                             break;
                     }
-                    throw new OSH.Exception.Exception("Cannot connect to the datasource ["+reason+"]: "+this.getUrl(),event);
+                    if(e.code !== 1000) {
+                        throw new OSH.Exception.Exception("Datasource is now closed[" + reason + "]: " + this.getUrl(), event);
+                    } else {
+                        //TODO:send log
+                        console.log("Datasource has been closed normally");
+                    }
                 }.bind(this);
             }
             this.init = true;
@@ -172,7 +177,7 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     disconnect: function() {
-        if (OSH.Utils.isWebWorker() && this.worker != null) {
+        if (OSH.Utils.isWebWorker() && this.worker != null && this.ENABLED) {
             this.worker.postMessage("close");
             this.worker.terminate();
             this.init = false;

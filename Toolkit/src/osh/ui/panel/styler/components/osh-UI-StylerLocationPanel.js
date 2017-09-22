@@ -28,33 +28,29 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Utils.addHTMLTitledLine(this.contentElt,"Default location");
 
 
-        var xDefaultValue = "0.0";
-        var yDefaultValue = "0.0";
-        var zDefaultValue = "0.0";
+        var xDefaultValue = "";
+        var yDefaultValue = "";
+        var zDefaultValue = "";
 
         // inits default values
-        if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.location)) {
-
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.default")) {
             // default location
-            if (!isUndefinedOrNull(this.styler.ui.location.default)) {
-                xDefaultValue = this.styler.ui.location.default.x;
-                yDefaultValue = this.styler.ui.location.default.y;
-                zDefaultValue = this.styler.ui.location.default.z;
-            }
+            xDefaultValue = this.styler.ui.location.default.x;
+            yDefaultValue = this.styler.ui.location.default.y;
+            zDefaultValue = this.styler.ui.location.default.z;
         }
 
-        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", "",xDefaultValue);
-        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", "",yDefaultValue);
-        this.zDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Z", "",zDefaultValue);
+        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
+        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", yDefaultValue,"0.0");
+        this.zDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Z", zDefaultValue,"0.0");
 
         OSH.Utils.addHTMLTitledLine(this.contentElt,"Mapping");
 
         // load existing values if any
         // load UI settings
-        if((!isUndefinedOrNull(this.styler.ui) &&
-            !isUndefinedOrNull(this.styler.ui.location) &&
-            !isUndefinedOrNull(this.styler.ui.location.locationFunc)) ||
-            isUndefinedOrNull(this.styler.properties.locationFunc)) {
+
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping") ||
+            !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.locationFunc")) {
             this.initMappingFunctionUI();
         } else {
             this.initCustomFunctionUI();
@@ -86,15 +82,11 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             var observables = self.getObservable(this.dsListBoxId);
             this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
 
-            if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.location)) {
-
-                // location function
-                if(!isUndefinedOrNull(this.styler.ui.location.locationFunc)) {
-                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.x;
-                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.y;
-                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFunc.z;
-                }
-            }
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping")) {
+                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.x;
+                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.y;
+                document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.z;
+        }
         }
     },
 
@@ -139,74 +131,87 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initCustomFunctionUI:function() {
         this.textareaId = OSH.Utils.createJSEditor(this.contentElt,this.styler.properties.locationFunc.handler.toSource());
+
+
     },
 
+    /**
+     * Returns the properties as JSON object.
+     *
+     * @return {
+     *  ui : {
+     *      location : {
+     *      }
+     *  },
+     *
+     *  location : {...}, // if any
+     *
+     *  locationFunc: {...} // if any
+     * }
+     */
     getProperties:function() {
         var stylerProperties = {};
 
-        var locationProps = OSH.UI.Styler.Factory.getLocation(
+        var locationFuncProps,  defaultLocationProps;
+
+        // update ui property
+        stylerProperties.ui = {
+            location:{}
+        };
+
+        // default location x,y,z
+        defaultLocationProps = OSH.UI.Styler.Factory.getLocation(
             Number(document.getElementById(this.xDefaultInputId).value),
             Number(document.getElementById(this.yDefaultInputId).value),
             Number(document.getElementById(this.zDefaultInputId).value)
         );
 
+        // update ui property
+        stylerProperties.ui.location.default = {
+            x: Number(document.getElementById(this.xDefaultInputId).value),
+            y: Number(document.getElementById(this.yDefaultInputId).value),
+            z: Number(document.getElementById(this.zDefaultInputId).value)
+        };
 
-        OSH.Utils.copyProperties(locationProps, stylerProperties);
+        // mapping function with data
+        if(isUndefinedOrNull(this.textareaId)) {
+            var xIdx=0,yIdx=0,zIdx=0;
 
-        var locationFuncProps;
-
-        if(OSH.Utils.hasOwnNestedProperty(this.styler,"ui.location.locationFunc")){
             if (!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
-                var xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
-                var yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
-                var zIdx = document.getElementById(this.zInputMappingId).selectedIndex;
+                xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
+                yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
+                zIdx = document.getElementById(this.zInputMappingId).selectedIndex;
 
                 locationFuncProps = OSH.UI.Styler.Factory.getLocationFunc(
                     this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
-                    xIdx, yIdx, zIdx);
-
-                // update ui property
-                if (isUndefinedOrNull(this.styler.ui)) {
-                    this.styler.ui = {
-                        location: {}
-                    };
-                }
-
-                if (isUndefinedOrNull(this.styler.ui.location)) {
-                    this.styler.ui.location = {};
-                }
-
-                this.styler.ui.location.locationFunc = {
-                    x: xIdx,
-                    y: yIdx,
-                    z: zIdx
-                };
+                    xIdx, yIdx, zIdx); // obs indexes
             }
-        } else if(OSH.Utils.hasOwnNestedProperty(this.styler,"properties.locationFunc.dataSourceIds")) {
+
+            stylerProperties.ui.location.locationFuncMapping = {
+                x: xIdx,
+                y: yIdx,
+                z: zIdx
+            };
+        } else {
+            // custom textual function
+            var textContent = document.getElementById(this.textareaId).value;
+
             locationFuncProps = OSH.UI.Styler.Factory.getCustomLocationFunc(
-                this.styler.properties.locationFunc.dataSourceIds, //datasource array
+                this.styler, //datasource array
                 document.getElementById(this.textareaId).value //locationFnStr
             );
+
+            stylerProperties.ui.location.custom = textContent;
         }
 
+
+        // copy default location properties
+        OSH.Utils.copyProperties(defaultLocationProps, stylerProperties);
+
+        // copy location function properties if any
         if (!isUndefinedOrNull(locationFuncProps)) {
             OSH.Utils.copyProperties(locationFuncProps, stylerProperties);
         }
-
-        // update ui property
-        if (isUndefinedOrNull(this.styler.ui)) {
-
-            this.styler.ui = {
-                location: {}
-            };
-        }
-
-        console.log(this.styler.ui);
-        this.styler.ui.location.default = {
-            x: document.getElementById(this.xDefaultInputId).value,
-            y: document.getElementById(this.yDefaultInputId).value,
-            z: document.getElementById(this.zDefaultInputId).value
-        };
 
         return stylerProperties;
     }

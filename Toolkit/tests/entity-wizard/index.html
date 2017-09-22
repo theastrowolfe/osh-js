@@ -456,6 +456,26 @@
         entityWizardDialog2.minimize();
 
         entityWizardView2.attachTo(entityWizardDialog2.popContentDiv.id);
+
+        // add geoJSON test feature
+        //1424073849000
+        var geojsonFeature = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Polygon",
+                         "coordinates": [[[1.3973128795623777,43.592374168438646],[1.3988900184631345,43.592374168438646],
+                                        [1.3988900184631345,43.5941380474202],[1.3973128795623777,43.5941380474202],
+                                        [1.3973128795623777,43.592374168438646]]]
+                    }
+                }
+            ]
+        };
+
+        L.geoJSON(geojsonFeature).addTo(leafletMapView2.map);
     }
 
     create();

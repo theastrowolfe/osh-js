@@ -166,16 +166,27 @@ OSH.UI.Styler.Factory.getLocationFunc = function(datasource,xIdx,yIdx,zIdx) {
         "z: rec." + datasource.resultTemplate[zIdx].path + "," +
         "}";
 
-    return OSH.UI.Styler.Factory.getCustomLocationFunc([datasource.id],locationFnStr);
-};
-
-OSH.UI.Styler.Factory.getCustomLocationFunc = function(dataSourceIdsArray,locationFnStr) {
     var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
     var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
 
     return {
         locationFunc : {
-            dataSourceIds: dataSourceIdsArray,
+            dataSourceIds: [datasource.id],
+            handler: locationTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getCustomLocationFunc = function(styler,locationFnStr) {
+    OSH.Asserts.checkObjectPropertyPath(styler,
+        "properties.locationFunc.dataSourceIds","The styler must have datasourceId to be used with locationFunc");
+
+    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+
+    return {
+        locationFunc : {
+            dataSourceIds: styler.properties.locationFunc.dataSourceIds,
             handler: locationTemplateHandlerFn
         }
     };
@@ -186,6 +197,44 @@ OSH.UI.Styler.Factory.getFixedIcon = function(iconArraybuffer) {
     return  {
         icon: OSH.Utils.arrayBufferToImageDataURL(iconArraybuffer)
     };
+};
+
+OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource, observableIdx,
+                                      defaultIconArrayBuffer, lowIconArrayBuffer, highIconArrayBuffer, thresholdValue) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultIconArrayBuffer);
+    OSH.Asserts.checkIsDefineOrNotNull(lowIconArrayBuffer);
+    OSH.Asserts.checkIsDefineOrNotNull(highIconArrayBuffer);
+    OSH.Asserts.checkIsDefineOrNotNull(thresholdValue);
+
+    var defaultBlobURL = OSH.Utils.arrayBufferToImageDataURL(defaultIconArrayBuffer);
+    var lowBlobURL = OSH.Utils.arrayBufferToImageDataURL(lowIconArrayBuffer);
+    var highBlobURL = OSH.Utils.arrayBufferToImageDataURL(highIconArrayBuffer);
+
+    var path = "timeStamp";
+
+    if(observableIdx > 0) {
+        path = datasource.resultTemplate[observableIdx].path;
+    }
+
+    var iconTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowBlobURL + "'; }" + // <
+                       "else if (" + path + " > " + thresholdValue + " ) { return '" + highBlobURL + "'; }" + // >
+                       "else { return '"+defaultBlobURL+ "'; }"; // ==
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    return {
+        iconFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: iconTemplateHandlerFn
+        }
+    };
+
 };
 
 OSH.UI.Styler.Factory.getCustomIconFunc = function(dataSourceIdsArray,iconFnStr) {

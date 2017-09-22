@@ -345,11 +345,11 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     color:#056BA6;
 }
 .osh .input-file-i:before {
-    content: "\f0c6";
-    font-size:1.85em;
+    content: "\f093";
+    font-size:1.25em;
 }
 .osh .input-file-i {
-    margin-top: -4px;
+    margin-top: 0px;
 }
 
 .osh .text-area {

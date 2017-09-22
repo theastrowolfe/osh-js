@@ -21,17 +21,31 @@
  */
 OSH.Asserts = function() {};
 
-OSH.Asserts.checkIsDefineOrNotNull = function(object,errorMessageTemplate) {
+OSH.Asserts.checkIsDefineOrNotNull = function(object) {
 
     if(isUndefinedOrNull(object)) {
-        throw new OSH.Exception.Exception(errorMessageTemplate);
+        throw new OSH.Exception.Exception("the object is undefined or null");
     }
     return object;
 };
 
-OSH.Asserts.checkObjectPropertyPath = function(object,path,errorMessageTemplate) {
+OSH.Asserts.checkObjectPropertyPath = function(object,path,errorMessage) {
+
     if(!OSH.Utils.hasOwnNestedProperty(object,path)){
-        throw new OSH.Exception.Exception(errorMessageTemplate);
+        var message = "The path "+path+" for the object does not exists";
+        if(!isUndefinedOrNull(errorMessage)) {
+            message = errorMessage;
+        }
+
+        throw new OSH.Exception.Exception(message);
     }
     return object;
+};
+
+OSH.Asserts.checkArrayIndex = function(array, index) {
+    if(array.length === 0) {
+        throw new OSH.Exception.Exception("The array length is 0");
+    } else if(index > array.length -1 ) {
+        throw new OSH.Exception.Exception("The given index of the array is out of range:"+index+" > "+(array.length -1));
+    }
 };

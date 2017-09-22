@@ -42,6 +42,8 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
     },
 
     loadObservable:function(datasourceSelectId,observableSelectId) {
+        var isNotEmpty = true;
+
         OSH.Utils.removeAllFromSelect(observableSelectId);
         var datasourceSelectTag = document.getElementById(datasourceSelectId);
         var observableSelectTag = document.getElementById(observableSelectId);
@@ -58,8 +60,11 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
                 option.object = currentDS.resultTemplate[key].object;
 
                 observableSelectTag.add(option);
+                isNotEmpty = false;
             }
         }
+
+        return isNotEmpty;
     },
 
     loadUom:function(observableSelectId,thresholdInputId) {
