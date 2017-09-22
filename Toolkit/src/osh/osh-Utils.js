@@ -374,8 +374,37 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
   return value.substring(0,value.length-1);
 };
 
-OSH.Utils.copyProperties = function(firstObject,secondObject) {
-    for (var k in firstObject) secondObject[k] = firstObject[k];
+/**
+ * Merge properties from an object to another one.
+ * If the property already exists, the function will try to copy children ones.
+ *
+ * @param from the origin object
+ * @param to the object to copy properties into
+ * @return {*} the final merged object
+ */
+OSH.Utils.copyProperties = function(from,to,forceMerge) {
+    for (var property in from) {
+        if(isUndefinedOrNull(to[property]) || forceMerge) {
+            to[property] = from[property];
+        } else {
+            // copy children
+            if(!Array.isArray(from[property]) && // test if array
+                !OSH.Utils.isFunction(from[property]) && // test is not a function
+                OSH.Utils.isObject(from[property])) { // test is object
+
+                OSH.Utils.copyProperties(from[property], to[property]);
+            }
+        }
+    }
+    return to;
+};
+
+OSH.Utils.isFunction = function(object) {
+    return object === 'function' || object instanceof Function;
+};
+
+OSH.Utils.isObject = function(object) {
+    return object === 'object' || object instanceof Object;
 };
 
 OSH.Utils.addHTMLLine = function(div) {
