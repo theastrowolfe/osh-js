@@ -37,12 +37,14 @@ OSH.UI.Panel = BaseClass.extend({
     initPanel:function() {},
 
     addListener: function(div,listenerName, func) {
-        div.addEventListener(listenerName,func,false);
-        this.componentListeners.push({
-            div: div,
-            name:listenerName,
-            func:func
-        });
+        OSH.Utils.onDomReady(function() {
+            div.addEventListener(listenerName, func, false);
+            this.componentListeners.push({
+                div: div,
+                name: listenerName,
+                func: func
+            });
+        }.bind(this));
     },
 
     removeAllListerners:function() {

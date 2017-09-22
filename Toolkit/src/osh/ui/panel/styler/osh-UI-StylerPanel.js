@@ -96,12 +96,6 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
             inputElt.nextSibling.value = theFile.name;
             return function(e) {
                 var arrayBuffer = e.target.result;
-                var url = OSH.Utils.arrayBufferToImageDataURL(arrayBuffer);
-
-                var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                sel.innerHTML = ['<img class="thumb" src="', url,
-                    '" title="', escape(theFile.name), '"/>'].join('');
-
                 callbackFn({arraybuffer:arrayBuffer,name:theFile.name,type:theFile.type});
             };
         })(file);
@@ -121,6 +115,31 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
             inputElt.nextSibling.text = props.name;
             inputElt.nextSibling.value = props.name;
         }
+    },
+
+    inputFileKeyHandler : function(callbackFn,evt) {
+        OSH.Asserts.checkIsDefineOrNotNull(evt);
+
+        var clipboardData = evt.clipboardData || window.clipboardData;
+        var pastedData = clipboardData.getData('Text');
+        var path = pastedData;
+
+        // Closure to capture the file information.
+        var inputElt = this;
+
+        var callback = function(isImage,details) {
+            if (isImage) {
+                // get type from content-type
+                //TODO:Asserts?
+                var contentType = details.type.split("/")[1];
+
+                OSH.Utils.getArrayBufferFromHttpImage(path,contentType,function(arraybuffer){
+                    callbackFn({arraybuffer:arraybuffer,name:path,type:contentType});
+                });
+            }
+        };
+
+        OSH.Utils.checkUrlImage(path,callback);
     },
 
     /**

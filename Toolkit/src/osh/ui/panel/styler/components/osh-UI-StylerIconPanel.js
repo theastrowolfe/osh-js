@@ -74,30 +74,6 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         //-- sets icon type
         var typeInputElt = document.getElementById(this.typeInputId);
 
-
-        /*if(!isUndefinedOrNull(this.styler.ui) && !isUndefinedOrNull(this.styler.ui.icon)) {
-            if (!isUndefinedOrNull(this.styler.ui.icon.fixed)) {
-                // loads fixed
-                typeInputElt.options.selectedIndex = 1;
-                this.addFixed(this.styler.ui.icon.fixed);
-            } else if (!isUndefinedOrNull(this.styler.ui.icon.threshold)) {
-                typeInputElt.options.selectedIndex = 2;
-                this.addThreshold(this.styler.ui.icon);
-            } else if (!isUndefinedOrNull(this.styler.ui.icon.custom)) {
-                typeInputElt.options.selectedIndex = 4;
-                this.addCustom(this.styler.ui.icon);
-            }
-
-            this.properties = this.styler.ui.icon;
-        } else if(!isUndefinedOrNull(this.styler.properties) && !isUndefinedOrNull(this.styler.properties.iconFunc)) {
-            typeInputElt.options.selectedIndex = 4;
-            this.addCustom({custom :{iconFuncStr:this.styler.properties.iconFunc.handler.toSource()}});
-
-            this.properties.custom = {
-                iconFunc : this.styler.properties.iconFunc,
-            };
-        }*/
-
         if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon")) {
             if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon.fixed")) {
                 // loads fixed
@@ -156,6 +132,18 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
             self.properties.fixed.defaultIcon = result;
         }));
+
+        this.addListener(defaultIconInputElt.nextElementSibling, "paste", this.inputFileKeyHandler.bind(defaultIconInputElt.nextElementSibling,function(result) {
+            if(!isUndefinedOrNull(result)) {
+                self.properties.fixed.defaultIcon = result;
+            }
+        }));
+
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
+            self.properties.fixed.defaultIcon = result;
+        }));
+
+
 
         this.addListener(selectedIconInputElt, "change", this.inputFileHandler.bind(selectedIconInputElt,function(result) {
             self.properties.fixed.selectedIcon = result;

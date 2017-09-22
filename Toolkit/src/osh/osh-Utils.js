@@ -571,70 +571,66 @@ OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInput
 
         liElt.appendChild(divPrevElt);
 
-        // NOT working?!!!
-        inputFileElt.addEventListener('change', function() {
-            console.log("onchange");
-        }, false);
-
-        div.appendChild(ulElt);
-    } else {
-        div.appendChild(ulElt);
-    }
-
-
-    /*var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
-    strVar += "<label for=\"file-"+id+"\">"+label+"<\/label>";
-    if(!isUndefinedOrNull(createPreview) && createPreview) {
-        var prevId = OSH.Utils.randomUUID();
-        strVar += "<input id=\""+id+"\"  class=\"input-file preview\" type=\"file\" name=\"file-"+id+"\" onchange=\""+handleFileSelect()+ "\" />";
-        strVar += "<div id=\""+prevId+"\"class=\"preview\"/>";
-
-        function handleFileSelect(evt) {
-           console.log("ici");
-           /* var files = evt.target.files; // FileList object
-
-            // Loop through the FileList and render image files as thumbnails.
-            for (var i = 0, f; f = files[i]; i++) {
-
-                // Only process image files.
-                if (!f.type.match('image.*')) {
-                    continue;
-                }
-
+        OSH.Utils.onDomReady(function(){
+            inputFileElt.addEventListener('change', function(evt) {
+                var file = evt.target.files[0];
                 var reader = new FileReader();
 
                 // Closure to capture the file information.
-                reader.onload = (function(theFile) {
-                    return function(e) {
-                        // Render thumbnail.
-                        var span = document.createElement('span');
-                        span.innerHTML = ['<img class="thumb" src="', e.target.result,
-                            '" title="', escape(theFile.name), '"/>'].join('');
+                var inputElt = this;
 
-                        OSH.Utils.removeAllNodes(document.getElementById('prevId'));
-                        document.getElementById('prevId').appendChild(span, null);
+                reader.onload = (function(theFile) {
+                    inputElt.nextSibling.text = theFile.name;
+                    inputElt.nextSibling.value = theFile.name;
+                    return function(e) {
+                        var arrayBuffer = e.target.result;
+                        var url = OSH.Utils.arrayBufferToImageDataURL(arrayBuffer);
+
+                        var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+                        sel.innerHTML = ['<img class="thumb" src="', url,
+                            '" title="', escape(theFile.name), '"/>'].join('');
                     };
-                })(f);
+                })(file);
 
                 // Read in the image file as a data URL.
-                reader.readAsDataURL(f);
-            }
-        }
+                reader.readAsArrayBuffer(file);
+            }, false);
 
-        strVar += "<\/li><\/ul>";
-        // adds to div
-        div.innerHTML += strVar;
+            inputFileElt.nextElementSibling.addEventListener("paste",function(evt){
+                OSH.Asserts.checkIsDefineOrNotNull(evt);
 
-        document.getElementById(id).addEventListener('change', handleFileSelect);
+                var clipboardData = evt.clipboardData || window.clipboardData;
+                var pastedData = clipboardData.getData('Text');
+                var path = pastedData;
+
+                console.log(path);
+                // Closure to capture the file information.
+                var inputElt = this;
+
+                var callback = function(isImage,details) {
+                    if (isImage) {
+                        // get type from content-type
+                        //TODO:Asserts?
+                        var contentType = details.type.split("/")[1];
+
+                        OSH.Utils.getArrayBufferFromHttpImage(path,contentType,function(arraybuffer){
+                            var url = OSH.Utils.arrayBufferToImageDataURL(arraybuffer);
+
+                            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+                            sel.innerHTML = ['<img class="thumb" src="', url,
+                                '" title="', escape(path), '"/>'].join('');
+                        });
+                    }
+                };
+
+                OSH.Utils.checkUrlImage(path,callback);
+            });
+        });
+
+        div.appendChild(ulElt);
     } else {
-        strVar += "<input id=\""+id+"\"  class=\"input-file\" type=\"file\" name=\""+id+"\" />";
-
-        strVar += "<\/li><\/ul>";
-        // adds to div
-        div.innerHTML += strVar;
+        div.appendChild(ulElt);
     }
-*/
-
     return id;
 };
 
@@ -785,6 +781,21 @@ OSH.Utils.arrayBufferToImageDataURL = function(arraybuffer) {
     return URL.createObjectURL(blob);
 };
 
+OSH.Utils.getArrayBufferFromHttpImage = function(url,type,callback) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open( "GET", url, true );
+
+    // Ask for the result as an ArrayBuffer.
+    xhr.responseType = "arraybuffer";
+
+    xhr.onload = function( e ) {
+        callback(new Uint8Array( this.response ));
+    };
+
+    xhr.send();
+};
+
 OSH.Utils.createJSEditor = function(parentElt,content) {
     return OSH.Utils.addHTMLTextArea(parentElt, js_beautify(content));
 };
@@ -806,4 +817,34 @@ OSH.Utils.hasOwnNestedProperty = function(obj,propertyPath){
     }
 
     return true;
+};
+
+
+OSH.Utils.createXDomainRequest = function() {
+    var xdr = null;
+
+    if (window.XDomainRequest) {
+        xdr = new XDomainRequest();
+    } else if (window.XMLHttpRequest) {
+        xdr = new XMLHttpRequest();
+    } else {
+        throw new OSH.Exception.Exception("The browser does not handle cross-domain");
+    }
+
+    return xdr;
+};
+
+OSH.Utils.checkUrlImage = function(url,callback) {
+    var xdr = OSH.Utils.createXDomainRequest();
+    xdr.onload = function() {
+        var contentType = xdr.getResponseHeader('Content-Type');
+        if (contentType.slice(0,6) === 'image/') {// URL is valid image
+            callback(true,{type: contentType});
+        } else {
+            callback(false);
+        }
+    }
+
+    xdr.open("GET", url);
+    xdr.send();
 };
