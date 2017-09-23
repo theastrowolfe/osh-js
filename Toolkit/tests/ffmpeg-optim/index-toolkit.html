@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>Foscam tasking test</title>
+
+    <!-- VENDOR -->
+    <script type="text/javascript" src="vendor/YUVCanvas.js"></script>
+
+    <!--script type="text/javascript" src="js/workers/ffmpeg-h264.js"></script-->
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <style>
+
+        .video {
+            width: 612px;
+            height:338px;
+            border:solid 1px lightgrey;
+        }
+
+        .video canvas{
+            width: inherit;
+            height:inherit;
+        }
+
+        .video-selected {
+            border-radius: 3px;
+            box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
+        }
+
+        .videoElement {
+            padding: 5px 5px 5px 5px;
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);
+        }
+
+        .stats {
+            position: absolute;
+            margin-top: 35px;
+            margin-left: 5px;
+            background-color: white;
+            opacity: 0.5;
+            padding:3px;
+        }
+
+        #video-container {
+            display: flex;
+            flex-flow: row wrap;
+        }
+    </style>
+</head>
+<body id="body">
+<h2>FFMPEG test</h2>
+<div><input type="button" value="Add" id="add-button" /></div>
+<div id="video-container"></div>
+<script type="text/javascript">
+
+    window.OSH.BASE_WORKER_URL = "../../src/osh/ui/view/video/workers";
+    // We can add a group of dataSources and set the options
+    var dataReceiverController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor : 1
+    });
+
+    //var NUM_VIEWS = 6;
+    var USE_WEB_WORKERS = true;
+
+    var videoContainer = document.getElementById("video-container");
+   // for(var i = 0;i < NUM_VIEWS; i++) {
+
+    var i = 0;
+    document.getElementById("add-button").onclick = function() {
+        var videoElt = document.createElement("div");
+        videoElt.className = "videoElement";
+
+        videoElt.id = "video_" + (i);
+
+        var statsElt = document.createElement("div");
+        statsElt.setAttribute("id","stats-"+i);
+        statsElt.className = "stats";
+
+        var videoBlockElt = document.createElement("div");
+        videoBlockElt.className = "blockElt";
+
+        videoBlockElt.appendChild(statsElt);
+        videoBlockElt.appendChild(videoElt);
+
+        videoContainer.appendChild(videoBlockElt);
+
+        var videoDataSource = new OSH.DataReceiver.VideoH264("H264 video " + i, {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "localhost:8182/sensorhub/sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+            //offeringID: "urn:android:device:5da60da96b568172-sos",
+            startTime: "now",
+            endTime: "2055-08-11T20:18:05.451Z",
+            offeringID:"urn:android:device:caf661b4881b902c-sos",
+            //offeringID: "urn:android:device:caf661b4881b902c-sos",
+            //offeringID: "urn:mysos:offering:foscam-r2",
+            //startTime: "2017-09-11T23:11:07.875Z",
+            //endTime: "2017-09-11T23:13:01.216Z",
+            syncMasterTime: false,
+            bufferingTime: 0
+        });
+
+        //2017-09-11T23:11:07.875Z / 2017-09-11T23:13:01.216Z
+
+        console.log(videoDataSource.buildUrl(videoDataSource.properties));
+
+        var videoView_1 = new OSH.UI.FFMPEGView(videoElt.id, {
+            dataSourceId: videoDataSource.id,
+            css: "video",
+            cssSelected: "video-selected",
+            name: "Android Video",
+            useWorker: USE_WEB_WORKERS,
+            useWebWorkerTransferableData: false,
+            width: 1920,
+            height: 1080
+        });
+        dataReceiverController.addDataSource(videoDataSource);
+        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[videoDataSource.id]});
+
+        videoView_1.onAfterDecoded = function() {
+            statsElt.innerHTML = "Fps: "+videoView_1.statistics.fps+"";
+        };
+        i++;
+    };
+
+    //}
+</script>
+
+</body>
+</html>

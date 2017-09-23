@@ -45,19 +45,20 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         }
 
         // add template
-        var entityWizard = document.createElement("div");
-        entityWizard.setAttribute("id","Entity-wizard-"+OSH.Utils.randomUUID());
-        entityWizard.setAttribute("class",'entity-wizard');
+        var entityEditor = document.createElement("div");
+        entityEditor.setAttribute("id","Entity-editor-"+OSH.Utils.randomUUID());
+        entityEditor.setAttribute("class",'entity-editor');
 
-        document.getElementById(this.divId).appendChild(entityWizard);
+        document.getElementById(this.divId).appendChild(entityEditor);
 
 
         this.tabPanel = new OSH.UI.Panel.TabPanel();
 
+        this.tabPanel.addTab("File",this.createFilePanel());
         this.tabPanel.addTab("Info",this.createInfoPanel());
         this.tabPanel.addTab("Data Sources",this.createDSPanel());
         this.tabPanel.addTab("Views",this.createViewPanel());
-        entityWizard.appendChild(this.tabPanel.divElt);
+        entityEditor.appendChild(this.tabPanel.divElt);
 
         this.datasources = {}; //TODO: probably to remove
         this.views = [];
@@ -67,6 +68,18 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
         this.initDatasources();
 
+    },
+
+    createFilePanel:function() {
+        var divElt = document.createElement("div");
+        var inputFileEltId = OSH.Helper.HtmlHelper.addTitledFileChooser(divElt,"Load");
+
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            var nextElt = document.getElementById("text-"+inputFileEltId);
+            nextElt.className += " load-settings ";
+        });
+
+        return divElt;
     },
 
     createInfoPanel:function() {
@@ -120,10 +133,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         this.viewContainer = OSH.Utils.randomUUID();
         this.createButtonId = OSH.Utils.randomUUID();
 
-        var buttonName = "Create";
-        if(!isUndefinedOrNull(this.entity.datacontroller)) {
-            buttonName = "Edit";
-        }
+        var buttonName = "Save";
 
         var strVar = "      <div class=\"select-style\">";
         strVar += "         <select id=\""+this.selectViewId+"\">";
@@ -352,8 +362,6 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
             // setup existing info
             discoveryView.initDataSource(self.datasources[dataSource.id]);
-
-            discoveryView.setButton("Edit");
         });
 
         this.buildDSResultTemplate(dataSource);
@@ -678,8 +686,6 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                currentView.viewItemsToAdd = [];
            }
        }
-
-       document.getElementById(this.createButtonId).innerHTML = "Edit";
     },
 
 

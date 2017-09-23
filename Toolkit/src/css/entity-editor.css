@@ -1,0 +1,113 @@
+.osh .entity-wizard {
+    /*margin: 0 auto; => center?*/
+    /*background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);*/
+    /*background-color: rgba(5, 107, 166, 0.6);*/
+    overflow: auto;
+    min-height: 300px;
+}
+
+.osh .entity-wizard button.submit {
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.osh .entity-wizard .view-container {
+    clear: both;
+    height: 158px;
+}
+
+.osh .entity-wizard .datasource-container {
+    clear: both;
+    height: 230px;
+    overflow: auto;
+}
+
+.osh .entity-wizard  section .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+
+/** DataSource tab**/
+.osh .entity-wizard .ds-line {
+    width:100%;
+}
+
+.osh .entity-wizard .ds-line > span{
+    margin-left: 15px;
+    font-size: 17px;
+}
+
+.osh .entity-wizard .ds-line > .control {
+    margin-left:-15px;
+    margin-top:-2px;
+}
+
+.osh .entity-wizard .ds-line > .control .edit {
+    padding-right: 15px;
+}
+
+.osh .entity-wizard  .ds-line > .control .edit:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .entity-wizard  .ds-line > .control .delete {
+    padding-right: 15px;
+}
+
+.osh .entity-wizard  .ds-line > .control .delete:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .entity-wizard  .ds-line > .control .fa-2x {
+    font-size: 1.5em;
+}
+
+.osh .entity-wizard  .add-view-button {
+    margin-left: 15px;
+}
+
+/** create button **/
+.osh .panel .entity-wizard .create {
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    display: table;
+}
+
+.osh .entity-wizard .info .input-text {
+    width:200px;
+}
+
+.osh .entity-wizard .datasource {}
+
+.osh .entity-wizard .views {}
+
+.osh .dialog-edit-view .view-item-line  > input{
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px
+}
+
+.osh .dialog-edit-view .view-item-line  > .select-style {
+    float:right;
+}
+
+.osh .dialog-edit-view .viewItem-container {
+    height: 160px;
+    overflow: auto;
+}
+
+.osh .dialog-edit-view .edit-view .input-text {
+     width: calc(100% - 146px);
+}
+
+.osh .entity-wizard .load-settings.input-file-text:not(.preview) {
+    width: calc(100% - 200px);
+}

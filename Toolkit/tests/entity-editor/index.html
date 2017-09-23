@@ -1,0 +1,493 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify-css.js"></script>
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify-html.js"></script>
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify.js"></script>
+
+    <!--//TODO: add into vendors -->
+    <script src="../../vendor-local/clone/clone.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/parsers/osh-SWEXmlParser.js"></script>
+    <script type="text/javascript" src="../../src/osh/server/osh-Server.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerLinePlot.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPolyline.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-MapView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-CesiumView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-ChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-SaveDialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-TabPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerLocationPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerIconPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditorPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditViewPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityNoViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityChartEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityMapEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityVideoEditPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerMarkerPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerXYPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerLinePlotPanel.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/entity-editor.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog-save.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/panel.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
+    <style>
+        body {
+            margin: 0;
+            height: calc(100% - 20px);
+            background-color: black;
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+
+        *, *:before, *:after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        h1 {
+            padding: 50px 0;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        p {
+            margin: 0 0 20px;
+            line-height: 1.5;
+        }
+
+        .osh.dialog .pop-over {
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+        }
+
+        .dialog-entity {
+            width:430px;
+            height:400px;
+            margin-bottom:10px;
+        }
+
+        .dialog-discovery {
+            width:430px;
+            height:515px;
+            margin-bottom:10px;
+        }
+
+        .dialog-edit-view {
+            width:430px;
+            height:490px;
+            margin-bottom:10px;
+        }
+
+        .leaflet-container, #container {
+            height: 100%;
+            float: right;
+        }
+
+        .osh.dialog .app-dialog {
+            width: 450px;
+            height: 350px;
+        }
+
+        #dialog-container {
+            position: absolute;
+            float: left;
+            width: calc(50% - 5px);
+            margin-left: 50px;
+        }
+
+        #dialog-container-2 {
+            position: absolute;
+            float: left;
+            width: calc(50% - 5px);
+            margin-left: 50px;
+        }
+
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .leaflet-container .leaflet-marker-pane img {
+            max-width: 32px !important;
+            height:auto;
+        }
+
+        #map-container {
+            height:100%;
+        }
+
+        #map-container-2 {
+            height:100%;
+        }
+
+        #left {
+            width:calc(50% - 5px);
+            height: 100%;
+            float:left;
+            margin-right: 10px;
+        }
+
+        #right{
+            width:calc(50% - 5px);
+            height: 100%;
+            float:right;
+        }
+    </style>
+</head>
+
+<body id="body">
+<div id="left">
+    <div id="dialog-container"></div>
+    <div id="map-container"></div>
+    <div id="container"></div>
+</div>
+<div id="right">
+    <div id="dialog-container-2"></div>
+    <div id="map-container-2"></div>
+    <div id="container-2"></div>
+</div>
+<script type="text/javascript">
+
+    window.OSH.BASE_WORKER_URL = "js/sub/workers";
+    window.CESIUM_BASE_URL = 'vendor/';
+
+
+    function create() {
+        /** CREATE NEW ENTITY **/
+
+        var androidPhoneGpsDataSource = new OSH.DataReceiver.JSON("android-GPS", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/Location",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: 3 + "",
+            syncMasterTime: true,
+            bufferingTime: 1000,
+            timeShift: -16000
+        });
+
+
+        //------------- STYLER ---------//
+        var pointMarker = new OSH.UI.Styler.PointMarker({
+            location: {
+                x: 1.42376557,
+                y: 43.61758626,
+                z: 100
+            },
+            locationFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                handler: function (rec) {
+                    return {
+                        x: rec.location.lon,
+                        y: rec.location.lat,
+                        z: rec.location.alt
+                    };
+                }
+            },
+            icon: 'images/cameralook.png',
+            iconFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                handler: function (rec, timeStamp, options) {
+                    if (options.selected) {
+                        return 'images/cameralook-selected.png'
+                    } else {
+                        return 'images/cameralook.png';
+                    }
+                    ;
+                }
+            }
+        });
+
+        //------------ VIEW -----------------//
+        var leafletMapView = new OSH.UI.LeafletView("map-container",
+            [{
+                styler: pointMarker,
+                name: "Android Phone GPS"
+            },
+                {
+                    styler: new OSH.UI.Styler.Polyline({
+                        locationFunc: {
+                            dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                            handler: function (rec) {
+                                return {
+                                    x: rec.location.lon,
+                                    y: rec.location.lat,
+                                    z: rec.location.alt
+                                };
+                            }
+                        },
+                        color: 'rgba(0,0,255,0.5)',
+                        weight: 10,
+                        opacity: .5,
+                        smoothFactor: 1,
+                        maxPoints: 200
+                    }),
+                    name: "Android Phone GPS Path"
+                }]
+            ,{
+                name:"Leaflet - Test map"
+            });
+
+        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+            replayFactor : 3
+        });
+
+        // We can add a group of dataSources and set the options
+        dataProviderController.addDataSource(androidPhoneGpsDataSource);
+
+        //---------------------------------------------------------------//
+        //---------------------------- Starts ---------------------------//
+        //---------------------------------------------------------------//
+
+        // starts streaming
+        dataProviderController.connectAll();
+
+        var entityWizardView = new OSH.UI.EntityEditorPanel("",{
+            viewContainer: "container",
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+        });
+
+        var entityWizardDialog    = new OSH.UI.DialogPanel("dialog-container",{
+            /*  css: "dialog-entity",
+             name: "Entity",
+             show:true,
+             draggable:true,
+             dockable: false,
+             closeable: true,*/
+
+            css: "dialog-entity",
+            name: "Create new Entity",
+            show:true,
+            pinContainerId: "dialog-container",
+            draggable:true
+        });
+
+        entityWizardView.attachTo(entityWizardDialog.popContentDiv.id);
+
+        entityWizardDialog.pin();
+        entityWizardDialog.minimize();
+    }
+    function edit() {
+        //-------------------------//
+        /** EDIT EXISTING ENTITY **/
+        //-------------------------//
+
+        var androidPhoneGpsDataSource2 = new OSH.DataReceiver.JSON("android-GPS", {
+                protocol: "ws",
+                service: "SOS",
+                endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+                offeringID: "urn:android:device:060693280a28e015-sos",
+                observedProperty: "http://sensorml.com/ont/swe/property/Location",
+                startTime: "2015-02-16T07:58:00Z",
+                endTime: "2015-02-16T08:09:00Z",
+                replaySpeed: 3 + "",
+                syncMasterTime: true,
+                bufferingTime: 1000,
+                timeShift: -16000
+            });
+
+
+        var dataProviderController2 = new OSH.DataReceiver.DataReceiverController({
+            replayFactor : 3
+        });
+
+        // We can add a group of dataSources and set the options
+        dataProviderController2.addDataSource(androidPhoneGpsDataSource2);
+
+        // creates entity
+        var newEntity = {
+            id : "Entity-"+OSH.Utils.randomUUID(),
+            dataSources : [androidPhoneGpsDataSource2.id],
+            datacontroller: dataProviderController2
+        };
+
+        //------------- STYLER ---------//
+        var pointMarker2 = new OSH.UI.Styler.PointMarker({
+            location: {
+                x: 1.42376557,
+                y: 43.61758626,
+                z: 100
+            },
+            locationFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                handler: function (rec) {
+                    return {
+                        x: rec.location.lon,
+                        y: rec.location.lat,
+                        z: rec.location.alt
+                    };
+                }
+            },
+            icon: 'images/cameralook.png',
+            iconFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                handler: function (rec, timeStamp, options) {
+                    if (options.selected) {
+                        return 'images/cameralook-selected.png'
+                    } else {
+                        return 'images/cameralook.png';
+                    }
+                    ;
+                }
+            }
+        });
+
+        //------------ VIEW -----------------//
+        var leafletMapView2 = new OSH.UI.LeafletView("map-container-2",
+            [{
+                styler: pointMarker2,
+                name: "Android Phone GPS",
+                entityId:newEntity.id
+            },
+                {
+                    styler: new OSH.UI.Styler.Polyline({
+                        locationFunc: {
+                            dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                            handler: function (rec) {
+                                return {
+                                    x: rec.location.lon,
+                                    y: rec.location.lat,
+                                    z: rec.location.alt
+                                };
+                            }
+                        },
+                        color: 'rgba(0,0,255,0.5)',
+                        weight: 10,
+                        opacity: .5,
+                        smoothFactor: 1,
+                        maxPoints: 200
+                    }),
+                    name: "Android Phone GPS Path",
+                    entityId:newEntity.id
+                }]
+            ,{
+                name:"Leaflet - Test map - EDIT"
+            });
+
+        // starts streaming
+        dataProviderController2.connectAll();
+
+        var entityWizardView2 = new OSH.UI.EntityEditorPanel("",{
+            viewContainer: "container-2",
+            entity:newEntity,
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+        });
+
+        var entityWizardDialog2    = new OSH.UI.DialogPanel("dialog-container-2",{
+            css: "dialog-entity",
+            name: "Edit Entity",
+            show:true,
+            pinContainerId: "dialog-container-2",
+            draggable:true
+        });
+
+        entityWizardDialog2.pin();
+        entityWizardDialog2.minimize();
+
+        entityWizardView2.attachTo(entityWizardDialog2.popContentDiv.id);
+
+        // add geoJSON test feature
+        // 1424073849000
+        // https://cdn.dribbble.com/users/220498/avatars/mini/7544be7cf4ee9c2294b953b8e4534c17.jpeg?1479139677
+        var geojsonFeature = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Polygon",
+                         "coordinates": [[[1.3973128795623777,43.592374168438646],[1.3988900184631345,43.592374168438646],
+                                        [1.3988900184631345,43.5941380474202],[1.3973128795623777,43.5941380474202],
+                                        [1.3973128795623777,43.592374168438646]]]
+                    }
+                }
+            ]
+        };
+
+        L.geoJSON(geojsonFeature).addTo(leafletMapView2.map);
+    }
+
+    create();
+    edit();
+</script>
+
+</body>
+</html>
