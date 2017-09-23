@@ -42,9 +42,9 @@ OSH.UI.EntityEditViewPanel = OSH.UI.Panel.extend({
     },
 
     buildViewProperties: function() {
-        OSH.Utils.addHTMLTitledLine(this.divElt,"View properties");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"View properties");
 
-        var inputViewNameId = OSH.Utils.addInputText(this.divElt,"Name",this.view.name);
+        var inputViewNameId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Name",this.view.name);
 
         var self = this;
         OSH.EventManager.observeDiv(inputViewNameId,"change",function(event){
@@ -55,10 +55,10 @@ OSH.UI.EntityEditViewPanel = OSH.UI.Panel.extend({
     },
 
     buildContainer: function(containerArr) {
-        OSH.Utils.addHTMLTitledLine(this.divElt,"Container");
-        this.containerDivId = OSH.Utils.addHTMLListBox(this.divElt,"",containerArr);
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"Container");
+        this.containerDivId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",containerArr);
 
-        OSH.Utils.HTMLListBoxSetSelected(document.getElementById(this.containerDivId),this.view.container);
+        OSH.Helper.HtmlHelper.HTMLListBoxSetSelected(document.getElementById(this.containerDivId),this.view.container);
         // add default containers
         // listener
         var self = this;

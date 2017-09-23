@@ -24,8 +24,8 @@ OSH.UI.EntityNoViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
     },
 
     buildDataSource: function(datasourceArr) {
-        OSH.Utils.addHTMLTitledLine(this.divElt,"Data Sources");
-        var dataSourceId = OSH.Utils.addHTMLListBox(this.divElt,"",[]);
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"Data Sources");
+        var dataSourceId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",[]);
         var selectTag = document.getElementById(dataSourceId);
 
         for(var key in datasourceArr) {

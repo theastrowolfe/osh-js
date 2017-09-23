@@ -44,7 +44,7 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
     loadObservable:function(datasourceSelectId,observableSelectId) {
         var isNotEmpty = true;
 
-        OSH.Utils.removeAllFromSelect(observableSelectId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(observableSelectId);
         var datasourceSelectTag = document.getElementById(datasourceSelectId);
         var observableSelectTag = document.getElementById(observableSelectId);
 
@@ -90,23 +90,53 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
 
         // Closure to capture the file information.
         var inputElt = this;
-
         reader.onload = (function(theFile) {
             inputElt.nextSibling.text = theFile.name;
             inputElt.nextSibling.value = theFile.name;
+
             return function(e) {
-                var arrayBuffer = e.target.result;
-                callbackFn({arraybuffer:arrayBuffer,name:theFile.name,type:theFile.type});
+                var l, d, array;
+                d = e.target.result;
+                l = d.length;
+                array = new Uint8Array(l);
+                for (var i = 0; i < l; i++){
+                    array[i] = d.charCodeAt(i);
+                }
+                var blob = new Blob([array], {type: 'application/octet-stream'});
+                callbackFn({
+                    url:URL.createObjectURL(blob),
+                    binaryString:d,
+                    name:theFile.name
+                });
             };
         })(file);
 
-        // Read in the image file as a data URL.
-        reader.readAsArrayBuffer(file);
+        // Read in the image file as a binary string.
+        reader.readAsBinaryString(file);
+    },
+
+
+    inputFilePasteHandler : function(callbackFn,evt) {
+        OSH.Asserts.checkIsDefineOrNotNull(evt);
+
+        var clipboardData = evt.clipboardData || window.clipboardData;
+        var pastedData = clipboardData.getData('Text');
+
+        var name = "";
+        var split = pastedData.split("/");
+        if(split.length > 0) {
+            name = split[split.length-1];
+        }
+
+        callbackFn({
+            url:pastedData,
+            name:name
+        });
     },
 
     setInputFileValue:function(inputElt,props /** name,arraybuffer,type **/) {
         if(!isUndefinedOrNull(props)) {
-            var url = OSH.Utils.arrayBufferToImageDataURL(props.arraybuffer);
+            var url = props.url;
 
             var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
             sel.innerHTML = ['<img class="thumb" src="', url,
@@ -115,31 +145,6 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
             inputElt.nextSibling.text = props.name;
             inputElt.nextSibling.value = props.name;
         }
-    },
-
-    inputFileKeyHandler : function(callbackFn,evt) {
-        OSH.Asserts.checkIsDefineOrNotNull(evt);
-
-        var clipboardData = evt.clipboardData || window.clipboardData;
-        var pastedData = clipboardData.getData('Text');
-        var path = pastedData;
-
-        // Closure to capture the file information.
-        var inputElt = this;
-
-        var callback = function(isImage,details) {
-            if (isImage) {
-                // get type from content-type
-                //TODO:Asserts?
-                var contentType = details.type.split("/")[1];
-
-                OSH.Utils.getArrayBufferFromHttpImage(path,contentType,function(arraybuffer){
-                    callbackFn({arraybuffer:arraybuffer,name:path,type:contentType});
-                });
-            }
-        };
-
-        OSH.Utils.checkUrlImage(path,callback);
     },
 
     /**

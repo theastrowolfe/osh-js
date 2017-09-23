@@ -208,6 +208,7 @@ OSH_SRC.push('./src/osh/osh-BaseClass.js');
 OSH_SRC.push('./src/osh/osh-Template.js');
 OSH_SRC.push('./src/osh/osh-Browser.js');
 OSH_SRC.push('./src/osh/osh-Utils.js');
+OSH_SRC.push('./src/osh/helper/osh-HtmlHelper.js');
 OSH_SRC.push('./src/osh/osh-Browser.js');
 OSH_SRC.push('./src/osh/osh-EventMap.js');
 OSH_SRC.push('./src/osh/osh-EventManager.js');

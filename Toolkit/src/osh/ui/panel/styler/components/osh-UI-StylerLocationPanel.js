@@ -25,7 +25,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         this.contentElt = document.createElement("div");
         this.divElt.appendChild(this.contentElt);
 
-        OSH.Utils.addHTMLTitledLine(this.contentElt,"Default location");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Default location");
 
 
         var xDefaultValue = "";
@@ -40,11 +40,11 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             zDefaultValue = this.styler.ui.location.default.z;
         }
 
-        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
-        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", yDefaultValue,"0.0");
-        this.zDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Z", zDefaultValue,"0.0");
+        this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
+        this.yDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Y", yDefaultValue,"0.0");
+        this.zDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Z", zDefaultValue,"0.0");
 
-        OSH.Utils.addHTMLTitledLine(this.contentElt,"Mapping");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Mapping");
 
         // load existing values if any
         // load UI settings
@@ -68,10 +68,10 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         }
 
         // add UIs
-        this.dsListBoxId     = OSH.Utils.addHTMLListBox(this.contentElt, "Data Source", dsName);
-        this.xInputMappingId = OSH.Utils.addHTMLListBox(this.contentElt, "X", []);
-        this.yInputMappingId = OSH.Utils.addHTMLListBox(this.contentElt, "Y", []);
-        this.zInputMappingId = OSH.Utils.addHTMLListBox(this.contentElt, "Z", []);
+        this.dsListBoxId     = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Data Source", dsName);
+        this.xInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "X", []);
+        this.yInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Y", []);
+        this.zInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Z", []);
 
         var self = this;
 
@@ -95,9 +95,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         var yInputTag = document.getElementById(yInputMappingId);
         var zInputTag = document.getElementById(zInputMappingId);
 
-        OSH.Utils.removeAllFromSelect(xInputMappingId);
-        OSH.Utils.removeAllFromSelect(yInputMappingId);
-        OSH.Utils.removeAllFromSelect(zInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(xInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(yInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(zInputMappingId);
 
         if(!isUndefinedOrNull(observableArr)) {
             for (var i=0;i < observableArr.length;i++) {

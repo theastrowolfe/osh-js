@@ -37,7 +37,10 @@ OSH.UI.Panel = BaseClass.extend({
     initPanel:function() {},
 
     addListener: function(div,listenerName, func) {
-        OSH.Utils.onDomReady(function() {
+        OSH.Asserts.checkIsDefineOrNotNull(div);
+        OSH.Asserts.checkIsDefineOrNotNull(func);
+
+        OSH.Helper.HtmlHelper.onDomReady(function() {
             div.addEventListener(listenerName, func, false);
             this.componentListeners.push({
                 div: div,

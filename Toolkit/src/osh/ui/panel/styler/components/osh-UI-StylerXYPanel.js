@@ -25,12 +25,12 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         this.contentElt = document.createElement("div");
         this.divElt.appendChild(this.contentElt);
 
-        OSH.Utils.addHTMLTitledLine(this.contentElt,"Default values");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Default values");
 
-        this.xDefaultInputId = OSH.Utils.addInputText(this.contentElt, "X", "","0.0");
-        this.yDefaultInputId = OSH.Utils.addInputText(this.contentElt, "Y", "","0.0");
+        this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", "","0.0");
+        this.yDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Y", "","0.0");
 
-        OSH.Utils.addHTMLTitledLine(this.contentElt,"Mapping");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Mapping");
 
         // load existing values if any
         // load UI settings
@@ -52,9 +52,9 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         }
 
         // add UIs
-        this.dsListBoxId     = OSH.Utils.addHTMLListBox(this.contentElt, "Data Source", dsName);
-        this.xInputMappingId = OSH.Utils.addHTMLListBox(this.contentElt, "X", []);
-        this.yInputMappingId = OSH.Utils.addHTMLListBox(this.contentElt, "Y", []);
+        this.dsListBoxId     = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Data Source", dsName);
+        this.xInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "X", []);
+        this.yInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Y", []);
 
         var self = this;
 
@@ -81,8 +81,8 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         var xInputTag = document.getElementById(xInputMappingId);
         var yInputTag = document.getElementById(yInputMappingId);
 
-        OSH.Utils.removeAllFromSelect(xInputMappingId);
-        OSH.Utils.removeAllFromSelect(yInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(xInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(yInputMappingId);
 
         if(!isUndefinedOrNull(observableArr)) {
             for (var i=0;i < observableArr.length;i++) {
@@ -107,7 +107,7 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
     },
 
     initCustomFunctionUI:function() {
-        this.textareaId = OSH.Utils.addHTMLTextArea(this.contentElt, this.styler.properties.valuesFunc.handler.toSource());
+        this.textareaId = OSH.Helper.HtmlHelper.addHTMLTextArea(this.contentElt, this.styler.properties.valuesFunc.handler.toSource());
     },
 
     getProperties:function() {

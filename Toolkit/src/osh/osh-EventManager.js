@@ -61,7 +61,7 @@ OSH.EventManager.remove = function(eventName) {
  * @memberof OSH.EventManager
  */
 OSH.EventManager.observeDiv = function(divId, eventName, fnCallback) {
-   OSH.Utils.onDomReady(function() {
+   OSH.Helper.HtmlHelper.onDomReady(function() {
         elem = document.getElementById(divId);
         // use native dom event listener
         elem.addEventListener(eventName, fnCallback);

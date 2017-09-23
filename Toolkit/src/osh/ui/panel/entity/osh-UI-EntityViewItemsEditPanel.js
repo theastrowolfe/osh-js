@@ -37,7 +37,7 @@ OSH.UI.EntityViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
         this.viewItemsContainerDivId = OSH.Utils.randomUUID();
         var addViewItemId = OSH.Utils.randomUUID();
 
-        OSH.Utils.addHTMLTitledLine(this.divElt,"View items");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"View items");
 
         var viewItemsDivElt = document.createElement("div");
         viewItemsDivElt.setAttribute("class","viewItem-section");

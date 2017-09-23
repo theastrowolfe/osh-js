@@ -384,14 +384,11 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
  */
 OSH.Utils.copyProperties = function(from,to,forceMerge) {
     for (var property in from) {
-        if(isUndefinedOrNull(to[property]) || forceMerge) {
+        if(isUndefinedOrNull(to[property]) || forceMerge || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
             to[property] = from[property];
         } else {
             // copy children
-            if(!Array.isArray(from[property]) && // test if array
-                !OSH.Utils.isFunction(from[property]) && // test is not a function
-                OSH.Utils.isObject(from[property])) { // test is object
-
+            if(OSH.Utils.isObject(from[property])) { // test is object
                 OSH.Utils.copyProperties(from[property], to[property]);
             }
         }
@@ -405,292 +402,6 @@ OSH.Utils.isFunction = function(object) {
 
 OSH.Utils.isObject = function(object) {
     return object === 'object' || object instanceof Object;
-};
-
-OSH.Utils.addHTMLLine = function(div) {
-    div.innerHTML += OSH.Utils.createHTMLLine();
-};
-
-OSH.Utils.addHTMLTitledLine = function(div,title) {
-    div.innerHTML += OSH.Utils.createHTMLTitledLine(title);
-};
-
-OSH.Utils.createHTMLLine = function() {
-    return "<div class=\"horizontal-line\"><\/div>";
-};
-
-OSH.Utils.createHTMLTitledLine = function(title) {
-    return "<div class=\"horizontal-titled-line\">"+title+"<\/div>";
-};
-
-OSH.Utils.addHTMLListBox = function(div,label,values,defaultTitleOption,defaultSelectTagId) {
-    var ul = document.createElement("ul");
-    ul.setAttribute("class","osh-ul");
-
-    var strVar = "<li class=\"osh-li\">";
-
-    var selectTagId = OSH.Utils.randomUUID();
-    var divId = OSH.Utils.randomUUID();
-
-    if(!isUndefinedOrNull(defaultSelectTagId)) {
-        selectTagId = defaultSelectTagId;
-    }
-
-    if(!isUndefinedOrNull(label) && label !== "") {
-      strVar += "    <label>"+label+"<\/label>";
-    }
-    strVar += "      <div class=\"select-style\" id=\""+divId+"\">";
-    strVar += "         <select id=\"" + selectTagId + "\">";
-
-    if(!isUndefinedOrNull(defaultTitleOption)) {
-        strVar += "            <option value=\"\" disabled selected>"+defaultTitleOption+"<\/option>";
-    }
-
-    if(!isUndefinedOrNull(values)) {
-        var first = true;
-        for(var key in values) {
-            if(first) {
-                strVar += "            <option  selected value=\"" + values[key] + "\">" + values[key] + "<\/option>";
-                first = false;
-            } else {
-                strVar += "            <option value=\"" + values[key] + "\">" + values[key] + "<\/option>";
-            }
-        }
-    }
-    strVar += "     <\/select><\/div><\/li>";
-    ul.innerHTML += strVar;
-
-    div.appendChild(ul);
-    return selectTagId;
-};
-
-OSH.Utils.HTMLListBoxSetSelected = function(listboxElt, defaultValue) {
-
-    if(isUndefinedOrNull(defaultValue) || defaultValue === "") {
-        return;
-    }
-
-    for(var i=0; i < listboxElt.options.length;i++) {
-        var currentOption = listboxElt.options[i].value;
-
-        if(currentOption === defaultValue) {
-            listboxElt.options[i].setAttribute("selected","");
-            break;
-        }
-    }
-};
-
-OSH.Utils.addHTMLTextArea = function(parentElt,content) {
-    var ulElt = document.createElement("ul");
-    ulElt.setAttribute("class","osh-ul");
-
-    var liElt =  document.createElement("li");
-    liElt.setAttribute("class","osh-li");
-
-    var textareaId = OSH.Utils.randomUUID();
-    var textAreaElt = document.createElement("textarea");
-    textAreaElt.setAttribute("class","text-area");
-    textAreaElt.setAttribute("id",textareaId);
-
-    textAreaElt.value = content;
-
-    // appends textarea
-    liElt.appendChild(textAreaElt);
-
-    // appends li to ul
-    ulElt.appendChild(liElt);
-
-    parentElt.appendChild(ulElt);
-
-    return textareaId;
-};
-
-OSH.Utils.addTitledFileChooser = function(div,label, createPreview, defaultInputDivId) {
-    var id = OSH.Utils.randomUUID();
-
-    if(!isUndefined(defaultInputDivId)) {
-      id = defaultInputDivId;
-    }
-
-    var ulElt = document.createElement("ul");
-    ulElt.setAttribute("class","osh-ul");
-
-    var liElt =  document.createElement("li");
-    liElt.setAttribute("class","osh-li");
-
-    var labelElt = document.createElement("label");
-    labelElt.innerHTML = label;
-
-    var labelForElt = document.createElement("label");
-    labelForElt.setAttribute("class","input-file-label-for");
-    labelForElt.setAttribute("for",id);
-
-    var iElt = document.createElement("i");
-    iElt.setAttribute("class","fa input-file-i");
-    iElt.setAttribute("aria-hidden","true");
-
-    labelForElt.appendChild(iElt);
-
-    var inputTextElt = document.createElement("input");
-    inputTextElt.setAttribute("class","input-file-text");
-    inputTextElt.setAttribute("id","text-"+id);
-    inputTextElt.setAttribute("type","text");
-    inputTextElt.setAttribute("name","file-text-"+id);
-
-    var inputFileElt = document.createElement("input");
-    inputFileElt.setAttribute("class","input-file");
-    inputFileElt.setAttribute("id",id);
-    inputFileElt.setAttribute("type","file");
-    inputFileElt.setAttribute("name","file-"+id);
-
-    // appends label
-    liElt.appendChild(labelElt);
-
-    // appends label for
-    liElt.appendChild(labelForElt);
-
-    // appends input file
-    liElt.appendChild(inputFileElt);
-
-    // appends input text
-    liElt.appendChild(inputTextElt);
-
-    // appends li to ul
-    ulElt.appendChild(liElt);
-
-    // appends preview if any
-    if(!isUndefinedOrNull(createPreview) && createPreview) {
-        var prevId = OSH.Utils.randomUUID();
-
-        var divPrevElt =  document.createElement("div");
-        divPrevElt.setAttribute("class","preview");
-        divPrevElt.setAttribute("id",prevId);
-
-        OSH.Utils.addCss(inputFileElt,"preview");
-        OSH.Utils.addCss(inputTextElt,"preview");
-
-        liElt.appendChild(divPrevElt);
-
-        OSH.Utils.onDomReady(function(){
-            inputFileElt.addEventListener('change', function(evt) {
-                var file = evt.target.files[0];
-                var reader = new FileReader();
-
-                // Closure to capture the file information.
-                var inputElt = this;
-
-                reader.onload = (function(theFile) {
-                    inputElt.nextSibling.text = theFile.name;
-                    inputElt.nextSibling.value = theFile.name;
-                    return function(e) {
-                        var arrayBuffer = e.target.result;
-                        var url = OSH.Utils.arrayBufferToImageDataURL(arrayBuffer);
-
-                        var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                        sel.innerHTML = ['<img class="thumb" src="', url,
-                            '" title="', escape(theFile.name), '"/>'].join('');
-                    };
-                })(file);
-
-                // Read in the image file as a data URL.
-                reader.readAsArrayBuffer(file);
-            }, false);
-
-            inputFileElt.nextElementSibling.addEventListener("paste",function(evt){
-                OSH.Asserts.checkIsDefineOrNotNull(evt);
-
-                var clipboardData = evt.clipboardData || window.clipboardData;
-                var pastedData = clipboardData.getData('Text');
-                var path = pastedData;
-
-                console.log(path);
-                // Closure to capture the file information.
-                var inputElt = this;
-
-                var callback = function(isImage,details) {
-                    if (isImage) {
-                        // get type from content-type
-                        //TODO:Asserts?
-                        var contentType = details.type.split("/")[1];
-
-                        OSH.Utils.getArrayBufferFromHttpImage(path,contentType,function(arraybuffer){
-                            var url = OSH.Utils.arrayBufferToImageDataURL(arraybuffer);
-
-                            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
-                            sel.innerHTML = ['<img class="thumb" src="', url,
-                                '" title="', escape(path), '"/>'].join('');
-                        });
-                    }
-                };
-
-                OSH.Utils.checkUrlImage(path,callback);
-            });
-        });
-
-        div.appendChild(ulElt);
-    } else {
-        div.appendChild(ulElt);
-    }
-    return id;
-};
-
-OSH.Utils.addInputTextValueWithUOM = function(div, label,placeholder,uom) {
-    var id = OSH.Utils.randomUUID();
-
-    var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
-    if(!isUndefinedOrNull(label)) {
-        strVar += "<label for=\"" + id + "\">" + label + "<\/label>";
-    }
-
-    if(!isUndefinedOrNull(placeholder)) {
-        strVar += "<input id=\"" + id + "\"  class=\"input-text  input-uom\" type=\"input-text\" name=\"" + id + "\" placeholder=\""+placeholder+"\"/>";
-    } else {
-        strVar += "<input id=\"" + id + "\"  class=\"input-text  input-uom\" type=\"input-text\" name=\"" + id + "\" />";
-    }
-
-    strVar += "<div class=\"uom\">"+uom+"</div>";
-    strVar += "<\/li><\/ul>";
-
-    // adds to div
-    div.innerHTML += strVar;
-
-    return id;
-};
-
-OSH.Utils.addInputText = function(div, label,defaultValue,placeholder) {
-    var id = OSH.Utils.randomUUID();
-
-    var strVar = "<ul class=\"osh-ul\"><li class=\"osh-li\">";
-    if(!isUndefinedOrNull(label)) {
-        strVar += "<label for=\"" + id + "\">" + label + ":<\/label>";
-    }
-
-    var extraAttrs = "";
-
-    if(!isUndefinedOrNull(defaultValue) && defaultValue !== "") {
-        extraAttrs += "value=\""+defaultValue+"\"";
-    }
-
-    if(!isUndefinedOrNull(placeholder)) {
-        extraAttrs += "placeholder=\""+placeholder+"\"";
-    }
-
-    strVar += "<input id=\"" + id + "\"  class=\"input-text\" type=\"input-text\" name=\"" + id + "\" "+extraAttrs+" />";
-
-    strVar += "<\/li><\/ul>";
-
-    // adds to div
-    div.innerHTML += strVar;
-
-    return id;
-};
-
-OSH.Utils.removeAllNodes = function(div) {
-  if(!isUndefinedOrNull(div)) {
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
-    }
-  }
 };
 
 OSH.Utils.traverse = function(o,func,params) {
@@ -731,51 +442,6 @@ OSH.Utils.getUOM = function(uomObject) {
     return result;
 };
 
-OSH.Utils.removeAllFromSelect = function(tagId) {
-    var i;
-    var selectTag = document.getElementById(tagId);
-    for (i = selectTag.options.length - 1; i >= 0; i--) {
-        selectTag.remove(i);
-    }
-};
-
-OSH.Utils.onDomReady = function(callback) {
-    /*!
-     * domready (c) Dustin Diaz 2014 - License MIT
-     * https://github.com/ded/domready
-     */
-    !function (name, definition) {
-
-        if (typeof module != 'undefined') module.exports = definition();
-        else if (typeof define == 'function' && typeof define.amd == 'object') define(definition);
-        else this[name] = definition();
-
-    }('domready', function () {
-
-        var fns = [], listener
-            , doc = typeof document === 'object' && document
-            , hack = doc && doc.documentElement.doScroll
-            , domContentLoaded = 'DOMContentLoaded'
-            , loaded = doc && (hack ? /^loaded|^c/ : /^loaded|^i|^c/).test(doc.readyState);
-
-
-        if (!loaded && doc)
-            doc.addEventListener(domContentLoaded, listener = function () {
-                doc.removeEventListener(domContentLoaded, listener);
-                loaded = 1;
-                while (listener = fns.shift()) listener();
-            });
-
-        return function (fn) {
-            loaded ? setTimeout(fn, 0) : fns.push(fn);
-        }
-    });
-
-    // End domready(c)
-
-    domready(callback);
-};
-
 OSH.Utils.arrayBufferToImageDataURL = function(arraybuffer) {
     var blob = new Blob([new Uint8Array(arraybuffer)]);
     return URL.createObjectURL(blob);
@@ -797,7 +463,7 @@ OSH.Utils.getArrayBufferFromHttpImage = function(url,type,callback) {
 };
 
 OSH.Utils.createJSEditor = function(parentElt,content) {
-    return OSH.Utils.addHTMLTextArea(parentElt, js_beautify(content));
+    return OSH.Helper.HtmlHelper.addHTMLTextArea(parentElt, js_beautify(content));
 };
 
 OSH.Utils.hasOwnNestedProperty = function(obj,propertyPath){
@@ -835,7 +501,7 @@ OSH.Utils.createXDomainRequest = function() {
 };
 
 OSH.Utils.checkUrlImage = function(url,callback) {
-    var xdr = OSH.Utils.createXDomainRequest();
+    /*var xdr = OSH.Utils.createXDomainRequest();
     xdr.onload = function() {
         var contentType = xdr.getResponseHeader('Content-Type');
         if (contentType.slice(0,6) === 'image/') {// URL is valid image
@@ -846,5 +512,8 @@ OSH.Utils.checkUrlImage = function(url,callback) {
     }
 
     xdr.open("GET", url);
-    xdr.send();
+    xdr.send();*/
+    callback(url.match(/\.(jpeg|jpg|gif|png)$/i) != null, {
+        remote:(url.startsWith("http") || url.startsWith("https"))
+    });
 };

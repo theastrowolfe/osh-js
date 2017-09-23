@@ -257,7 +257,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                 OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
             }
         };
-        OSH.Utils.onDomReady(checkExistingViews);
+        OSH.Helper.HtmlHelper.onDomReady(checkExistingViews);
     },
 
     initDatasources: function() {

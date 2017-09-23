@@ -78,6 +78,12 @@ window.OSH.DataConnector = {};
 window.OSH.Utils = {};
 
 /**
+ * @namespace {object} OSH.Utils
+ * @memberof OSH
+ */
+window.OSH.Helper = {};
+
+/**
  * @namespace {object} OSH.DataSender
  * @memberof OSH
  */

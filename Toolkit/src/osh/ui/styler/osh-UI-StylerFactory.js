@@ -193,27 +193,35 @@ OSH.UI.Styler.Factory.getCustomLocationFunc = function(styler,locationFnStr) {
 };
 
 //----- ICON ----//
-OSH.UI.Styler.Factory.getFixedIcon = function(iconArraybuffer) {
+OSH.UI.Styler.Factory.getFixedIcon = function(dataSourceIdsArray,url) {
+
+    var iconTemplate =  "return '"+url+ "';";
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    // generates iconFunc in case of iconFunc was already set. This is to override existing function if no selected
+    // icon has been set
     return  {
-        icon: OSH.Utils.arrayBufferToImageDataURL(iconArraybuffer)
+        icon: url,
+        iconFunc : {
+        dataSourceIds: dataSourceIdsArray,
+            handler: iconTemplateHandlerFn
+        }
     };
 };
 
 OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource, observableIdx,
-                                      defaultIconArrayBuffer, lowIconArrayBuffer, highIconArrayBuffer, thresholdValue) {
+                                      defaultIconUrl, lowIconUrl, highIconUrl, thresholdValue) {
 
     OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
     OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
     OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
     OSH.Asserts.checkIsDefineOrNotNull(datasource);
-    OSH.Asserts.checkIsDefineOrNotNull(defaultIconArrayBuffer);
-    OSH.Asserts.checkIsDefineOrNotNull(lowIconArrayBuffer);
-    OSH.Asserts.checkIsDefineOrNotNull(highIconArrayBuffer);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultIconUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(lowIconUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(highIconUrl);
     OSH.Asserts.checkIsDefineOrNotNull(thresholdValue);
-
-    var defaultBlobURL = OSH.Utils.arrayBufferToImageDataURL(defaultIconArrayBuffer);
-    var lowBlobURL = OSH.Utils.arrayBufferToImageDataURL(lowIconArrayBuffer);
-    var highBlobURL = OSH.Utils.arrayBufferToImageDataURL(highIconArrayBuffer);
 
     var path = "timeStamp";
 
@@ -221,14 +229,15 @@ OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource,
         path = datasource.resultTemplate[observableIdx].path;
     }
 
-    var iconTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowBlobURL + "'; }" + // <
-                       "else if (" + path + " > " + thresholdValue + " ) { return '" + highBlobURL + "'; }" + // >
-                       "else { return '"+defaultBlobURL+ "'; }"; // ==
+    var iconTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowIconUrl + "'; }" + // <
+                       "else if (" + path + " > " + thresholdValue + " ) { return '" + highIconUrl + "'; }" + // >
+                       "else { return '"+defaultIconUrl+ "'; }"; // ==
 
     var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
     var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
 
     return {
+        icon: defaultIconUrl,
         iconFunc : {
             dataSourceIds: dataSourceIdsArray,
             handler: iconTemplateHandlerFn
@@ -249,23 +258,26 @@ OSH.UI.Styler.Factory.getCustomIconFunc = function(dataSourceIdsArray,iconFnStr)
     };
 };
 
-OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultIconArraybuffer,selectedIconArraybuffer) {
-    var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(selectedIconArraybuffer);
-    var defaultBlobURL  = OSH.Utils.arrayBufferToImageDataURL(defaultIconArraybuffer);
+OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultUrl,selectedUrl) {
+
+    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(selectedUrl);
 
     var iconTemplate = "";
     var blobURL = "";
 
     iconTemplate = "if (options.selected) {";
-    iconTemplate += "  return '" + selectedBlobURL + "'";
+    iconTemplate += "  return '" +  selectedUrl + "'";
     iconTemplate += "} else {";
-    iconTemplate += "  return '" + defaultBlobURL + "'";
+    iconTemplate += "  return '" + defaultUrl + "'";
     iconTemplate += "}";
 
     var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
     var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
 
     return {
+        icon:defaultUrl,
         iconFunc : {
             dataSourceIds: dataSourceIdsArray,
             handler: iconTemplateHandlerFn

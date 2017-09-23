@@ -56,7 +56,7 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
             input: inputElt
         });
 
-        OSH.Utils.removeAllNodes(this.mainElt);
+        OSH.Helper.HtmlHelper.removeAllNodes(this.mainElt);
 
         for(var key in this.labelElt) {
             this.mainElt.appendChild(this.labelElt[key].input);
