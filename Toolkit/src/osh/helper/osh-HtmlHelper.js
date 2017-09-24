@@ -115,6 +115,10 @@ OSH.Helper.HtmlHelper.onDomReady = function(callback) {
     domready(callback);
 };
 
+OSH.Helper.HtmlHelper.addFileChooser = function(div, createPreview, defaultInputDivId) {
+    return OSH.Helper.HtmlHelper.addTitledFileChooser(div,null, createPreview,defaultInputDivId);
+};
+
 OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, defaultInputDivId) {
     var id = OSH.Utils.randomUUID();
 
@@ -128,8 +132,10 @@ OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, 
     var liElt =  document.createElement("li");
     liElt.setAttribute("class","osh-li");
 
-    var labelElt = document.createElement("label");
-    labelElt.innerHTML = label;
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.innerHTML = label;
+    }
 
     var labelForElt = document.createElement("label");
     labelForElt.setAttribute("class","input-file-label-for");
@@ -153,8 +159,10 @@ OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, 
     inputFileElt.setAttribute("type","file");
     inputFileElt.setAttribute("name","file-"+id);
 
-    // appends label
-    liElt.appendChild(labelElt);
+    if(!isUndefinedOrNull(label)) {
+        // appends label
+        liElt.appendChild(labelElt);
+    }
 
     // appends label for
     liElt.appendChild(labelForElt);
@@ -218,6 +226,25 @@ OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, 
         })(inputFileElt); //passing the variable to freeze, creating a new closure
         div.appendChild(ulElt);
     } else {
+        (function(inputElt) {
+            OSH.Helper.HtmlHelper.onDomReady(function(){
+                inputElt.addEventListener('change', function(evt) {
+                    var file = evt.target.files[0];
+                    var reader = new FileReader();
+
+                    // Closure to capture the file information.
+                    var inputElt = this;
+
+                    reader.onload = (function(theFile) {
+                        inputElt.nextSibling.text = theFile.name;
+                        inputElt.nextSibling.value = theFile.name;
+                    })(file);
+
+                    // Read in the image file as a data URL.
+                    reader.readAsDataURL(file);
+                }, false);
+            });
+        })(inputFileElt); //passing the variable to freeze, creating a new closure
         div.appendChild(ulElt);
     }
     return id;

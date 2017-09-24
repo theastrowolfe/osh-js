@@ -129,7 +129,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
         var self = this;
 
-        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(defaultIconInputElt,function(result) {
             self.properties.fixed.default = result;
         }));
 
@@ -137,7 +137,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             self.properties.fixed.default = result;
         }));
 
-        this.addListener(selectedIconInputElt, "change", this.inputFileHandler.bind(selectedIconInputElt,function(result) {
+        this.addListener(selectedIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(selectedIconInputElt,function(result) {
             self.properties.fixed.selected = result;
         }));
 
@@ -223,7 +223,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         });
 
         var defaultIconInputElt = document.getElementById(defaultIconInputId);
-        this.addListener(defaultIconInputElt, "change", this.inputFileHandler.bind(defaultIconInputElt,function(result) {
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(defaultIconInputElt,function(result) {
             self.properties.threshold.default = result;
         }));
 
@@ -232,7 +232,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         }));
 
         var lowIconInputElt = document.getElementById(lowIconInputId);
-        this.addListener(lowIconInputElt, "change", this.inputFileHandler.bind(lowIconInputElt,function(result) {
+        this.addListener(lowIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(lowIconInputElt,function(result) {
             self.properties.threshold.low = result;
         }));
 
@@ -241,7 +241,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         }));
 
         var highIconInputElt = document.getElementById(highIconInputId);
-        this.addListener(highIconInputElt, "change", this.inputFileHandler.bind(highIconInputElt,function(result) {
+        this.addListener(highIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(highIconInputElt,function(result) {
             self.properties.threshold.high = result;
         }));
 

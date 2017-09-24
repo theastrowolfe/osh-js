@@ -123,3 +123,4 @@ String.prototype.replaceAll = function(search, replacement) {
 Function.prototype.toSource = function() {
     return this.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'').trim();
 };
+

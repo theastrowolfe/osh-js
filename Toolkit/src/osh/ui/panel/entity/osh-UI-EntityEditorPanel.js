@@ -51,7 +51,6 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
         document.getElementById(this.divId).appendChild(entityEditor);
 
-
         this.tabPanel = new OSH.UI.Panel.TabPanel();
 
         this.tabPanel.addTab("File",this.createFilePanel());
@@ -60,25 +59,88 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         this.tabPanel.addTab("Views",this.createViewPanel());
         entityEditor.appendChild(this.tabPanel.divElt);
 
-        this.datasources = {}; //TODO: probably to remove
-        this.views = [];
+        // inits properties
+        this.properties = {
+            datasources : {},
+            views : []
+        };
 
         // inits views
         this.initViews();
 
+        // inits datasources
         this.initDatasources();
 
     },
 
     createFilePanel:function() {
         var divElt = document.createElement("div");
-        var inputFileEltId = OSH.Helper.HtmlHelper.addTitledFileChooser(divElt,"Load");
+
+        // LOAD part
+        var loadDivElt = document.createElement("div");
+
+        // adds button
+        var loadButtonElt = document.createElement("button");
+        loadButtonElt.setAttribute("id",OSH.Utils.randomUUID());
+        loadButtonElt.setAttribute("class","submit load-button");
+        loadButtonElt.setAttribute("disabled",""); // disabled by default
+
+        loadButtonElt.innerHTML = "Load";
+
+        loadDivElt.appendChild(loadButtonElt);
+
+        // adds input field
+        var inputFileEltId = OSH.Helper.HtmlHelper.addFileChooser(loadDivElt);
+
+        var self = this;
 
         OSH.Helper.HtmlHelper.onDomReady(function(){
             var nextElt = document.getElementById("text-"+inputFileEltId);
             nextElt.className += " load-settings ";
+
+            // listeners
+            var inputFileElt = document.getElementById(inputFileEltId);
+            self.addListener(inputFileElt, "change", self.inputFileHandlerAsText.bind(inputFileElt,function(result) {
+                self.enableElt(loadButtonElt.id);
+
+                self.loadProperties(result.data);
+            }));
         });
 
+        // SAVE part
+        var divSaveElt = document.createElement("div");
+        divSaveElt.setAttribute("class","save");
+
+        // adds button
+        var saveButtonElt = document.createElement("button");
+        saveButtonElt.setAttribute("id",OSH.Utils.randomUUID());
+        saveButtonElt.setAttribute("class","submit load-button");
+
+        saveButtonElt.innerHTML = "Save";
+
+        divSaveElt.appendChild(saveButtonElt);
+
+        // adds input field
+        var defaultName = "entity-properties.json";
+        var inputTextSaveEltId = OSH.Helper.HtmlHelper.addInputText(divSaveElt,null,defaultName,"filename.json");
+
+
+        OSH.Helper.HtmlHelper.onDomReady(function() {
+            var inputTextElt = document.getElementById(inputTextSaveEltId);
+            self.addListener(saveButtonElt, "click", function (evt) {
+                var inputTextValue = inputTextElt.value;
+                var fileName = defaultName;
+
+                if(!isUndefinedOrNull(inputTextValue) && inputTextValue !== "") {
+                    fileName = inputTextValue;
+                }
+
+               self.saveProperties(fileName);
+            });
+        });
+
+        divElt.appendChild(loadDivElt);
+        divElt.appendChild(divSaveElt);
         return divElt;
     },
 
@@ -186,6 +248,9 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     initViews: function() {
+        // defines available views that user can create
+        // views are associated with an instance type (to create final instance) and global type (abstract one)
+        // the name is the one displayed
         var views = [{
             name: "Map 2D (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.LEAFLET,
@@ -223,6 +288,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
         var self = this;
 
+        // checks for existing views
         var checkExistingViews = function() {
             var viewList = self.getViewList();
 
@@ -237,6 +303,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                         type: event.object.type,
                         instance : event.object
                     };
+
                     selectViewTag.add(option);
 
                     OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
@@ -267,6 +334,8 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                 OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
             }
         };
+
+        // checking for existing views once the DOM has been loaded
         OSH.Helper.HtmlHelper.onDomReady(checkExistingViews);
     },
 
@@ -279,12 +348,35 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         }
     },
 
+    saveProperties: function(fileName) {
+        var dataToSave = {
+            test: "someValue"
+        };
+
+        try {
+            var blob = new Blob([JSON.stringify(dataToSave)], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, fileName);
+        } catch(exception) {
+            throw new OSH.Exception.Exception("Cannot save the data as file: "+fileName);
+        }
+
+    },
+
+    loadProperties : function(textData) {
+        try{
+            var jsonProperties = JSON.parse(textData);
+            console.log(jsonProperties);
+        } catch(exception) {
+            throw new OSH.Exception.Exception("Cannot convert '"+result.file.name+"' into JSON: "+exception);
+        }
+    },
+
     editDataSource:function(dataSource) {
-        this.datasources[dataSource.id] = dataSource;
+        this.properties.datasources[dataSource.id] = dataSource;
 
         document.getElementById("ds-name-"+dataSource.id).innerHTML = dataSource.name;
 
-        this.buildDSResultTemplate(this.datasources[dataSource.id]);
+        this.buildDSResultTemplate(this.properties.datasources[dataSource.id]);
     },
 
     buildDSResultTemplate:function(dataSource) {
@@ -305,7 +397,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
     addDataSource:function(dataSource) {
 
         this.nbDatasources++;
-        this.datasources[dataSource.id] = dataSource;
+        this.properties.datasources[dataSource.id] = dataSource;
 
         var div = document.createElement('div');
         div.setAttribute("id",dataSource.id);
@@ -333,7 +425,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
             div.parentNode.removeChild(div);
-            delete self.datasources[dataSource.id];
+            delete self.properties.datasources[dataSource.id];
             self.nbDatasources--;
         });
 
@@ -361,7 +453,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
             discoveryView.attachTo(discoveryDialog.popContentDiv.id);
 
             // setup existing info
-            discoveryView.initDataSource(self.datasources[dataSource.id]);
+            discoveryView.initDataSource(self.properties.datasources[dataSource.id]);
         });
 
         this.buildDSResultTemplate(dataSource);
@@ -412,7 +504,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
             };
         }
 
-        this.views.push(view);
+        this.properties.views.push(view);
 
         // creates the line
         var div = document.createElement('div');
@@ -451,12 +543,12 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
             var newArr = [];
 
-            for(var i=0;i < self.views.length;i++) {
-                if(self.views[i].id !== view.id) {
-                    newArr.push(self.views[i]);
+            for(var i=0;i < self.properties.views.length;i++) {
+                if(self.properties.views[i].id !== view.id) {
+                    newArr.push(self.properties.views[i]);
                 }
             }
-            self.views = newArr;
+            self.properties.views = newArr;
         });
 
         OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view.id));
@@ -468,9 +560,9 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
     editView:function(viewId,event) {
         var currentView = null;
         // finds the view instance and updates it
-        for(var i=0;i < this.views.length;i++) {
-            if (this.views[i].id === viewId) {
-                currentView = this.views[i];
+        for(var i=0;i < this.properties.views.length;i++) {
+            if (this.properties.views[i].id === viewId) {
+                currentView = this.properties.views[i];
                 break;
             }
         }
@@ -478,8 +570,8 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         // gathers Data Sources
         var dsArray = [];
 
-        for(var key in this.datasources) {
-            var dsClone = this.datasources[key];
+        for(var key in this.properties.datasources) {
+            var dsClone = this.properties.datasources[key];
             dsArray.push(dsClone);
         }
 
@@ -522,9 +614,9 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
              document.getElementById(editedView.lineDivId).querySelector("span.line-left").innerHTML = editedView.name;
              // finds the view instance and updates it
-             for(var i=0;i < this.views.length;i++) {
-                 if (this.views[i].id === editedView.id) {
-                     this.views[i] = editedView;
+             for(var i=0;i < this.properties.views.length;i++) {
+                 if (this.properties.views[i].id === editedView.id) {
+                     this.properties.views[i] = editedView;
                      break;
                  }
              }
@@ -532,69 +624,6 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
              editViewDialog.close();
              editView = null;
         }.bind(this);
-
-        /* var currentView = null;
-         // finds the view instance and updates it
-         for(var i=0;i < this.views.length;i++) {
-             if (this.views[i].id === viewId) {
-                 currentView = this.views[i];
-                 break;
-             }
-         }
-
-         var dsArray = [];
-
-         for(var key in this.datasources) {
-             var dsClone = this.datasources[key];
-             dsArray.push(dsClone);
-         }
-
-         var cloneView = {};
-         OSH.Utils.copyProperties(currentView,cloneView);
-
-         var editView = null;
-         var viewProps = {
-             view:cloneView,
-             datasources:dsArray
-         };
-
-         // creates the panel corresponding to the view type
-         switch(currentView.type) {
-             case OSH.UI.View.ViewType.MAP:  editView = new OSH.UI.EntityMapEditPanel("",viewProps);break;
-             case OSH.UI.View.ViewType.CHART:  editView = new OSH.UI.EntityChartEditPanel("",viewProps);break;
-             case OSH.UI.View.ViewType.VIDEO:  editView = new OSH.UI.EntityVideoEditPanel("",viewProps);break;
-         }
-
-         var editViewDialog = new OSH.UI.SaveDialogPanel("", {
-             draggable: true,
-             css: "dialog-edit-view", //TODO: create unique class for all the views
-             name: "Edit "+currentView.name+" View",
-             show:true,
-             dockable: false,
-             closeable: true,
-             connectionIds : [],
-             destroyOnClose:true,
-             modal:true
-         });
-
-         editView.attachTo(editViewDialog.popContentDiv.id);
-
-
-         editViewDialog.onSave = function() {
-             var editedView = editView.getView();
-
-             document.getElementById(editedView.lineDivId).querySelector("span.line-left").innerHTML = editedView.name;
-             // finds the view instance and updates it
-             for(var i=0;i < this.views.length;i++) {
-                 if (this.views[i].id === editedView.id) {
-                     this.views[i] = editedView;
-                     break;
-                 }
-             }
-
-             editViewDialog.close();
-         }.bind(this);*/
-
     },
 
     createEntity:function(event) {
@@ -604,9 +633,9 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
         // get DS array
         var replayFactor = 1;
         var datasourceArray = [];
-        for(var key in this.datasources) {
-            datasourceArray.push(this.datasources[key]);
-            replayFactor = this.datasources[key].replaySpeed;
+        for(var key in this.properties.datasources) {
+            datasourceArray.push(this.properties.datasources[key]);
+            replayFactor = this.properties.datasources[key].replaySpeed;
         }
 
         // updates name & data sources
@@ -624,8 +653,8 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
             this.entity.datacontroller.connectAll();
         }
 
-       for(var i=0;i< this.views.length;i++) {
-           var currentView = this.views[i];
+       for(var i=0;i< this.properties.views.length;i++) {
+           var currentView = this.properties.views[i];
 
            // checks if view exists
            if (isUndefinedOrNull(currentView.instance) || isUndefinedOrNull(document.getElementById(currentView.instance.id))) { // is not an existing instance
@@ -651,7 +680,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
                    this.createViewItems(currentView, viewInstance, this.entity);
                }
 
-               this.views[i].instance = viewInstance;
+               this.properties.views[i].instance = viewInstance;
            } else {
                // the instance already exist, the entity has to be added/updated to this instance
            }

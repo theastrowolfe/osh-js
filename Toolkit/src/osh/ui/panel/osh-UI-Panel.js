@@ -82,5 +82,89 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     onResize:function() {
+    },
+
+    inputFileHandlerAsBinaryString:function(callbackFn,evt) {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        var inputElt = this;
+        reader.onload = (function(theFile) {
+            inputElt.nextSibling.text = theFile.name;
+            inputElt.nextSibling.value = theFile.name;
+
+            return function(e) {
+                var l, d, array;
+                d = e.target.result;
+                l = d.length;
+                array = new Uint8Array(l);
+                for (var i = 0; i < l; i++){
+                    array[i] = d.charCodeAt(i);
+                }
+                var blob = new Blob([array], {type: 'application/octet-stream'});
+                callbackFn({
+                    url:URL.createObjectURL(blob),
+                    binaryString:d,
+                    name:theFile.name
+                });
+            };
+        })(file);
+
+        // Read in the image file as a binary string.
+        reader.readAsBinaryString(file);
+    },
+
+    inputFileHandlerAsText:function(callbackFn,evt) {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        var inputElt = this;
+        reader.onload = (function(theFile) {
+            inputElt.nextSibling.text = theFile.name;
+            inputElt.nextSibling.value = theFile.name;
+
+            return function(e) {
+                callbackFn({
+                    data:e.target.result,
+                    file: theFile
+                });
+            };
+        })(file);
+
+        // Read in the image file as a binary string.
+        reader.readAsText(file);
+    },
+
+    inputFilePasteHandler : function(callbackFn,evt) {
+        OSH.Asserts.checkIsDefineOrNotNull(evt);
+
+        var clipboardData = evt.clipboardData || window.clipboardData;
+        var pastedData = clipboardData.getData('Text');
+
+        var name = "";
+        var split = pastedData.split("/");
+        if(split.length > 0) {
+            name = split[split.length-1];
+        }
+
+        callbackFn({
+            url:pastedData,
+            name:name
+        });
+    },
+
+    setInputFileValue:function(inputElt,props /** name,arraybuffer,type **/) {
+        if(!isUndefinedOrNull(props)) {
+            var url = props.url;
+
+            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+            sel.innerHTML = ['<img class="thumb" src="', url,
+                '" title="', escape(props.name), '"/>'].join('');
+
+            inputElt.nextSibling.text = props.name;
+            inputElt.nextSibling.value = props.name;
+        }
     }
 });

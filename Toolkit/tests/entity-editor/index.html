@@ -15,8 +15,12 @@
     <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify-html.js"></script>
     <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify.js"></script>
 
+
     <!--//TODO: add into vendors -->
     <script src="../../vendor-local/clone/clone.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../vendor/FileSaver.js/FileSaver.min.js"></script>
 
     <!-- OSH Core -->
     <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
@@ -319,12 +323,12 @@
         // starts streaming
         dataProviderController.connectAll();
 
-        var entityWizardView = new OSH.UI.EntityEditorPanel("",{
+        var entityEditorView = new OSH.UI.EntityEditorPanel("",{
             viewContainer: "container",
             services: ["http://sensiasoft.net:8181/sensorhub/sos"]
         });
 
-        var entityWizardDialog    = new OSH.UI.DialogPanel("dialog-container",{
+        var entityEditorDialog    = new OSH.UI.DialogPanel("dialog-container",{
             /*  css: "dialog-entity",
              name: "Entity",
              show:true,
@@ -339,10 +343,10 @@
             draggable:true
         });
 
-        entityWizardView.attachTo(entityWizardDialog.popContentDiv.id);
+        entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);
 
-        entityWizardDialog.pin();
-        entityWizardDialog.minimize();
+        entityEditorDialog.pin();
+        entityEditorDialog.minimize();
     }
     function edit() {
         //-------------------------//
@@ -444,13 +448,13 @@
         // starts streaming
         dataProviderController2.connectAll();
 
-        var entityWizardView2 = new OSH.UI.EntityEditorPanel("",{
+        var entityEditorView2 = new OSH.UI.EntityEditorPanel("",{
             viewContainer: "container-2",
             entity:newEntity,
             services: ["http://sensiasoft.net:8181/sensorhub/sos"]
         });
 
-        var entityWizardDialog2    = new OSH.UI.DialogPanel("dialog-container-2",{
+        var entityEditorDialog2    = new OSH.UI.DialogPanel("dialog-container-2",{
             css: "dialog-entity",
             name: "Edit Entity",
             show:true,
@@ -458,10 +462,10 @@
             draggable:true
         });
 
-        entityWizardDialog2.pin();
-        entityWizardDialog2.minimize();
+        entityEditorDialog2.pin();
+        entityEditorDialog2.minimize();
 
-        entityWizardView2.attachTo(entityWizardDialog2.popContentDiv.id);
+        entityEditorView2.attachTo(entityEditorDialog2.popContentDiv.id);
 
         // add geoJSON test feature
         // 1424073849000
