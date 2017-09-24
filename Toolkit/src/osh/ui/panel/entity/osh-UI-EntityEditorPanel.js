@@ -100,11 +100,24 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
             // listeners
             var inputFileElt = document.getElementById(inputFileEltId);
+
+            var lastDataLoaded;
+
             self.addListener(inputFileElt, "change", self.inputFileHandlerAsText.bind(inputFileElt,function(result) {
                 self.enableElt(loadButtonElt.id);
 
-                self.loadProperties(result.data);
+                lastDataLoaded = result;
             }));
+
+            self.addListener(loadButtonElt,"click",function(evt) {
+                if(!isUndefinedOrNull(lastDataLoaded)) {
+                    try{
+                        self.loadProperties(lastDataLoaded.data);
+                    } catch(exception) {
+                        throw new OSH.Exception.Exception("Cannot convert '"+lastDataLoaded.file.name+"' into JSON: "+exception);
+                    }
+                }
+            });
         });
 
         // SAVE part
@@ -350,7 +363,7 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
     saveProperties: function(fileName) {
         var dataToSave = {
-            test: "someValue"
+            datasources: this.properties.datasources
         };
 
         try {
@@ -362,10 +375,14 @@ OSH.UI.EntityEditorPanel = OSH.UI.Panel.extend({
 
     },
 
-    loadProperties : function(textData) {
+    loadProperties : function(textData,fileName) {
         try{
             var jsonProperties = JSON.parse(textData);
             console.log(jsonProperties);
+
+            for(var key in jsonProperties.datasources){
+                this.addDataSource(jsonProperties.datasources[key]);
+            }
         } catch(exception) {
             throw new OSH.Exception.Exception("Cannot convert '"+result.file.name+"' into JSON: "+exception);
         }

@@ -25,7 +25,7 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
 
         this.divElt.appendChild(this.mainElt);
 
-        this.sectionNb = 1;
+        this.sectionNb = 0;
 
         this.sectionElts = [];
         this.labelElt = [];
@@ -67,12 +67,13 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
             this.mainElt.appendChild(this.sectionElts[key]);
         }
 
-        if(this.sectionNb++ === 1) {
-            this.setChecked(inputElt,sectionElt);
-        }
-
         // listeners
         OSH.EventManager.observeDiv(labelElt.id,"click",this.setChecked.bind(this,inputElt,sectionElt));
+
+        var self = this;
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            OSH.Helper.HtmlHelper.fireEvent(self.labelElt[0].label, "click");
+        });
     },
 
     setChecked:function(inputElt,sectionElt,evt) {
@@ -89,7 +90,7 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
         OSH.Utils.replaceCss(sectionElt,"hide-tab","show-tab");
 
         this.currentSelectedInput = inputElt;
-        this.currentSelectedSection = sectionElt
+        this.currentSelectedSection = sectionElt;
     },
 
     disableTab:function(index) {},
