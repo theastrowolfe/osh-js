@@ -28,6 +28,12 @@ OSH.Helper.HtmlHelper.createHTMLTitledLine = function(title) {
     return div;
 };
 
+OSH.Helper.HtmlHelper.createHTMLLine = function(title) {
+    var div = document.createElement("div");
+    div.setAttribute("class","horizontal-line");
+    return div;
+};
+
 OSH.Helper.HtmlHelper.addHTMLLine = function(parentElt) {
     parentElt.appendChild(OSH.Helper.HtmlHelper.createHTMLLine());
 };
@@ -348,9 +354,6 @@ OSH.Helper.HtmlHelper.removeAllFromSelect = function(tagId) {
 };
 
 OSH.Helper.HtmlHelper.addHTMLListBox = function(parentElt,label,values,defaultTitleOption,defaultSelectTagId) {
-    var ul = document.createElement("ul");
-    ul.setAttribute("class","osh-ul");
-
     var id = OSH.Utils.randomUUID();
     var selectTagId = OSH.Utils.randomUUID();
 

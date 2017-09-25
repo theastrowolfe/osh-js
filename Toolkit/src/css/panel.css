@@ -43,6 +43,7 @@
 
 .osh .panel .tab-panel .show-tab {
     display:block;
+    height: inherit;
 }
 
 .osh .panel .tab-panel .hide-tab {
@@ -72,6 +73,10 @@
 
 .osh .panel .line-right {
     float:right;
+}
+
+.osh .panel {
+    height:inherit;
 }
 
 

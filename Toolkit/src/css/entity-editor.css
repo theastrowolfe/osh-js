@@ -2,8 +2,8 @@
     /*margin: 0 auto; => center?*/
     /*background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);*/
     /*background-color: rgba(5, 107, 166, 0.6);*/
-    overflow: auto;
-    min-height: 300px;
+    min-height: calc(100% + 30px);
+    height:inherit;
 }
 
 .osh .entity-editor button.submit {
@@ -13,12 +13,13 @@
 
 .osh .entity-editor .view-container {
     clear: both;
-    height: 158px;
+    height: calc(100% + 45px);
+    overflow: auto;
 }
 
 .osh .entity-editor .datasource-container {
     clear: both;
-    height: 230px;
+    height: calc(100% + 45px);
     overflow: auto;
 }
 
@@ -26,11 +27,14 @@
     width: 200px;
     float: left;
     margin-right: 15px;
-    margin-left: 15px;
     margin-bottom: 15px;
 }
 
 /** DataSource tab**/
+.osh .entity-editor .tab-panel {
+    height:calc(100% - 50px);
+}
+
 .osh .entity-editor .ds-line {
     width:100%;
 }
@@ -69,6 +73,7 @@
 
 .osh .entity-editor  .add-view-button {
     margin-left: 15px;
+    margin-top:-12px; /* padding osh-ul value */
 }
 
 /** create button **/
@@ -128,4 +133,9 @@
 
 .osh .entity-editor div.save .input-text{
     width: 238px;
+}
+
+.osh .entity-editor button.submit.save-entity-button {
+    margin: auto;
+    margin-top: 12px;
 }

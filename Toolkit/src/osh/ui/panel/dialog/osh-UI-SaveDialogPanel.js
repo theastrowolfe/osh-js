@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.SaveDialogPanel = OSH.UI.DialogPanel.extend({
+OSH.UI.Panel.SaveDialogPanel = OSH.UI.Panel.DialogPanel.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId, properties);
 

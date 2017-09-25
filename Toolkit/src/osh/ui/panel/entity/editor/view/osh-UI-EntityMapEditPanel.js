@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.EntityMapEditPanel = OSH.UI.EntityViewItemsEditPanel.extend({
+OSH.UI.Panel.EntityMapEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
 
     getNewStylerInstance:function(type) {
         if(type === "Marker") {

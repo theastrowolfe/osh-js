@@ -20,7 +20,7 @@
  * @type {OSH.UI.DialogPanel}
  * @augments OSH.UI.DialogPanel
  */
-OSH.UI.MultiDialogPanel = OSH.UI.DialogPanel.extend({
+OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
 
     initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId,options);

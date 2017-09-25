@@ -226,7 +226,7 @@ OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource,
     var path = "timeStamp";
 
     if(observableIdx > 0) {
-        path = datasource.resultTemplate[observableIdx].path;
+        path = "rec."+datasource.resultTemplate[observableIdx].path;
     }
 
     var iconTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowIconUrl + "'; }" + // <

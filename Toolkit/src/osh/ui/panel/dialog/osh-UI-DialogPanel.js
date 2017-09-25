@@ -33,7 +33,7 @@
         modal: false
     });
  */
-OSH.UI.DialogPanel = OSH.UI.Panel.extend({
+OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
     initialize: function (parentElementDivId, options) {
         this._super(parentElementDivId,options);
         // creates HTML eflement

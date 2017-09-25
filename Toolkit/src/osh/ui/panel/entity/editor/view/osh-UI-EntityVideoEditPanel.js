@@ -14,25 +14,6 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.EntityChartEditPanel = OSH.UI.EntityViewItemsEditPanel.extend({
+OSH.UI.Panel.EntityVideoEditPanel = OSH.UI.Panel.EntityNoViewItemsEditPanel.extend({
 
-    getNewStylerInstance:function(type) {
-        if(type === "LinePlot") {
-            return new OSH.UI.Styler.LinePlot({});
-        }
-    },
-
-    getTypeFromStylerInstance:function(stylerInstance) {
-        if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
-            return "LinePlot";
-        }
-    },
-
-    getStylerList:function() {
-        return ["LinePlot"];
-    },
-
-    getStylerPanelInstance:function(properties) {
-        return new OSH.UI.Panel.StylerLinePlotPanel("",properties);
-    }
 });

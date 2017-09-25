@@ -80,20 +80,27 @@
 
 
     <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-TabPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerLocationPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerIconPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditorPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityEditViewPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityViewItemsEditPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityNoViewItemsEditPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityChartEditPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityMapEditPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/entity/osh-UI-EntityVideoEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerPanel.js"></script>
 
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerMarkerPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/components/osh-UI-StylerXYPanel.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/panel/styler/osh-UI-StylerLinePlotPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerMarkerPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerLinePlotPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerLocationPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerIconPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerXYPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityEditViewPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityNoViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityVideoEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityMapEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityChartEditPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityFilePanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityInfoPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityDatasourcePanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityViewPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityEditorPanel.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../src/css/entity-editor.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
@@ -323,12 +330,12 @@
         // starts streaming
         dataProviderController.connectAll();
 
-        var entityEditorView = new OSH.UI.EntityEditorPanel("",{
+        var entityEditorView = new OSH.UI.Panel.EntityEditorPanel("",{
             viewContainer: "container",
             services: ["http://sensiasoft.net:8181/sensorhub/sos"]
         });
 
-        var entityEditorDialog    = new OSH.UI.DialogPanel("dialog-container",{
+        var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
             /*  css: "dialog-entity",
              name: "Entity",
              show:true,
@@ -448,13 +455,13 @@
         // starts streaming
         dataProviderController2.connectAll();
 
-        var entityEditorView2 = new OSH.UI.EntityEditorPanel("",{
+        var entityEditorView2 = new OSH.UI.Panel.EntityEditorPanel("",{
             viewContainer: "container-2",
             entity:newEntity,
             services: ["http://sensiasoft.net:8181/sensorhub/sos"]
         });
 
-        var entityEditorDialog2    = new OSH.UI.DialogPanel("dialog-container-2",{
+        var entityEditorDialog2    = new OSH.UI.Panel.DialogPanel("dialog-container-2",{
             css: "dialog-entity",
             name: "Edit Entity",
             show:true,

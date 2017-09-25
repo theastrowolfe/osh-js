@@ -166,5 +166,22 @@ OSH.UI.Panel = BaseClass.extend({
             inputElt.nextSibling.text = props.name;
             inputElt.nextSibling.value = props.name;
         }
+    },
+
+    //TODO: to move into HELPER
+    removeAllFromSelect:function(tagId) {
+        var i;
+        var selectTag = document.getElementById(tagId);
+        for (i = selectTag.options.length - 1; i > 0; i--) {
+            selectTag.remove(i);
+        }
+    },
+
+    //TODO: to move into HELPER
+    removeAllFromSelectElement:function(element) {
+        var i;
+        for (i = element.options.length - 1; i > 0; i--) {
+            element.remove(i);
+        }
     }
 });

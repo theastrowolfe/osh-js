@@ -86,8 +86,14 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.x;
                 document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.y;
                 document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.z;
+            }
         }
-        }
+
+        this.addListener(document.getElementById(this.dsListBoxId), "change", function () {
+            // updates observables { x,y,z} listbox
+            var observables = self.getObservable(self.dsListBoxId);
+            self.loadMapLocation(observables,self.xInputMappingId,self.yInputMappingId,self.zInputMappingId);
+        });
     },
 
     loadMapLocation:function(observableArr,xInputMappingId,yInputMappingId,zInputMappingId) {
@@ -131,8 +137,6 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initCustomFunctionUI:function() {
         this.textareaId = OSH.Utils.createJSEditor(this.contentElt,this.styler.properties.locationFunc.handler.toSource());
-
-
     },
 
     /**
@@ -188,6 +192,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             }
 
             stylerProperties.ui.location.locationFuncMapping = {
+                datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
                 x: xIdx,
                 y: yIdx,
                 z: zIdx

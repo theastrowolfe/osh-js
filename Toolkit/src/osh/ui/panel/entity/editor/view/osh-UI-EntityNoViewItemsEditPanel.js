@@ -14,7 +14,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.EntityNoViewItemsEditPanel = OSH.UI.EntityEditViewPanel.extend({
+OSH.UI.Panel.EntityNoViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend({
     initialize: function (parentElementDivId, options) {
         this._super(parentElementDivId, options);
     },

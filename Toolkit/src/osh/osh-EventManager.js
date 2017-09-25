@@ -69,6 +69,22 @@ OSH.EventManager.observeDiv = function(divId, eventName, fnCallback) {
 };
 
 /**
+ *
+ * @param element
+ * @param eventName
+ * @param fnCallback
+ * @instance
+ * @memberof OSH.EventManager
+ */
+OSH.EventManager.observeElement = function(element, eventName, fnCallback) {
+    OSH.Helper.HtmlHelper.onDomReady(function() {
+        // use native dom event listener
+        element.addEventListener(eventName, fnCallback);
+    });
+};
+
+
+/**
  * This part defines the events used INTO the API
  * @const
  * @type {{DATA: string, SYNC_DATA: string, SELECT_VIEW: string, CONTEXT_MENU: string, SHOW_VIEW: string, CONNECT_DATASOURCE: string, DISCONNECT_DATASOURCE: string, DATASOURCE_UPDATE_TIME: string, CURRENT_MASTER_TIME: string, UAV_TAKEOFF: string, UAV_GOTO: string, UAV_LOOKAT: string, UAV_LAND: string, UAV_ORBIT: string, LOADING_START: string, LOADING_STOP: string, ADD_VIEW_ITEM: string}}
