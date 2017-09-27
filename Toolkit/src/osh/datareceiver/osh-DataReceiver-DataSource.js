@@ -102,8 +102,10 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
    * @memberof OSH.DataReceiver.DataSource
    */
   connect: function() {
-    this.connector.connect();
-    this.connected = true;
+    if(!this.connected) {
+        this.connector.connect();
+        this.connected = true;
+    }
   },
 
   /**

@@ -62,6 +62,17 @@
     padding-right: 15px;
 }
 
+.osh .entity-editor  .ds-line > .control .delete:disabled {
+    color:red;
+}
+
+.osh .entity-editor .fa.disabled, .osh .entity-editor .fa[disabled],
+    .osh .entity-editor .disabled > .osh .entity-editor .fa,
+    .osh .entity-editor [disabled] > .fa {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .osh .entity-editor  .ds-line > .control .delete:hover {
     color: #056BA6;
     cursor:pointer;

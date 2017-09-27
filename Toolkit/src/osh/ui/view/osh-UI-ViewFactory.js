@@ -57,15 +57,9 @@ OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
  * @param entity
  * @return {*}
  */
-OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,viewProperties, datasource, entity) {
+OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,viewProperties) {
     var cloneProperties = {};
     cloneProperties = OSH.Utils.clone(viewProperties);
-
-    cloneProperties.dataSourceId = datasource.id;
-
-    if(!isUndefinedOrNull(entity)) {
-        cloneProperties.entityId = entity.id;
-    }
 
     var viewInstance = null;
 
@@ -86,7 +80,7 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
     return viewInstance;
 };
 
-OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultProperties, viewItems) {
+OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultProperties) {
     var viewInstance = null;
 
     switch (viewInstanceType) {
@@ -95,15 +89,15 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : {
-            viewInstance = new OSH.UI.LeafletView("",viewItems,defaultProperties);
+            viewInstance = new OSH.UI.LeafletView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.CESIUM : {
-            viewInstance = new OSH.UI.CesiumView("",viewItems,defaultProperties);
+            viewInstance = new OSH.UI.CesiumView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
-            viewInstance = new OSH.UI.Nvd3LineChartView("",viewItems,defaultProperties);
+            viewInstance = new OSH.UI.Nvd3LineChartView("",[],defaultProperties);
         }
             break;
         default:

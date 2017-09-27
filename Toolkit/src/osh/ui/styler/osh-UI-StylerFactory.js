@@ -211,12 +211,11 @@ OSH.UI.Styler.Factory.getFixedIcon = function(dataSourceIdsArray,url) {
     };
 };
 
-OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource, observableIdx,
+OSH.UI.Styler.Factory.getThresholdIcon = function(datasource, observableIdx,
                                       defaultIconUrl, lowIconUrl, highIconUrl, thresholdValue) {
 
     OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
     OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
-    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
     OSH.Asserts.checkIsDefineOrNotNull(datasource);
     OSH.Asserts.checkIsDefineOrNotNull(defaultIconUrl);
     OSH.Asserts.checkIsDefineOrNotNull(lowIconUrl);
@@ -239,7 +238,7 @@ OSH.UI.Styler.Factory.getThresholdIcon = function(dataSourceIdsArray,datasource,
     return {
         icon: defaultIconUrl,
         iconFunc : {
-            dataSourceIds: dataSourceIdsArray,
+            dataSourceIds: [datasource.id],
             handler: iconTemplateHandlerFn
         }
     };

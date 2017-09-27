@@ -186,19 +186,22 @@ OSH.DataReceiver.DataReceiverController = BaseClass.extend({
      * @memberof OSH.DataReceiver.DataReceiverController
      */
     addDataSource: function (dataSource, options) {
-        this.dataSourcesIdToDataSources[dataSource.id] = dataSource;
-        this.buffer.addDataSource(dataSource.id, {
-            name: dataSource.name,
-            syncMasterTime: dataSource.syncMasterTime,
-            bufferingTime: dataSource.bufferingTime,
-            timeOut: dataSource.timeOut
-        });
+        // if DS does not exist yet
+        if(!(dataSource.id in this.dataSourcesIdToDataSources)) {
+            this.dataSourcesIdToDataSources[dataSource.id] = dataSource;
+            this.buffer.addDataSource(dataSource.id, {
+                name: dataSource.name,
+                syncMasterTime: dataSource.syncMasterTime,
+                bufferingTime: dataSource.bufferingTime,
+                timeOut: dataSource.timeOut
+            });
 
-        //TODO: make frozen variables?
-        dataSource.onData = function (data) {
-            this.buffer.push({dataSourceId: dataSource.getId(), data: data});
+            //TODO: make frozen variables?
+            dataSource.onData = function (data) {
+                this.buffer.push({dataSourceId: dataSource.getId(), data: data});
 
-        }.bind(this);
+            }.bind(this);
+        }
     },
 
     /**

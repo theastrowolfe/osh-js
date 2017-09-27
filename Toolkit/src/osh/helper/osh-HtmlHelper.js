@@ -420,6 +420,74 @@ OSH.Helper.HtmlHelper.addHTMLListBox = function(parentElt,label,values,defaultTi
     return selectTagId;
 };
 
+OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox = function(parentElt,label,values,defaultTitleOption,defaultSelectTagId) {
+    var id = OSH.Utils.randomUUID();
+    var selectTagId = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    if(!isUndefinedOrNull(defaultSelectTagId)) {
+        selectTagId = defaultSelectTagId;
+    }
+
+
+    if(!isUndefinedOrNull(label) && label !== "") {
+        var labelElt = document.createElement("label");
+        labelElt.innerHTML = label;
+
+        liElt.appendChild(labelElt);
+    }
+
+    var divElt = document.createElement("div");
+    divElt.setAttribute("id",""+id);
+    divElt.setAttribute("class","select-style");
+
+    var selectElt = document.createElement("select");
+    selectElt.setAttribute("id",""+selectTagId);
+
+    if(!isUndefinedOrNull(defaultTitleOption)) {
+        var optionElt = document.createElement("option");
+        optionElt.setAttribute("value","");
+        optionElt.setAttribute("disabled","");
+        optionElt.setAttribute("selected","");
+        optionElt.innerHTML = defaultTitleOption;
+
+        selectElt.appendChild(optionElt);
+    }
+
+    if(!isUndefinedOrNull(values)) {
+        var first = true;
+        var optionElt;
+
+        for(var key in values) {
+            optionElt = document.createElement("option");
+            optionElt.setAttribute("value",values[key].name);
+            optionElt.innerHTML = values[key].name+"";
+            optionElt.object = values[key];
+
+            if(first) {
+                optionElt.setAttribute("selected","");
+                first = false;
+            }
+
+            selectElt.appendChild(optionElt);
+        }
+    }
+
+    divElt.appendChild(selectElt);
+
+    liElt.appendChild(divElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return selectTagId;
+};
+
 /**
  * Fire an event handler to the specified node. Event handlers can detect that the event was fired programatically
  * by testing for a 'synthetic=true' property on the event object

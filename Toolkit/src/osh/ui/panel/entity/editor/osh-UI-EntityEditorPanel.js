@@ -40,7 +40,11 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         if(isUndefinedOrNull(this.entity)) {
             // creates new entity
             this.entity = {
-                id: "entity-" + OSH.Utils.randomUUID()
+                id: "entity-" + OSH.Utils.randomUUID(),
+                dataSources: [],
+                dataProviderController: new OSH.DataReceiver.DataReceiverController({
+                    replayFactor: 1 //TODO:which datasource??!
+                })
             };
         }
 
@@ -67,6 +71,8 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         createButtonElt.innerHTML = "Save";
 
         entityEditor.appendChild(createButtonElt);
+
+
         // inits properties
         this.properties = {
             datasources : {},
@@ -78,6 +84,8 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         // inits datasources
         //this.initDatasources();
+
+        this.addListener(createButtonElt, "click", this.saveEntity.bind(this));
 
     },
 
@@ -101,7 +109,11 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     createViewPanel: function() {
-        this.viewPanel = new OSH.UI.Panel.EntityViewPanel("",{datasources:this.datasourcePanel.datasources});
+        this.viewPanel = new OSH.UI.Panel.EntityViewPanel("",{
+            datasources:this.datasourcePanel.datasources,
+            entityId:this.entity.id
+        });
+
         return this.viewPanel.divElt;
     },
 
@@ -270,5 +282,15 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         // starts streaming
         dataProviderController.connectAll();
+    },
+
+    saveEntity:function() {
+        for(var key in this.datasourcePanel.datasources) {
+            var ds = this.datasourcePanel.datasources[key];
+            // add datasource to dataprovider
+            this.entity.dataProviderController.addDataSource(ds);
+            // connects datasource
+            ds.connect();
+        }
     }
 });

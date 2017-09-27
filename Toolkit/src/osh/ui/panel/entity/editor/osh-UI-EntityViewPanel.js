@@ -90,55 +90,35 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         var self = this;
 
         // checks for existing views
-        //TODO: extract this part into a function
-        var checkExistingViews = function() {
-            var viewList = self.getViewList();
-
-            for(var key in viewList) {
-                var currentViewDiv = viewList[key];
-                OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
-                    var option = document.createElement("option");
-                    option.text = event.object.name;
-                    option.value = event.object.name;
-                    option.properties = {
-                        name: event.object.name,
-                        type: event.object.type,
-                        instance : event.object
-                    };
-
-                    self.selectElt.add(option);
-
-                    OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
-
-                    var addToView = false;
-
-                    if(!isUndefinedOrNull(self.entity)) {
-                        if(!isUndefinedOrNull(event.object.viewItems)) {
-
-                            // case where one of the viewItem might be concerned by the entity
-                            for(var key in event.object.viewItems) {
-                                if(event.object.viewItems[key].entityId === self.entity.id){
-                                    addToView = true;
-                                    break;
-                                }
-                            }
-                        } else if(!isUndefinedOrNull(event.object.entityId) &&
-                            event.object.entityId === self.entity.id){
-                            addToView = true;
-                        }
-
-                    }
-                    if(addToView) {
-                        self.addView(option.properties);
-                    }
-                });
-
-                OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
-            }
-        };
-
         // checking for existing views once the DOM has been loaded
-        OSH.Helper.HtmlHelper.onDomReady(checkExistingViews);
+        OSH.Helper.HtmlHelper.onDomReady(this.initExistingViews.bind(this));
+    },
+
+    initExistingViews:function() {
+        var self = this;
+
+        var viewList = this.getViewList();
+
+        for(var key in viewList) {
+            var currentViewDiv = viewList[key];
+            OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+                var option = document.createElement("option");
+                option.text = event.object.name;
+                option.value = event.object.name;
+                option.properties = {
+                    name: event.object.name,
+                    type: event.object.type,
+                    instance: event.object
+                };
+
+                option.properties.instance.canDelete = false;
+                self.selectElt.add(option);
+
+                OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
+            });
+
+            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
+        }
     },
 
     onAddViewClickHandler:function(event) {
@@ -153,78 +133,39 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
     },
 
     addView:function(viewProperties) {
-        var lineDivId = "LineView"+OSH.Utils.randomUUID();
-
-        var view = {};
-
         // two cases: this is an existing view or this is a view we want to create
-        if(isUndefinedOrNull(viewProperties.instance)) {
-            view = {
-                name: viewProperties.name,
-                id: OSH.Utils.randomUUID(),
-                container: "",
-                datasource: null,
-                lineDivId:lineDivId,
-                viewInstanceType:viewProperties.viewInstanceType,
-                type: viewProperties.type,
-                viewItems:[]
-            };
-        } else {
+        var viewInstance;
 
-            // transform the instance into properties to be edited/saved/loaded
-            view = {
-                name: viewProperties.instance.name,
-                id: viewProperties.instance.id,
-                container: document.getElementById(viewProperties.instance.divId).parentNode.id,
-                datasource: viewProperties.instance.datasource,
-                lineDivId:lineDivId,
-                type: viewProperties.instance.getType(),
-                viewItems:viewProperties.instance.viewItems,
-                instance:viewProperties.instance
-            };
+        if(isUndefinedOrNull(viewProperties.instance)) {
+            // creates the instance
+            viewInstance = this.getNewViewInstance(viewProperties);
+        } else { // the view already exists
+            viewInstance = viewProperties.instance;
+            viewInstance.canDelete = false;
         }
 
-        this.views.push(view);
-
-        // creates the line
-        var div = document.createElement('div');
-        div.setAttribute("id",lineDivId);
-        div.setAttribute("class","ds-line");
-
-        var deleteId = OSH.Utils.randomUUID();
-        var editId = OSH.Utils.randomUUID();
-
-        var strVar = "<span class=\"line-left\">"+view.name+"<\/span>";
-        strVar += "   <table class=\"control line-right\">";
-        strVar += "      <tr>";
-        strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
-        strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
-        strVar += "      <\/tr>";
-        strVar += "   <\/table>";
-        strVar += "<\/div>";
-        strVar += "<div style=\"clear: both;\"><\/div>";
-
-        div.innerHTML = strVar;
+        this.views.push(viewInstance);
 
         // adds line to tab
-        this.containerElt.appendChild(div);
+        var lineElt = this.getNewLine(viewInstance.name);
 
-        // add listeners
-        var self = this;
+        // appends line to container
+        this.containerElt.appendChild(lineElt);
 
-        OSH.EventManager.observeDiv(deleteId,"click",function(event) {
-            self.containerElt.removeChild(div);
-            var newArr = [];
+        var editElt = document.querySelectorAll(".control td.edit");
+        var deleteElt = document.querySelectorAll(".control td.delete");
 
-            for(var i=0;i < self.properties.views.length;i++) {
-                if(self.properties.views[i].id !== view.id) {
-                    newArr.push(self.properties.views[i]);
-                }
-            }
-            self.properties.views = newArr;
-        });
+        editElt = editElt[editElt.length-1];
+        deleteElt = deleteElt[deleteElt.length-1];
 
-        OSH.EventManager.observeDiv(editId,"click",this.editView.bind(this,view.id));
+        // handlers
+        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
+
+        if(viewInstance.canDelete) {
+            OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
+        } else {
+            deleteElt.setAttribute("disabled","");
+        }
     },
 
     editView:function(viewId,event) {
@@ -296,5 +237,185 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
     getViewList:function() {
         return document.querySelectorAll(".osh.view");
+    },
+
+    getNewViewInstance:function(properties) {
+        // gets view type
+        var viewInstanceType = properties.viewInstanceType;
+
+        // gets default view properties
+        // gets default view property
+        var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
+
+        defaultViewProperties.name = properties.name;
+        // creates the panel corresponding to the view type
+        var viewInstance;
+
+        if(properties.type === OSH.UI.View.ViewType.MAP || properties.type === OSH.UI.View.ViewType.CHART) {
+            viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties);
+        } else {
+            viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType, defaultViewProperties);
+        }
+
+        viewInstance.canDelete = true;
+
+        return viewInstance;
+    },
+
+    getNewLine:function(viewName) {
+        // creates the line
+        var lineElt = document.createElement('div');
+        lineElt.setAttribute("id","LineView"+OSH.Utils.randomUUID());
+        lineElt.setAttribute("class","ds-line");
+
+        var spanElt = document.createElement("span");
+        spanElt.setAttribute("class","line-left");
+        spanElt.innerHTML = ""+viewName;
+
+        var tableElt = document.createElement("table");
+        tableElt.setAttribute("class","control line-right");
+
+        var trElt = document.createElement("tr");
+
+        var editTdElt = document.createElement("td");
+        editTdElt.setAttribute("class","fa fa-2x fa-pencil-square-o edit");
+        editTdElt.setAttribute("aria-hidden","true");
+
+        var deleteTdElt = document.createElement("td");
+        deleteTdElt.setAttribute("class","fa fa-2x fa-trash-o delete");
+        deleteTdElt.setAttribute("aria-hidden","true");
+
+        var divElt = document.createElement("div");
+        divElt.setAttribute("style","clear: both;");
+
+        // builds table
+        trElt.appendChild(editTdElt);
+        trElt.appendChild(deleteTdElt);
+        tableElt.appendChild(trElt);
+
+        // builds line
+        lineElt.appendChild(spanElt);
+        lineElt.appendChild(tableElt);
+        lineElt.appendChild(divElt);
+
+        return lineElt;
+    },
+
+    editHandler:function(lineElt,viewInstance) {
+        // get current viewInstance
+
+        OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
+
+        // gathers Data Sources
+        var dsArray = [];
+
+        for(var key in this.options.datasources) {
+            var dsClone = this.options.datasources[key];
+            dsArray.push(dsClone);
+        }
+
+        var cloneViewInstance = {};
+        OSH.Utils.copyProperties(viewInstance,cloneViewInstance);
+
+        var options = {
+            view:cloneViewInstance,
+            datasources : dsArray,
+            entityId:this.options.entityId
+        };
+
+        // creates the panel corresponding to the view type
+        var editView;
+        switch(viewInstance.type) {
+            case OSH.UI.View.ViewType.MAP:  editView = new OSH.UI.Panel.EntityMapEditPanel("",options);break;
+            case OSH.UI.View.ViewType.CHART:  editView = new OSH.UI.Panel.EntityChartEditPanel("",options);break;
+            case OSH.UI.View.ViewType.VIDEO:  editView = new OSH.UI.Panel.EntityVideoEditPanel("",options);break;
+        }
+
+        OSH.Asserts.checkIsDefineOrNotNull(editView);
+
+        var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
+            draggable: true,
+            css: "dialog-edit-view", //TODO: create unique class for all the views
+            name: "Edit "+cloneViewInstance.name+" View",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true
+        });
+
+        editView.attachTo(editViewDialog.popContentDiv.id);
+
+        editViewDialog.onSave = function() {
+            var editedView = editView.getView();
+
+            lineElt.querySelector("span.line-left").innerHTML = editedView.name;
+
+            // finds the view instance and updates i
+            var i;
+
+            for(i=0;i < this.views.length;i++) {
+                if (this.views[i].id === editedView.id) {
+                    this.views[i] = editedView;
+                    break;
+                }
+            }
+
+            editViewDialog.close();
+            editView = null;
+
+            //TODO: switch container or create a new one(dialog) if needed
+
+            this.addViewItems(this.views[i]);
+
+        }.bind(this);
+
+    },
+
+    deleteHandler:function(lineElt,viewInstance) {
+        this.containerElt.removeChild(lineElt);
+        var newArr = [];
+
+        for(var i=0;i < this.views.length;i++) {
+            if(this.views[i].id !== viewInstance.id) {
+                newArr.push(this.views[i]);
+            }
+        }
+        this.views = newArr;
+
+        // destroy element
+        OSH.Utils.destroyElement(viewInstance.elementDiv);
+    },
+
+    addViewItems:function(view) {
+        // updates/add view item
+        if(!isUndefinedOrNull(view.viewItemsToAdd)) {
+            for (var j = 0; j < view.viewItemsToAdd.length; j++) {
+                /* switch(currentView.viewItemsToAdd[i].action) {
+                 case "add": {
+                 var viewItemToAdd = currentView.viewItemsToAdd[i];
+                 //currentView.instance.viewItems.splice(i, 1);
+
+                 OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
+                 viewItem: viewItemToAdd
+                 });
+                 }
+                 break;
+                 case "update":
+                 break; //TODO: update a viewItem
+                 case "remove":
+                 break; //TODO: remove a viewItem
+                 }*/
+
+                var viewItemToAdd = view.viewItemsToAdd[j];
+
+                OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + view.id, {
+                    viewItem: viewItemToAdd
+                });
+            }
+            view.viewItemsToAdd = [];
+        }
     }
+
 });

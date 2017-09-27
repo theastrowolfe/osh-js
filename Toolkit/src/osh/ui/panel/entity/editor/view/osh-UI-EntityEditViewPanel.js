@@ -32,9 +32,13 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
 
         var containerArr = this.getContainers();
         if(this.view.container !== "") {
-            containerArr = this.getContainers().concat(this.view.container).filter(function(value, index, self) {
-                return self.indexOf(value) === index;
-            });
+            if(!isUndefinedOrNull(this.view.container.id)) {
+                containerArr.push(this.view.container.id);
+            } else {
+                containerArr = this.getContainers().concat(this.view.container).filter(function(value, index, self) {
+                    return self.indexOf(value) === index;
+                });
+            }
         }
         this.buildContainer(containerArr);
 
@@ -59,12 +63,23 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
         this.containerDivId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",containerArr);
 
         OSH.Helper.HtmlHelper.HTMLListBoxSetSelected(document.getElementById(this.containerDivId),this.view.container);
+
+        var containerElt = document.getElementById(this.containerDivId);
+
+        if(!isUndefinedOrNull(this.view.container)) {
+            var idx = -1;
+            if(!isUndefinedOrNull(this.view.container.id)) {
+                idx = containerArr.indexOf(this.view.container.id);
+            } else {
+                idx = containerArr.indexOf(this.view.container);
+            }
+            containerElt.options[idx].setAttribute("selected","");
+        }
         // add default containers
         // listener
         var self = this;
 
         OSH.EventManager.observeDiv(this.containerDivId,"change",function(event){
-
             // updates view container
             self.view.container = this.options[this.selectedIndex].value;
         });

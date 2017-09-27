@@ -162,24 +162,19 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 low: null,
                 high: null,
                 default: null,
-                datasource: null,
+                datasourceIdx: null,
                 observableIdx: null
             }
         };
 
         OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Data source");
 
-        // data source
-        var dsName = [];
-        for(var i=0;i < this.options.datasources.length;i++) {
-            dsName.push(this.options.datasources[i].name);
-        }
 
         if(this.options.datasources.length > 0) {
             this.properties.threshold.datasourceIdx = 0;
         }
 
-        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.content, "Data Source", dsName);
+        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.content, "Data Source", this.options.datasources);
         var observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.content, "Observable", []);
 
         // default
@@ -264,6 +259,25 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             this.properties.threshold.low = defaultProperties.low;
             this.properties.threshold.high = defaultProperties.high;
             this.properties.threshold.value = defaultProperties.value;
+
+            var dsSelectTag = document.getElementById(dsListBoxId);
+
+            for(var i=0; i < dsSelectTag.options.length;i++) {
+                var currentOption = dsSelectTag.options[i];
+
+                if(currentOption.object.id === defaultProperties.datasourceId) {
+                    currentOption.setAttribute("selected","");
+                    this.properties.threshold.datasourceIdx = i;
+                    break;
+                }
+            }
+
+            this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId);
+
+            var obsSelectTag = document.getElementById(observableListBoxId);
+            obsSelectTag.options[defaultProperties.observableIdx].setAttribute("selected","");
+
+            this.properties.threshold.observableIdx = defaultProperties.observableIdx
         }
     },
 
@@ -298,7 +312,6 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         for (var key in this.options.datasources) {
             dsIdsArray.push(this.options.datasources[key].id);
         }
-
 
         if (!isUndefinedOrNull(this.properties.fixed)) {
             OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed");
@@ -366,9 +379,10 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
             //dataSourceIdsArray,datasource, observableIdx,
             //defaultIconArrayBuffer, lowIconArrayBuffer, highIconArrayBuffer, thresholdValue
+            var currentDatasource = this.options.datasources[this.properties.threshold.datasourceIdx];
+
             var iconFuncProps = OSH.UI.Styler.Factory.getThresholdIcon(
-                dsIdsArray,
-                this.options.datasources[this.properties.threshold.datasourceIdx],
+                currentDatasource,
                 this.properties.threshold.observableIdx,
                 this.properties.threshold.default.url,
                 this.properties.threshold.low.url,
@@ -384,7 +398,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             stylerProperties.ui.icon.threshold.high = this.properties.threshold.high;
             stylerProperties.ui.icon.threshold.value = this.properties.threshold.value;
             stylerProperties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
-            stylerProperties.ui.icon.threshold.datasourceIdx = this.properties.threshold.datasourceIdx;
+            stylerProperties.ui.icon.threshold.datasourceId = currentDatasource.id;
         }
         return stylerProperties;
     }

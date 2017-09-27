@@ -359,3 +359,12 @@ body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", san
     padding: 5px;
 }
 
+/** DISABLED BEHAVIOR **/
+.fa.disabled,
+.fa[disabled],
+.disabled > .fa,
+[disabled] > .fa {
+    color: lightgrey;
+    /*or*/ opacity: 0.5;
+}
+
