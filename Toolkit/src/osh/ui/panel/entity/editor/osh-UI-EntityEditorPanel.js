@@ -186,34 +186,6 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
            }
 
            //TODO: check container and switch if currentView.container != view.divElt.parentNode.id
-
-           // updates/add view item
-           if(!isUndefinedOrNull(currentView.viewItemsToAdd)) {
-                for(var j=0;j < currentView.viewItemsToAdd.length;j++){
-                   /* switch(currentView.viewItemsToAdd[i].action) {
-                        case "add": {
-                            var viewItemToAdd = currentView.viewItemsToAdd[i];
-                            //currentView.instance.viewItems.splice(i, 1);
-
-                            OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
-                                viewItem: viewItemToAdd
-                            });
-                        }
-                            break;
-                        case "update":
-                            break; //TODO: update a viewItem
-                        case "remove":
-                            break; //TODO: remove a viewItem
-                    }*/
-
-                    var viewItemToAdd = currentView.viewItemsToAdd[j];
-
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
-                        viewItem: viewItemToAdd
-                    });
-                }
-               currentView.viewItemsToAdd = [];
-           }
        }
     },
 

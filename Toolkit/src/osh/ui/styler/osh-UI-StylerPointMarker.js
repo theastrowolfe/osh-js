@@ -180,6 +180,12 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	 * @instance
 	 */
 	clear:function(){
-	}
+	},
+
+	remove:function(view) {
+        if(!isUndefinedOrNull(view)) {
+            view.removeMarker(this);
+        }
+    }
 
 });

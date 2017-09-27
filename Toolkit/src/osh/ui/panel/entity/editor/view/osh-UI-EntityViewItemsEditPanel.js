@@ -33,6 +33,13 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
     },
 
     buildViewItems:function(defaultViewItemArr) {
+        if(isUndefinedOrNull(this.view.viewItemsToAdd)) {
+            this.view.viewItemsToAdd = [];
+        }
+        if(isUndefinedOrNull(this.view.viewItemsToRemove)) {
+            this.view.viewItemsToRemove = [];
+        }
+
         // styler part
         this.viewItemsContainerDivId = OSH.Utils.randomUUID();
         var addViewItemId = OSH.Utils.randomUUID();
@@ -120,9 +127,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
             if(!isUndefinedOrNull(this.entityId)) {
                 viewItem.entityId = this.entityId;
             }
-            if(isUndefinedOrNull(this.view.viewItemsToAdd)) {
-                this.view.viewItemsToAdd = [];
-            }
+
             this.view.viewItemsToAdd.push(viewItem);
         }
 
@@ -166,7 +171,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
 
         OSH.EventManager.observeDiv(deleteId, "click", function (event) {
             viewItemsContainerElt.removeChild(div);
-            var newArray = [];
+            /*var newArray = [];
 
             for (var i = 0; i < self.view.viewItems.length; i++) {
                 if (self.view.viewItems[i].id !== viewItem.id) {
@@ -174,7 +179,8 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
                 }
             }
 
-            self.view.viewItems = newArray;
+            self.view.viewItems = newArray;*/
+            self.view.viewItemsToRemove.push(viewItem);
         });
 
         OSH.EventManager.observeDiv(editId, "click", this.editStyler.bind(this, viewItem));

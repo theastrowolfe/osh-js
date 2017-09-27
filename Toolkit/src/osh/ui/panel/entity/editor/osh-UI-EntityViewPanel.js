@@ -367,7 +367,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
             //TODO: switch container or create a new one(dialog) if needed
 
-            this.addViewItems(this.views[i]);
+            this.checkViewItems(this.views[i]);
 
         }.bind(this);
 
@@ -388,33 +388,24 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         OSH.Utils.destroyElement(viewInstance.elementDiv);
     },
 
-    addViewItems:function(view) {
+    checkViewItems:function(view) {
         // updates/add view item
         if(!isUndefinedOrNull(view.viewItemsToAdd)) {
             for (var j = 0; j < view.viewItemsToAdd.length; j++) {
-                /* switch(currentView.viewItemsToAdd[i].action) {
-                 case "add": {
-                 var viewItemToAdd = currentView.viewItemsToAdd[i];
-                 //currentView.instance.viewItems.splice(i, 1);
-
-                 OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + currentView.instance.id, {
-                 viewItem: viewItemToAdd
-                 });
-                 }
-                 break;
-                 case "update":
-                 break; //TODO: update a viewItem
-                 case "remove":
-                 break; //TODO: remove a viewItem
-                 }*/
-
                 var viewItemToAdd = view.viewItemsToAdd[j];
 
-                OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM + "-" + view.id, {
-                    viewItem: viewItemToAdd
-                });
+                view.addViewItem(viewItemToAdd);
             }
             view.viewItemsToAdd = [];
+        }
+
+        // DELETE
+        if(!isUndefinedOrNull(view.viewItemsToRemove)) {
+            for (var j = 0; j < view.viewItemsToRemove.length; j++) {
+               var viewItemToRemove = view.viewItemsToRemove[j];
+                view.removeViewItem(viewItemToRemove);
+            }
+            view.viewItemsToRemove = [];
         }
     }
 

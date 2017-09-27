@@ -23,5 +23,17 @@ OSH.UI.MapView = OSH.UI.View.extend({
 
     getType: function()  {
         return OSH.UI.View.ViewType.MAP;
-    }
+    },
+
+    addMarker: function (properties) {},
+
+    removeMarker:function() {},
+
+    updateMarker: function (styler) {},
+
+    addPolyline: function (properties) {},
+
+    updatePolyline: function (styler) {},
+
+    removePolyline:function() {}
 });

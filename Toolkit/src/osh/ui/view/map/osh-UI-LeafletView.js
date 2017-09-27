@@ -210,6 +210,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
     },
 
     //---------- FEATURES SETUP --------------//
+
     addMarker: function (properties) {
         //create marker
         var marker = null;
@@ -320,6 +321,20 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
     },
 
     /**
+     * Remove marker from the map
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.LeafletView
+     */
+    removeMarker:function(styler) {
+        if(styler.id in this.stylerIdToStyler) {
+            var markerId = this.stylerToObj[styler.getId()];
+            var marker = this.markers[markerId];
+            this.map.removeLayer(marker);
+        }
+    },
+
+    /**
      *
      * @param styler
      * @instance
@@ -368,6 +383,8 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
             marker.setIcon(markerIcon);
         }
     },
+
+
 
     /**
      *

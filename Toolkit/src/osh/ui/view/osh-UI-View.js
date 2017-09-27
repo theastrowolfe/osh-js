@@ -302,6 +302,45 @@ OSH.UI.View = BaseClass.extend({
     },
 
     /**
+     * Remove viewItem to the view
+     * @param viewItem
+     * @instance
+     * @memberof OSH.UI.View
+     */
+    removeViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+
+        var idx = -1;
+        for(var i=0;i < this.viewItems.length;i++) {
+            if(this.viewItems[i].id === viewItem.id) {
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx > -1) {
+            var viewItemToRemove = this.viewItems[idx];
+            var idxStyler = -1;
+            for(var i=0;i < this.stylers.length;i++) {
+                if(this.stylers[i].id === viewItemToRemove.styler.id) {
+                    idxStyler = i;
+                    break;
+                }
+            }
+
+            if(idxStyler > -1 ) {
+                viewItem.styler.remove(this);
+
+                this.stylers.splice(idxStyler,1);
+                delete this.stylerIdToStyler[viewItemToRemove.styler.id];
+            }
+            this.viewItems.splice(idx, 1);
+
+
+        }
+    },
+
+    /**
      * @instance
      * @memberof OSH.UI.View
      */
@@ -326,6 +365,11 @@ OSH.UI.View = BaseClass.extend({
         // new version including the id inside the event id
         OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM+"-"+this.id,function(event){
             this.addViewItem(event.viewItem);
+        }.bind(this));
+
+        // new version including the id inside the event id
+        OSH.EventManager.observe(OSH.EventManager.EVENT.REMOVE_VIEW_ITEM+"-"+this.id,function(event){
+            this.removeViewItem(event.viewItem);
         }.bind(this));
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
