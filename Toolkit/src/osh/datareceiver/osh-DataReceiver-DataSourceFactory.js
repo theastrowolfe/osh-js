@@ -42,14 +42,17 @@ OSH.DataReceiver.DataSourceFactory.definitionMap = {
     "http://sensorml.com/ont/swe/property/Image" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO //video
 };
 
-OSH.DataReceiver.DataSourceFactory.createDatasourceFromType = function(type,properties,callback) {
-    OSH.Asserts.checkIsDefineOrNotNull(type);
-    OSH.Asserts.checkTrue(type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON || type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO);
+OSH.DataReceiver.DataSourceFactory.createDatasourceFromType = function(properties,callback) {
+    OSH.Asserts.checkIsDefineOrNotNull(properties);
+    OSH.Asserts.checkIsDefineOrNotNull(properties.type);
+    OSH.Asserts.checkTrue(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON || properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO);
 
-    if(type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON) {
+    if(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON) {
         OSH.DataReceiver.DataSourceFactory.createJsonDatasource(properties,callback);
-    } else if(type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO) {
+    } else if(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO) {
         OSH.DataReceiver.DataSourceFactory.createVideoDatasource(properties);
+    } else {
+        throw new OSH.Exception.Exception("The datasource type is not supported: "+properties.type,properties);
     }
 };
 

@@ -428,13 +428,13 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             bufferingTime: Number(buffering),
             timeShift: Number(timeShift),
             timeout: Number(timeout),
-            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined
+            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined,
+            type:OSH.DataReceiver.DataSourceFactory.definitionMap[obsProp]
         };
 
         var existingDSId = serviceTag.dataSourceId;
-        var dsType = OSH.DataReceiver.DataSourceFactory.definitionMap[obsProp];
 
-        OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsType, properties,function(result){
+        OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(properties,function(result){
             if(!isUndefinedOrNull(existingDSId)) {
                 result.id = existingDSId;
                 this.onEditHandler(result);

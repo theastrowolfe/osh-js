@@ -139,10 +139,15 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         this.buildDSResultTemplate(this.datasources[dataSource.id]);
     },
 
-    loadDataSources:function(dsArray) {
+    loadDataSourcesProperty:function(dsPropertyArray) {
         this.reset();
-        for(var key in dsArray) {
-            this.addDataSource(dsArray[key]);
+        var self = this;
+
+        for(var key in dsPropertyArray) {
+            // gets new instance
+            var datasource = OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsPropertyArray[key],function(result){
+                self.addDataSource(result);
+            });
         }
     },
 
