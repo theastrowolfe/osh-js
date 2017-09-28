@@ -454,7 +454,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var dsType = OSH.DataReceiver.DataSourceFactory.definitionMap[obsProp];
 
         OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsType, properties,function(result){
-            if(!isUndefined(existingDSId)) {
+            if(!isUndefinedOrNull(existingDSId)) {
                 result.id = existingDSId;
                 this.onEditHandler(result);
             } else {

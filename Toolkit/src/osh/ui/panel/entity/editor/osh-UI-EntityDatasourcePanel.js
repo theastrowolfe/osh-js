@@ -40,7 +40,6 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         this.divElt.appendChild(divContainer);
 
         this.datasources = {};
-
         this.nbDatasources = 0;
     },
 
@@ -130,8 +129,6 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
             // setup existing info
             discoveryView.initDataSource(self.datasources[dataSource.id]);
         });
-
-        this.buildDSResultTemplate(dataSource);
     },
 
     editDataSource:function(dataSource) {
@@ -142,89 +139,16 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         this.buildDSResultTemplate(this.datasources[dataSource.id]);
     },
 
-    buildDSResultTemplate:function(dataSource) {
-        // get result template from datasource
-        var server = new OSH.Server({
-            url: "http://" + dataSource.properties.endpointUrl
-        });
-
-        var self = this;
-        // offering, observedProperty
-        server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
-            dataSource.resultTemplate = self.buildDSStructure(dataSource,jsonResp);
-        },function(error) {
-            // do something
-        });
+    loadDataSources:function(dsArray) {
+        this.reset();
+        for(var key in dsArray) {
+            this.addDataSource(dsArray[key]);
+        }
     },
 
-    buildDSStructure:function(datasource,resultTemplate) {
-        var result = [];
-        var currentObj = null;
-        var group = null;
-
-        OSH.Utils.traverse(resultTemplate.GetResultTemplateResponse.resultStructure.field,function(key,value,params) {
-            if(params.defLevel !== null && params.level < params.defLevel) {
-                result.push(currentObj);
-                currentObj = null;
-                params.defLevel = null;
-            }
-
-            if(group !== null && params.level < group.level  ) {
-                group = null;
-            }
-
-            if(!isUndefinedOrNull (value.definition)) {
-
-                var saveGroup = false;
-                if(currentObj !== null) {
-                    saveGroup = true;
-                    group = {
-                        path:currentObj.path,
-                        level:params.level,
-                        object: currentObj.object
-                    };
-                }
-
-                currentObj = {
-                    definition : value.definition,
-                    path:  null,
-                    object: value
-                };
-
-                params.defLevel = params.level+1;
-            }
-
-            if(params.defLevel !== null && params.level >= params.defLevel) {
-                if(key === "name") {
-                    if(currentObj.path === null) {
-                        if(group !== null) {
-                            currentObj.path = group.path + "."+value;
-                            currentObj.parentObject = group.object;
-                        } else {
-                            currentObj.path = value;
-                        }
-                    } else {
-                        currentObj.path = currentObj.path+"."+value;
-                    }
-                }
-            }
-        },{level:0,defLevel:null});
-
-        if(currentObj !== null) {
-            result.push(currentObj);
-        }
-
-        for(var key in result) {
-            var uiLabel = "no label/axisID/name defined";
-            if(!isUndefinedOrNull (result[key].object.label)) {
-                uiLabel = result[key].object.label;
-            } else if(!isUndefinedOrNull (result[key].object.axisID)) {
-                uiLabel = result[key].object.axisID;
-            } else if(!isUndefinedOrNull (result[key].object.name)) {
-                uiLabel = result[key].object.name;
-            }
-            result[key].uiLabel = uiLabel;
-        }
-        return result;
+    reset:function() {
+        OSH.Helper.HtmlHelper.removeAllNodes(document.getElementById(this.divDSContainerId));
+        this.datasources = {};
+        this.nbDatasources = 0;
     }
 });

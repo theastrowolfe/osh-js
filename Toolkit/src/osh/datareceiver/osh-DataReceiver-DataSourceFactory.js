@@ -83,11 +83,18 @@ OSH.DataReceiver.DataSourceFactory.createVideoDatasource = function(properties,c
         // store compression info
         properties.compression = compression;
 
+        var datasource;
+
         if(compression === "JPEG") {
-            callback(new OSH.DataReceiver.VideoMjpeg(properties.name, properties));
+            datasource = new OSH.DataReceiver.VideoMjpeg(properties.name, properties);
         } else if(compression === "H264") {
-            callback(new OSH.DataReceiver.VideoH264(properties.name, properties));
+            datasource = new OSH.DataReceiver.VideoH264(properties.name, properties);
         }
+
+        this.buildDSResultTemplate(datasource,function (dsResult) {
+            callback(dsResult);
+        });
+
     },function(error) {
         throw new OSH.Exception.Exception("Cannot Get result template for "+properties.endpointUrl,error);
     });
@@ -104,5 +111,96 @@ OSH.DataReceiver.DataSourceFactory.createJsonDatasource = function(properties,ca
     OSH.Asserts.checkIsDefineOrNotNull(properties);
     OSH.Asserts.checkIsDefineOrNotNull(callback);
 
-    callback(new OSH.DataReceiver.JSON(properties.name, properties));
+    var datasource = new OSH.DataReceiver.JSON(properties.name, properties);
+
+    this.buildDSResultTemplate(datasource,function (dsResult) {
+        callback(dsResult);
+    });
+};
+
+OSH.DataReceiver.DataSourceFactory.buildDSResultTemplate = function(dataSource,callback) {
+    // get result template from datasource
+    var server = new OSH.Server({
+        url: "http://" + dataSource.properties.endpointUrl
+    });
+
+    var self = this;
+    // offering, observedProperty
+    server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
+        dataSource.resultTemplate = self.buildDSStructure(dataSource,jsonResp);
+        callback(dataSource);
+    },function(error) {
+        // do something
+    });
+};
+
+OSH.DataReceiver.DataSourceFactory.buildDSStructure = function (datasource, resultTemplate) {
+    var result = [];
+    var currentObj = null;
+    var group = null;
+
+    OSH.Utils.traverse(resultTemplate.GetResultTemplateResponse.resultStructure.field, function (key, value, params) {
+        if (params.defLevel !== null && params.level < params.defLevel) {
+            result.push(currentObj);
+            currentObj = null;
+            params.defLevel = null;
+        }
+
+        if (group !== null && params.level < group.level) {
+            group = null;
+        }
+
+        if (!isUndefinedOrNull(value.definition)) {
+
+            var saveGroup = false;
+            if (currentObj !== null) {
+                saveGroup = true;
+                group = {
+                    path: currentObj.path,
+                    level: params.level,
+                    object: currentObj.object
+                };
+            }
+
+            currentObj = {
+                definition: value.definition,
+                path: null,
+                object: value
+            };
+
+            params.defLevel = params.level + 1;
+        }
+
+        if (params.defLevel !== null && params.level >= params.defLevel) {
+            if (key === "name") {
+                if (currentObj.path === null) {
+                    if (group !== null) {
+                        currentObj.path = group.path + "." + value;
+                        currentObj.parentObject = group.object;
+                    } else {
+                        currentObj.path = value;
+                    }
+                } else {
+                    currentObj.path = currentObj.path + "." + value;
+                }
+            }
+        }
+    }, {level: 0, defLevel: null});
+
+    if (currentObj !== null) {
+        result.push(currentObj);
+    }
+
+    for (var key in result) {
+        var uiLabel = "no label/axisID/name defined";
+        if (!isUndefinedOrNull(result[key].object.label)) {
+            uiLabel = result[key].object.label;
+        } else if (!isUndefinedOrNull(result[key].object.axisID)) {
+            uiLabel = result[key].object.axisID;
+        } else if (!isUndefinedOrNull(result[key].object.name)) {
+            uiLabel = result[key].object.name;
+        }
+        result[key].uiLabel = uiLabel;
+    }
+    return result;
 };
