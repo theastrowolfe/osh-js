@@ -56,23 +56,28 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         var views = [{
             name: "Map 2D (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.LEAFLET,
-            type: OSH.UI.View.ViewType.MAP
+            type: OSH.UI.View.ViewType.MAP,
+            hash: 0x0001
         },{
             name: "Globe 3D (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.CESIUM,
-            type: OSH.UI.View.ViewType.MAP
+            type: OSH.UI.View.ViewType.MAP,
+            hash: 0x0002
         },{
             name: "Chart (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART,
-            type: OSH.UI.View.ViewType.CHART
+            type: OSH.UI.View.ViewType.CHART,
+            hash: 0x0003
         },{
             name: "Video - H264 (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.FFMPEG,
-            type: OSH.UI.View.ViewType.VIDEO
+            type: OSH.UI.View.ViewType.VIDEO,
+            hash: 0x0004
         },{
             name: "Video - MJPEG (New)",
             viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.MJPEG,
-            type: OSH.UI.View.ViewType.VIDEO
+            type: OSH.UI.View.ViewType.VIDEO,
+            hash: 0x0005
         }];
 
         this.removeAllFromSelectElement(this.selectElt);
@@ -111,7 +116,6 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                     instance: event.object
                 };
 
-                option.properties.instance.canDelete = false;
                 self.selectElt.add(option);
 
                 OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
@@ -141,7 +145,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             viewInstance = this.getNewViewInstance(viewProperties);
         } else { // the view already exists
             viewInstance = viewProperties.instance;
-            viewInstance.canDelete = false;
+            viewInstance.hash = 0x0000;
         }
 
         this.views.push(viewInstance);
@@ -160,12 +164,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         // handlers
         OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
-
-        if(viewInstance.canDelete) {
-            OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
-        } else {
-            deleteElt.setAttribute("disabled","");
-        }
+        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
     },
 
     editView:function(viewId,event) {
@@ -240,6 +239,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
     },
 
     getNewViewInstance:function(properties) {
+
         // gets view type
         var viewInstanceType = properties.viewInstanceType;
 
@@ -257,8 +257,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType, defaultViewProperties);
         }
 
-        viewInstance.canDelete = true;
-
+        viewInstance.hash = properties.hash;
         return viewInstance;
     },
 
@@ -384,8 +383,18 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         }
         this.views = newArr;
 
+        // delete corresponding viewItem
+        var currentViewItem;
+        for(var i = 0;i < viewInstance.viewItems.length;i++) {
+            currentViewItem = viewInstance.viewItems[i];
+            if(currentViewItem.entityId === this.options.entityId) {
+                viewInstance.removeViewItem(currentViewItem);
+            }
+        }
         // destroy element
-        OSH.Utils.destroyElement(viewInstance.elementDiv);
+        if(viewInstance.hash !== 0x0000) {
+            OSH.Utils.destroyElement(viewInstance.elementDiv);
+        }
     },
 
     checkViewItems:function(view) {
@@ -407,6 +416,51 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             }
             view.viewItemsToRemove = [];
         }
-    }
+    },
 
+    /**
+     * load views from saved data
+     * @param viewPropertiesArray
+     */
+    loadViews:function(viewPropertiesArray) {
+        this.reset();
+        var currentProperty;
+
+        var existingViewList = this.getViewList();
+        for(var key in viewPropertiesArray) {
+            currentProperty = viewPropertiesArray[key];
+            if(currentProperty.hash === 0x000) {
+                // existing view
+               outer: for(var i=0;i < existingViewList.length;i++) {
+                    var currentViewDiv = existingViewList[i];
+
+                    OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+                        var viewInstance = event.object;
+                        var nodeIndex = OSH.Utils.getChildNumber(viewInstance.elementDiv);
+                        if(viewInstance.type === currentProperty.type &&
+                            nodeIndex === currentProperty.nodeIdx &&
+                            viewInstance.elementDiv.parentNode.id === currentProperty.container){
+
+                                this.addView({
+                                    name: currentProperty.name,
+                                    type: currentProperty.type,
+                                    instance: event.object,
+                                    hash: currentProperty.hash
+                                });
+                        }
+                        OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
+                    }.bind(this));
+
+                    OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
+                }
+            } else {
+
+            }
+        }
+    },
+
+    reset:function() {
+        OSH.Helper.HtmlHelper.removeAllNodes(this.containerElt);
+        this.views = [];
+    }
 });
