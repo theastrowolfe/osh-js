@@ -531,3 +531,7 @@ OSH.Utils.destroyElement = function(element) {
 
     element.parentNode.removeChild(element);
 };
+
+OSH.Utils.getChildNumber = function(node) {
+    return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+}

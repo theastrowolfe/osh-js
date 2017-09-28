@@ -58,7 +58,7 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
                     try{
                         self.loadProperties(lastDataLoaded.data);
                     } catch(exception) {
-                        throw new OSH.Exception.Exception("Cannot convert '"+lastDataLoaded.file.name+"' into JSON: "+exception);
+                        throw new OSH.Exception.Exception("Cannot convert '"+lastDataLoaded.file.name+"' into JSON: ",exception);
                     }
                 }
             });
@@ -105,7 +105,7 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
             var blob = new Blob([JSON.stringify(properties)], {type: "text/plain;charset=utf-8"});
             saveAs(blob, fileName);
         } catch(exception) {
-            throw new OSH.Exception.Exception("Cannot save the data as file: "+fileName);
+            throw new OSH.Exception.Exception("Cannot save the data as file: "+fileName,exception);
         }
 
     },
@@ -114,7 +114,7 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
         try{
             this.loadPropertiesHandler(JSON.parse(textData));
         } catch(exception) {
-            throw new OSH.Exception.Exception("Cannot convert '"+fileName+"' into JSON: "+exception);
+            throw new OSH.Exception.Exception("Cannot convert '"+fileName+"' into JSON: ",exception);
         }
     },
 
@@ -127,5 +127,9 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
 
     beforeOnSaveProperties:function() {
         return [];
+    },
+
+    enableElt:function(id) {
+        document.getElementById(id).removeAttribute("disabled","");
     }
 });

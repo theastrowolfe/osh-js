@@ -16,20 +16,8 @@
 
 OSH.UI.Panel.EntityChartEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
 
-    getNewStylerInstance:function(type) {
-        if(type === "LinePlot") {
-            return new OSH.UI.Styler.LinePlot({});
-        }
-    },
-
-    getTypeFromStylerInstance:function(stylerInstance) {
-        if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
-            return "LinePlot";
-        }
-    },
-
     getStylerList:function() {
-        return ["LinePlot"];
+        return [OSH.UI.Styler.Factory.TYPE.LINE_PLOT];
     },
 
     getStylerPanelInstance:function(properties) {

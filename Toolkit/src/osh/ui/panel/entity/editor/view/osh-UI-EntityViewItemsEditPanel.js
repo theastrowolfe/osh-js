@@ -103,9 +103,10 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
         var selectedStylerName = stylerList[0];
 
         if(!isUndefined(event.viewItem)) {
+            //TODO: check if that is still necessary with the new architecture
             viewItem = event.viewItem;
             styler = viewItem.styler;
-            selectedStylerName = this.getTypeFromStylerInstance(styler);
+            selectedStylerName = OSH.UI.Styler.Factory.getTypeFromInstance(styler);
         } else {
             if(isUndefinedOrNull(this.nbViewItems)) {
                 this.nbViewItems = 0;
@@ -114,8 +115,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
             var stylerUI = null;
 
             if(!isUndefinedOrNull(stylerList)){
-                stylerUI = this.getNewStylerInstance(stylerList[0]);
-                stylerUI.ui = {};
+                stylerUI = OSH.UI.Styler.Factory.getNewInstanceFromType(stylerList[0]);
             }
 
             viewItem = {
@@ -171,15 +171,6 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
 
         OSH.EventManager.observeDiv(deleteId, "click", function (event) {
             viewItemsContainerElt.removeChild(div);
-            /*var newArray = [];
-
-            for (var i = 0; i < self.view.viewItems.length; i++) {
-                if (self.view.viewItems[i].id !== viewItem.id) {
-                    newArray.push(self.view.viewItems[i]);
-                }
-            }
-
-            self.view.viewItems = newArray;*/
             self.view.viewItemsToRemove.push(viewItem);
         });
 

@@ -335,8 +335,6 @@ OSH.UI.View = BaseClass.extend({
                 delete this.stylerIdToStyler[viewItemToRemove.styler.id];
             }
             this.viewItems.splice(idx, 1);
-
-
         }
     },
 

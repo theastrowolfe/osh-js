@@ -431,7 +431,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             currentProperty = viewPropertiesArray[key];
             if(currentProperty.hash === 0x000) {
                 // existing view
-               outer: for(var i=0;i < existingViewList.length;i++) {
+               for(var i=0;i < existingViewList.length;i++) {
                     var currentViewDiv = existingViewList[i];
 
                     OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
@@ -441,12 +441,28 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                             nodeIndex === currentProperty.nodeIdx &&
                             viewInstance.elementDiv.parentNode.id === currentProperty.container){
 
-                                this.addView({
-                                    name: currentProperty.name,
-                                    type: currentProperty.type,
-                                    instance: event.object,
-                                    hash: currentProperty.hash
+                            //--- Stylers
+                            for(var key in currentProperty.viewItems) {
+                                var currentViewItemProps = currentProperty.viewItems[key];
+                                var currentViewStylerProps = currentViewItemProps.styler;
+                                var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
+                                OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
+
+                                event.object.addViewItem({
+                                    name: currentViewItemProps.name,
+                                    entityId: currentViewItemProps.entityId,
+                                    styler:stylerInstance
                                 });
+                            }
+
+                            this.addView({
+                                name: currentProperty.name,
+                                type: currentProperty.type,
+                                instance: event.object,
+                                hash: currentProperty.hash
+                            });
+
+
                         }
                         OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
                     }.bind(this));

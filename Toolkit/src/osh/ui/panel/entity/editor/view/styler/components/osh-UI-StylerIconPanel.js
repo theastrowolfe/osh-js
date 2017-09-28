@@ -399,6 +399,8 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             stylerProperties.ui.icon.threshold.value = this.properties.threshold.value;
             stylerProperties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
             stylerProperties.ui.icon.threshold.datasourceId = currentDatasource.id;
+        } else {
+            delete stylerProperties.icon; // remove icon properties from result
         }
         return stylerProperties;
     }

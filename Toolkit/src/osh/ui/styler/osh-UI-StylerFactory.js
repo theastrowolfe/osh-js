@@ -24,6 +24,11 @@ OSH.UI.Styler.Factory.LOCATION_DEFINITIONS = ["http://www.opengis.net/def/proper
 OSH.UI.Styler.Factory.ORIENTATION_DEFINITIONS = ["http://sensorml.com/ont/swe/property/OrientationQuaternion"];
 OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property/Weather"];
 
+OSH.UI.Styler.Factory.TYPE = {
+    MARKER:"Marker",
+    POLYLINE:"Polyline",
+    LINE_PLOT: "LinePlot"
+};
 
 /**
  *
@@ -283,3 +288,28 @@ OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultU
         }
     };
 };
+
+OSH.UI.Styler.Factory.getTypeFromInstance = function(stylerInstance) {
+    if(stylerInstance instanceof OSH.UI.Styler.PointMarker){
+        return OSH.UI.Styler.Factory.TYPE.MARKER;
+    } else if(stylerInstance instanceof OSH.UI.Styler.Polyline){
+        return OSH.UI.Styler.Factory.TYPE.POLYLINE;
+    } else if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
+        return OSH.UI.Styler.Factory.TYPE.LINE_PLOT;
+    } else {
+        throw new OSH.Exception.Exception("No type available for the instance "+stylerInstance);
+    }
+};
+
+OSH.UI.Styler.Factory.getNewInstanceFromType = function(type) {
+    if(type === OSH.UI.Styler.Factory.TYPE.LINE_PLOT) {
+        return new OSH.UI.Styler.LinePlot({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.MARKER) {
+        return new OSH.UI.Styler.PointMarker({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.POLYLINE) {
+        return new OSH.UI.Styler.Polyline({});
+    } else {
+        throw new OSH.Exception.Exception("No styler instance available for the type "+type);
+    }
+};
+

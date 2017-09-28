@@ -16,24 +16,8 @@
 
 OSH.UI.Panel.EntityMapEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
 
-    getNewStylerInstance:function(type) {
-        if(type === "Marker") {
-            return new OSH.UI.Styler.PointMarker({});
-        } else if(type === "Polyline") {
-            return new OSH.UI.Styler.Polyline({});
-        }
-    },
-
-    getTypeFromStylerInstance:function(stylerInstance) {
-        if(stylerInstance instanceof OSH.UI.Styler.PointMarker){
-            return "Marker";
-        } else if(stylerInstance instanceof OSH.UI.Styler.Polyline){
-            return "Polyline";
-        }
-    },
-
     getStylerList:function() {
-        return ["Marker","Polyline"];
+        return [OSH.UI.Styler.Factory.TYPE.MARKER, OSH.UI.Styler.Factory.TYPE.POLYLINE];
     },
 
     getStylerPanelInstance:function(properties) {

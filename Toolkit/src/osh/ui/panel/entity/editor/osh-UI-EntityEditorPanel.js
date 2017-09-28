@@ -39,13 +39,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         if(isUndefinedOrNull(this.entity)) {
             // creates new entity
-            this.entity = {
-                id: "entity-" + OSH.Utils.randomUUID(),
-                dataSources: [],
-                dataProviderController: new OSH.DataReceiver.DataReceiverController({
-                    replayFactor: 1 //TODO:which datasource??!
-                })
-            };
+            this.createEntity();
         }
 
         // add template
@@ -79,22 +73,28 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             views : []
         };
 
-        // inits views
-        //this.initViews();
-
-        // inits datasources
-        //this.initDatasources();
-
         this.addListener(createButtonElt, "click", this.saveEntity.bind(this));
+    },
 
+    createEntity:function() {
+        this.entity = {
+            id: "entity-" + OSH.Utils.randomUUID(),
+            dataSources: [],
+            dataProviderController: new OSH.DataReceiver.DataReceiverController({
+                replayFactor: 1 //TODO:which datasource??!
+            })
+        };
     },
 
     createFilePanel:function() {
         var filePanel = new OSH.UI.Panel.EntityFilePanel();
         filePanel.beforeOnSaveProperties = function() {
-            return this.datasourcePanel.datasources;
+            return this.createSaveProperty();
         }.bind(this);
 
+        filePanel.loadPropertiesHandler = function(properties) {
+            this.restoreSavedProperties(properties);
+         }.bind(this);
         return filePanel.divElt;
     },
 
@@ -125,70 +125,6 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             }
         }
     },
-
-    createEntity:function(event) {
-
-       var entityName = document.getElementById(this.nameTagId).value;
-
-        // get DS array
-        var replayFactor = 1;
-        var datasourceArray = [];
-        for(var key in this.properties.datasources) {
-            datasourceArray.push(this.properties.datasources[key]);
-            replayFactor = this.properties.datasources[key].replaySpeed;
-        }
-
-        // updates name & data sources
-        this.entity.name = entityName;
-
-        //TODO: make the diff between exsiting ones and the ones which have been removed/added
-        this.entity.dataSources = datasourceArray;
-
-        if(isUndefinedOrNull(this.entity.datacontroller)) {
-             this.entity.datacontroller = new OSH.DataReceiver.DataReceiverController({
-                    replayFactor : replayFactor
-             });
-            this.entity.datacontroller.addEntity(this.entity);
-            // starts streaming
-            this.entity.datacontroller.connectAll();
-        }
-
-       for(var i=0;i< this.properties.views.length;i++) {
-           var currentView = this.properties.views[i];
-
-           // checks if view exists
-           if (isUndefinedOrNull(currentView.instance) || isUndefinedOrNull(document.getElementById(currentView.instance.id))) { // is not an existing instance
-
-               // gets view type
-               var viewInstanceType = currentView.viewInstanceType;
-
-               // gets default view properties
-               // gets default view property
-               var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
-               var viewInstance;
-
-               if (isUndefinedOrNull(currentView.viewItems)) {
-                   viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType, defaultViewProperties, currentView.datasource, this.entity);
-                   this.createViewNoViewItems(currentView, viewInstance, this.entity);
-               } else  { // view items instance
-                   var viewItems = [];
-                   for (var j = 0; j < currentView.viewItems.length; j++) {
-                       currentView.viewItems[j].entityId = this.entity.id;
-                   }
-
-                   viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties, currentView.viewItems);
-                   this.createViewItems(currentView, viewInstance, this.entity);
-               }
-
-               this.properties.views[i].instance = viewInstance;
-           } else {
-               // the instance already exist, the entity has to be added/updated to this instance
-           }
-
-           //TODO: check container and switch if currentView.container != view.divElt.parentNode.id
-       }
-    },
-
 
     enableElt:function(id) {
         document.getElementById(id).removeAttribute("disabled","");
@@ -257,12 +193,111 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     saveEntity:function() {
+        // We can add a group of dataSources and set the options
+        this.entity.dataProviderController.addEntity(this.entity);
+
+        // starts streaming
+        this.entity.dataProviderController.connectAll();
+    },
+
+    createSaveProperty:function() {
+        var props = {};
+
+        // Entity information
+        props.infos = {
+            id: this.entity.id,
+            name : document.getElementById(this.infoPanel.nameTagId).value,
+            icon : document.getElementById(this.infoPanel.iconTagId).value,
+            description: document.getElementById(this.infoPanel.descriptionTagId).value
+        };
+
+        // Datasource information
+        var datasourcesProperty = [];
         for(var key in this.datasourcePanel.datasources) {
-            var ds = this.datasourcePanel.datasources[key];
-            // add datasource to dataprovider
-            this.entity.dataProviderController.addDataSource(ds);
-            // connects datasource
-            ds.connect();
+            var dsProps = {};
+            OSH.Utils.copyProperties(this.datasourcePanel.datasources[key].properties,dsProps);
+            dsProps.id = this.datasourcePanel.datasources[key].id;
+
+            datasourcesProperty.push(dsProps);
         }
+        props.datasources = datasourcesProperty;
+
+        // view information
+        // new or existing ?
+        // store name, type & hash
+        var views = [];
+        var currentView;
+
+        for(var key in this.viewPanel.views) {
+            currentView = this.viewPanel.views[key];
+            var viewItems = [];
+            // compute view Items infos
+            if(!isUndefinedOrNull(currentView.viewItems)) {
+                var currentViewItem;
+
+                for(var key in currentView.viewItems) {
+                    currentViewItem = currentView.viewItems[key];
+
+                    // save only viewItem created using UI
+                    if(currentViewItem.entityId === this.entity.id) {
+                        var viewItemToSave = {
+                            name: currentViewItem.name,
+                            entityId: currentViewItem.entityId,
+                            styler: null
+                        };
+
+                        if (!isUndefinedOrNull(currentViewItem.styler)) {
+                            // compute styler
+                            var stylerToSave = {
+                                ui: currentViewItem.styler.ui,
+                                type: OSH.UI.Styler.Factory.getTypeFromInstance(currentViewItem.styler)
+                            };
+
+                            viewItemToSave.styler = stylerToSave;
+                        }
+
+                        viewItems.push(viewItemToSave);
+                    }
+                }
+            }
+
+            views.push({
+                type: currentView.type,
+                hash: currentView.hash,
+                name: currentView.name,
+                container: currentView.elementDiv.parentNode.id,
+                nodeIdx: OSH.Utils.getChildNumber(currentView.elementDiv),
+                display: currentView.elementDiv.style.display, // for new created views, should be equal to NONE,
+                viewItems:viewItems
+            });
+        }
+
+        props.views = views;
+        return props;
+    },
+
+    restoreSavedProperties:function(properties){
+        this.infoPanel.loadInfos(properties.infos);
+        this.datasourcePanel.loadDataSourcesProperty(properties.datasources,function(datasourceArray) {
+
+            this.createEntity();
+
+            // asigns saved values
+            this.entity.id = properties.infos.id;
+            this.entity.name = properties.infos.name;
+            this.entity.icon = properties.infos.icon;
+            this.entity.description = properties.infos.description;
+            this.entity.dataSources = datasourceArray;
+
+            // View panel
+            // re-init entity-id
+            this.viewPanel.options.entityId = this.entity.id
+            this.viewPanel.options.datasources = this.datasourcePanel.datasources;
+
+            this.viewPanel.loadViews(properties.views);
+
+            // adds and connects datasources
+            this.saveEntity();
+        }.bind(this));
     }
 });

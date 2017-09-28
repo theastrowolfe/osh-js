@@ -143,16 +143,22 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         this.reset();
         var self = this;
 
+        if(isUndefinedOrNull(dsPropertyArray) || dsPropertyArray.length === 0) {
+            callback([]);
+        }
         var nbElements = dsPropertyArray.length;
 
         for(var key in dsPropertyArray) {
-            // gets new instance
-            var datasource = OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsPropertyArray[key],function(result){
-                self.addDataSource(result);
-                if(--nbElements === 0) {
-                    callback(Object.values(this.datasources));
-                }
-            }.bind(this));
+            (function(id) {
+                // gets new instance
+                var datasource = OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsPropertyArray[key], function (result) {
+                    result.id = id;
+                    self.addDataSource(result);
+                    if (--nbElements === 0) {
+                        callback(Object.values(self.datasources));
+                    }
+                });
+            })(dsPropertyArray[key].id);  //passing the variable to freeze, creating a new closure
         }
     },
 

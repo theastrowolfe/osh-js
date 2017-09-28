@@ -83,9 +83,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
 
             if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping")) {
-                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.x;
-                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.y;
-                document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.z;
+                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.xIdx;
+                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.yIdx;
+                document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.zIdx;
             }
         }
 
@@ -193,9 +193,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
             stylerProperties.ui.location.locationFuncMapping = {
                 datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
-                x: xIdx,
-                y: yIdx,
-                z: zIdx
+                xIdx: xIdx,
+                yIdx: yIdx,
+                zIdx: zIdx
             };
         } else {
             // custom textual function

@@ -25,5 +25,16 @@ OSH.UI.Panel.EntityInfoPanel = OSH.UI.Panel.extend({
         this.descriptionTagId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Description url","","description here");
 
         OSH.Utils.addCss(this.divElt,"info");
+    },
+
+    loadInfos:function(infos){
+        OSH.Asserts.checkIsDefineOrNotNull(infos);
+        OSH.Asserts.checkObjectPropertyPath(infos,"name", "infos.name does not exist");
+        OSH.Asserts.checkObjectPropertyPath(infos,"icon", "infos.icon does not exist");
+        OSH.Asserts.checkObjectPropertyPath(infos,"description", "infos.description does not exist");
+
+        document.getElementById(this.nameTagId).value = infos.name;
+        document.getElementById(this.iconTagId).value = infos.icon;
+        document.getElementById(this.descriptionTagId).value = infos.description;
     }
 });
