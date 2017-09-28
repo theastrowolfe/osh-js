@@ -156,25 +156,6 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
         OSH.EventManager.observeDiv(this.observablePropertyTagId,"change",this.onSelectedObsProperty.bind(this));
         OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
-
-        // definition mapping
-
-        this.definitionMap = {
-            "http://www.opengis.net/def/property/OGC/0/SensorLocation" : "json", //location
-            "http://sensorml.com/ont/swe/property/Location" : "json", //location
-            "http://sensorml.com/ont/swe/property/Latitude" : "json", //location
-            "http://sensorml.com/ont/swe/property/Longitude" : "json", //location
-            "http://sensorml.com/ont/swe/property/Altitude" : "json", //location
-            "http://sensorml.com/ont/swe/property/OrientationQuaternion" : "json", //orientation
-            "http://www.opengis.net/def/property/OGC/0/PlatformOrientation": "json", //orientation
-            "http://sensorml.com/ont/swe/property/OSH/0/GimbalOrientation" : "json", // orientation
-            "http://www.opengis.net/def/property/OGC/0/PlatformLocation" : "json", //location
-            "http://sensorml.com/ont/swe/property/Weather" : "json", //curve
-            "http://sensorml.com/ont/swe/property/WindSpeed" : "json", //curve
-            "http://sensorml.com/ont/swe/property/WindDirection" : "json",
-            "http://sensorml.com/ont/swe/property/VideoFrame": "video", //video
-            "http://sensorml.com/ont/swe/property/Image" : "video"
-        };
     },
 
     initDataSource:function(dataSource) {
@@ -306,7 +287,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         for(var i = 0; i  < offering.observableProperty.length;i++) {
             // check if obs if supported
             var disable = false;
-            disable = !(offering.observableProperty[i] in this.definitionMap);
+            disable = !(offering.observableProperty[i] in OSH.DataReceiver.DataSourceFactory.definitionMap);
             this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering,null,disable);
         }
 
