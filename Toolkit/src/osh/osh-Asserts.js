@@ -49,3 +49,13 @@ OSH.Asserts.checkArrayIndex = function(array, index) {
         throw new OSH.Exception.Exception("The given index of the array is out of range:"+index+" > "+(array.length -1));
     }
 };
+
+OSH.Asserts.checkTrue = function(cond,errorMessage) {
+  if(!cond) {
+      if(!isUndefinedOrNull(errorMessage)) {
+          throw new OSH.Exception.Exception(errorMessage);
+      } else {
+          throw new OSH.Exception.Exception("Assert failed, cond ["+cond+"] is not met");
+      }
+  }
+};

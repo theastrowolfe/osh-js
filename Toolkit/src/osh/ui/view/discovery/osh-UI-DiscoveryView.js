@@ -433,9 +433,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         var timeShift = timeShiftTag.value;
         var timeout = timeoutTag.value;
 
-        var dsType = this.definitionMap[obsProp];
-
         var properties = {
+            name:nameTag.value,
             protocol: "ws",
             service: "SOS",
             endpointUrl: endPointUrl,
@@ -452,25 +451,17 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         };
 
         var existingDSId = serviceTag.dataSourceId;
+        var dsType = OSH.DataReceiver.DataSourceFactory.definitionMap[obsProp];
 
-        if(dsType === "json") {
-            var newDS = this.createJSONDataSource(nameTag.value,properties);
+        OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsType, properties,function(result){
             if(!isUndefined(existingDSId)) {
-                newDS.id = existingDSId;
-                this.onEditHandler(newDS);
+                result.id = existingDSId;
+                this.onEditHandler(result);
             } else {
-                this.onAddHandler(newDS);
+                this.onAddHandler(result);
             }
-        } else if(dsType === "video") {
-            this.createVideoDataSource(nameTag.value,properties,function(ds){
-                if(!isUndefined(existingDSId)) {
-                    ds.id = existingDSId;
-                    this.onEditHandler(ds);
-                } else {
-                    this.onAddHandler(ds);
-                }
-            }.bind(this));
-        }
+        }.bind(this));
+
         return false;
     },
 
@@ -557,55 +548,6 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         for (i = selectTag.options.length - 1; i > 0; i--) {
             selectTag.remove(i);
         }
-    },
-
-    /**
-     *
-     * @param name
-     * @param properties the datasource properties
-     * @param callback callback function called when the datasource is created. The callback will returns undefined if no datasource matches.
-     * @memberof OSH.UI.DiscoveryView
-     * @instance
-     */
-    createVideoDataSource:function(name,properties,callback) {
-        var oshServer = new OSH.Server({
-            url: "http://"+properties.endpointUrl
-        });
-
-        oshServer.getResultTemplate(properties.offeringID,properties.observedProperty, function(jsonResp){
-            var resultEncodingArr = jsonResp.GetResultTemplateResponse.resultEncoding.member;
-            var compression = null;
-
-            for(var i=0;i < resultEncodingArr.length;i++) {
-                var elt = resultEncodingArr[i];
-                if('compression' in elt) {
-                    compression = elt.compression;
-                    break;
-                }
-            }
-
-            // store compression info
-            properties.compression = compression;
-
-            if(compression === "JPEG") {
-                callback(new OSH.DataReceiver.VideoMjpeg(name, properties));
-            } else if(compression === "H264") {
-                callback(new OSH.DataReceiver.VideoH264(name, properties));
-            }
-        },function(error) {
-            callback();
-        });
-    },
-
-    /**
-     *
-     * @param name
-     * @param properties the datasource properties
-     * @memberof OSH.UI.DiscoveryView
-     * @instance
-     */
-    createJSONDataSource:function(name,properties) {
-        return new OSH.DataReceiver.JSON(name, properties);
     },
 
     getType: function()  {
