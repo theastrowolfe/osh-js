@@ -139,15 +139,20 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         this.buildDSResultTemplate(this.datasources[dataSource.id]);
     },
 
-    loadDataSourcesProperty:function(dsPropertyArray) {
+    loadDataSourcesProperty:function(dsPropertyArray,callback) {
         this.reset();
         var self = this;
+
+        var nbElements = dsPropertyArray.length;
 
         for(var key in dsPropertyArray) {
             // gets new instance
             var datasource = OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsPropertyArray[key],function(result){
                 self.addDataSource(result);
-            });
+                if(--nbElements === 0) {
+                    callback(Object.values(this.datasources));
+                }
+            }.bind(this));
         }
     },
 
