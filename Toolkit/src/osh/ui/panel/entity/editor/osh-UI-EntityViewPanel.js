@@ -170,8 +170,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         // appends line to container
         this.containerElt.appendChild(lineElt);
 
-        var editElt = document.querySelectorAll(".control td.edit");
-        var deleteElt = document.querySelectorAll(".control td.delete");
+        var editElt = lineElt.querySelectorAll(".control td.edit");
+        var deleteElt = lineElt.querySelectorAll(".control td.delete");
 
         editElt = editElt[editElt.length-1];
         deleteElt = deleteElt[deleteElt.length-1];
