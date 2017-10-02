@@ -480,6 +480,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                                                 // regenerate a blob from binary string and replace corresponding function
                                                 var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
                                                 funcStr = funcStr.replace(matches[1],blobUrl);
+                                                result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
                                             }
                                         }
 
