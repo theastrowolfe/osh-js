@@ -106,7 +106,8 @@ OSH.UI.Panel = BaseClass.extend({
                 callbackFn({
                     url:URL.createObjectURL(blob),
                     binaryString:d,
-                    name:theFile.name
+                    name:theFile.name,
+                    length:l
                 });
             };
         })(file);

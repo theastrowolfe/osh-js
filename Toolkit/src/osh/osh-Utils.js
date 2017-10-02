@@ -534,4 +534,31 @@ OSH.Utils.destroyElement = function(element) {
 
 OSH.Utils.getChildNumber = function(node) {
     return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-}
+};
+
+OSH.Utils.searchPropertyByValue = function(object, propertyValue, resultArray) {
+    var idx;
+
+    for(var property in object) {
+        if(!isUndefinedOrNull(object[property])) {
+            if(OSH.Utils.isObject(object[property])) {
+                OSH.Utils.searchPropertyByValue(object[property],propertyValue,resultArray);
+            } else if(Array.isArray(object[property]) && (idx=object[property].indexOf(propertyValue)) > -1) {
+                resultArray.push(object);
+            } else if(OSH.Utils.isFunction(object[property])) {
+                continue; // skip
+            } else if(object[property] === propertyValue) {
+                resultArray.push(object);
+            }
+        }
+    }
+};
+
+OSH.Utils.binaryStringToBlob = function(binaryString) {
+    var array = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++){
+        array[i] = binaryString.charCodeAt(i);
+    }
+    var blob = new Blob([array], {type: 'application/octet-stream'});
+    return URL.createObjectURL(blob);
+};

@@ -247,12 +247,22 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                         };
 
                         if (!isUndefinedOrNull(currentViewItem.styler)) {
+                            var cStyler = currentViewItem.styler;
+
                             // compute styler
                             var stylerToSave = {
                                 ui: currentViewItem.styler.ui,
                                 type: OSH.UI.Styler.Factory.getTypeFromInstance(currentViewItem.styler)
                             };
 
+                            for(var property in cStyler) {
+                                if(property.endsWith("Func")) {
+                                    stylerToSave[property] = {};
+
+                                    OSH.Utils.copyProperties(cStyler[property],stylerToSave[property]);
+                                    stylerToSave[property].handlerStr = cStyler[property].handler.toSource();
+                                }
+                            }
                             viewItemToSave.styler = stylerToSave;
                         }
 
@@ -291,7 +301,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
             // View panel
             // re-init entity-id
-            this.viewPanel.options.entityId = this.entity.id
+            this.viewPanel.options.entityId = this.entity.id;
             this.viewPanel.options.datasources = this.datasourcePanel.datasources;
 
             this.viewPanel.loadViews(properties.views);

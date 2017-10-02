@@ -277,7 +277,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             var obsSelectTag = document.getElementById(observableListBoxId);
             obsSelectTag.options[defaultProperties.observableIdx].setAttribute("selected","");
 
-            this.properties.threshold.observableIdx = defaultProperties.observableIdx
+            this.properties.threshold.observableIdx = defaultProperties.observableIdx;
         }
     },
 
@@ -342,7 +342,6 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                         this.properties.fixed.selected.url
                     );
 
-                    console.log(selectedIconProps.iconFunc.handler.toSource());
                     OSH.Utils.copyProperties(selectedIconProps, stylerProperties);
 
                     // UI

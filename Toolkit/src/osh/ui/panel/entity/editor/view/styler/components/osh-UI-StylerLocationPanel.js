@@ -142,7 +142,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
     /**
      * Returns the properties as JSON object.
      *
-     * @return {
+     * @example {
      *  ui : {
      *      location : {
      *      }

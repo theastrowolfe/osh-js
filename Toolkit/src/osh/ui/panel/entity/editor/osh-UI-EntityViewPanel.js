@@ -460,7 +460,38 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                                 var currentViewItemProps = currentProperty.viewItems[key];
                                 var currentViewStylerProps = currentViewItemProps.styler;
                                 var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
+
                                 OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
+
+                                // re-create styler function
+                                for(var property in stylerInstance) {
+                                    if(property.endsWith("Func")) {
+                                        var regex = /(blob:[^']*)'/g;
+                                        var matches;
+                                        var funcStr = stylerInstance[property].handlerStr;
+
+                                        while ((matches = regex.exec(stylerInstance[property].handlerStr)) !== null) {
+                                            var result = [];
+                                            OSH.Utils.searchPropertyByValue(
+                                                stylerInstance.ui,
+                                                matches[1],
+                                                result);
+                                            if(!isUndefinedOrNull(result) && result.length > 0) {
+                                                // regenerate a blob from binary string and replace corresponding function
+                                                var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
+                                                funcStr = funcStr.replace(matches[1],blobUrl);
+                                            }
+                                        }
+
+                                        var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
+                                            stylerInstance[property].dataSourceIds,
+                                            property,
+                                            funcStr);
+
+
+                                        stylerInstance.updateProperties(func);
+                                    }
+                                }
 
                                 event.object.addViewItem({
                                     name: currentViewItemProps.name,
@@ -475,8 +506,6 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                                 instance: event.object,
                                 hash: currentProperty.hash
                             });
-
-
                         }
                         OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
                     }.bind(this));
@@ -484,7 +513,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                     OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
                 }
             } else {
-
+                //TODO: case where the view is a new view
             }
         }
     },

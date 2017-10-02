@@ -168,7 +168,7 @@ OSH.UI.Styler.Factory.getLocationFunc = function(datasource,xIdx,yIdx,zIdx) {
     var locationFnStr = "return {" +
         "x: rec." + datasource.resultTemplate[xIdx].path + "," +
         "y: rec." + datasource.resultTemplate[yIdx].path + "," +
-        "z: rec." + datasource.resultTemplate[zIdx].path + "," +
+        "z: rec." + datasource.resultTemplate[zIdx].path +
         "}";
 
     var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
@@ -313,3 +313,17 @@ OSH.UI.Styler.Factory.getNewInstanceFromType = function(type) {
     }
 };
 
+
+OSH.UI.Styler.Factory.buildFunctionFromSource = function(dataSourceIds,propertyName,strSource) {
+    var stylerFunc = {};
+
+    var argsFuncTemplateHandlerFn = ['rec', 'timeStamp', 'options', strSource];
+    var funcTemplateHandlerFn = Function.apply(null, argsFuncTemplateHandlerFn);
+
+    stylerFunc[propertyName] = {
+        dataSourceIds: dataSourceIds,
+        handler: funcTemplateHandlerFn
+    };
+
+    return stylerFunc;
+};
