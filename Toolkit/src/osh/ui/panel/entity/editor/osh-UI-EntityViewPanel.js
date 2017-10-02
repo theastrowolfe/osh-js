@@ -118,6 +118,20 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
                 self.selectElt.add(option);
 
+                //if(self.entity.entityId === option.properties.instance.entityId
+                var addView = false;
+
+                for (var keyView in event.object.viewItems) {
+                    if (event.object.viewItems[keyView].entityId === self.options.entityId) {
+                        addView = true;
+                        break;
+                    }
+                }
+
+                if(addView) {
+                    self.addView(option.properties);
+                }
+
                 OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
             });
 
