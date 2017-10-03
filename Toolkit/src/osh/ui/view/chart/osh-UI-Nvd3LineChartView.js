@@ -47,8 +47,8 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		this._super(parentElementDivId,viewItems,options);
 
 		this.entityId = options.entityId;
-		var xLabel = 'Time';
-		var yLabel = 'yLabel';
+		this.xLabel = 'Time';
+        this.yLabel = 'yAxisLabel';
 		var xTickFormat = null;
 
 		var yTickFormat = d3.format('.02f');
@@ -57,15 +57,15 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		var showYAxis = true;
 		var showXAxis = true;
 		var transitionDuration = 1;
-		var maxPoints = 999;
+        this.maxPoints = 999;
 
-		if (typeof (options) != "undefined") {
+		if (!isUndefinedOrNull(options)) {
 			if (options.xLabel) {
-				var xLabel = options.xLabel;
+                this.xLabel = options.xLabel;
 			}
 
 			if (options.yLabel) {
-				var yLabel = options.yLabel;
+                this.yLabel = options.yLabel;
 			}
 
 			if (options.xTickFormat) {
@@ -117,17 +117,17 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		;
 
 		this.chart.xAxis //Chart x-axis settings
-		.axisLabel(xLabel).tickFormat(function(d) {
-			return d3.time.format.utc('%H:%M:%SZ')(new Date(d))
+		.axisLabel(this.xLabel).tickFormat(function(d) {
+			return d3.time.format.utc('%H:%M:%SZ')(new Date(d));
 		});
 
 		this.chart.yAxis //Chart y-axis settings
-		.axisLabel(yLabel).tickFormat(d3.format('.02f'))
+		.axisLabel(this.yLabel).tickFormat(d3.format('.02f'))
 		.axisLabelDistance(15);
 
 		this.css = document.getElementById(this.divId).className;
 
-		if(typeof (options) != "undefined") {
+		if(!isUndefinedOrNull(options)) {
 			if (options.css) {
 				this.css += " " + options.css;
 			}
@@ -176,7 +176,7 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 	 * @instance
 	 * @memberof OSH.UI.Nvd3CurveChartView
 	 */
-	updateCurve : function(styler, timestamp, options) {
+	updateLinePlot : function(styler, timestamp, options) {
 		if (typeof (this.data) === "undefined") {
 			this.d3Data = [];	
 			var name = options.name;
@@ -210,9 +210,26 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		}
 	},
 
+	updateProperties:function(properties) {
+		if(!isUndefined(properties)) {
+			if(!isUndefinedOrNull(properties.xLabel)) {
+				this.xLabel = properties.xLabel;
+                this.chart.xAxis.axisLabel(this.xLabel);
+			}
+
+            if(!isUndefinedOrNull(properties.yLabel)) {
+                this.yLabel = properties.yLabel;
+                this.chart.yAxis.axisLabel(this.yLabel);
+            }
+
+            if(!isUndefinedOrNull(properties.maxPoints)) {
+				this.maxPoints = properties.maxPoints;
+            }
+		}
+	},
+
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceIds
 	 * @instance
 	 * @memberof OSH.UI.Nvd3CurveChartView
@@ -225,7 +242,11 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 			this.div.setAttribute("class",this.css);
 		}
 	},
-	
+
+	removeLinePlot:function(styler) {
+		//TODO: remove current styler
+	},
+
 	/**
      * @instance
      * @memberof OSH.UI.Nvd3CurveChartView

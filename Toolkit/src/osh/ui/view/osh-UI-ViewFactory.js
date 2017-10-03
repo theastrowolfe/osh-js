@@ -43,6 +43,16 @@ OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
             };
             break;
         }
+        case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
+            props = {
+                name: "Line chart",
+                css: "chart-view",
+                cssSelected: "",
+                maxPoints: 30,
+                initData:true
+            };
+            break;
+        }
         default:break;
     }
 
