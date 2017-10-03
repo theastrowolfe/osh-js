@@ -231,6 +231,11 @@ html.osh.dialog.modal, body.osh.dialog.modal {
     pointer-events: none;
 }
 
+.osh.dialog.closed  {
+    display:none;
+}
+
+
 .osh.dialog.modal.closed  {
     display:none;
 }
