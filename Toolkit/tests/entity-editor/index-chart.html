@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify-css.js"></script>
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify-html.js"></script>
+    <script type="text/javascript" src="../../vendor/js-beautify/js/lib/beautify.js"></script>
+
+
+    <!--//TODO: add into vendors -->
+    <script src="../../vendor-local/clone/clone.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../vendor/FileSaver.js/FileSaver.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/parsers/osh-SWEXmlParser.js"></script>
+    <script type="text/javascript" src="../../src/osh/server/osh-Server.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceFactory.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerLinePlot.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPolyline.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-ViewFactory.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-MapView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/map/osh-UI-CesiumView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-ChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-SaveDialogPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-TabPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerMarkerPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerLinePlotPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerLocationPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerIconPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerXYPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityEditViewPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityNoViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityVideoEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityMapEditPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/view/osh-UI-EntityChartEditPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityFilePanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityInfoPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityDatasourcePanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityViewPanel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/entity/editor/osh-UI-EntityEditorPanel.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/entity-editor.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/discovery.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog-save.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/panel.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/edit-view.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
+    <style>
+        body {
+            margin: 0;
+            height: calc(100% - 20px);
+            background-color: black;
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+
+        *, *:before, *:after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        h1 {
+            padding: 50px 0;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        p {
+            margin: 0 0 20px;
+            line-height: 1.5;
+        }
+
+        .osh.dialog .pop-over {
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+        }
+
+        .dialog-entity {
+            width:430px;
+            height:400px;
+            margin-bottom:10px;
+        }
+
+        .dialog-discovery {
+            width:430px;
+            height:515px;
+            margin-bottom:10px;
+        }
+
+        .dialog-edit-view {
+            width:430px;
+            height:490px;
+            margin-bottom:10px;
+        }
+
+        .osh.dialog .app-dialog {
+            width: 450px;
+            height: 350px;
+        }
+
+        #dialog-container {
+            position: absolute;
+            float: left;
+            width: calc(50% - 5px);
+            margin-left: 50px;
+        }
+
+        #container {
+            height:100%;
+            background:white;
+        }
+
+    </style>
+</head>
+
+<body id="body">
+    <div id="dialog-container"></div>
+    <div id="container"></div>
+    <script type="text/javascript">
+
+    window.OSH.BASE_WORKER_URL = "js/sub/workers";
+    window.CESIUM_BASE_URL = 'vendor/';
+
+
+    var weatherDataSource = new OSH.DataReceiver.JSON("weather", {
+        protocol: "ws",
+        service: "SOS",
+        endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+        offeringID: "urn:mysos:offering03",
+        observedProperty: "http://sensorml.com/ont/swe/property/Weather",
+        startTime: "now",
+        endTime: "2055-01-01Z",
+        syncMasterTime: false,
+        bufferingTime: 1000
+    });
+
+
+    var windSpeedChartView = new OSH.UI.Nvd3LineChartView("container",
+        [/*{
+            styler: new OSH.UI.Styler.LinePlot({
+                valuesFunc: {
+                    dataSourceIds: [weatherDataSource.id],
+                    handler: function (rec, timeStamp) {
+                        return {
+                            x: timeStamp,
+                            y: rec.windSpeed
+                        };
+                    }
+                }
+            })
+        }*/],
+        {
+            name: "WindSpeed chart",
+            yLabel: 'Wind Speed (m/s)',
+            xLabel: 'Time',
+            css: "chart-view",
+            cssSelected: "video-selected",
+            maxPoints: 30,
+            initData:false
+        }
+    );
+
+    //---------------------------------------------------------------//
+    //--------------------- Creates DataProvider --------------------//
+    //---------------------------------------------------------------//
+
+    var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor: 1
+    });
+
+    // We can add a group of dataSources and set the options
+    dataProviderController.addDataSource(weatherDataSource);
+
+    //---------------------------------------------------------------//
+    //---------------------------- Starts ---------------------------//
+    //---------------------------------------------------------------//
+
+    // starts streaming
+    dataProviderController.connectAll();
+</script>
+
+</body>
+</html>
