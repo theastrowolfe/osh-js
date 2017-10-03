@@ -30,127 +30,6 @@ OSH.UI.Styler.Factory.TYPE = {
     LINE_PLOT: "LinePlot"
 };
 
-/**
- *
- * @param properties
- * //-- LOCATION
- * properties.location.default.x -> Number
- * properties.location.default.y -> Number
- * properties.location.default.z -> Number
- * properties.location.mappingIdx.x -> Number (index into DS)
- * properties.location.mappingIdx.y -> Number (index into DS)
- * properties.location.mappingIdx.z -> Number (index into DS)
- *
- * //-- ICON
- * // DS
- * properties.icon.threshold.datasourceIdx -> Number;
- * properties.icon.threshold.observableIdx -> Number;
- *
- * // icon func
- * properties.icon.threshold.lowIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
- * properties.icon.threshold.highIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
- * properties.icon.threshold.value -> Number;
- * properties.icon.threshold.selectedIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
- *
- * // icon fixed
- * properties.icon.fixed.defaultIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
- * properties.icon.fixed.selectedIcon -> Object -> {arraybuffer -> ArrayBuffer, name -> String, type -> String};
- */
-
-OSH.UI.Styler.Factory.createMarkerStylerProperties = function(properties) {
-    var resultProperties = {};
-
-    var datasources = properties.datasources;
-
-    //-- LOCATION PART
-    if(!isUndefinedOrNull(properties.location)) {
-
-        resultProperties.location = {
-            x:Number(properties.location.default.x),
-            y:Number(properties.location.default.y),
-            z:Number(properties.location.default.z)
-        };
-
-        if(!isUndefinedOrNull(properties.location.datasourceIdx)) {
-            var ds = datasources[properties.location.datasourceIdx];
-            var locationFnStr = "return {" +
-                "x: rec." + ds.resultTemplate[properties.location.mappingIdx.x].path + "," +
-                "y: rec." + ds.resultTemplate[properties.location.mappingIdx.y].path + "," +
-                "z: rec." + ds.resultTemplate[properties.location.mappingIdx.z].path + "," +
-                "}";
-
-            var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
-            var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
-
-            resultProperties.locationFunc = {
-                dataSourceIds: [ds.id],
-                handler: locationTemplateHandlerFn
-            };
-        }
-    }
-
-    //-- ICON PART
-    if(!isUndefinedOrNull(properties.icon)) {
-        // check type
-        if(!isUndefinedOrNull(properties.icon.fixed)) {
-            var defaultUrl;
-            if(!isUndefinedOrNull(properties.icon.fixed.defaultIcon)) {
-                defaultUrl = OSH.Utils.arrayBufferToImageDataURL(properties.icon.fixed.defaultIcon.arraybuffer);
-                resultProperties.icon = defaultUrl;
-            }
-
-            if(!isUndefinedOrNull(properties.icon.fixed.selectedIcon) && !isUndefinedOrNull(properties.location.datasourceIdx)) {
-                var ds = datasources[properties.location.datasourceIdx];
-                var selectedBlobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.fixed.selectedIcon.arraybuffer);
-
-                iconTemplate = "if (options.selected) {";
-                iconTemplate += "  return '" + selectedBlobURL + "'";
-                iconTemplate += "} else {";
-                iconTemplate += "  return '" + defaultUrl + "'";
-                iconTemplate += "}";
-
-                var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
-                var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
-
-                resultProperties.iconFunc = {
-                    dataSourceIds: [ds.id],
-                    handler: iconTemplateHandlerFn
-                };
-            }
-        }
-
-        var iconTemplate = "";
-        var blobURL = "";
-
-        if(!isUndefinedOrNull(properties.icon.threshold) && !isUndefinedOrNull(properties.icon.threshold.datasourceIdx)) {
-            var ds = datasources[properties.icon.threshold.datasourceIdx];
-
-            var path = ds.resultTemplate[properties.icon.threshold.observableIdx].path;
-
-            blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.lowIcon.arraybuffer);
-            iconTemplate += "if (" + path + " < " + properties.icon.threshold.value + " ) { return '" + blobURL + "'; }";
-
-            blobURL = OSH.Utils.arrayBufferToImageDataURL(properties.icon.threshold.highIcon.arraybuffer);
-            iconTemplate += "else { return '" + blobURL + "'; }";
-
-            var argsIconTemplateHandlerFn = ['rec', 'timeStamp' ,'options', iconTemplate];
-            var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
-
-            resultProperties.iconFunc = {
-                dataSourceIds: [ds.id],
-                handler: iconTemplateHandlerFn
-            };
-        }
-    }
-
-    //TODO:check color
-    //TODO:check size
-    //TODO:check label
-
-    // creates styler instance from tabs properties
-    //return new OSH.UI.Styler.PointMarker(resultProperties);
-    return resultProperties;
-};
 
 OSH.UI.Styler.Factory.getLocation = function(x,y,z) {
   return {
@@ -165,13 +44,28 @@ OSH.UI.Styler.Factory.getLocation = function(x,y,z) {
 
 //---- LOCATION ----//
 OSH.UI.Styler.Factory.getLocationFunc = function(datasource,xIdx,yIdx,zIdx) {
+
+    var x = "timeStamp",y = "timeStamp",z="timeStamp";
+
+    if(xIdx > 0 ) {
+        x = "rec." + datasource.resultTemplate[xIdx].path;
+    }
+
+    if(yIdx > 0 ) {
+        y = "rec." + datasource.resultTemplate[yIdx].path;
+    }
+
+    if(zIdx > 0 ) {
+        z = "rec." + datasource.resultTemplate[zIdx].path;
+    }
+
     var locationFnStr = "return {" +
-        "x: rec." + datasource.resultTemplate[xIdx].path + "," +
-        "y: rec." + datasource.resultTemplate[yIdx].path + "," +
-        "z: rec." + datasource.resultTemplate[zIdx].path +
+        "x: "+ x + "," +
+        "y: "+ y + "," +
+        "z: "+ z +
         "}";
 
-    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+    var argsLocationTemplateHandlerFn = ['rec','timeStamp','options', locationFnStr];
     var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
 
     return {
@@ -285,6 +179,56 @@ OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultU
         iconFunc : {
             dataSourceIds: dataSourceIdsArray,
             handler: iconTemplateHandlerFn
+        }
+    };
+};
+
+//---- VALUES ----//
+OSH.UI.Styler.Factory.getValues = function(x,y) {
+    return {
+        values: {
+            x: x,
+            y: y
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getValuesFunc = function(datasource,xIdx,yIdx) {
+
+    var x = "timeStamp",y = "timeStamp";
+
+    if(xIdx > 0 ) {
+        x = "rec." + datasource.resultTemplate[xIdx].path;
+    }
+
+    if(yIdx > 0 ) {
+        y = "rec." + datasource.resultTemplate[yIdx].path;
+    }
+
+    var valuesFnStr = "return {" +
+        "x: "+ x + "," +
+        "y: "+ y +
+        "}";
+
+    var argsValuesTemplateHandlerFn = ['rec', 'timeStamp', 'options', valuesFnStr];
+    var valuesTemplateHandlerFn = Function.apply(null, argsValuesTemplateHandlerFn);
+
+    return {
+        valuesFunc : {
+            dataSourceIds: [datasource.id],
+            handler: valuesTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getCustomValuesFunc = function(dataSourceIdsArray,valuesFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', valuesFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        valuesFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
         }
     };
 };
