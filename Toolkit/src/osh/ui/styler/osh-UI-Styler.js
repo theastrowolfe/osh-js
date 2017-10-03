@@ -77,8 +77,7 @@ OSH.UI.Styler = BaseClass.extend({
 		for (var i = 0; i < dataSourceIds.length; i++) {
 			var dataSourceId = dataSourceIds[i];
 
-			// check if the Fn exist for this DS
-
+			// check if the Fn exists for this DS
             if(!isUndefinedOrNull(fn.fnName)) {
                 for (var dsKey in this.dataSourceToStylerMap) {
                     var currentDsArray = this.dataSourceToStylerMap[dsKey];
@@ -93,8 +92,11 @@ OSH.UI.Styler = BaseClass.extend({
 						}
                     }
                     if(idx > -1) {
-                        currentDsArray.splice(idx, 1);
-					}
+                        this.dataSourceToStylerMap[dsKey].splice(idx, 1);
+						if(this.dataSourceToStylerMap[dsKey].length === 0) {
+							delete this.dataSourceToStylerMap[dsKey];
+						}
+                    }
                 }
             }
             var exist = false;

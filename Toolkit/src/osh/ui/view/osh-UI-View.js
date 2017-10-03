@@ -35,6 +35,7 @@ OSH.UI.View = BaseClass.extend({
         this.lastRec = {};
         this.selectedDataSources = [];
         this.dataSources = [];
+        this.stylerIdToDatasources = {};
 
         //this.divId = divId;
         this.id = "view-" + OSH.Utils.randomUUID();
@@ -236,6 +237,8 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     addViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+
         this.viewItems.push(viewItem);
         if (viewItem.hasOwnProperty("styler")) {
             var styler = viewItem.styler;
@@ -246,58 +249,79 @@ OSH.UI.View = BaseClass.extend({
             styler.init(this);
             styler.viewItem = viewItem;
             this.stylerIdToStyler[styler.id] = styler;
+
+            this.observeDatasourceStyler(viewItem,styler);
         }
         if (viewItem.hasOwnProperty("contextmenu")) {
             this.contextMenus.push(viewItem.contextmenu);
         }
         //for(var dataSourceId in styler.dataSourceToStylerMap) {
+    },
+
+    observeDatasourceStyler:function(viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
+
+        var styler = viewItem.styler;
+
         var ds = styler.getDataSourcesIds();
+
+        if(!( styler.id in this.stylerIdToDatasources)) {
+            this.stylerIdToDatasources[styler.id] = [];
+        }
         for(var i =0; i < ds.length;i++) {
             var dataSourceId = ds[i];
-            // observes the data come in
-            var self = this;
-            (function(frozenDataSourceId) { // use a close here to no share the dataSourceId variable
 
-                OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
+            var idx = this.stylerIdToDatasources[styler.id].indexOf(dataSourceId);
 
-                    // skip data reset events for now
-                    if (event.reset)
-                        return;
+            if(idx === -1) {
+                this.stylerIdToDatasources[styler.id].push(dataSourceId);
 
-                    // we check selected dataSource only when the selected entity is not set
-                    var selected = false;
-                    if (typeof self.selectedEntity !== "undefined") {
-                        selected = (viewItem.entityId === self.selectedEntity);
-                    }
-                    else {
-                        selected = (self.selectedDataSources.indexOf(frozenDataSourceId) > -1);
-                    }
+                // observes the data come in
+                var self = this;
+                (function (frozenDataSourceId) { // use a close here to no share the dataSourceId variable
 
-                    //TODO: maybe done into the styler?
-                    styler.setData(frozenDataSourceId, event.data, self, {
-                        selected: selected
-                    });
-                    self.lastRec[frozenDataSourceId] = event.data;
-                });
+                    OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
 
-                OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW, function(event) {
-                    // we check selected dataSource only when the selected entity is not set
-                    var selected = false;
-                    if (typeof event.entityId !== "undefined") {
-                        selected = (viewItem.entityId === event.entityId);
-                    }
-                    else {
-                        selected = (event.dataSourcesIds.indexOf(frozenDataSourceId) > -1);
-                    }
+                        // skip data reset events for now
+                        if (event.reset)
+                            return;
 
-                    if(frozenDataSourceId in self.lastRec) {
-                        styler.setData(frozenDataSourceId, self.lastRec[frozenDataSourceId], self, {
+                        // we check selected dataSource only when the selected entity is not set
+                        var selected = false;
+                        if (typeof self.selectedEntity !== "undefined") {
+                            selected = (viewItem.entityId === self.selectedEntity);
+                        }
+                        else {
+                            selected = (self.selectedDataSources.indexOf(frozenDataSourceId) > -1);
+                        }
+
+                        //TODO: maybe done into the styler?
+                        styler.setData(frozenDataSourceId, event.data, self, {
                             selected: selected
                         });
-                    }
-                });
+                        self.lastRec[frozenDataSourceId] = event.data;
+                    });
 
-            })(dataSourceId); //passing the variable to freeze, creating a new closure
+                    OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW, function (event) {
+                        // we check selected dataSource only when the selected entity is not set
+                        var selected = false;
+                        if (typeof event.entityId !== "undefined") {
+                            selected = (viewItem.entityId === event.entityId);
+                        }
+                        else {
+                            selected = (event.dataSourcesIds.indexOf(frozenDataSourceId) > -1);
+                        }
+
+                        if (frozenDataSourceId in self.lastRec) {
+                            styler.setData(frozenDataSourceId, self.lastRec[frozenDataSourceId], self, {
+                                selected: selected
+                            });
+                        }
+                    });
+
+                })(dataSourceId); //passing the variable to freeze, creating a new closure
+            }
         }
     },
 
@@ -309,7 +333,6 @@ OSH.UI.View = BaseClass.extend({
      */
     removeViewItem: function (viewItem) {
         OSH.Asserts.checkIsDefineOrNotNull(viewItem);
-        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
 
         var idx = -1;
         for(var i=0;i < this.viewItems.length;i++) {
@@ -320,20 +343,22 @@ OSH.UI.View = BaseClass.extend({
         }
 
         if (idx > -1) {
-            var viewItemToRemove = this.viewItems[idx];
-            var idxStyler = -1;
-            for(var i=0;i < this.stylers.length;i++) {
-                if(this.stylers[i].id === viewItemToRemove.styler.id) {
-                    idxStyler = i;
-                    break;
+            if(!isUndefinedOrNull(viewItem.styler)) {
+                var viewItemToRemove = this.viewItems[idx];
+                var idxStyler = -1;
+                for (var i = 0; i < this.stylers.length; i++) {
+                    if (this.stylers[i].id === viewItemToRemove.styler.id) {
+                        idxStyler = i;
+                        break;
+                    }
                 }
-            }
 
-            if(idxStyler > -1 ) {
-                viewItem.styler.remove(this);
+                if (idxStyler > -1) {
+                    viewItem.styler.remove(this);
 
-                this.stylers.splice(idxStyler,1);
-                delete this.stylerIdToStyler[viewItemToRemove.styler.id];
+                    this.stylers.splice(idxStyler, 1);
+                    delete this.stylerIdToStyler[viewItemToRemove.styler.id];
+                }
             }
             this.viewItems.splice(idx, 1);
         }
@@ -341,12 +366,35 @@ OSH.UI.View = BaseClass.extend({
 
     updateViewItem: function (viewItem) {
         OSH.Asserts.checkIsDefineOrNotNull(viewItem);
-        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
 
         for(var i=0;i < this.viewItems.length;i++) {
             if(this.viewItems[i].id === viewItem.id) {
-                this.viewItems[i].styler.update(this);
+                // update styler
+                if(!isUndefinedOrNull(this.viewItems[i].styler)) {
+                    this.viewItems[i].styler.update(this);
+                    this.removeOldViewItemsDatasource(this.viewItems[i]);
+                    // observe datasource
+                    this.observeDatasourceStyler(this.viewItems[i]);
+                }
                 break;
+            }
+        }
+    },
+
+    //TODO: not working. need to remove observationon the old DS
+    removeOldViewItemsDatasource:function(viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
+
+        var currentDsIds = this.stylerIdToDatasources[viewItem.styler.id];
+        var newDs = viewItem.styler.getDataSourcesIds();
+
+        for(var key in currentDsIds) {
+            var currentDsId = currentDsIds[key];
+
+            if (newDs.indexOf(currentDsId) === -1) {
+                // remove observe event
+                OSH.EventManager.remove(OSH.EventManager.EVENT.DATA + "-" + currentDsId);
             }
         }
     },
@@ -395,7 +443,7 @@ OSH.UI.View = BaseClass.extend({
         var self = this;
         OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT+"-"+this.divId,function(event){
             OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,{
-               object: self
+                object: self
             });
         }.bind(this));
     },
