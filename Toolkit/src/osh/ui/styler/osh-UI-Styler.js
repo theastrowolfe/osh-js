@@ -142,5 +142,12 @@ OSH.UI.Styler = BaseClass.extend({
      * @memberof OSH.UI.Styler
      * @instance
      */
-	remove:function(view) {}
+	remove:function(view) {},
+
+    /**
+     *  Update a styler from its view
+     * @memberof OSH.UI.Styler
+     * @instance
+     */
+    update:function(view) {}
 });

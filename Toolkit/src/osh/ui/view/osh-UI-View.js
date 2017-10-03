@@ -309,6 +309,7 @@ OSH.UI.View = BaseClass.extend({
      */
     removeViewItem: function (viewItem) {
         OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
 
         var idx = -1;
         for(var i=0;i < this.viewItems.length;i++) {
@@ -335,6 +336,18 @@ OSH.UI.View = BaseClass.extend({
                 delete this.stylerIdToStyler[viewItemToRemove.styler.id];
             }
             this.viewItems.splice(idx, 1);
+        }
+    },
+
+    updateViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
+
+        for(var i=0;i < this.viewItems.length;i++) {
+            if(this.viewItems[i].id === viewItem.id) {
+                this.viewItems[i].styler.update(this);
+                break;
+            }
         }
     },
 
@@ -368,6 +381,11 @@ OSH.UI.View = BaseClass.extend({
         // new version including the id inside the event id
         OSH.EventManager.observe(OSH.EventManager.EVENT.REMOVE_VIEW_ITEM+"-"+this.id,function(event){
             this.removeViewItem(event.viewItem);
+        }.bind(this));
+
+        // new version including the id inside the event id
+        OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
+            this.updateViewItem(event.viewItem);
         }.bind(this));
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){

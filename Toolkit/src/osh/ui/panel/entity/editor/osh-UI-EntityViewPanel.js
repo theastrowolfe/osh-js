@@ -430,6 +430,12 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             }
             view.viewItemsToRemove = [];
         }
+
+        // update all viewItems
+        for (var j = 0; j < view.viewItems.length; j++) {
+            var viewItemToUpdate = view.viewItems[j];
+            view.updateViewItem(viewItemToUpdate);
+        }
     },
 
     /**

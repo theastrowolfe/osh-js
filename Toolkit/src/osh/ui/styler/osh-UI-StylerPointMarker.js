@@ -168,7 +168,14 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
-			if (!isUndefinedOrNull(view) && this.location !==null) {
+			if (!isUndefinedOrNull(view) && !isUndefinedOrNull(this.location)) {
+			    this.lastTimeStamp = rec.timeStamp;
+			    this.lastOptions = options;
+			    this.lastData = {
+                    lastTimeStamp : rec.timeStamp,
+                    lastOptions : options,
+                    location: this.location
+                };
 				view.updateMarker(this, rec.timeStamp, options);
 			}
 		}
@@ -185,6 +192,13 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	remove:function(view) {
         if(!isUndefinedOrNull(view)) {
             view.removeMarker(this);
+        }
+    },
+
+    update:function(view) {
+        if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
+            this.location = this.lastData.location;
+            view.updateMarker(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
         }
     }
 
