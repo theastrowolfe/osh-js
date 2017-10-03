@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+    height: calc(100% - 20px);
+    background-color: black;
+}
+
+html {
+    height: calc(100% - 0px);
+}
+
+*, *:before, *:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+h1 {
+    padding: 50px 0;
+    font-weight: 400;
+    text-align: center;
+}
+
+p {
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.osh.dialog .pop-over {
+    background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+}
+
+.dialog-entity {
+    width:430px;
+    height:400px;
+    margin-bottom:10px;
+}
+
+.dialog-discovery {
+    width:430px;
+    height:515px;
+    margin-bottom:10px;
+}
+
+.dialog-edit-view {
+    width:430px;
+    height:490px;
+    margin-bottom:10px;
+}
+
+.leaflet-container, #container {
+    height: 100%;
+    float: right;
+}
+
+.osh.dialog .app-dialog {
+    width: 450px;
+    height: 350px;
+}
+
+#dialog-container {
+    position: absolute;
+    float: left;
+    width: calc(50% - 5px);
+    margin-left: 50px;
+}
+
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
+
+.leaflet-container .leaflet-marker-pane img {
+    max-width: 32px !important;
+    height:auto;
+}
+
+#map-container {
+    height:100%;
+}
+
+/** Circle menu **/
+.c-circle-menu {
+    bottom: 12px;
+}
+
+.c-circle-menu__mask.is-active {
+    opacity: 0.3;
+}

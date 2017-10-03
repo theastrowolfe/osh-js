@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../Toolkit/vendor/js-beautify/js/lib/beautify-css.js"></script>
+    <script type="text/javascript" src="../../Toolkit/vendor/js-beautify/js/lib/beautify-html.js"></script>
+    <script type="text/javascript" src="../../Toolkit/vendor/js-beautify/js/lib/beautify.js"></script>
+
+
+    <!--//TODO: add into vendors -->
+    <script src="../../Toolkit/vendor-local/clone/clone.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../Toolkit/vendor/FileSaver.js/FileSaver.min.js"></script>
+
+    <!-- Circle menu -->
+    <link rel="stylesheet" type="text/css" href="css/circle-menu.css"/>
+    <script type="text/javascript" src="vendor/circleMenu.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/parsers/osh-SWEXmlParser.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/server/osh-Server.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/datareceiver/osh-DataReceiver-DataSourceFactory.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerFactory.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerAuto.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerLinePlot.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/styler/osh-UI-StylerPolyline.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/osh-UI-Panel.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/osh-UI-ViewFactory.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-MapView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/map/osh-UI-CesiumView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/chart/osh-UI-ChartView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/dialog/osh-UI-SaveDialogPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/video/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/osh-UI-TabPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerPanel.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerMarkerPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerLinePlotPanel.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerLocationPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerIconPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerXYPanel.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityEditViewPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityNoViewItemsEditPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityVideoEditPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityMapEditPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/view/osh-UI-EntityChartEditPanel.js"></script>
+
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/osh-UI-EntityFilePanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/osh-UI-EntityInfoPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/osh-UI-EntityDatasourcePanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/osh-UI-EntityViewPanel.js"></script>
+    <script type="text/javascript" src="../../Toolkit/src/osh/ui/panel/entity/editor/osh-UI-EntityEditorPanel.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/entity-editor.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/discovery.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/dialog-save.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/panel.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/edit-view.css"/>
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/common.css"/>
+
+    <link rel="stylesheet" type="text/css" href="css/geohack.css"/>
+    <script type="text/javascript" src="js/geohack.js"></script>
+
+</head>
+
+<body id="body">
+    <div id="dialog-container"></div>
+    <div id="map-container"></div>
+    <div id="container"></div>
+    <nav class="c-circle-menu js-menu">
+        <button class="c-circle-menu__toggle js-menu-toggle">
+            <span>Toggle</span>
+        </button>
+        <ul class="c-circle-menu__items">
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="3D-view-button">
+                    <img src="images/3d.svg" alt="">
+                </a>
+            </li>
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="2D-view-button">
+                    <img src="images/2d.svg" alt="">
+                </a>
+            </li>
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="add-entity-button">
+                    <img src="images/add.svg" alt="">
+                </a>
+            </li>
+            <!-- more items here -->
+        </ul>
+        <div class="c-circle-menu__mask js-menu-mask"></div>
+    </nav>
+</body>
+</html>
