@@ -30,7 +30,7 @@ p {
 }
 
 .osh.dialog .pop-over {
-    background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+    background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(../images/3JZchqt.png), url(../images/9kxBTzr.jpg);
 }
 
 .dialog-entity {
@@ -63,8 +63,7 @@ p {
 
 #dialog-container {
     position: absolute;
-    float: left;
-    width: calc(50% - 5px);
+    width: 100%;
     margin-left: 50px;
 }
 

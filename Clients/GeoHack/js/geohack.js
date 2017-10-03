@@ -12,26 +12,6 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
         }
     );
 
-    /*
-     var entityEditorView = new OSH.UI.Panel.EntityEditorPanel("",{
-     viewContainer: "container",
-     services: ["http://sensiasoft.net:8181/sensorhub/sos"]
-     });
-
-     var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
-
-     css: "dialog-entity",
-     name: "Create new Entity",
-     show:true,
-     pinContainerId: "dialog-container",
-     draggable:true
-     });
-
-     entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);
-
-     entityEditorDialog.pin();*/
-//entityEditorDialog.minimize();
-
     var menu = cssCircleMenu('.js-menu');
     var currentIdView = leafletMapView.divId;
     var mainDiv = document.getElementById("map-container");
@@ -55,10 +35,25 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
         menu.closeMenu();
     };
 
-    /*document.getElementById("add-entity-button").onclick = function(event){
-        discoveryDialog.show({
-            viewId : discoveryDialog.id
-        });
-    };*/
+   document.getElementById("add-entity-button").onclick = function(event){
+     var entityEditorView = new OSH.UI.Panel.EntityEditorPanel("",{
+     viewContainer: "map-container",
+     services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+     });
+
+     var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
+         css: "dialog-entity",
+         name: "Create new Entity",
+         show:true,
+         pinContainerId: "dialog-container",
+         draggable:true
+     });
+
+     entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);
+
+     entityEditorDialog.pin();
+     //entityEditorDialog.minimize();
+     menu.closeMenu();
+   };
 
 });
