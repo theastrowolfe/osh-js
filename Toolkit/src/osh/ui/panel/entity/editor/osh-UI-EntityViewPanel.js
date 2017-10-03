@@ -177,75 +177,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         deleteElt = deleteElt[deleteElt.length-1];
 
         // handlers
-        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
-        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
-    },
-
-    editView:function(viewId,event) {
-        var currentView = null;
-        // finds the view instance and updates it
-        for(var i=0;i < this.views.length;i++) {
-            if (this.views[i].id === viewId) {
-                currentView = this.views[i];
-                break;
-            }
-        }
-
-        // gathers Data Sources
-        var dsArray = [];
-
-        for(var key in this.options.datasources) {
-            var dsClone = this.options.datasources[key];
-            dsArray.push(dsClone);
-        }
-
-
-        var cloneView = {};
-        OSH.Utils.copyProperties(currentView,cloneView);
-
-        var editView = null;
-
-        var viewProps = {
-            view:cloneView,
-            datasources:dsArray
-        };
-
-        // creates the panel corresponding to the view type
-        switch(currentView.type) {
-            case OSH.UI.View.ViewType.MAP:  editView = new OSH.UI.Panel.EntityMapEditPanel("",viewProps);break;
-            case OSH.UI.View.ViewType.CHART:  editView = new OSH.UI.Panel.EntityChartEditPanel("",viewProps);break;
-            case OSH.UI.View.ViewType.VIDEO:  editView = new OSH.UI.Panel.EntityVideoEditPanel("",viewProps);break;
-        }
-
-        var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
-            draggable: true,
-            css: "dialog-edit-view", //TODO: create unique class for all the views
-            name: "Edit "+currentView.name+" View",
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [],
-            destroyOnClose:true,
-            modal:true
-        });
-
-        editView.attachTo(editViewDialog.popContentDiv.id);
-
-        editViewDialog.onSave = function() {
-            var editedView = editView.getView();
-
-            document.getElementById(editedView.lineDivId).querySelector("span.line-left").innerHTML = editedView.name;
-            // finds the view instance and updates it
-            for(var i=0;i < this.views.length;i++) {
-                if (this.views[i].id === editedView.id) {
-                    this.views[i] = editedView;
-                    break;
-                }
-            }
-
-            editViewDialog.close();
-            editView = null;
-        }.bind(this);
+        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance.id));
+        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance.id));
     },
 
     getViewList:function() {
@@ -314,7 +247,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         return lineElt;
     },
 
-    editHandler:function(lineElt,viewInstance) {
+    editHandler:function(lineElt,viewInstanceId) {
+        var viewInstance = this.getViewById(viewInstanceId);
         // get current viewInstance
 
         OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
@@ -386,7 +320,11 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
     },
 
-    deleteHandler:function(lineElt,viewInstance) {
+    deleteHandler:function(lineElt,viewInstanceId) {
+        // get current viewInstance
+        var viewInstance = this.getViewById(viewInstanceId);
+        OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
+
         this.containerElt.removeChild(lineElt);
         var newArr = [];
 
@@ -452,72 +390,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             if(currentProperty.hash === 0x000) {
                 // existing view
                for(var i=0;i < existingViewList.length;i++) {
-                    var currentViewDiv = existingViewList[i];
-
-                    OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
-                        var viewInstance = event.object;
-                        var nodeIndex = OSH.Utils.getChildNumber(viewInstance.elementDiv);
-                        if(viewInstance.type === currentProperty.type &&
-                            nodeIndex === currentProperty.nodeIdx &&
-                            viewInstance.elementDiv.parentNode.id === currentProperty.container){
-
-                            //--- Stylers
-                            for(var key in currentProperty.viewItems) {
-                                var currentViewItemProps = currentProperty.viewItems[key];
-                                var currentViewStylerProps = currentViewItemProps.styler;
-                                var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
-
-                                OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
-
-                                // re-create styler function
-                                for(var property in stylerInstance) {
-                                    if(property.endsWith("Func")) {
-                                        var regex = /(blob:[^']*)'/g;
-                                        var matches;
-                                        var funcStr = stylerInstance[property].handlerStr;
-
-                                        while ((matches = regex.exec(stylerInstance[property].handlerStr)) !== null) {
-                                            var result = [];
-                                            OSH.Utils.searchPropertyByValue(
-                                                stylerInstance.ui,
-                                                matches[1],
-                                                result);
-                                            if(!isUndefinedOrNull(result) && result.length > 0) {
-                                                // regenerate a blob from binary string and replace corresponding function
-                                                var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
-                                                funcStr = funcStr.replace(matches[1],blobUrl);
-                                                result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
-                                            }
-                                        }
-
-                                        var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
-                                            stylerInstance[property].dataSourceIds,
-                                            property,
-                                            funcStr);
-
-
-                                        stylerInstance.updateProperties(func);
-                                    }
-                                }
-
-                                event.object.addViewItem({
-                                    name: currentViewItemProps.name,
-                                    entityId: currentViewItemProps.entityId,
-                                    styler:stylerInstance
-                                });
-                            }
-
-                            this.addView({
-                                name: currentProperty.name,
-                                type: currentProperty.type,
-                                instance: event.object,
-                                hash: currentProperty.hash
-                            });
-                        }
-                        OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
-                    }.bind(this));
-
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
+                    this.restoringView(existingViewList[i],currentProperty);
                 }
             } else {
                 //TODO: case where the view is a new view
@@ -528,5 +401,98 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
     reset:function() {
         OSH.Helper.HtmlHelper.removeAllNodes(this.containerElt);
         this.views = [];
+    },
+
+    getViewById:function(id) {
+        var view;
+
+        for(i=0;i < this.views.length;i++) {
+            if (this.views[i].id === id) {
+                view = this.views[i];
+                break;
+            }
+        }
+
+        return view;
+    },
+
+    //**************************************************************//
+    //*************Restoring view **********************************//
+    //**************************************************************//
+
+    restoringView:function(currentViewDiv,currentProperty) {
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+            var viewInstance = event.object;
+            var nodeIndex = OSH.Utils.getChildNumber(viewInstance.elementDiv);
+            if(viewInstance.type === currentProperty.type &&
+                nodeIndex === currentProperty.nodeIdx &&
+                viewInstance.elementDiv.parentNode.id === currentProperty.container){
+
+                //--- Stylers
+                for(var key in currentProperty.viewItems) {
+                    var props = this.restoringStyler(currentProperty.viewItems[key]);
+                    viewInstance.addViewItem(props);
+                }
+
+                this.addView({
+                    name: currentProperty.name,
+                    type: currentProperty.type,
+                    instance: event.object,
+                    hash: currentProperty.hash
+                });
+            }
+            OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
+        }.bind(this));
+
+        OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
+    },
+
+    restoringStyler:function(currentViewItemProps) {
+        var currentViewStylerProps = currentViewItemProps.styler;
+        var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
+
+        OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
+
+        // re-create styler function
+        for(var property in stylerInstance) {
+            this.restoringStylerFunction(stylerInstance,property);
+        }
+
+        return {
+            name: currentViewItemProps.name,
+            entityId: currentViewItemProps.entityId,
+            styler:stylerInstance
+        };
+    },
+
+    restoringStylerFunction:function(stylerInstance,property) {
+        if(property.endsWith("Func")) {
+            var regex = /(blob:[^']*)'/g;
+            var matches;
+            var funcStr = stylerInstance[property].handlerStr;
+
+            while ((matches = regex.exec(stylerInstance[property].handlerStr)) !== null) {
+                var result = [];
+                OSH.Utils.searchPropertyByValue(
+                    stylerInstance.ui,
+                    matches[1],
+                    result);
+                if(!isUndefinedOrNull(result) && result.length > 0) {
+                    // regenerate a blob from binary string and replace corresponding function
+                    var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
+                    funcStr = funcStr.replace(matches[1],blobUrl);
+                    result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
+                }
+            }
+
+            var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
+                stylerInstance[property].dataSourceIds,
+                property,
+                funcStr);
+
+
+            stylerInstance.updateProperties(func);
+        }
     }
+    /** End restoring view **/
 });
