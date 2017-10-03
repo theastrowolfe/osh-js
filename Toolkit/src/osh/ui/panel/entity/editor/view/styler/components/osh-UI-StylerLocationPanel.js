@@ -112,7 +112,6 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 var option = document.createElement("option");
                 option.text = observableArr[i].uiLabel;
                 option.value = observableArr[i].uiLabel;
-                option.object = observableArr[i].object;
 
                 xInputTag.add(option);
 
@@ -120,7 +119,6 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 option = document.createElement("option");
                 option.text = observableArr[i].uiLabel;
                 option.value = observableArr[i].uiLabel;
-                option.object = observableArr[i].object;
 
                 yInputTag.add(option);
 
@@ -128,7 +126,6 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 option = document.createElement("option");
                 option.text = observableArr[i].uiLabel;
                 option.value = observableArr[i].uiLabel;
-                option.object = observableArr[i].object;
 
                 zInputTag.add(option);
             }

@@ -32,8 +32,7 @@ OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
             for (var key in currentDS.resultTemplate) {
 
                 result.push({
-                    uiLabel: currentDS.resultTemplate[key].uiLabel,
-                    object: currentDS.resultTemplate[key].object
+                    uiLabel: currentDS.resultTemplate[key].uiLabel
                 });
             }
         }
