@@ -177,8 +177,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         deleteElt = deleteElt[deleteElt.length-1];
 
         // handlers
-        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance.id));
-        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance.id));
+        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
+        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
     },
 
     getViewList:function() {
@@ -247,8 +247,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         return lineElt;
     },
 
-    editHandler:function(lineElt,viewInstanceId) {
-        var viewInstance = this.getViewById(viewInstanceId);
+    editHandler:function(lineElt,viewInstance) {
+        var viewInstance = this.getViewById(viewInstance.id);
         // get current viewInstance
 
         OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
@@ -320,9 +320,10 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
     },
 
-    deleteHandler:function(lineElt,viewInstanceId) {
+    deleteHandler:function(lineElt,viewInstance) {
         // get current viewInstance
-        var viewInstance = this.getViewById(viewInstanceId);
+        var viewInstance = this.getViewById(viewInstance.id);
+
         OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
 
         this.containerElt.removeChild(lineElt);
@@ -376,28 +377,6 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         }
     },
 
-    /**
-     * load views from saved data
-     * @param viewPropertiesArray
-     */
-    loadViews:function(viewPropertiesArray) {
-        this.reset();
-        var currentProperty;
-
-        var existingViewList = this.getViewList();
-        for(var key in viewPropertiesArray) {
-            currentProperty = viewPropertiesArray[key];
-            if(currentProperty.hash === 0x000) {
-                // existing view
-               for(var i=0;i < existingViewList.length;i++) {
-                    this.restoringView(existingViewList[i],currentProperty);
-                }
-            } else {
-                //TODO: case where the view is a new view
-            }
-        }
-    },
-
     reset:function() {
         OSH.Helper.HtmlHelper.removeAllNodes(this.containerElt);
         this.views = [];
@@ -419,6 +398,28 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
     //**************************************************************//
     //*************Restoring view **********************************//
     //**************************************************************//
+
+    /**
+     * load views from saved data
+     * @param viewPropertiesArray
+     */
+    loadViews:function(viewPropertiesArray) {
+        this.reset();
+        var currentProperty;
+
+        var existingViewList = this.getViewList();
+        for(var key in viewPropertiesArray) {
+            currentProperty = viewPropertiesArray[key];
+            if(currentProperty.hash === 0x000) {
+                // existing view
+                for(var i=0;i < existingViewList.length;i++) {
+                    this.restoringView(existingViewList[i],currentProperty);
+                }
+            } else {
+                //TODO: case where the view is a new view
+            }
+        }
+    },
 
     restoringView:function(currentViewDiv,currentProperty) {
         OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {

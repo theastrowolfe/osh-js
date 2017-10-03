@@ -193,6 +193,36 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     saveEntity:function() {
+        // create corresponding views
+        var views = this.viewPanel.views;
+
+        for(var key in views) {
+            var currentView = views[key];
+
+            if(currentView.hash !== 0x0000) {
+                if (isUndefinedOrNull(currentView.inDialog) || !currentView.inDialog) {
+                    var viewDialog = new OSH.UI.Panel.DialogPanel("", {
+                        draggable: true,
+                        css: "app-dialog", //TBD into edit view
+                        name: currentView.name,
+                        show: true,
+                        dockable: false,
+                        closeable: true,
+                        connectionIds: [],//TODO
+                        destroyOnClose: true,
+                        modal: false,
+                        keepRatio: false
+                    });
+
+                    currentView.attachTo(viewDialog.popContentDiv.id);
+                    currentView.inDialog = true;
+
+                    viewDialog.onClose = function() {
+                        currentView.inDialog = false;
+                    };
+                }
+            }
+        }
         // We can add a group of dataSources and set the options
         this.entity.dataProviderController.addEntity(this.entity);
 
@@ -278,7 +308,8 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                 container: currentView.elementDiv.parentNode.id,
                 nodeIdx: OSH.Utils.getChildNumber(currentView.elementDiv),
                 display: currentView.elementDiv.style.display, // for new created views, should be equal to NONE,
-                viewItems:viewItems
+                viewItems:viewItems,
+                options:currentView.options
             });
         }
 
