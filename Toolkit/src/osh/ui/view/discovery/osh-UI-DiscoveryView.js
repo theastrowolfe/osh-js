@@ -316,6 +316,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
                 var d = new Date();
                 d.setUTCFullYear(2055);
                 endTimeInputTag.value = d.toISOString();
+
+                startTimeInputTag.value = "now";
             } else {
                 endTimeInputTag.value = offering.phenomenonTime.endPosition;
             }
