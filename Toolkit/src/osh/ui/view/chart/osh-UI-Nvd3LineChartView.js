@@ -156,6 +156,16 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 			});
 		});
 
+		if(!isUndefinedOrNull(options) && !isUndefinedOrNull(options.initData) && options.initData) {
+            this.svgChart
+                .datum([{
+                    values : [{y : 0,x : 0}],
+                    key : "",
+                    interpolate : "cardinal",
+                    area : true
+                }]) //Populate the <svg> element with chart data...
+                .call(this.chart);
+		}
 	},
 
 	/**
@@ -175,8 +185,8 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 				values : [],
 				key : this.names[styler.getId()],
 				interpolate : "cardinal",
-				area : true,
-			}
+				area : true
+			};
 
 			this.data.values.push({
 				y : styler.y,
