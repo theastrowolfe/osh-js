@@ -24,15 +24,27 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
         var tabPanel = new OSH.UI.Panel.TabPanel();
 
         // tab elements
-        this.xyPanel = new OSH.UI.Panel.XYPanel("",this.options);
+        this.valesPanel = new OSH.UI.Panel.XYPanel("",this.options);
 
-        tabPanel.addTab("Values",this.xyPanel.divElt);
+        tabPanel.addTab("Values",this.valesPanel.divElt);
 
         this.divElt.appendChild(tabPanel.divElt);
     },
 
     getStyler:function() {
         var uiProperties = {};
+
+        // gets properties from panels
+        var valuesPanelProperties = this.valesPanel.getProperties();
+
+        // copies UI properties
+        OSH.Utils.copyProperties(valuesPanelProperties,uiProperties);
+
+        // updates styler with properties
+        this.options.styler.updateProperties(valuesPanelProperties);
+
+        // saves UI properties into styler object to be reloaded
+        OSH.Utils.copyProperties(uiProperties,this.options.styler,true);
 
         return this.options.styler;
     }

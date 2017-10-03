@@ -16,11 +16,35 @@
 
 OSH.UI.Panel.EntityChartEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
 
+    buildViewProperties: function() {
+        this._super();
+
+        this.inputXLabelId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"X label",null,"x label");
+        this.inputYLabelId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Y label",null,"y label");
+        this.inputMaxPoint = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Max points",null,"maximum points displayed at the same time");
+
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            document.getElementById(this.inputXLabelId).value = this.options.view.xLabel;
+            document.getElementById(this.inputYLabelId).value = this.options.view.yLabel;
+            document.getElementById(this.inputMaxPoint).value = this.options.view.maxPoints;
+        }.bind(this));
+    },
+
     getStylerList:function() {
         return [OSH.UI.Styler.Factory.TYPE.LINE_PLOT];
     },
 
     getStylerPanelInstance:function(properties) {
         return new OSH.UI.Panel.StylerLinePlotPanel("",properties);
+    },
+
+    getView:function() {
+        this.view.updateProperties({
+           xLabel:  document.getElementById(this.inputXLabelId).value,
+           yLabel: document.getElementById(this.inputYLabelId).value,
+           maxPoints:Number(document.getElementById(this.inputMaxPoint).value)
+        });
+
+        return this.view;
     }
 });
