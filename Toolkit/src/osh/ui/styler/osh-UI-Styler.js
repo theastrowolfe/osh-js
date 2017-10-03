@@ -83,7 +83,7 @@ OSH.UI.Styler = BaseClass.extend({
                 for (var dsKey in this.dataSourceToStylerMap) {
                     var currentDsArray = this.dataSourceToStylerMap[dsKey];
                     var idx = -1;
-                    for (var j=0;i< currentDsArray.length;j++) {
+                    for (var j=0;j< currentDsArray.length;j++) {
                     	var currentDsElt = currentDsArray[j];
 						if(!isUndefinedOrNull(currentDsElt.fnName) && fn.fnName === currentDsElt.fnName) {
 
@@ -106,11 +106,10 @@ OSH.UI.Styler = BaseClass.extend({
                 }
             }
 
-            if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
-                this.dataSourceToStylerMap[dataSourceId] = [];
-            }
-
             if (!exist) {
+                if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
+                    this.dataSourceToStylerMap[dataSourceId] = [];
+                }
                 this.dataSourceToStylerMap[dataSourceId].push(fn);
             }
 
