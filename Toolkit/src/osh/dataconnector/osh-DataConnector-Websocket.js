@@ -159,7 +159,7 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                             reason = 'The connection was closed due to a failure to perform a TLS handshake';
                             break;
                     }
-                    if(e.code !== 1000) {
+                    if(e.code !== 1000 && e.code !== 1005) {
                         throw new OSH.Exception.Exception("Datasource is now closed[" + reason + "]: " + this.getUrl(), event);
                     } else {
                         //TODO:send log
@@ -181,8 +181,10 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
             this.worker.postMessage("close");
             this.worker.terminate();
             this.init = false;
-        } else if (this.ws != null) {
-            this.ws.close();
+        } else if (this.ws !== null) {
+            if(this.ws.readyState === WebSocket.OPEN) {
+                this.ws.close();
+            }
             this.init = false;
         }
     },

@@ -104,7 +104,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
     },
 
     createDSPanel:function() {
-       this.datasourcePanel = new OSH.UI.Panel.EntityDatasourcePanel("",{services:this.services});
+       this.datasourcePanel = new OSH.UI.Panel.EntityDatasourcePanel("",{services:this.services, entity:this.entity});
        return this.datasourcePanel.divElt;
     },
 

@@ -15,12 +15,13 @@
  ******************************* END LICENSE BLOCK ***************************/
 
 OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
-    initialize: function (parentElementDivId, properties) {
-        this._super(parentElementDivId, properties);
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
     },
 
     initPanel:function() {
         this.addDsButtonId = OSH.Utils.randomUUID();
+        this.entity = this.options.entity;
 
         var buttonElt = document.createElement("button");
         buttonElt.setAttribute("id",this.addDsButtonId);
@@ -97,10 +98,18 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         // add listeners
         var self = this;
 
+        this.entity.dataSources.push(dataSource);
+
         OSH.EventManager.observeDiv(deleteId,"click",function(event) {
             div.parentNode.removeChild(div);
+            dataSource.disconnect();
+
             delete self.datasources[dataSource.id];
             self.nbDatasources--;
+
+            self.entity.dataSources = self.entity.dataSources.filter(function(ds){
+                return ds.id !== dataSource.id;
+            });
         });
 
         OSH.EventManager.observeDiv(editId,"click",function(event) {
