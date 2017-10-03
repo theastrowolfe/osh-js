@@ -83,8 +83,8 @@ OSH.UI.Styler = BaseClass.extend({
                 for (var dsKey in this.dataSourceToStylerMap) {
                     var currentDsArray = this.dataSourceToStylerMap[dsKey];
                     var idx = -1;
-                    for (var i=0;i< currentDsArray.length;i++) {
-                    	var currentDsElt = currentDsArray[i];
+                    for (var j=0;i< currentDsArray.length;j++) {
+                    	var currentDsElt = currentDsArray[j];
 						if(!isUndefinedOrNull(currentDsElt.fnName) && fn.fnName === currentDsElt.fnName) {
 
 							// remove old function having the same name
