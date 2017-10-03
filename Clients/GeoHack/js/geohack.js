@@ -12,6 +12,7 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
         }
     );
 
+
     var menu = cssCircleMenu('.js-menu');
     var currentIdView = leafletMapView.divId;
     var mainDiv = document.getElementById("map-container");
@@ -46,7 +47,9 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
          name: "Create new Entity",
          show:true,
          pinContainerId: "dialog-container",
-         draggable:true
+         draggable:true,
+         closeable:true,
+         destroyOnClose:true
      });
 
      entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);

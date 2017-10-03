@@ -2,7 +2,7 @@
 
 .osh {}
 
-.osh .view {
+.osh.view {
     width:100%;
     height: inherit;
 }

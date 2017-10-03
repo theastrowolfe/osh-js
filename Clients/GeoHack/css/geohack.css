@@ -64,7 +64,7 @@ p {
 #dialog-container {
     position: absolute;
     width: 100%;
-    margin-left: 50px;
+    padding-left: 50px;
 }
 
 
@@ -75,7 +75,7 @@ p {
 
 .leaflet-container .leaflet-marker-pane img {
     max-width: 32px !important;
-    height:auto;
+    height:auto !important;
 }
 
 #map-container {
