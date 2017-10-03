@@ -177,11 +177,11 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     disconnect: function() {
-        if (OSH.Utils.isWebWorker() && this.worker != null && this.ENABLED) {
+        if (OSH.Utils.isWebWorker() && !isUndefinedOrNull(this.ws) && this.ENABLED) {
             this.worker.postMessage("close");
             this.worker.terminate();
             this.init = false;
-        } else if (this.ws !== null) {
+        } else if (!isUndefinedOrNull(this.ws)) {
             if(this.ws.readyState === WebSocket.OPEN) {
                 this.ws.close();
             }
