@@ -76,22 +76,45 @@ OSH.UI.Styler = BaseClass.extend({
 	addFn : function(dataSourceIds, fn) {
 		for (var i = 0; i < dataSourceIds.length; i++) {
 			var dataSourceId = dataSourceIds[i];
-			if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
-				this.dataSourceToStylerMap[dataSourceId] = [];
-			}
 
 			// check if the Fn exist for this DS
-			var exist = false;
-			for(var key in this.dataSourceToStylerMap[dataSourceId]) {
-				if(!isUndefinedOrNull(fn.fnName) && this.dataSourceToStylerMap[dataSourceId][key].fnName === fn.fnName) {
+
+            if(!isUndefinedOrNull(fn.fnName)) {
+                for (var dsKey in this.dataSourceToStylerMap) {
+                    var currentDsArray = this.dataSourceToStylerMap[dsKey];
+                    var idx = -1;
+                    for (var i=0;i< currentDsArray.length;i++) {
+                    	var currentDsElt = currentDsArray[i];
+						if(!isUndefinedOrNull(currentDsElt.fnName) && fn.fnName === currentDsElt.fnName) {
+
+							// remove old function having the same name
+							idx = i;
+							break;
+						}
+                    }
+                    if(idx > -1) {
+                        currentDsArray.splice(idx, 1);
+					}
+                }
+            }
+            var exist = false;
+            for(var key in this.dataSourceToStylerMap[dataSourceId]) {
+                if(!isUndefinedOrNull(fn.fnName) && this.dataSourceToStylerMap[dataSourceId][key].fnName === fn.fnName) {
                     this.dataSourceToStylerMap[dataSourceId][key] = fn;
                     exist = true;
                     break;
-				}
-			}
-			if(!exist) {
+                }
+            }
+
+            if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
+                this.dataSourceToStylerMap[dataSourceId] = [];
+            }
+
+            if (!exist) {
                 this.dataSourceToStylerMap[dataSourceId].push(fn);
             }
+
+
 		}
 	},
 
