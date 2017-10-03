@@ -452,8 +452,7 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
      * @instance
      * @memberof OSH.UI.DialogPanel
      */
-    onClose: function (callback) {
-        this.onClose = callback;
+    onClose: function () {
     },
 
     /**
@@ -465,10 +464,8 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
             this.outer.parentNode.removeChild(this.outer);
         } else {
             this.outer.setAttribute("class", this.outer.className +  " closed");
-            if (this.onClose) {
-                this.onClose();
-            }
         }
+        this.onClose();
     },
 
     /**
