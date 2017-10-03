@@ -29,49 +29,53 @@ OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 		this.stroke = 1;
 		this.x = 0;
 		this.y = [];
-		
-		if(!isUndefinedOrNull(properties.stroke)){
-			this.stroke = properties.stroke;
-		} 
-		
-		if(!isUndefinedOrNull(properties.color)){
-			this.color = properties.color;
-		} 
-		
-		if(!isUndefinedOrNull(properties.x)){
-			this.x = properties.x;
-		} 
-		
-		if(!isUndefinedOrNull(properties.y)){
-			this.y = properties.y;
-		} 
-		
-		if(!isUndefinedOrNull(properties.strokeFunc)) {
-			var fn = function(rec,timeStamp,options) {
-				this.stroke = properties.strokeFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-            fn.fnName = "stroke";
-			this.addFn(properties.strokeFunc.dataSourceIds,fn);
-		}
-		
-		if(!isUndefinedOrNull(properties.colorFunc)) {
-			var fn = function(rec,timeStamp,options) {
-				this.color = properties.colorFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-            fn.fnName = "color";
-			this.addFn(properties.colorFunc.dataSourceIds,fn);
-		}
-		
-		if(!isUndefinedOrNull(properties.valuesFunc)) {
-			var fn = function(rec,timeStamp,options) {
-				var values = properties.valuesFunc.handler(rec,timeStamp,options);
-				this.x = values.x;
-				this.y = values.y;
-			}.bind(this);
-            fn.fnName = "values";
-			this.addFn(properties.valuesFunc.dataSourceIds,fn);
-		}
+
+        this.updateProperties(properties);
 	},
+
+    updateProperties:function(properties) {
+        if(!isUndefinedOrNull(properties.stroke)){
+            this.stroke = properties.stroke;
+        }
+
+        if(!isUndefinedOrNull(properties.color)){
+            this.color = properties.color;
+        }
+
+        if(!isUndefinedOrNull(properties.x)){
+            this.x = properties.x;
+        }
+
+        if(!isUndefinedOrNull(properties.y)){
+            this.y = properties.y;
+        }
+
+        if(!isUndefinedOrNull(properties.strokeFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.stroke = properties.strokeFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "stroke";
+            this.addFn(properties.strokeFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.colorFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.color = properties.colorFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "color";
+            this.addFn(properties.colorFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.valuesFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                var values = properties.valuesFunc.handler(rec,timeStamp,options);
+                this.x = values.x;
+                this.y = values.y;
+            }.bind(this);
+            fn.fnName = "values";
+            this.addFn(properties.valuesFunc.dataSourceIds,fn);
+        }
+    },
 
 	/**
 	 * @param $super
@@ -86,8 +90,36 @@ OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 		if(this._super(dataSourceId,rec,view,options)) {
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined") {
-				view.updateCurve(this,rec.timeStamp,options);
+                this.lastData = {
+                    lastTimeStamp : rec.timeStamp,
+                    lastOptions : options,
+                    x: this.x,
+					y: this.y
+                };
+				view.updateLinePlot(this,rec.timeStamp,options);
 			}
 		}
-	}
+	},
+
+    /**
+     *
+     * @memberof OSH.UI.Styler.StylerLinePlot
+     * @instance
+     */
+    clear:function(){
+    },
+
+    remove:function(view) {
+        if(!isUndefinedOrNull(view)) {
+            view.removeLinePlot(this);
+        }
+    },
+
+    update:function(view) {
+        if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
+            this.x = this.lastData.x;
+            this.y = this.lastData.y;
+            view.updateLinePlot(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
+        }
+    }
 });

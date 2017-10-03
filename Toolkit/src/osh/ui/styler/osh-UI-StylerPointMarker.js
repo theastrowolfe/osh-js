@@ -169,8 +169,6 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
 			if (!isUndefinedOrNull(view) && !isUndefinedOrNull(this.location)) {
-			    this.lastTimeStamp = rec.timeStamp;
-			    this.lastOptions = options;
 			    this.lastData = {
                     lastTimeStamp : rec.timeStamp,
                     lastOptions : options,
