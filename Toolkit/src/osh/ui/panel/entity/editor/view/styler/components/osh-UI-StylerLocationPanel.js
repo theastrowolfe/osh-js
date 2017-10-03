@@ -78,14 +78,25 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         // adds default values
         if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
 
-            // updates observables { x,y,z} listbox
-            var observables = self.getObservable(this.dsListBoxId);
-            this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
-
             if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping")) {
-                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.xIdx;
-                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.yIdx;
-                document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.zIdx;
+                var datasourceIdx = -1;
+                for (var i = 0; i < this.options.datasources.length; i++) {
+                    if(this.options.datasources[i].id === this.styler.ui.location.locationFuncMapping.datasourceId) {
+                        datasourceIdx = i;
+                        break;
+                    }
+                }
+                if(datasourceIdx > -1) {
+                    document.getElementById(this.dsListBoxId).options.selectedIndex = datasourceIdx;
+
+                    this.loadDatasources();
+
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.xIdx;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.yIdx;
+                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.zIdx;
+                }
+            } else {
+               this.loadDatasources();
             }
         }
 
@@ -94,6 +105,12 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             var observables = self.getObservable(self.dsListBoxId);
             self.loadMapLocation(observables,self.xInputMappingId,self.yInputMappingId,self.zInputMappingId);
         });
+    },
+
+    loadDatasources:function() {
+        // updates observables { x,y,z} listbox
+        var observables = this.getObservable(this.dsListBoxId);
+        this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
     },
 
     loadMapLocation:function(observableArr,xInputMappingId,yInputMappingId,zInputMappingId) {
