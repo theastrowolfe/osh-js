@@ -153,7 +153,8 @@ OSH.DataReceiver.DataSourceFactory.buildDSStructure = function (datasource, resu
             group = null;
         }
 
-        if (!isUndefinedOrNull(value.definition)) {
+        //TODO: define stop rules
+        if (!isUndefinedOrNull(value.definition) || !isUndefinedOrNull(value.axisID)) {
 
             var saveGroup = false;
             if (currentObj !== null) {
@@ -165,11 +166,18 @@ OSH.DataReceiver.DataSourceFactory.buildDSStructure = function (datasource, resu
                 };
             }
 
-            currentObj = {
-                definition: value.definition,
-                path: null,
-                object: value
-            };
+            if (!isUndefinedOrNull(value.definition)) {
+                currentObj = {
+                    definition: value.definition,
+                    path: null,
+                    object: value
+                };
+            } else {
+                currentObj = {
+                    path: null,
+                    object: value
+                };
+            }
 
             params.defLevel = params.level + 1;
         }
