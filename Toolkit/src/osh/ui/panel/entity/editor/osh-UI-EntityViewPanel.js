@@ -179,6 +179,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         // handlers
         OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
         OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
+
+        return viewInstance;
     },
 
     getViewList:function() {
@@ -413,33 +415,62 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             if(currentProperty.hash === 0x000) {
                 // existing view
                 for(var i=0;i < existingViewList.length;i++) {
-                    this.restoringView(existingViewList[i],currentProperty);
+                    this.restoringExistingView(existingViewList[i],currentProperty);
                 }
             } else {
                 //TODO: case where the view is a new view
+                OSH.Asserts.checkTrue(currentProperty.container.startsWith("pop-content-id"));
+                this.restoringDialogView(existingViewList[i],currentProperty);
+
             }
         }
     },
 
-    restoringView:function(currentViewDiv,currentProperty) {
+    restoringDialogView:function(currentViewDiv,properties) {
+        var viewInstance = this.addView({
+            name: properties.name,
+            type: properties.type,
+            hash: properties.hash,
+            viewInstanceType:properties.viewInstanceType
+        });
+
+        var viewDialog = new OSH.UI.Panel.DialogPanel("", {
+            draggable: true,
+            css: "app-dialog", //TBD into edit view
+            name: viewInstance.name,
+            show: true,
+            dockable: false,
+            closeable: true,
+            connectionIds: [],//TODO
+            destroyOnClose: true,
+            modal: false,
+            keepRatio: false
+        });
+
+        viewInstance.attachTo(viewDialog.popContentDiv.id);
+        viewInstance.inDialog = true;
+
+        viewDialog.onClose = function() {
+            viewInstance.inDialog = false;
+        };
+
+        this.restoringView(viewInstance,currentViewDiv,properties);
+    },
+
+    restoringExistingView:function(currentViewDiv,properties) {
         OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
             var viewInstance = event.object;
             var nodeIndex = OSH.Utils.getChildNumber(viewInstance.elementDiv);
-            if(viewInstance.type === currentProperty.type &&
-                nodeIndex === currentProperty.nodeIdx &&
-                viewInstance.elementDiv.parentNode.id === currentProperty.container){
-
-                //--- Stylers
-                for(var key in currentProperty.viewItems) {
-                    var props = this.restoringStyler(currentProperty.viewItems[key]);
-                    viewInstance.addViewItem(props);
-                }
+            if(viewInstance.type === properties.type &&
+                nodeIndex === properties.nodeIdx &&
+                viewInstance.elementDiv.parentNode.id === properties.container) {
+                this.restoringView(viewInstance, currentViewDiv, properties);
 
                 this.addView({
-                    name: currentProperty.name,
-                    type: currentProperty.type,
-                    instance: event.object,
-                    hash: currentProperty.hash
+                    name: properties.name,
+                    type: properties.type,
+                    instance: viewInstance,
+                    hash: properties.hash
                 });
             }
             OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
@@ -448,15 +479,25 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
     },
 
+    restoringView:function(viewInstance,currentViewDiv,properties) {
+        //--- Stylers
+        for(var key in properties.viewItems) {
+            var props = this.restoringStyler(properties.viewItems[key]);
+            viewInstance.addViewItem(props);
+        }
+    },
+
     restoringStyler:function(currentViewItemProps) {
         var currentViewStylerProps = currentViewItemProps.styler;
         var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
 
         OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
 
-        // re-create styler function
-        for(var property in stylerInstance) {
-            this.restoringStylerFunction(stylerInstance,property);
+        // re-create styler function from UI selection
+        if(OSH.Utils.hasOwnNestedProperty(stylerInstance,"properties.ui")) {
+            for (var property in stylerInstance) {
+                this.restoringStylerFunction(stylerInstance, property);
+            }
         }
 
         return {
@@ -475,7 +516,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             while ((matches = regex.exec(stylerInstance[property].handlerStr)) !== null) {
                 var result = [];
                 OSH.Utils.searchPropertyByValue(
-                    stylerInstance.ui,
+                    stylerInstance.properties.ui,
                     matches[1],
                     result);
                 if(!isUndefinedOrNull(result) && result.length > 0) {
