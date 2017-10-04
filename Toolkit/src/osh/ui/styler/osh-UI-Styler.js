@@ -74,49 +74,41 @@ OSH.UI.Styler = BaseClass.extend({
 	 * @instance
 	 */
 	addFn : function(dataSourceIds, fn) {
-		for (var i = 0; i < dataSourceIds.length; i++) {
-			var dataSourceId = dataSourceIds[i];
+		this.removeFn(fn.fnName);
+        for (var i = 0; i < dataSourceIds.length; i++) {
+            var dataSourceId = dataSourceIds[i];
 
-			// check if the Fn exists for this DS
-            if(!isUndefinedOrNull(fn.fnName)) {
-                for (var dsKey in this.dataSourceToStylerMap) {
-                    var currentDsArray = this.dataSourceToStylerMap[dsKey];
-                    var idx = -1;
-                    for (var j=0;j< currentDsArray.length;j++) {
-                    	var currentDsElt = currentDsArray[j];
-						if(!isUndefinedOrNull(currentDsElt.fnName) && fn.fnName === currentDsElt.fnName) {
-
-							// remove old function having the same name
-							idx = i;
-							break;
-						}
-                    }
-                    if(idx > -1) {
-                        this.dataSourceToStylerMap[dsKey].splice(idx, 1);
-						if(this.dataSourceToStylerMap[dsKey].length === 0) {
-							delete this.dataSourceToStylerMap[dsKey];
-						}
-                    }
-                }
+            if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
+                this.dataSourceToStylerMap[dataSourceId] = [];
             }
-            var exist = false;
-            for(var key in this.dataSourceToStylerMap[dataSourceId]) {
-                if(!isUndefinedOrNull(fn.fnName) && this.dataSourceToStylerMap[dataSourceId][key].fnName === fn.fnName) {
-                    this.dataSourceToStylerMap[dataSourceId][key] = fn;
-                    exist = true;
+            this.dataSourceToStylerMap[dataSourceId].push(fn);
+        }
+	},
+
+	removeFn:function(fnName) {
+        for (var dsKey in this.dataSourceToStylerMap) {
+        	var currentDsArray = this.dataSourceToStylerMap[dsKey];
+
+            var idx = -1;
+            for (var j=0;j< currentDsArray.length;j++) {
+                var currentDsElt = currentDsArray[j];
+                if(!isUndefinedOrNull(currentDsElt.fnName) && fnName  === currentDsElt.fnName) {
+                    // remove old function having the same name
+                    idx = j;
                     break;
                 }
             }
 
-            if (!exist) {
-                if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
-                    this.dataSourceToStylerMap[dataSourceId] = [];
+            // if a function has to be removed
+            if(idx > -1) {
+            	// removed from the array
+                this.dataSourceToStylerMap[dsKey].splice(idx, 1);
+                if(this.dataSourceToStylerMap[dsKey].length === 0) {
+                    // remove this datasource because it is not longer used
+                	delete this.dataSourceToStylerMap[dsKey];
                 }
-                this.dataSourceToStylerMap[dataSourceId].push(fn);
             }
-
-
-		}
+        }
 	},
 
 	/**
@@ -174,4 +166,5 @@ OSH.UI.Styler = BaseClass.extend({
      * @instance
      */
     update:function(view) {}
+
 });
