@@ -44,6 +44,8 @@ OSH.UI.View = BaseClass.extend({
         this.dataSourceId = -1;
 
         if(!isUndefinedOrNull(options)) {
+            this.options = options;
+
             // sets dataSourceId
             if(!isUndefinedOrNull(options.dataSourceId)) {
                 this.dataSourceId = options.dataSourceId;
