@@ -104,7 +104,7 @@ OSH.UI.Styler.Factory.getFixedIcon = function(dataSourceIdsArray,url) {
     return  {
         icon: url,
         iconFunc : {
-        dataSourceIds: dataSourceIdsArray,
+        dataSourceIds: dataSourceIdsArray, // TODO: find a way to use something else because it is not depending on datasources but user interaction in that case
             handler: iconTemplateHandlerFn
         }
     };

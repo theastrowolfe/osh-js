@@ -197,6 +197,8 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
         if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
             this.location = this.lastData.location;
             view.updateMarker(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
+        } else {
+            view.updateMarker(this,0,{});
         }
     }
 
