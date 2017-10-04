@@ -32,10 +32,10 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         var zDefaultValue = "";
 
         // inits default values
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.values.default")) {
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.default")) {
             // default values
-            xDefaultValue = this.styler.ui.values.default.x;
-            yDefaultValue = this.styler.ui.values.default.y;
+            xDefaultValue = this.styler.properties.ui.values.default.x;
+            yDefaultValue = this.styler.properties.ui.values.default.y;
         }
 
         this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
@@ -46,7 +46,7 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         // load existing values if any
         // load UI settings
 
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.values.valuesFuncMapping") ||
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.valuesFuncMapping") ||
             !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.valuesFunc")) {
             this.initMappingFunctionUI();
         } else {
@@ -74,13 +74,24 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         // adds default values
         if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
 
-            // updates observables { x,y,z} listbox
-            var observables = self.getObservable(this.dsListBoxId);
-            this.loadMapValues(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.valuesFuncMapping")) {
+                var datasourceIdx = -1;
+                for (var i = 0; i < this.options.datasources.length; i++) {
+                    if(this.options.datasources[i].id === this.styler.properties.ui.values.valuesFuncMapping.datasourceId) {
+                        datasourceIdx = i;
+                        break;
+                    }
+                }
+                if(datasourceIdx > -1) {
+                    document.getElementById(this.dsListBoxId).options.selectedIndex = datasourceIdx;
 
-            if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.values.valuesFuncMapping")) {
-                document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.values.valuesFuncMapping.xIdx;
-                document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.values.valuesFuncMapping.yIdx;
+                    this.loadDatasources();
+
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.properties.ui.values.valuesFuncMapping.xIdx;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.properties.ui.values.valuesFuncMapping.yIdx;
+                }
+            } else {
+                this.loadDatasources();
             }
         }
 
@@ -89,6 +100,12 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
             var observables = self.getObservable(self.dsListBoxId);
             self.loadMapValues(observables,self.xInputMappingId,self.yInputMappingId);
         });
+    },
+
+    loadDatasources:function() {
+        // updates observables { x,y,z} listbox
+        var observables = this.getObservable(this.dsListBoxId);
+        this.loadMapValues(observables,this.xInputMappingId,this.yInputMappingId);
     },
 
     loadMapValues:function(observableArr,xInputMappingId,yInputMappingId) {
@@ -137,23 +154,25 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
      * }
      */
     getProperties:function() {
-        var stylerProperties = {};
-
-        var valuesFuncProps,  defaultValuesProps;
-
-        // update ui property
-        stylerProperties.ui = {
-            values:{}
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    values: {}
+                }
+            },
+            values: {}
         };
 
+        var valuesFuncProps,fixedValuesProps;
+
         // default values x,y
-        defaultValuesProps = OSH.UI.Styler.Factory.getValues(
+        fixedValuesProps = OSH.UI.Styler.Factory.getValues(
             Number(document.getElementById(this.xDefaultInputId).value),
             Number(document.getElementById(this.yDefaultInputId).value)
         );
 
         // update ui property
-        stylerProperties.ui.values.default = {
+        stylerProperties.properties.ui.values.default = {
             x: Number(document.getElementById(this.xDefaultInputId).value),
             y: Number(document.getElementById(this.yDefaultInputId).value)
         };
@@ -171,7 +190,7 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
                     xIdx, yIdx); // obs indexes
             }
 
-            stylerProperties.ui.values.valuesFuncMapping = {
+            stylerProperties.properties.ui.values.valuesFuncMapping = {
                 datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
                 xIdx: xIdx,
                 yIdx: yIdx
@@ -185,16 +204,16 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
                 document.getElementById(this.textareaId).value //valuesFnStr
             );
 
-            stylerProperties.ui.values.custom = textContent;
+            stylerProperties.properties.ui.values.custom = textContent;
         }
 
 
         // copy default values properties
-        OSH.Utils.copyProperties(defaultValuesProps, stylerProperties);
+        OSH.Utils.copyProperties(fixedValuesProps, stylerProperties);
 
         // copy values function properties if any
         if (!isUndefinedOrNull(valuesFuncProps)) {
-            OSH.Utils.copyProperties(valuesFuncProps, stylerProperties);
+            OSH.Utils.copyProperties(valuesFuncProps, stylerProperties.properties);
         }
 
         return stylerProperties;

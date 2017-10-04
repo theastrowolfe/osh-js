@@ -74,23 +74,23 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         //-- sets icon type
         var typeInputElt = document.getElementById(this.typeInputId);
 
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon")) {
-            if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon.fixed")) {
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon")) {
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.fixed")) {
                 // loads fixed
                 typeInputElt.options.selectedIndex = 1;
-                this.addFixed(this.styler.ui.icon.fixed);
-            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon.threshold")) {
+                this.addFixed(this.styler.properties.ui.icon.fixed);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.threshold")) {
                 // loads threshold
                 typeInputElt.options.selectedIndex = 2;
-                this.addThreshold(this.styler.ui.icon.threshold);
-            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon.map")) {
+                this.addThreshold(this.styler.properties.ui.icon.threshold);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.map")) {
                 // loads map
                 typeInputElt.options.selectedIndex = 3;
-                this.addMap(this.styler.ui.icon.map);
-            } else if (OSH.Utils.hasOwnNestedProperty(this.styler, "ui.icon.custom")) {
+                this.addMap(this.styler.properties.ui.icon.map);
+            } else if (OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.custom")) {
                 // loads custom
                 typeInputElt.options.selectedIndex = 4;
-                this.addCustom(this.styler.ui.icon.custom);
+                this.addCustom(this.styler.properties.ui.icon.custom);
             }
         } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.iconFunc")) {
             typeInputElt.options.selectedIndex = 4;
@@ -300,10 +300,12 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
     },
 
     getProperties:function() {
-        var stylerProperties = {};
-
-        // update ui property
-        stylerProperties.ui = {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    icon: {}
+                }
+            },
             icon: {}
         };
 
@@ -317,16 +319,18 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed");
 
             // DEFAULT ICON
-            stylerProperties.ui.icon.fixed = {};
+            stylerProperties.properties.ui.icon.fixed = {};
 
             OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed.default.url");
 
             var defaultIconProps = OSH.UI.Styler.Factory.getFixedIcon(dsIdsArray,this.properties.fixed.default.url);
 
-            OSH.Utils.copyProperties(defaultIconProps,stylerProperties);
+            OSH.Utils.copyProperties(defaultIconProps,stylerProperties.properties);
+
+            stylerProperties.icon = defaultIconProps.icon;
 
             // UI
-            stylerProperties.ui.icon.fixed.default = this.properties.fixed.default;
+            stylerProperties.properties.ui.icon.fixed.default = this.properties.fixed.default;
 
             // SELECTED ICON
             //TODO: replace selected way
@@ -342,16 +346,18 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                         this.properties.fixed.selected.url
                     );
 
-                    OSH.Utils.copyProperties(selectedIconProps, stylerProperties);
+                    OSH.Utils.copyProperties(selectedIconProps, stylerProperties.properties);
+
+                    stylerProperties.icon = selectedIconProps.icon;
 
                     // UI
-                    stylerProperties.ui.icon.fixed.selected = this.properties.fixed.selected;
+                    stylerProperties.properties.ui.icon.fixed.selected = this.properties.fixed.selected;
                 }
             }
         } else if (!isUndefinedOrNull(this.properties.custom)) {
             OSH.Asserts.checkObjectPropertyPath(this.properties,"custom");
 
-            stylerProperties.ui.icon.custom = {};
+            stylerProperties.properties.ui.icon.custom = {};
             var textContent = document.getElementById(this.textareaId).value;
 
             var iconFuncProps = OSH.UI.Styler.Factory.getCustomIconFunc(
@@ -359,13 +365,13 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 textContent //iconFnStr
             );
 
-            OSH.Utils.copyProperties(iconFuncProps,stylerProperties);
+            OSH.Utils.copyProperties(iconFuncProps,stylerProperties.properties);
 
             // UI
-            stylerProperties.ui.icon.custom = textContent;
+            stylerProperties.properties.ui.icon.custom = textContent;
 
         } else if (!isUndefinedOrNull(this.properties.threshold)) {
-            stylerProperties.ui.icon.threshold = {};
+            stylerProperties.properties.ui.icon.threshold = {};
 
             OSH.Asserts.checkObjectPropertyPath(this.properties,"threshold");
 
@@ -389,15 +395,17 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 this.properties.threshold.value
             );
 
-            OSH.Utils.copyProperties(iconFuncProps,stylerProperties);
+            OSH.Utils.copyProperties(iconFuncProps,stylerProperties.properties);
+
+            stylerProperties.icon = iconFuncProps.icon;
 
             // UI
-            stylerProperties.ui.icon.threshold.default = this.properties.threshold.default;
-            stylerProperties.ui.icon.threshold.low = this.properties.threshold.low;
-            stylerProperties.ui.icon.threshold.high = this.properties.threshold.high;
-            stylerProperties.ui.icon.threshold.value = this.properties.threshold.value;
-            stylerProperties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
-            stylerProperties.ui.icon.threshold.datasourceId = currentDatasource.id;
+            stylerProperties.properties.ui.icon.threshold.default = this.properties.threshold.default;
+            stylerProperties.properties.ui.icon.threshold.low = this.properties.threshold.low;
+            stylerProperties.properties.ui.icon.threshold.high = this.properties.threshold.high;
+            stylerProperties.properties.ui.icon.threshold.value = this.properties.threshold.value;
+            stylerProperties.properties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
+            stylerProperties.properties.ui.icon.threshold.datasourceId = currentDatasource.id;
         } else {
             delete stylerProperties.icon; // remove icon properties from result
         }

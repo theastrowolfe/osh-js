@@ -32,19 +32,19 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
     },
 
     getStyler:function() {
-        var uiProperties = {};
-
         // gets properties from panels
         var valuesPanelProperties = this.valesPanel.getProperties();
 
-        // copies UI properties
-        OSH.Utils.copyProperties(valuesPanelProperties,uiProperties);
+        OSH.Asserts.checkObjectPropertyPath(valuesPanelProperties,"properties","missins property 'properties");
 
         // updates styler with properties
-        this.options.styler.updateProperties(valuesPanelProperties);
+        this.options.styler.updateProperties(valuesPanelProperties.properties);
+
+        // copy others properties
+        delete valuesPanelProperties.properties;
 
         // saves UI properties into styler object to be reloaded
-        OSH.Utils.copyProperties(uiProperties,this.options.styler,true);
+        OSH.Utils.copyProperties(valuesPanelProperties,this.options.styler,true);
 
         return this.options.styler;
     }

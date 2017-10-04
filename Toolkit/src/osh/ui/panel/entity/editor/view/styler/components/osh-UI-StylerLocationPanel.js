@@ -33,11 +33,11 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         var zDefaultValue = "";
 
         // inits default values
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.default")) {
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.default")) {
             // default location
-            xDefaultValue = this.styler.ui.location.default.x;
-            yDefaultValue = this.styler.ui.location.default.y;
-            zDefaultValue = this.styler.ui.location.default.z;
+            xDefaultValue = this.styler.properties.ui.location.default.x;
+            yDefaultValue = this.styler.properties.ui.location.default.y;
+            zDefaultValue = this.styler.properties.ui.location.default.z;
         }
 
         this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
@@ -49,7 +49,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         // load existing values if any
         // load UI settings
 
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping") ||
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.locationFuncMapping") ||
             !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.locationFunc")) {
             this.initMappingFunctionUI();
         } else {
@@ -78,10 +78,10 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         // adds default values
         if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
 
-            if(OSH.Utils.hasOwnNestedProperty(this.styler, "ui.location.locationFuncMapping")) {
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.locationFuncMapping")) {
                 var datasourceIdx = -1;
                 for (var i = 0; i < this.options.datasources.length; i++) {
-                    if(this.options.datasources[i].id === this.styler.ui.location.locationFuncMapping.datasourceId) {
+                    if(this.options.datasources[i].id === this.styler.properties.ui.location.locationFuncMapping.datasourceId) {
                         datasourceIdx = i;
                         break;
                     }
@@ -91,9 +91,9 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
                     this.loadDatasources();
 
-                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.xIdx;
-                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.yIdx;
-                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.ui.location.locationFuncMapping.zIdx;
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.xIdx;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.yIdx;
+                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.zIdx;
                 }
             } else {
                this.loadDatasources();
@@ -168,14 +168,17 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
      * }
      */
     getProperties:function() {
-        var stylerProperties = {};
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    location: {}
+                }
+            },
+            location: {}
+        };
 
         var locationFuncProps,  defaultLocationProps;
 
-        // update ui property
-        stylerProperties.ui = {
-            location:{}
-        };
 
         // default location x,y,z
         defaultLocationProps = OSH.UI.Styler.Factory.getLocation(
@@ -185,7 +188,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         );
 
         // update ui property
-        stylerProperties.ui.location.default = {
+        stylerProperties.properties.ui.location.default = {
             x: Number(document.getElementById(this.xDefaultInputId).value),
             y: Number(document.getElementById(this.yDefaultInputId).value),
             z: Number(document.getElementById(this.zDefaultInputId).value)
@@ -205,7 +208,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                     xIdx, yIdx, zIdx); // obs indexes
             }
 
-            stylerProperties.ui.location.locationFuncMapping = {
+            stylerProperties.properties.ui.location.locationFuncMapping = {
                 datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
                 xIdx: xIdx,
                 yIdx: yIdx,
@@ -220,7 +223,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 document.getElementById(this.textareaId).value //locationFnStr
             );
 
-            stylerProperties.ui.location.custom = textContent;
+            stylerProperties.properties.ui.location.custom = textContent;
         }
 
 
@@ -229,7 +232,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // copy location function properties if any
         if (!isUndefinedOrNull(locationFuncProps)) {
-            OSH.Utils.copyProperties(locationFuncProps, stylerProperties);
+            OSH.Utils.copyProperties(locationFuncProps, stylerProperties.properties);
         }
 
         return stylerProperties;

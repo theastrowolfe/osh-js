@@ -34,22 +34,25 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
     },
 
     getStyler:function() {
-        var uiProperties = {};
-
         // gets properties from panels
         var locationPanelProperties = this.locationPanel.getProperties();
         var iconPanelProperties = this.iconPanel.getProperties();
 
-        // copies UI properties
-        OSH.Utils.copyProperties(locationPanelProperties,uiProperties);
-        OSH.Utils.copyProperties(iconPanelProperties,uiProperties);
+        OSH.Asserts.checkObjectPropertyPath(locationPanelProperties,"properties","missing property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(iconPanelProperties,"properties","missing property 'properties");
 
         // updates styler with properties
-        this.options.styler.updateProperties(locationPanelProperties);
-        this.options.styler.updateProperties(iconPanelProperties);
+        this.options.styler.updateProperties(locationPanelProperties.properties);
+        this.options.styler.updateProperties(iconPanelProperties.properties);
+
+        // copy others properties
+        delete locationPanelProperties.properties;
+        delete iconPanelProperties.properties;
 
         // saves UI properties into styler object to be reloaded
-        OSH.Utils.copyProperties(uiProperties,this.options.styler,true);
+        // saves UI properties into styler object to be reloaded
+        OSH.Utils.copyProperties(locationPanelProperties,this.options.styler,true);
+        OSH.Utils.copyProperties(iconPanelProperties,this.options.styler,true);
 
         return this.options.styler;
     }

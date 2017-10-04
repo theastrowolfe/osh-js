@@ -86,6 +86,7 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
     }
 
     viewInstance.id = viewProperties.id;
+    viewInstance.viewInstanceType = viewInstanceType;
 
     return viewInstance;
 };
@@ -113,6 +114,7 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
         default:
             break;
     }
+    viewInstance.viewInstanceType = viewInstanceType;
     return viewInstance;
 };
 
