@@ -165,6 +165,9 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                         //TODO:send log
                         console.log("Datasource has been closed normally");
                     }
+                    this.init = false;
+                    this.onClose();
+
                 }.bind(this);
             }
             this.init = true;
