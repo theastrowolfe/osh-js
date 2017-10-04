@@ -44,5 +44,9 @@ OSH.DataConnector.DataConnector = BaseClass.extend({
    */
   getUrl: function() {
     return this.url;
+  },
+
+  onClose:function() {
+
   }
 });

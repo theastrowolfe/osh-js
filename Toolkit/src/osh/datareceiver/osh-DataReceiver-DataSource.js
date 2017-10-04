@@ -71,6 +71,9 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
     // checks if type is WebSocket
     if(properties.protocol == "ws") {
       this.connector = new OSH.DataConnector.WebSocketDataConnector(this.buildUrl(properties));
+      this.connector.onClose = function() {
+        this.connected = false;
+      }.bind(this);
       // connects the callback
       this.connector.onMessage = this.onMessage.bind(this);
     } else if(properties.protocol == "http") {
