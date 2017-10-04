@@ -192,6 +192,12 @@ OSH.Buffer = BaseClass.extend({
     }
   },
 
+  removeDataSource:function(dataSourceId) {
+    if(dataSourceId in this.buffers) {
+      delete this.buffers[dataSourceId];
+    }
+  },
+
   /**
    * Adds an entity which contains one or more dataSources.
    * The dataSources are then added to the buffer using {@link OSH.Buffer.addDataSource}

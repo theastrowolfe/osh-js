@@ -218,5 +218,21 @@ OSH.DataReceiver.DataReceiverController = BaseClass.extend({
 
     getDataSource:function(id) {
         return this.dataSourcesIdToDataSources[id];
+    },
+
+    removeDataSource:function(datasource) {
+        this.buffer.removeDataSource(datasource.id);
+        if(datasource.id in this.dataSourcesIdToDataSources) {
+            delete this.dataSourcesIdToDataSources[datasource.id];
+        }
+    },
+
+    updateDataSource: function(datasource) {
+        // disconnects datasource before updating
+        OSH.EventManager.fire(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE,{dataSourcesId:[datasource.id]});
+        // removes from buffer and internal map
+        this.removeDataSource(datasource);
+        // adds as a new one (because of handler to regenerate
+        this.addDataSource(datasource);
     }
 });
