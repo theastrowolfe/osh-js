@@ -142,11 +142,15 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
 
     editDataSource:function(dataSource) {
         this.datasources[dataSource.id] = dataSource;
-
         document.getElementById("ds-name-"+dataSource.id).innerHTML = dataSource.name;
 
-        this.buildDSResultTemplate(this.datasources[dataSource.id]);
+        // datasource has been changed, disconnect it
+        dataSource.disconnect();
+
+        this.onDatasourceChanged(dataSource);
     },
+
+    onDatasourceChanged : function(dataSource) {},
 
     loadDataSourcesProperty:function(dsPropertyArray,callback) {
         this.reset();

@@ -105,6 +105,11 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
     createDSPanel:function() {
        this.datasourcePanel = new OSH.UI.Panel.EntityDatasourcePanel("",{services:this.services, entity:this.entity});
+
+       this.datasourcePanel.onDatasourceChanged = function(datasource) {
+           this.entity.dataProviderController.updateDataSource(datasource);
+       }.bind(this);
+
        return this.datasourcePanel.divElt;
     },
 
@@ -230,18 +235,39 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         this.entity.dataProviderController.connectAll();
     },
 
-    createSaveProperty:function() {
-        var props = {};
+    createSaveProperty: function () {
+        var result = {};
 
         // Entity information
-        props.infos = {
+        this.saveInfo(result);
+
+        // Datasource information
+        this.saveDatasources(result);
+
+        // view information
+        // new or existing ?
+        // store name, type & hash
+
+        this.saveViews(result);
+
+        return result;
+    },
+
+    //**************************************************************//
+    //*************Saving property**********************************//
+    //**************************************************************//
+
+    saveInfo:function(result) {
+        // Entity information
+        result.infos = {
             id: this.entity.id,
             name : document.getElementById(this.infoPanel.nameTagId).value,
             icon : document.getElementById(this.infoPanel.iconTagId).value,
             description: document.getElementById(this.infoPanel.descriptionTagId).value
         };
+    },
 
-        // Datasource information
+    saveDatasources:function(result) {
         var datasourcesProperty = [];
         for(var key in this.datasourcePanel.datasources) {
             var dsProps = {};
@@ -250,71 +276,100 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
             datasourcesProperty.push(dsProps);
         }
-        props.datasources = datasourcesProperty;
+        result.datasources = datasourcesProperty;
+    },
 
-        // view information
-        // new or existing ?
-        // store name, type & hash
-        var views = [];
+    saveViews:function(result) {
+        result.views  = [];
         var currentView;
 
+        // iterates over views
         for(var key in this.viewPanel.views) {
             currentView = this.viewPanel.views[key];
+            result.views.push(this.saveView(currentView));
+        }
+    },
+
+    saveView:function(view) {
+        // compute view Items infos
+        if(!isUndefinedOrNull(view.viewItems)) {
+            var currentViewItem;
             var viewItems = [];
-            // compute view Items infos
-            if(!isUndefinedOrNull(currentView.viewItems)) {
-                var currentViewItem;
 
-                for(var key in currentView.viewItems) {
-                    currentViewItem = currentView.viewItems[key];
+            for(var key in view.viewItems) {
+                currentViewItem = view.viewItems[key];
 
-                    // save only viewItem created using UI
-                    if(currentViewItem.entityId === this.entity.id) {
-                        var viewItemToSave = {
-                            name: currentViewItem.name,
-                            entityId: currentViewItem.entityId,
-                            styler: null
-                        };
-
-                        if (!isUndefinedOrNull(currentViewItem.styler)) {
-                            var cStyler = currentViewItem.styler;
-
-                            // compute styler
-                            var stylerToSave = {
-                                ui: currentViewItem.styler.ui,
-                                type: OSH.UI.Styler.Factory.getTypeFromInstance(currentViewItem.styler)
-                            };
-
-                            for(var property in cStyler) {
-                                if(property.endsWith("Func")) {
-                                    stylerToSave[property] = {};
-
-                                    OSH.Utils.copyProperties(cStyler[property],stylerToSave[property]);
-                                    stylerToSave[property].handlerStr = cStyler[property].handler.toSource();
-                                }
-                            }
-                            viewItemToSave.styler = stylerToSave;
-                        }
-
-                        viewItems.push(viewItemToSave);
-                    }
+                // save only viewItem created using UI
+                if(currentViewItem.entityId === this.entity.id) {
+                    viewItems.push(this.saveViewItem(currentViewItem));
                 }
             }
-
-            views.push({
-                type: currentView.type,
-                hash: currentView.hash,
-                name: currentView.name,
-                container: currentView.elementDiv.parentNode.id,
-                nodeIdx: OSH.Utils.getChildNumber(currentView.elementDiv),
-                display: currentView.elementDiv.style.display, // for new created views, should be equal to NONE,
-                viewItems:viewItems,
-                options:currentView.options
-            });
         }
 
-        props.views = views;
-        return props;
+        return {
+            type: view.type,
+            hash: view.hash,
+            name: view.name,
+            container: view.elementDiv.parentNode.id,
+            nodeIdx: OSH.Utils.getChildNumber(view.elementDiv),
+            display: view.elementDiv.style.display, // for new created views, should be equal to NONE,
+            viewItems:viewItems,
+            options:view.options,
+            viewInstanceType:view.viewInstanceType
+        };
+    },
+
+    saveViewItem:function(viewItem) {
+        var viewItemToSave = {
+            name: viewItem.name,
+            entityId: viewItem.entityId,
+            styler: null
+        };
+
+        if (!isUndefinedOrNull(viewItem.styler)) {
+            viewItemToSave.styler = this.saveStyler(viewItem.styler);
+        }
+
+        return viewItemToSave;
+    },
+
+    saveStyler:function(styler) {
+        var stylerToSave = {
+            properties:{},
+            type: OSH.UI.Styler.Factory.getTypeFromInstance(styler)
+        };
+
+        for(var property in styler.properties) {
+            if(property.endsWith("Func")) {
+                stylerToSave[property] = {};
+
+                OSH.Utils.copyProperties(styler.properties[property],stylerToSave[property]);
+                stylerToSave[property].handlerStr = styler.properties[property].handler.toSource();
+            } else {
+                stylerToSave.properties[property] = styler.properties[property];
+            }
+        }
+
+        return stylerToSave;
+
+        // compute styler
+        /*var uiProps = {};
+        if(OSH.Utils.hasOwnNestedProperty(styler,"properties.ui")) {
+            uiProps = styler.properties.ui;
+        }
+        var stylerToSave = {
+            ui: uiProps,
+            type: OSH.UI.Styler.Factory.getTypeFromInstance(styler)
+        };
+
+        for(var property in styler.properties) {
+            if(property.endsWith("Func")) {
+                stylerToSave[property] = {};
+
+                OSH.Utils.copyProperties(styler.properties[property],stylerToSave[property]);
+                stylerToSave[property].handlerStr = styler.properties[property].handler.toSource();
+            }
+        }*/
     },
 
     restoreSavedProperties:function(properties){
