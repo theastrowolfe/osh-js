@@ -129,7 +129,9 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
 
         this.rootTag.setAttribute("class", "pop-over resizable");
         this.rootTag.setAttribute("draggable", this.draggable);
-
+        if(this.draggable) {
+            OSH.Utils.addCss(this.rootTag,"draggable");
+        }
 
         // set root parent
         var p = this.rootTag.parentNode;

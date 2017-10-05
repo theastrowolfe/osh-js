@@ -384,7 +384,7 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
  */
 OSH.Utils.copyProperties = function(from,to,forceMerge) {
     for (var property in from) {
-        if(isUndefinedOrNull(to[property]) || forceMerge || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
+        if(isUndefinedOrNull(to[property])  || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
             to[property] = from[property];
         } else {
             // copy children
@@ -562,3 +562,13 @@ OSH.Utils.binaryStringToBlob = function(binaryString) {
     var blob = new Blob([array], {type: 'application/octet-stream'});
     return URL.createObjectURL(blob);
 };
+
+OSH.Utils.fixSelectable = function(oElement, bGotFocus) {
+    var oParent = oElement.parentNode;
+    while(oParent !== null && !/\bdraggable\b/.test(oParent.className)) {
+        oParent = oParent.parentNode;
+    }
+    if(oParent !== null) {
+        oParent.draggable = !bGotFocus;
+    }
+}
