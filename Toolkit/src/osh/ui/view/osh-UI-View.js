@@ -34,6 +34,7 @@ OSH.UI.View = BaseClass.extend({
         this.stylerIdToStyler = {};
         this.lastRec = {};
         this.selectedDataSources = [];
+        this.xyz = [];
         this.dataSources = [];
         this.stylerIdToDatasources = {};
 
@@ -278,7 +279,7 @@ OSH.UI.View = BaseClass.extend({
 
             if(idx === -1) {
                 this.stylerIdToDatasources[styler.id].push(dataSourceId);
-
+                var frozenDataSourceId = dataSourceId;
                 // observes the data come in
                 var self = this;
                 (function (frozenDataSourceId) { // use a close here to no share the dataSourceId variable
@@ -310,9 +311,11 @@ OSH.UI.View = BaseClass.extend({
                         var selected = false;
                         if (typeof event.entityId !== "undefined") {
                             selected = (viewItem.entityId === event.entityId);
+                            self.selectedEntity = event.entityId;
                         }
                         else {
                             selected = (event.dataSourcesIds.indexOf(frozenDataSourceId) > -1);
+                            self.selectedDataSources = event.dataSourcesIds;
                         }
 
                         if (frozenDataSourceId in self.lastRec) {
