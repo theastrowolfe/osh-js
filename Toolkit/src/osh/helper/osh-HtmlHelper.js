@@ -73,6 +73,15 @@ OSH.Helper.HtmlHelper.addHTMLTextArea = function(parentElt,content) {
 
     textAreaElt.value = content;
 
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    textAreaElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    textAreaElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
     // appends textarea
     liElt.appendChild(textAreaElt);
 
@@ -158,6 +167,15 @@ OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, 
     inputTextElt.setAttribute("id","text-"+id);
     inputTextElt.setAttribute("type","text");
     inputTextElt.setAttribute("name","file-text-"+id);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputTextElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputTextElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
 
     var inputFileElt = document.createElement("input");
     inputFileElt.setAttribute("class","input-file");
@@ -294,6 +312,15 @@ OSH.Helper.HtmlHelper.addInputTextValueWithUOM = function(parentElt, label,place
 
     parentElt.appendChild(ulElt);
 
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
     return id;
 };
 
@@ -332,6 +359,15 @@ OSH.Helper.HtmlHelper.addInputText = function(parentElt, label,defaultValue,plac
     ulElt.appendChild(liElt);
 
     parentElt.appendChild(ulElt);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
 
     return id;
 };

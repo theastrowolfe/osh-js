@@ -58,6 +58,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         discoveryForm.setAttribute("id",this.formTagId);
         discoveryForm.setAttribute("class",'discovery-form');
 
+        OSH.Utils.addCss(document.getElementById(this.divId),"discovery-view");
+
         document.getElementById(this.divId).appendChild(discoveryForm);
 
         var strVar="";
@@ -143,6 +145,17 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 
         discoveryForm.innerHTML = strVar;
 
+        // FIX select input-text instead of dragging the element(when the parent is draggable)
+        var inputs = discoveryForm.querySelectorAll("input.input-text");
+        for(var i = 0;i < inputs.length;i++) {
+            inputs[i].onfocus = function(e){
+              OSH.Utils.fixSelectable(this, true);
+            };
+
+            inputs[i].onblur = function(e){
+                OSH.Utils.fixSelectable(this, false);
+            };
+        }
         // fill service from urls
         if(typeof properties !== "undefined") {
             // add services
