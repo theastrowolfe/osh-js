@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test merge</title>
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+</head>
+<body>
+    <script type="text/javascript">
+        function merge(from,to) {
+            for (var property in from) {
+                if(isUndefinedOrNull(to[property]) || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
+                    to[property] = from[property];
+                } else {
+                    // copy children
+                    if(OSH.Utils.isObject(from[property])) { // test is object
+                        OSH.Utils.copyProperties(from[property], to[property]);
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function test1() {
+            var a = {
+                a: 'a'
+            };
+
+            var b = {
+                b: 'b'
+            };
+
+            merge(a,b);
+            OSH.Asserts.checkIsDefineOrNotNull(b);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a);
+            OSH.Asserts.checkIsDefineOrNotNull(b.b);
+            return b;
+        }
+
+        function test2() {
+            var a = {
+                a: {
+                    d:'d'
+                }
+            };
+
+            var b = {
+                a: {
+                    c:'c'
+                },
+                b: 'b'
+            };
+
+            merge(a,b);
+            OSH.Asserts.checkIsDefineOrNotNull(b);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.d);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.c);
+            OSH.Asserts.checkIsDefineOrNotNull(b.b);
+
+            OSH.Asserts.checkTrue(b.a.d === 'd');
+            OSH.Asserts.checkTrue(b.a.c === 'c');
+            OSH.Asserts.checkTrue(b.b === 'b');
+
+            return b;
+        }
+
+        function test3() {
+            var a = {
+                a: {
+                    d:'d'
+                },
+                f : 'f'
+            };
+
+            var b = {
+                a: {
+                    c:'c'
+                },
+                b: 'b'
+            };
+
+            merge(a,b);
+            OSH.Asserts.checkIsDefineOrNotNull(b);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.d);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.c);
+            OSH.Asserts.checkIsDefineOrNotNull(b.f);
+            OSH.Asserts.checkIsDefineOrNotNull(b.b);
+
+            OSH.Asserts.checkTrue(b.a.d === 'd');
+            OSH.Asserts.checkTrue(b.a.c === 'c');
+            OSH.Asserts.checkTrue(b.f === 'f');
+            OSH.Asserts.checkTrue(b.b === 'b');
+
+            return b;
+        }
+
+        function test4() {
+            var a = {
+                a: {
+                    d: {
+                        e : 'e'
+                    }
+                },
+                f : 'f'
+            };
+
+            var b = {
+                a: {
+                    c:'c'
+                },
+                b: 'b'
+            };
+
+            merge(a,b);
+            OSH.Asserts.checkIsDefineOrNotNull(b);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.d);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.d.e);
+            OSH.Asserts.checkIsDefineOrNotNull(b.a.c);
+            OSH.Asserts.checkIsDefineOrNotNull(b.f);
+            OSH.Asserts.checkIsDefineOrNotNull(b.b);
+
+            OSH.Asserts.checkTrue(b.a.d.e === 'e');
+            OSH.Asserts.checkTrue(b.a.c === 'c');
+            OSH.Asserts.checkTrue(b.f === 'f');
+            OSH.Asserts.checkTrue(b.b === 'b');
+
+            console.log(b);
+            return b;
+        }
+
+        try {
+            test1();
+            test2();
+            test3();
+            test4();
+            console.log("Test passed!");
+        }catch(exception) {
+            console.error("Test not passed!"+ exception.message);
+        }
+
+
+    </script>
+</body>
+</html>
