@@ -26,33 +26,24 @@ OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE = {
 };
 
 OSH.DataReceiver.DataSourceFactory.definitionMap = {
-    "http://www.opengis.net/def/property/OGC/0/SensorLocation" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/Location" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/Latitude" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/Longitude" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/Altitude" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/OrientationQuaternion" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //orientation
-    "http://www.opengis.net/def/property/OGC/0/PlatformOrientation": OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //orientation
-    "http://sensorml.com/ont/swe/property/OSH/0/GimbalOrientation" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, // orientation
-    "http://www.opengis.net/def/property/OGC/0/PlatformLocation" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //location
-    "http://sensorml.com/ont/swe/property/Weather" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //curve
-    "http://sensorml.com/ont/swe/property/WindSpeed" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON, //curve
-    "http://sensorml.com/ont/swe/property/WindDirection" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON,
     "http://sensorml.com/ont/swe/property/VideoFrame": OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO, //video
     "http://sensorml.com/ont/swe/property/Image" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO //video
 };
 
 OSH.DataReceiver.DataSourceFactory.createDatasourceFromType = function(properties,callback) {
     OSH.Asserts.checkIsDefineOrNotNull(properties);
-    OSH.Asserts.checkIsDefineOrNotNull(properties.type);
-    OSH.Asserts.checkTrue(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON || properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO);
+    OSH.Asserts.checkIsDefineOrNotNull(properties.definition);
 
-    if(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.JSON) {
-        OSH.DataReceiver.DataSourceFactory.createJsonDatasource(properties,callback);
-    } else if(properties.type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO) {
-        OSH.DataReceiver.DataSourceFactory.createVideoDatasource(properties);
+    var type = "";
+
+    if(properties.definition in OSH.DataReceiver.DataSourceFactory.definitionMap) {
+        type = OSH.DataReceiver.DataSourceFactory.definitionMap[properties.definition];
+    }
+
+    if(type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO) {
+        OSH.DataReceiver.DataSourceFactory.createVideoDatasource(properties,callback);
     } else {
-        throw new OSH.Exception.Exception("The datasource type is not supported: "+properties.type,properties);
+        OSH.DataReceiver.DataSourceFactory.createJsonDatasource(properties,callback);
     }
 };
 
@@ -70,6 +61,8 @@ OSH.DataReceiver.DataSourceFactory.createVideoDatasource = function(properties,c
     var oshServer = new OSH.Server({
         url: "http://"+properties.endpointUrl
     });
+
+    var self = this;
 
     oshServer.getResultTemplate(properties.offeringID,properties.observedProperty, function(jsonResp){
         var resultEncodingArr = jsonResp.GetResultTemplateResponse.resultEncoding.member;
@@ -94,9 +87,8 @@ OSH.DataReceiver.DataSourceFactory.createVideoDatasource = function(properties,c
             datasource = new OSH.DataReceiver.VideoH264(properties.name, properties);
         }
 
-        this.buildDSResultTemplate(datasource,function (dsResult) {
-            callback(dsResult);
-        });
+        datasource.resultTemplate = self.buildDSStructure(datasource,jsonResp);
+        callback(datasource);
 
     },function(error) {
         throw new OSH.Exception.Exception("Cannot Get result template for "+properties.endpointUrl,error);

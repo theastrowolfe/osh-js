@@ -300,7 +300,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         for(var i = 0; i  < offering.observableProperty.length;i++) {
             // check if obs if supported
             var disable = false;
-            disable = !(offering.observableProperty[i] in OSH.DataReceiver.DataSourceFactory.definitionMap);
+            //disable = !(offering.observableProperty[i] in OSH.DataReceiver.DataSourceFactory.definitionMap);
+            disable = false;
             this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering,null,disable);
         }
 
@@ -444,7 +445,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
             timeShift: Number(timeShift),
             timeout: Number(timeout),
             responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined,
-            type:OSH.DataReceiver.DataSourceFactory.definitionMap[obsProp]
+            definition:obsProp
         };
 
         var existingDSId = serviceTag.dataSourceId;
