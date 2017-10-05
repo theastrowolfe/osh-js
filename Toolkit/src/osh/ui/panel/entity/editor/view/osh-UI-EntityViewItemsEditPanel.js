@@ -44,7 +44,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
         this.viewItemsContainerDivId = OSH.Utils.randomUUID();
         var addViewItemId = OSH.Utils.randomUUID();
 
-        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"View items");
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"View items");
 
         var viewItemsDivElt = document.createElement("div");
         viewItemsDivElt.setAttribute("class","viewItem-section");
@@ -61,7 +61,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
         viewItemsDivElt.appendChild(addViewItemButtonElt);
         viewItemsDivElt.appendChild(viewItemsContainerElt);
 
-        this.divElt.appendChild(viewItemsDivElt);
+        this.contentElt.appendChild(viewItemsDivElt);
 
         // inits from properties
         // check if the current view items are part of the current entity

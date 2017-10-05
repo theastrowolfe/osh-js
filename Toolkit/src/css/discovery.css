@@ -1,5 +1,9 @@
 @import "font-awesome-4.7.0/css/font-awesome.min.css";
 
+.osh .discovery-view {
+    overflow:auto;
+}
+
 .osh .discovery-form li:first-child, .osh .osh .discovery-form li:last-child {
     border-bottom:1px solid #777;
 }

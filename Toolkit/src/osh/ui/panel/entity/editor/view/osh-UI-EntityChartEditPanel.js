@@ -19,9 +19,9 @@ OSH.UI.Panel.EntityChartEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend
     buildViewProperties: function() {
         this._super();
 
-        this.inputXLabelId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"X label",null,"x label");
-        this.inputYLabelId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Y label",null,"y label");
-        this.inputMaxPoint = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Max points",null,"maximum points displayed at the same time");
+        this.inputXLabelId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"X label",null,"x label");
+        this.inputYLabelId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Y label",null,"y label");
+        this.inputMaxPoint = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Max points",null,"maximum points displayed at the same time");
 
         OSH.Helper.HtmlHelper.onDomReady(function(){
             document.getElementById(this.inputXLabelId).value = this.options.view.xLabel;

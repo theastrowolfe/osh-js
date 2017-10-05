@@ -116,7 +116,7 @@
 }
 
 .osh .dialog-edit-view .viewItem-container {
-    height: 160px;
+    max-height: 115px;
     overflow: auto;
 }
 
@@ -149,4 +149,13 @@
 .osh .entity-editor button.submit.save-entity-button {
     margin: auto;
     margin-top: 12px;
+}
+
+.osh.edit-view > .view-properties  {
+    height: 190px;
+    overflow: auto;
+}
+
+.osh.edit-view > .content-properties  {
+    height: 188px;
 }

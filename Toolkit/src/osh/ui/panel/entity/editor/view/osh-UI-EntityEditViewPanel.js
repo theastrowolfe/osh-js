@@ -28,6 +28,17 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
 
         OSH.Utils.addCss(this.divElt,"edit-view");
 
+
+        // creates view properties div
+        this.viewPropertiesElt = document.createElement("div");
+        this.viewPropertiesElt.setAttribute("class","view-properties");
+        this.divElt.appendChild(this.viewPropertiesElt);
+
+        // creates content div
+        this.contentElt = document.createElement("div");
+        this.contentElt.setAttribute("class","content-properties");
+        this.divElt.appendChild(this.contentElt);
+
         this.buildViewProperties();
 
         var containerArr = this.getContainers();
@@ -40,15 +51,18 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
                 });
             }
         }
-        this.buildContainer(containerArr);
+        //TODO:this.buildContainer(containerArr);
+
 
         this.buildContent();
     },
 
     buildViewProperties: function() {
-        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"View properties");
 
-        var inputViewNameId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Name",this.view.name);
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.viewPropertiesElt,"View properties");
+
+        var inputViewNameId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Name",this.view.name);
 
         var self = this;
         OSH.EventManager.observeDiv(inputViewNameId,"change",function(event){
