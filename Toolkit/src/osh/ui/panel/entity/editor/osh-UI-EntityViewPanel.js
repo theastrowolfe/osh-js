@@ -495,8 +495,11 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         // re-create styler function from UI selection
         if(OSH.Utils.hasOwnNestedProperty(stylerInstance,"properties.ui")) {
-            for (var property in stylerInstance) {
-                this.restoringStylerFunction(stylerInstance, property);
+            for (var property in stylerInstance.properties) {
+                if(property.endsWith("Func")) {
+                    var fnProperty = this.restoringStylerFunction(property,stylerInstance.properties[property], stylerInstance.properties.ui);
+                    stylerInstance.updateProperties(fnProperty);
+                }
             }
         }
 
@@ -507,34 +510,31 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         };
     },
 
-    restoringStylerFunction:function(stylerInstance,property) {
-        if(property.endsWith("Func")) {
-            var regex = /(blob:[^']*)'/g;
-            var matches;
-            var funcStr = stylerInstance[property].handlerStr;
+    restoringStylerFunction:function(fnName,fnProperty,uiProperty) {
+        var regex = /(blob:[^']*)'/g;
+        var matches;
+        var funcStr = fnProperty.handlerStr;
 
-            while ((matches = regex.exec(stylerInstance[property].handlerStr)) !== null) {
-                var result = [];
-                OSH.Utils.searchPropertyByValue(
-                    stylerInstance.properties.ui,
-                    matches[1],
-                    result);
-                if(!isUndefinedOrNull(result) && result.length > 0) {
-                    // regenerate a blob from binary string and replace corresponding function
-                    var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
-                    funcStr = funcStr.replace(matches[1],blobUrl);
-                    result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
-                }
+        while ((matches = regex.exec(fnProperty.handlerStr)) !== null) {
+            var result = [];
+            OSH.Utils.searchPropertyByValue(
+                uiProperty,
+                matches[1],
+                result);
+            if(!isUndefinedOrNull(result) && result.length > 0) {
+                // regenerate a blob from binary string and replace corresponding function
+                var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
+                funcStr = funcStr.replace(matches[1],blobUrl);
+                result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
             }
-
-            var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
-                stylerInstance[property].dataSourceIds,
-                property,
-                funcStr);
-
-
-            stylerInstance.updateProperties(func);
         }
+
+        var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
+            fnProperty.dataSourceIds,
+            fnName,
+            funcStr);
+
+        return func;
     }
     /** End restoring view **/
 });
