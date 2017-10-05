@@ -305,8 +305,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
                 ui: {
                     icon: {}
                 }
-            },
-            icon: {}
+            }
         };
 
         var dsIdsArray = [];
@@ -327,7 +326,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
             OSH.Utils.copyProperties(defaultIconProps,stylerProperties.properties);
 
-            stylerProperties.icon = defaultIconProps.icon;
+            stylerProperties.properties.icon = defaultIconProps.icon;
 
             // UI
             stylerProperties.properties.ui.icon.fixed.default = this.properties.fixed.default;
@@ -348,7 +347,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
                     OSH.Utils.copyProperties(selectedIconProps, stylerProperties.properties);
 
-                    stylerProperties.icon = selectedIconProps.icon;
+                    stylerProperties.properties.icon = selectedIconProps.icon;
 
                     // UI
                     stylerProperties.properties.ui.icon.fixed.selected = this.properties.fixed.selected;
@@ -397,7 +396,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
             OSH.Utils.copyProperties(iconFuncProps,stylerProperties.properties);
 
-            stylerProperties.icon = iconFuncProps.icon;
+            stylerProperties.properties.icon = iconFuncProps.icon;
 
             // UI
             stylerProperties.properties.ui.icon.threshold.default = this.properties.threshold.default;
@@ -407,7 +406,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
             stylerProperties.properties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
             stylerProperties.properties.ui.icon.threshold.datasourceId = currentDatasource.id;
         } else {
-            delete stylerProperties.icon; // remove icon properties from result
+            delete stylerProperties.properties.icon; // remove icon properties from result
         }
         return stylerProperties;
     }

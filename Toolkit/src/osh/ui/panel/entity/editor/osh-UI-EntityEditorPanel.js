@@ -340,11 +340,10 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         };
 
         for(var property in styler.properties) {
+            stylerToSave.properties[property] = {};
             if(property.endsWith("Func")) {
-                stylerToSave[property] = {};
-
-                OSH.Utils.copyProperties(styler.properties[property],stylerToSave[property]);
-                stylerToSave[property].handlerStr = styler.properties[property].handler.toSource();
+                OSH.Utils.copyProperties(styler.properties[property],stylerToSave.properties[property]);
+                stylerToSave.properties[property].handlerStr = styler.properties[property].handler.toSource();
             } else {
                 stylerToSave.properties[property] = styler.properties[property];
             }
@@ -352,24 +351,6 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         return stylerToSave;
 
-        // compute styler
-        /*var uiProps = {};
-        if(OSH.Utils.hasOwnNestedProperty(styler,"properties.ui")) {
-            uiProps = styler.properties.ui;
-        }
-        var stylerToSave = {
-            ui: uiProps,
-            type: OSH.UI.Styler.Factory.getTypeFromInstance(styler)
-        };
-
-        for(var property in styler.properties) {
-            if(property.endsWith("Func")) {
-                stylerToSave[property] = {};
-
-                OSH.Utils.copyProperties(styler.properties[property],stylerToSave[property]);
-                stylerToSave[property].handlerStr = styler.properties[property].handler.toSource();
-            }
-        }*/
     },
 
     restoreSavedProperties:function(properties){

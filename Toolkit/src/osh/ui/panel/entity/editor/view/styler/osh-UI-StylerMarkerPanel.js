@@ -49,11 +49,6 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
         delete locationPanelProperties.properties;
         delete iconPanelProperties.properties;
 
-        // saves UI properties into styler object to be reloaded
-        // saves UI properties into styler object to be reloaded
-        OSH.Utils.copyProperties(locationPanelProperties,this.options.styler,true);
-        OSH.Utils.copyProperties(iconPanelProperties,this.options.styler,true);
-
         return this.options.styler;
     }
 });

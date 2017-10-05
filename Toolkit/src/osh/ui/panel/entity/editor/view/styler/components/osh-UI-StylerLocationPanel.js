@@ -33,11 +33,11 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
         var zDefaultValue = "";
 
         // inits default values
-        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.default")) {
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "location")) {
             // default location
-            xDefaultValue = this.styler.properties.ui.location.default.x;
-            yDefaultValue = this.styler.properties.ui.location.default.y;
-            zDefaultValue = this.styler.properties.ui.location.default.z;
+            xDefaultValue = this.styler.location.x;
+            yDefaultValue = this.styler.location.y;
+            zDefaultValue = this.styler.location.z;
         }
 
         this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
@@ -173,8 +173,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 ui: {
                     location: {}
                 }
-            },
-            location: {}
+            }
         };
 
         var locationFuncProps,  defaultLocationProps;
@@ -186,13 +185,6 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
             Number(document.getElementById(this.yDefaultInputId).value),
             Number(document.getElementById(this.zDefaultInputId).value)
         );
-
-        // update ui property
-        stylerProperties.properties.ui.location.default = {
-            x: Number(document.getElementById(this.xDefaultInputId).value),
-            y: Number(document.getElementById(this.yDefaultInputId).value),
-            z: Number(document.getElementById(this.zDefaultInputId).value)
-        };
 
         // mapping function with data
         if(isUndefinedOrNull(this.textareaId)) {
@@ -206,14 +198,15 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
                 locationFuncProps = OSH.UI.Styler.Factory.getLocationFunc(
                     this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
                     xIdx, yIdx, zIdx); // obs indexes
+
+                stylerProperties.properties.ui.location.locationFuncMapping = {
+                    datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
+                    xIdx: xIdx,
+                    yIdx: yIdx,
+                    zIdx: zIdx
+                };
             }
 
-            stylerProperties.properties.ui.location.locationFuncMapping = {
-                datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
-                xIdx: xIdx,
-                yIdx: yIdx,
-                zIdx: zIdx
-            };
         } else {
             // custom textual function
             var textContent = document.getElementById(this.textareaId).value;
@@ -228,7 +221,7 @@ OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
 
 
         // copy default location properties
-        OSH.Utils.copyProperties(defaultLocationProps, stylerProperties);
+        OSH.Utils.copyProperties(defaultLocationProps, stylerProperties.properties);
 
         // copy location function properties if any
         if (!isUndefinedOrNull(locationFuncProps)) {
