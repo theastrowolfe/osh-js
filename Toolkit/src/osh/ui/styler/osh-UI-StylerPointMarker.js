@@ -64,7 +64,11 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	},
 
 	initProperties:function(properties) {
-        this.location = null;
+        this.location = {
+            x:0,
+            y:0,
+            z:0
+        };
         this.orientation = {heading:0};
         this.icon = null;
         this.iconAnchor = [16,16];
@@ -77,7 +81,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	},
 
 	updateProperties:function(properties) {
-	    OSH.Utils.copyProperties(properties,this.properties);
+	    OSH.Utils.copyProperties(properties,this.properties,true);
 
         if(!isUndefinedOrNull(properties.location)){
             this.location = properties.location;
