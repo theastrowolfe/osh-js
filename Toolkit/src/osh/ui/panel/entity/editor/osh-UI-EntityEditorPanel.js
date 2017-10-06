@@ -139,64 +139,6 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         document.getElementById(id).setAttribute("disabled","");
     },
 
-    createViewNoViewItems:function(currentView,viewInstance,newEntity) {
-        if (currentView.container.toLowerCase() === "dialog") {
-            var viewDialog = new OSH.UI.Panel.DialogPanel("", {
-                draggable: true,
-                css: "app-dialog", //TBD into edit view
-                name: currentView.name,
-                show: true,
-                dockable: false,
-                closeable: true,
-                connectionIds: [currentView.datasource.id],
-                destroyOnClose: true,
-                modal: false,
-                keepRatio: true
-            });
-
-            viewInstance.attachTo(viewDialog.popContentDiv.id);
-        }
-
-        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-            replayFactor: currentView.datasource.replaySpeed
-        });
-
-        // We can add a group of dataSources and set the options
-        dataProviderController.addEntity(newEntity);
-
-        // starts streaming
-        dataProviderController.connectAll();
-    },
-
-    createViewItems:function(currentView,viewInstance,newEntity) {
-        if (currentView.container.toLowerCase() === "dialog") {
-            var viewDialog = new OSH.UI.Panel.DialogPanel("", {
-                draggable: true,
-                css: "app-dialog", //TBD into edit view
-                name: currentView.name,
-                show: true,
-                dockable: false,
-                closeable: true,
-                connectionIds: [],//TODO
-                destroyOnClose: true,
-                modal: false,
-                keepRatio: false
-            });
-
-            viewInstance.attachTo(viewDialog.popContentDiv.id);
-        }
-
-        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-            replayFactor: 1 //TODO:which datasource??!
-        });
-
-        // We can add a group of dataSources and set the options
-        dataProviderController.addEntity(newEntity);
-
-        // starts streaming
-        dataProviderController.connectAll();
-    },
-
     saveEntity:function() {
         // create corresponding views
         var views = this.viewPanel.views;
