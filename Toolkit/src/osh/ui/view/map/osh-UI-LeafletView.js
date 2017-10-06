@@ -273,15 +273,18 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
             // gets the corresponding styler
             for(var stylerId in self.stylerToObj) {
                 if(self.stylerToObj[stylerId] == id) {
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.CONTEXT_MENU+"-"+self.stylerIdToStyler[stylerId].viewItem.contextMenuId,{
-                        //TODO: values have to be provided by properties
-                        offsetX: -70,
-                        offsetY: -70,
-                        action : "show",
-                        x:OSH.Utils.getXCursorPosition(),
-                        y:OSH.Utils.getYCursorPosition(),
-                        drawLineTo:id
-                    });
+                    // does not send event if the viewItem does not handle conte
+                    if(OSH.Utils.hasOwnNestedProperty(self.stylerIdToStyler[stylerId],"viewItem.contextMenuId")) {
+                        OSH.EventManager.fire(OSH.EventManager.EVENT.CONTEXT_MENU + "-" + self.stylerIdToStyler[stylerId].viewItem.contextMenuId, {
+                            //TODO: values have to be provided by properties
+                            offsetX: -70,
+                            offsetY: -70,
+                            action: "show",
+                            x: OSH.Utils.getXCursorPosition(),
+                            y: OSH.Utils.getYCursorPosition(),
+                            drawLineTo: id
+                        });
+                    }
                     break;
                 }
             }
