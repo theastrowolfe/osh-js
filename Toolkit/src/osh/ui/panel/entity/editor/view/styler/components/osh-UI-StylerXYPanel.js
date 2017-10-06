@@ -188,13 +188,13 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
                 valuesFuncProps = OSH.UI.Styler.Factory.getValuesFunc(
                     this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
                     xIdx, yIdx); // obs indexes
-            }
 
-            stylerProperties.properties.ui.values.valuesFuncMapping = {
-                datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
-                xIdx: xIdx,
-                yIdx: yIdx
-            };
+                stylerProperties.properties.ui.values.valuesFuncMapping = {
+                    datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
+                    xIdx: xIdx,
+                    yIdx: yIdx
+                };
+            }
         } else {
             // custom textual function
             var textContent = document.getElementById(this.textareaId).value;

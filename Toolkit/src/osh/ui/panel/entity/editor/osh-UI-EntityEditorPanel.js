@@ -151,7 +151,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             var viewId = currentView.id;
 
             if(currentView.hash !== 0x0000) {
-                if (isUndefinedOrNull(currentView.inDialog) || !currentView.inDialog.in) {
+                if (isUndefinedOrNull(currentView.dialog) || !currentView.dialog.in) {
                     var viewDialog = new OSH.UI.Panel.DialogPanel("", {
                         draggable: true,
                         css: "app-dialog", //TBD into edit view

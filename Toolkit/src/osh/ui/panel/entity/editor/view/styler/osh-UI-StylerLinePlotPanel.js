@@ -25,8 +25,10 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
 
         // tab elements
         this.valesPanel = new OSH.UI.Panel.XYPanel("",this.options);
+        this.colorPanel = new OSH.UI.Panel.ColorPanel("",this.options);
 
         tabPanel.addTab("Values",this.valesPanel.divElt);
+        tabPanel.addTab("Color",this.colorPanel.divElt);
 
         this.divElt.appendChild(tabPanel.divElt);
     },
@@ -34,17 +36,14 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
     getStyler:function() {
         // gets properties from panels
         var valuesPanelProperties = this.valesPanel.getProperties();
+        var colorPanelProperties = this.colorPanel.getProperties();
 
         OSH.Asserts.checkObjectPropertyPath(valuesPanelProperties,"properties","missins property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(colorPanelProperties,"properties","missins property 'properties");
 
         // updates styler with properties
         this.options.styler.updateProperties(valuesPanelProperties.properties);
-
-        // copy others properties
-        delete valuesPanelProperties.properties;
-
-        // saves UI properties into styler object to be reloaded
-        OSH.Utils.copyProperties(valuesPanelProperties,this.options.styler,true);
+        this.options.styler.updateProperties(colorPanelProperties.properties);
 
         return this.options.styler;
     }
