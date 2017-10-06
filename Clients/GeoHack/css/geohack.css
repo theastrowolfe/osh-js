@@ -47,7 +47,7 @@ p {
 
 .dialog-edit-view {
     width:430px;
-    height:490px;
+    height:500px;
     margin-bottom:10px;
 }
 
@@ -94,16 +94,15 @@ p {
     opacity: 0.3;
 }
 
-/** Custom dialog **/
-.osh.dialog .dialog-edit-view .no-keep-ratio {
-    height: 0px;
-    overflow:auto;
-}
-
 .osh.edit-view > .view-properties  {
     height: 190px;
 }
 
 .osh.edit-view > .content-properties {
     height:184px;
+}
+
+.osh.dialog .dialog-edit-view .tab-panel .show-tab {
+    height: 315px;
+    overflow: auto;
 }
