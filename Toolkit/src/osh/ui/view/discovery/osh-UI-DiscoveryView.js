@@ -171,6 +171,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
     },
 
+    getButtonElement:function() {
+        return document.getElementById(this.formButtonId);
+    },
+
     initDataSource:function(dataSource) {
         var serverTag = document.getElementById(this.serviceSelectTagId);
 

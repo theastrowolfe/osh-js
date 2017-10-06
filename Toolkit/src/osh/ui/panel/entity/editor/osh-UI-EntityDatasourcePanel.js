@@ -137,6 +137,11 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
 
             // setup existing info
             discoveryView.initDataSource(self.datasources[dataSource.id]);
+
+            discoveryView.getButtonElement().value = "Edit";
+            discoveryView.getButtonElement().text = "Edit";
+            discoveryView.getButtonElement().innerHTML = "Edit";
+
         });
     },
 
