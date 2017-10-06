@@ -440,7 +440,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             dockable: false,
             closeable: true,
             connectionIds: [],//TODO
-            destroyOnClose: true,
+            destroyOnClose: false,
             modal: false,
             keepRatio: false
         });

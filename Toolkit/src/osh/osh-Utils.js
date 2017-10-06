@@ -571,4 +571,10 @@ OSH.Utils.fixSelectable = function(oElement, bGotFocus) {
     if(oParent !== null) {
         oParent.draggable = !bGotFocus;
     }
-}
+};
+
+// returns true if the element or one of its parents has the class classname
+OSH.Utils.getSomeParentTheClass = function(element, classname) {
+    if (element.className.split(' ').indexOf(classname)>=0) return element;
+    return element.parentNode && OSH.Utils.getSomeParentTheClass(element.parentNode, classname);
+};

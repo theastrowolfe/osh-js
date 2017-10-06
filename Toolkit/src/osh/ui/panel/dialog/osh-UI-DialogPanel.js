@@ -138,6 +138,8 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
 
         this.outer = document.createElement("div");
         this.outer.setAttribute("class",(this.modal) ? "osh dialog modal " : "osh dialog ");
+        this.outer.setAttribute("id",this.id);
+
         this.outer.appendChild(this.rootTag);
 
         p.appendChild(this.outer);

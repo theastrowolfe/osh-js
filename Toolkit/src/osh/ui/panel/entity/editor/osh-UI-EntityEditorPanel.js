@@ -231,6 +231,11 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                     };
 
                     viewId=viewDialog.id;
+                } else{
+                    var parentDialog = OSH.Utils.getSomeParentTheClass(currentView.elementDiv,"dialog");
+                    if(!isUndefinedOrNull(parentDialog)) {
+                        viewId = parentDialog.id;
+                    }
                 }
             }
 
