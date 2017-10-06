@@ -233,6 +233,99 @@ OSH.UI.Styler.Factory.getCustomValuesFunc = function(dataSourceIdsArray,valuesFn
     };
 };
 
+// COLOR
+OSH.UI.Styler.Factory.getFixedColor = function(dataSourceIdsArray,url) {
+
+    var colorTemplate =  "return '"+url+ "';";
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    // generates iconFunc in case of iconFunc was already set. This is to override existing function if no selected
+    // icon has been set
+    return  {
+        color: url,
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray, // TODO: find a way to use something else because it is not depending on datasources but user interaction in that case
+            handler: colorTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getThresholdColor = function(datasource, observableIdx,
+                                                  defaultColor, lowColor, highColor, thresholdValue) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultColor);
+    OSH.Asserts.checkIsDefineOrNotNull(lowColor);
+    OSH.Asserts.checkIsDefineOrNotNull(highColor);
+    OSH.Asserts.checkIsDefineOrNotNull(thresholdValue);
+
+    var path = "timeStamp";
+
+    if(observableIdx > 0) {
+        path = "rec."+datasource.resultTemplate[observableIdx].path;
+    }
+
+    var colorTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowColor + "'; }" + // <
+        "else if (" + path + " > " + thresholdValue + " ) { return '" + highColor + "'; }" + // >
+        "else { return '"+defaultColor+ "'; }"; // ==
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    return {
+        color: defaultColor,
+        colorFunc : {
+            dataSourceIds: [datasource.id],
+            handler: colorTemplateHandlerFn
+        }
+    };
+
+};
+
+OSH.UI.Styler.Factory.getCustomColorFunc = function(dataSourceIdsArray,colorFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getSelectedColorFunc = function(dataSourceIdsArray,defaultColor,selectedColor) {
+
+    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultColor);
+    OSH.Asserts.checkIsDefineOrNotNull(selectedColor);
+
+    var colorTemplate = "";
+    var blobURL = "";
+
+    colorTemplate = "if (options.selected) {";
+    colorTemplate += "  return '" +  selectedColor + "'";
+    colorTemplate += "} else {";
+    colorTemplate += "  return '" + defaultColor + "'";
+    colorTemplate += "}";
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    return {
+        color:defaultColor,
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: colorTemplateHandlerFn
+        }
+    };
+};
+
+
 OSH.UI.Styler.Factory.getTypeFromInstance = function(stylerInstance) {
     if(stylerInstance instanceof OSH.UI.Styler.PointMarker){
         return OSH.UI.Styler.Factory.TYPE.MARKER;

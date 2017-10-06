@@ -274,6 +274,88 @@ OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, 
     return id;
 };
 
+
+OSH.Helper.HtmlHelper.addColorPicker = function(parentElt, label,defaultValue,placeholder) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var inputElt = document.createElement("input");
+    inputElt.setAttribute("id",id+"");
+    inputElt.setAttribute("class","input-text");
+    inputElt.setAttribute("type","input-text");
+    inputElt.setAttribute("name",""+id);
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue !== "") {
+        inputElt.setAttribute("value",defaultValue);
+    }
+
+    if(!isUndefinedOrNull(placeholder)) {
+        inputElt.setAttribute("placeholder",placeholder);
+    }
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    var inputColorElt = document.createElement("input");
+    inputColorElt.setAttribute("id","color-"+id);
+    inputColorElt.setAttribute("class","input-color");
+    inputColorElt.setAttribute("type","color");
+    inputColorElt.setAttribute("name","color-"+id);
+
+    OSH.Helper.HtmlHelper.onDomReady(function() {
+        if(!isUndefinedOrNull(defaultValue)) {
+            inputColorElt.value = defaultValue;
+            inputColorElt.select();
+        }
+    });
+
+    var regex = /^#(?:[0-9a-f]{6})$/i;
+
+    inputElt.addEventListener("keyup", function(event){
+        // if matches hexa color
+        if(regex.test(this.value)) {
+            inputColorElt.value = this.value;
+            inputColorElt.select();
+        }
+    },false);
+
+    inputColorElt.addEventListener("input", function(event){
+        inputElt.value = event.target.value;
+        inputElt.innerHTML = event.target.value;
+    }, false);
+    inputColorElt.addEventListener("change", function(event){
+        inputElt.value = event.target.value;
+        inputElt.innerHTML = event.target.value;
+    }, false);
+
+    liElt.appendChild(inputElt);
+    liElt.appendChild(inputColorElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    return id;
+};
+
 OSH.Helper.HtmlHelper.addInputTextValueWithUOM = function(parentElt, label,placeholder,uom) {
     var id = OSH.Utils.randomUUID();
 

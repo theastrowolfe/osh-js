@@ -25,7 +25,7 @@ OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 		this._super(properties);
 		this.xLabel = "";
 		this.yLabel = "";
-		this.color = "#000000";
+		this.color = "#1f77b5";
 		this.stroke = 1;
 		this.x = 0;
 		this.y = [];

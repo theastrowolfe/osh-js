@@ -185,7 +185,8 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 				values : [],
 				key : this.names[styler.getId()],
 				interpolate : "cardinal",
-				area : true
+				area : true,
+				color:styler.color
 			};
 
 			this.data.values.push({
@@ -198,6 +199,7 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 					.call(this.chart);
 
 		} else {
+			this.data.color = styler.color;
 			this.data.values.push({
 				y : styler.y,
 				x : styler.x
