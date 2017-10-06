@@ -76,6 +76,8 @@ OSH.UI.View = BaseClass.extend({
         this.init(parentElementDivId,viewItems,options);
 
         this.type = this.getType();
+
+        OSH.ViewMap.registerView(this);
     },
 
     /**
@@ -279,54 +281,56 @@ OSH.UI.View = BaseClass.extend({
 
             if(idx === -1) {
                 this.stylerIdToDatasources[styler.id].push(dataSourceId);
-                var frozenDataSourceId = dataSourceId;
                 // observes the data come in
-                var self = this;
-                (function (frozenDataSourceId) { // use a close here to no share the dataSourceId variable
-
-                    OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
-
-                        // skip data reset events for now
-                        if (event.reset)
-                            return;
-
-                        // we check selected dataSource only when the selected entity is not set
-                        var selected = false;
-                        if (typeof self.selectedEntity !== "undefined") {
-                            selected = (viewItem.entityId === self.selectedEntity);
-                        }
-                        else {
-                            selected = (self.selectedDataSources.indexOf(frozenDataSourceId) > -1);
-                        }
-
-                        //TODO: maybe done into the styler?
-                        styler.setData(frozenDataSourceId, event.data, self, {
-                            selected: selected
-                        });
-                        self.lastRec[frozenDataSourceId] = event.data;
-                    });
-
-                    OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW, function (event) {
-                        // we check selected dataSource only when the selected entity is not set
-                        var selected = false;
-                        if (typeof event.entityId !== "undefined") {
-                            selected = (viewItem.entityId === event.entityId);
-                            self.selectedEntity = event.entityId;
-                        }
-                        else {
-                            selected = (event.dataSourcesIds.indexOf(frozenDataSourceId) > -1);
-                            self.selectedDataSources = event.dataSourcesIds;
-                        }
-
-                        if (frozenDataSourceId in self.lastRec) {
-                            styler.setData(frozenDataSourceId, self.lastRec[frozenDataSourceId], self, {
-                                selected: selected
-                            });
-                        }
-                    });
-
-                })(dataSourceId); //passing the variable to freeze, creating a new closure
+                OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,this.onReceivedData.bind(this,dataSourceId,viewItem));
+                OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,this.onReceivedSelected.bind(this,dataSourceId,viewItem));
+                //TODO: critical: freeze the view as well
             }
+        }
+    },
+
+    onReceivedData:function(datasourceBindId,viewItem,event) {
+            var view = OSH.ViewMap.getView(this.id); // get sync view
+
+            // skip data reset events for now
+            if (event.reset)
+                return;
+
+            // we check selected dataSource only when the selected entity is not set
+            var selected = false;
+            if (typeof view.selectedEntity !== "undefined") {
+                selected = (viewItem.entityId === view.selectedEntity);
+            }
+            else {
+                selected = (view.selectedDataSources.indexOf(datasourceBindId) > -1);
+            }
+
+            //TODO: maybe done into the styler?
+            viewItem.styler.setData(datasourceBindId, event.data, view, {
+                selected: selected
+            });
+
+            view.lastRec[datasourceBindId] = event.data;
+    },
+
+    onReceivedSelected:function(datasourceBindId,viewItem,event) {
+        var view = OSH.ViewMap.getView(this.id); // get sync view
+
+        // we check selected dataSource only when the selected entity is not set
+        var selected = false;
+        if (typeof event.entityId !== "undefined") {
+            selected = (viewItem.entityId === event.entityId);
+            view.selectedEntity = event.entityId;
+        }
+        else {
+            selected = (event.dataSourcesIds.indexOf(datasourceBindId) > -1);
+            view.selectedDataSources = event.dataSourcesIds;
+        }
+
+        if (datasourceBindId in view.lastRec) {
+            viewItem.styler.setData(datasourceBindId, view.lastRec[datasourceBindId], view, {
+                selected: selected
+            });
         }
     },
 
