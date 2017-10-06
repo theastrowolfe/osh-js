@@ -5,6 +5,7 @@
 .circular-menu-container {
     position:absolute;
     z-index:9999;
+    top:0;
 }
 
 .circular-menu {
@@ -135,4 +136,8 @@
 
 .circular-menu-label {
     display:none;
+}
+
+.circular-menu-button.fa.fa-times {
+    padding: 6px !important; /** TODO: to fix**/
 }
