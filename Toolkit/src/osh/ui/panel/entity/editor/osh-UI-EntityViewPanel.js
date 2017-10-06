@@ -419,9 +419,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                 }
             } else {
                 //TODO: case where the view is a new view
-                OSH.Asserts.checkTrue(currentProperty.container.startsWith("pop-content-id"));
                 this.restoringDialogView(existingViewList[i],currentProperty);
-
             }
         }
     },

@@ -201,11 +201,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         // create corresponding views
         var views = this.viewPanel.views;
 
-        var menuItems = [/*{
-            name: "Android Video",
-            viewId: videoDialog.id,
-            css: "fa fa-video-camera"
-        }*/];
+        var menuItems = [];
 
         for(var key in views) {
             var currentView = views[key];
@@ -251,10 +247,14 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
             for(var i = 0;i < views.length;i++) {
                 for(var j=0;j < views[i].viewItems.length;j++) {
-                    views[i].addViewItemContextMenu(views[i].viewItems[j].id,menuId);
+                    views[i].viewItems[j].contextMenuId = menuId;
                 }
             }
         }
+
+        // update datasources
+        this.entity.dataSources = Object.values(this.datasourcePanel.datasources);
+
         // We can add a group of dataSources and set the options
         this.entity.dataProviderController.addEntity(this.entity);
 

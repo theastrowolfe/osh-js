@@ -261,23 +261,6 @@ OSH.UI.View = BaseClass.extend({
         //for(var dataSourceId in styler.dataSourceToStylerMap) {
     },
 
-    /**
-     * Add context context menu to an existing viewItem
-     * @param viewItemId
-     * @param contextMenuId
-     */
-    addViewItemContextMenu: function(viewItemId, contextMenuId) {
-        OSH.Asserts.checkIsDefineOrNotNull(viewItemId);
-        OSH.Asserts.checkIsDefineOrNotNull(contextMenuId);
-
-        for(var i=0;i < this.viewItems.length;i++) {
-            if(this.viewItems[i].id === viewItemId) {
-                this.viewItems[i].contextMenuId = contextMenuId;
-                break;
-            }
-        }
-    },
-
     observeDatasourceStyler:function(viewItem) {
         OSH.Asserts.checkIsDefineOrNotNull(viewItem);
         OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);

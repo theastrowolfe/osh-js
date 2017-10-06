@@ -148,9 +148,12 @@ OSH.UI.ContextMenu.CssMenu = OSH.UI.ContextMenu.extend({
      * @instance
      * @memberof OSH.UI.ContextMenu.CssMenu
      */
-    hide:function($super){
-        document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
-        this.removeElement();
+    hide:function(){
+        var selectDiv = document.querySelector('.'+this.type+'-menu-circle');
+        if(!isUndefinedOrNull(selectDiv)) {
+            selectDiv.classList.toggle('open');
+            this.removeElement();
+        }
     },
 
     /**
