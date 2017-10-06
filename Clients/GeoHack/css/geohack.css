@@ -93,3 +93,17 @@ p {
 .c-circle-menu__mask.is-active {
     opacity: 0.3;
 }
+
+/** Custom dialog **/
+.osh.dialog .dialog-edit-view .no-keep-ratio {
+    height: 0px;
+    overflow:auto;
+}
+
+.osh.edit-view > .view-properties  {
+    height: 190px;
+}
+
+.osh.edit-view > .content-properties {
+    height:184px;
+}
