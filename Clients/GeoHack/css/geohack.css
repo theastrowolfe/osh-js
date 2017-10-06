@@ -103,6 +103,6 @@ p {
 }
 
 .osh.dialog .dialog-edit-view .tab-panel .show-tab {
-    height: 315px;
+    max-height: 315px;
     overflow: auto;
 }
