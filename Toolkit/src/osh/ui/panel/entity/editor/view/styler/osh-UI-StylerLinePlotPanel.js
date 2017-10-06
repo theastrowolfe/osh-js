@@ -38,12 +38,17 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
         var valuesPanelProperties = this.valesPanel.getProperties();
         var colorPanelProperties = this.colorPanel.getProperties();
 
-        OSH.Asserts.checkObjectPropertyPath(valuesPanelProperties,"properties","missins property 'properties");
-        OSH.Asserts.checkObjectPropertyPath(colorPanelProperties,"properties","missins property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(valuesPanelProperties,"properties","missing property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(colorPanelProperties,"properties","missing property 'properties");
 
         // updates styler with properties
-        this.options.styler.updateProperties(valuesPanelProperties.properties);
-        this.options.styler.updateProperties(colorPanelProperties.properties);
+        var mergedProperties = {};
+
+        OSH.Utils.copyProperties(valuesPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(colorPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(colorPanelProperties.properties.ui,mergedProperties.properties.ui,true);
+
+        this.options.styler.updateProperties(mergedProperties.properties);
 
         return this.options.styler;
     }

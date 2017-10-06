@@ -384,7 +384,7 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
  */
 OSH.Utils.copyProperties = function(from,to,forceMerge) {
     for (var property in from) {
-        if(isUndefinedOrNull(to[property])  || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
+        if(isUndefinedOrNull(to[property])  || forceMerge || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
             to[property] = from[property];
         } else {
             // copy children

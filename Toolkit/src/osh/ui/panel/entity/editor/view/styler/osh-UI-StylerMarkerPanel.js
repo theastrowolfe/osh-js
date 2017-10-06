@@ -42,8 +42,16 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Asserts.checkObjectPropertyPath(iconPanelProperties,"properties","missing property 'properties");
 
         // updates styler with properties
-        this.options.styler.updateProperties(locationPanelProperties.properties);
-        this.options.styler.updateProperties(iconPanelProperties.properties);
+       // this.options.styler.updateProperties(locationPanelProperties.properties);
+       // this.options.styler.updateProperties(iconPanelProperties.properties);
+        // updates styler with properties
+        var mergedProperties = {};
+
+        OSH.Utils.copyProperties(locationPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(iconPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(iconPanelProperties.properties.ui,mergedProperties.properties.ui,true);
+
+        this.options.styler.updateProperties(mergedProperties.properties);
 
         return this.options.styler;
     }

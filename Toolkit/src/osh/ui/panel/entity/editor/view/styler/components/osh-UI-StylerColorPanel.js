@@ -119,15 +119,27 @@ OSH.UI.Panel.ColorPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Helper.HtmlHelper.onDomReady(function(){
             if(!isUndefinedOrNull(defaultProperties)){
                 if(!isUndefinedOrNull(defaultProperties.default)) {
-                    var defaultColorPickerElt = document.getElementById(this.defaultColorInputId).nextElementSibling;
+                    var defaultColorInputElt = document.getElementById(this.defaultColorInputId);
+                    var defaultColorPickerElt = defaultColorInputElt.nextElementSibling;
+
                     defaultColorPickerElt.value = defaultProperties.default;
                     defaultColorPickerElt.select();
+
+                    defaultColorInputElt.value = defaultProperties.default;
+                    defaultColorInputElt.innerHTML = defaultProperties.default;
+
                     this.properties.fixed.default = defaultProperties.default;
                 }
                 if(!isUndefinedOrNull(defaultProperties.selected)) {
+                    var selectedColorInputElt = document.getElementById(this.selectedColorInputId);
                     var selectedColorPickerElt = document.getElementById(this.selectedColorInputId).nextElementSibling;
+
                     selectedColorPickerElt.value = defaultProperties.selected;
                     selectedColorPickerElt.select();
+
+                    selectedColorInputElt.value = defaultProperties.selected;
+                    selectedColorInputElt.innerHTML = defaultProperties.selected;
+
                     this.properties.fixed.selected = defaultProperties.selected;
                 }
             }

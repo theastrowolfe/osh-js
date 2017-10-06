@@ -34,7 +34,7 @@ OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 	},
 
     updateProperties:function(properties) {
-        OSH.Utils.copyProperties(properties,this.properties);
+        OSH.Utils.copyProperties(properties,this.properties,true);
 
         if(!isUndefinedOrNull(properties.stroke)){
             this.stroke = properties.stroke;
