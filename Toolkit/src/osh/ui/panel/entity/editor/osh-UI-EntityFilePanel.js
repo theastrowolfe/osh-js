@@ -38,6 +38,8 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
 
         var self = this;
 
+        this.loadedFiles = [];
+
         OSH.Helper.HtmlHelper.onDomReady(function(){
             var nextElt = document.getElementById("text-"+inputFileEltId);
             nextElt.className += " load-settings ";
@@ -56,7 +58,7 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
             self.addListener(loadButtonElt,"click",function(evt) {
                 if(!isUndefinedOrNull(lastDataLoaded)) {
                     try{
-                        self.loadProperties(lastDataLoaded.data);
+                        self.loadProperties(lastDataLoaded.data,lastDataLoaded.file.name);
                     } catch(exception) {
                         throw new OSH.Exception.Exception("Cannot convert '"+lastDataLoaded.file.name+"' into JSON: ",exception);
                     }
@@ -112,7 +114,10 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
 
     loadProperties : function(textData,fileName) {
         try{
-            this.loadPropertiesHandler(JSON.parse(textData));
+            if( this.loadedFiles.indexOf(fileName)  === -1) {
+                this.loadPropertiesHandler(JSON.parse(textData));
+                this.loadedFiles.push(fileName);
+            }
         } catch(exception) {
             throw new OSH.Exception.Exception("Cannot convert '"+fileName+"' into JSON: ",exception);
         }

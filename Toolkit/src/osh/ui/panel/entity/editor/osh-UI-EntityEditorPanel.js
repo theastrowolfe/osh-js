@@ -209,6 +209,10 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         this.entity.dataProviderController.connectAll();
     },
 
+    //**************************************************************//
+    //*************Saving property**********************************//
+    //**************************************************************//
+
     createSaveProperty: function () {
         var result = {};
 
@@ -226,10 +230,6 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         return result;
     },
-
-    //**************************************************************//
-    //*************Saving property**********************************//
-    //**************************************************************//
 
     saveInfo:function(result) {
         // Entity information
