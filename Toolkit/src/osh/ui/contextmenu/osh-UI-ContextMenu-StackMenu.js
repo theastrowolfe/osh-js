@@ -75,11 +75,8 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             offsetY = properties.offsetY;
         }
 
-        if(typeof properties.x != "undefined") {
-            this.rootTag.style.left = properties.x + offsetX;
-        }
-        if(typeof properties.y != "undefined") {
-            this.rootTag.style.top = properties.y + offsetY;
+        if(!isUndefinedOrNull(properties.x) && !isUndefinedOrNull(properties.y)) {
+            this.rootTag.style.transform = "translate("+(properties.x + offsetX)+"px, "+(properties.y + offsetY)+"px)";
         }
 
         document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
@@ -101,5 +98,18 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             event.preventDefault();
             event.stopPropagation();
         }
+    },
+
+    handleEvents:function() {
+        this._super();
+
+        var self = this;
+        window.onmousedown = function() {
+            self.hide();
+        };
+
+        window.onclick = function() {
+            self.hide();
+        };
     }
 });

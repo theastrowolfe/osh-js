@@ -119,11 +119,8 @@ OSH.UI.ContextMenu.CssMenu = OSH.UI.ContextMenu.extend({
 
         document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
 
-        if(typeof properties.x != "undefined") {
-            this.rootTag.style.left = properties.x + offsetX;
-        }
-        if(typeof properties.y != "undefined") {
-            this.rootTag.style.top = properties.y + offsetY;
+        if(!isUndefinedOrNull(properties.x) && !isUndefinedOrNull(properties.y)) {
+            this.rootTag.style.transform = "translate("+(properties.x + offsetX)+"px, "+(properties.y + offsetY)+"px)";
         }
 
         // binds actions based on items

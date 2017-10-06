@@ -201,8 +201,16 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         // create corresponding views
         var views = this.viewPanel.views;
 
+        var menuItems = [/*{
+            name: "Android Video",
+            viewId: videoDialog.id,
+            css: "fa fa-video-camera"
+        }*/];
+
         for(var key in views) {
             var currentView = views[key];
+
+            var viewId = currentView.id;
 
             if(currentView.hash !== 0x0000) {
                 if (isUndefinedOrNull(currentView.inDialog) || !currentView.inDialog) {
@@ -214,7 +222,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                         dockable: false,
                         closeable: true,
                         connectionIds: [],//TODO
-                        destroyOnClose: true,
+                        destroyOnClose: false,
                         modal: false,
                         keepRatio: false
                     });
@@ -225,6 +233,25 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                     viewDialog.onClose = function() {
                         currentView.inDialog = false;
                     };
+
+                    viewId=viewDialog.id;
+                }
+            }
+
+            menuItems.push({
+                name: currentView.name,
+                viewId: viewId,
+                css: "fa fa-video-camera"
+            });
+        }
+
+        if(menuItems.length > 0) {
+            var menuId = "menu-"+OSH.Utils.randomUUID();
+            var menu = new OSH.UI.ContextMenu.StackMenu({id: menuId ,groupId: "menu-"+OSH.Utils.randomUUID(),items : menuItems});
+
+            for(var i = 0;i < views.length;i++) {
+                for(var j=0;j < views[i].viewItems.length;j++) {
+                    views[i].addViewItemContextMenu(views[i].viewItems[j].id,menuId);
                 }
             }
         }

@@ -188,7 +188,7 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
 
         if(!isUndefined(options)) {
             if(!isUndefined(options.show) && !options.show) {
-                OSH.Utils.addCss(this.outer,"hide");
+                OSH.Utils.addCss(this.outer,"closed");
 
                 // because the inherited class owns a show property as well, we have to remove that one
                 this.rootTag.style.display = "block";
@@ -384,8 +384,9 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
      * @memberof OSH.UI.DialogPanel
      */
     show: function(properties) {
-        if(!isUndefinedOrNull(this.contentId) && properties.viewId.indexOf(this.contentId) > -1) {
-            OSH.Utils.removeCss(this.outer,"hide");
+        if((!isUndefinedOrNull(this.contentId) && properties.viewId.indexOf(this.contentId) > -1) ||
+        this.id === properties.viewId) {
+            OSH.Utils.removeCss(this.outer,"closed");
             if(!isUndefined(this.initialWidth)) {
                 this.initialWidth = this.rootTag.offsetWidth;
             }
