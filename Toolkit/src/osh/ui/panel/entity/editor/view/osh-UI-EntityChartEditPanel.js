@@ -38,13 +38,19 @@ OSH.UI.Panel.EntityChartEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend
         return new OSH.UI.Panel.StylerLinePlotPanel("",properties);
     },
 
-    getView:function() {
-        this.view.updateProperties({
-           xLabel:  document.getElementById(this.inputXLabelId).value,
-           yLabel: document.getElementById(this.inputYLabelId).value,
-           maxPoints:Number(document.getElementById(this.inputMaxPoint).value)
-        });
+    getProperties:function() {
+        var superProperties = this._super();
 
+        OSH.Utils.copyProperties({
+            xLabel:  document.getElementById(this.inputXLabelId).value,
+            yLabel: document.getElementById(this.inputYLabelId).value,
+            maxPoints:Number(document.getElementById(this.inputMaxPoint).value)
+        },superProperties,true);
+
+        return superProperties;
+    },
+
+    getView:function() {
         return this.view;
     }
 });

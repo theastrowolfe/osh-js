@@ -20,7 +20,8 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
     },
 
     initPanel:function() {
-        this.view = OSH.ViewMap.getView(this.options.view.id);
+        //this.view = OSH.ViewMap.getView(this.options.view.id);
+        this.view = this.options.view;
 
         if(!isUndefinedOrNull(this.options.entityId)) {
             this.entityId = this.options.entityId;
@@ -106,6 +107,12 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
 
     getView:function() {
         return this.view;
+    },
+
+    getProperties:function() {
+        return {
+            name:this.view.name
+        };
     },
 
     getContainers:function() {

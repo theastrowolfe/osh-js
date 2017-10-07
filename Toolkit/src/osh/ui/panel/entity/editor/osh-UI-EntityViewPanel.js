@@ -297,16 +297,18 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         editView.attachTo(editViewDialog.popContentDiv.id);
 
         editViewDialog.onSave = function() {
-            var editedView = editView.getView();
+            var clonedView = editView.getView();
 
-            lineElt.querySelector("span.line-left").innerHTML = editedView.name;
+            lineElt.querySelector("span.line-left").innerHTML = clonedView.name;
 
             // finds the view instance and updates i
             var i;
 
             for(i=0;i < this.views.length;i++) {
-                if (this.views[i].id === editedView.id) {
-                    this.views[i] = editedView;
+                if (this.views[i].id === clonedView.id) {
+                    this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
+                    this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
+                    this.views[i].updateProperties(editView.getProperties());
                     break;
                 }
             }

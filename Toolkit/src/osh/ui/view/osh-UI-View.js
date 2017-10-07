@@ -282,19 +282,21 @@ OSH.UI.View = BaseClass.extend({
             if(idx === -1) {
                 this.stylerIdToDatasources[styler.id].push(dataSourceId);
                 // observes the data come in
-                OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,this.onReceivedData.bind(this,dataSourceId,viewItem));
+                this.observeData(dataSourceId,viewItem);
+                // OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,this.onReceivedData.bind(this,dataSourceId,viewItem));
                 OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,this.onReceivedSelected.bind(this,dataSourceId,viewItem));
                 //TODO: critical: freeze the view as well
             }
         }
     },
 
-    onReceivedData:function(datasourceBindId,viewItem,event) {
-            var view = OSH.ViewMap.getView(this.id); // get sync view
+    observeData:function(dataSourceId,viewItem){
+        var view = this;
 
+        OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,function(event){
             // skip data reset events for now
-            if (event.reset)
-                return;
+                if (event.reset)
+                    return;
 
             // we check selected dataSource only when the selected entity is not set
             var selected = false;
@@ -302,15 +304,16 @@ OSH.UI.View = BaseClass.extend({
                 selected = (viewItem.entityId === view.selectedEntity);
             }
             else {
-                selected = (view.selectedDataSources.indexOf(datasourceBindId) > -1);
+                selected = (view.selectedDataSources.indexOf(dataSourceId) > -1);
             }
 
             //TODO: maybe done into the styler?
-            viewItem.styler.setData(datasourceBindId, event.data, view, {
+            viewItem.styler.setData(dataSourceId, event.data, view, {
                 selected: selected
             });
 
-            view.lastRec[datasourceBindId] = event.data;
+            view.lastRec[dataSourceId] = event.data;
+        });
     },
 
     onReceivedSelected:function(datasourceBindId,viewItem,event) {
