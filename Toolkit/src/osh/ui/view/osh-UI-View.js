@@ -513,7 +513,9 @@ OSH.UI.View = BaseClass.extend({
 
     getType: function()  {
         return OSH.UI.View.ViewType.UNDEFINED;
-    }
+    },
+
+    updateProperties:function(properties) {}
 });
 
 OSH.UI.View.ViewType = {

@@ -176,7 +176,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                     };
 
                     viewId=viewDialog.id;
-                } else{
+                } else if(currentView.dialog.closed){
                     // show dialog
                     var parentDialog = OSH.Utils.getSomeParentTheClass(currentView.elementDiv,"dialog");
                     if(!isUndefinedOrNull(parentDialog)) {
