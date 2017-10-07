@@ -434,26 +434,6 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             viewInstanceType:properties.viewInstanceType
         });
 
-        var viewDialog = new OSH.UI.Panel.DialogPanel("", {
-            draggable: true,
-            css: "app-dialog", //TBD into edit view
-            name: viewInstance.name,
-            show: true,
-            dockable: false,
-            closeable: true,
-            connectionIds: [],//TODO
-            destroyOnClose: false,
-            modal: false,
-            keepRatio: false
-        });
-
-        viewInstance.attachTo(viewDialog.popContentDiv.id);
-        viewInstance.inDialog = true;
-
-        viewDialog.onClose = function() {
-            viewInstance.inDialog = false;
-        };
-
         this.restoringView(viewInstance,currentViewDiv,properties);
     },
 
