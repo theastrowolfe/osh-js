@@ -161,6 +161,18 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
 
         div.innerHTML = strVar;
 
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            var inputElt = document.getElementById(inputEltId);
+            // FIX select input-text instead of dragging the element(when the parent is draggable)
+            inputElt.onfocus = function (e) {
+                OSH.Utils.fixSelectable(this, true);
+            };
+
+            inputElt.onblur = function (e) {
+                OSH.Utils.fixSelectable(this, false);
+            };
+        });
+
         viewItemsContainerElt.appendChild(div);
 
         var self = this;
