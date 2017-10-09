@@ -20,36 +20,40 @@ OSH.UI.Panel.EntityNoViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.exten
     },
 
     buildContent:function() {
-        this.buildDataSource(this.options.datasources);
+        this.properties = {};
+
+        var dsArr = [];
+        if(!isUndefinedOrNull(this.options.datasources)) {
+            dsArr = Object.values(this.options.datasources);
+        }
+        this.buildDataSource(dsArr);
     },
 
     buildDataSource: function(datasourceArr) {
-        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"Data Sources");
-        var dataSourceId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",[]);
-        var selectTag = document.getElementById(dataSourceId);
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Data source");
 
-        for(var key in datasourceArr) {
 
-            var option = document.createElement("option");
-            option.text = datasourceArr[key].name;
-            option.value = datasourceArr[key].name;
-            option.obj = datasourceArr[key];
-
-            if(this.view.datasource !== null && datasourceArr[key].id === this.view.datasource.id) {
-                option.setAttribute("selected","");
-            }
-            selectTag.add(option);
+        if(this.options.datasources.length > 0) {
+            this.properties.datasourceIdx = 0;
+        } else {
+            this.properties.datasourceIdx = -1;
         }
 
-        if(this.view.datasource === null && datasourceArr.length > 0) {
-            this.view.datasource  = datasourceArr[0]; // default select the first one
+        this.dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
+    },
+
+    getProperties:function() {
+        var superProperties = this._super();
+
+        if(this.properties.datasourceIdx >= 0) {
+            var listElt = document.getElementById(this.dsListBoxId);
+            var selectedOption = listElt.options[listElt.selectedIndex];
+            OSH.Utils.copyProperties({
+                datasourceId: selectedOption.object.id,
+            },superProperties,true);
+
         }
 
-        // listener
-        var self = this;
-
-        OSH.EventManager.observeDiv(dataSourceId,"change",function(event) {
-            self.view.datasource = this.options[this.selectedIndex].obj;
-        });
+        return superProperties;
     }
 });

@@ -194,9 +194,15 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         // gets default view properties
         // gets default view property
-        var defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
+        var defaultViewProperties;
 
-        defaultViewProperties.name = properties.name;
+        if(isUndefinedOrNull(properties.options)) {
+            defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
+            defaultViewProperties.name = properties.name;
+        } else {
+            defaultViewProperties = properties.options;
+        }
+
         // creates the panel corresponding to the view type
         var viewInstance;
 
@@ -306,8 +312,13 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
             for(i=0;i < this.views.length;i++) {
                 if (this.views[i].id === clonedView.id) {
-                    this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
-                    this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
+                    if(viewInstance.type === OSH.UI.View.ViewType.VIDEO) {
+                        var viewProperties =  editView.getProperties();
+                        this.views[i].updateObserveData(viewProperties.datasourceId);
+                    } else {
+                        this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
+                        this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
+                    }
                     this.views[i].updateProperties(editView.getProperties());
                     break;
                 }
@@ -431,7 +442,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             name: properties.name,
             type: properties.type,
             hash: properties.hash,
-            viewInstanceType:properties.viewInstanceType
+            viewInstanceType:properties.viewInstanceType,
+            options:properties.options
         });
 
         this.restoringView(viewInstance,currentViewDiv,properties);

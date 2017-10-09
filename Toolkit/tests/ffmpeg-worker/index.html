@@ -8,12 +8,11 @@
     <!-- VENDOR -->
     <script type="text/javascript" src="vendor/YUVCanvas.js"></script>
 
-    <script type="text/javascript" src="vendor/broadway-all.min.js"></script>
+    <!--script type="text/javascript" src="vendor/broadway-all.min.js"></script>
     <script type="text/javascript" src="vendor/Decoder.js"></script>
-    <script type="text/javascript" src="vendor/Player.js"></script>
+    <script type="text/javascript" src="vendor/Player.js"></script-->
 
-    <script type="text/javascript" src="vendor/ffmpeg-h264.js"></script>
-
+    <!--script type="text/javascript" src="vendor/ffmpeg-h264.js"></script-->
     <!-- OSH Core -->
     <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
     <!-- OSH buffer sync lib -->
@@ -128,7 +127,7 @@
         //------------ VIEW -----------------//
 
         // Video 1 View
-        var videoView = new OSH.UI.H264View(videoContainerEl.id, {
+        var videoView = new OSH.UI.FFMPEGView(videoContainerEl.id, {
             dataSourceId: videoDataSource.id,
             css: "video",
             cssSelected: "video-selected",

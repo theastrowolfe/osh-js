@@ -41,9 +41,29 @@ OSH.UI.View = BaseClass.extend({
         //this.divId = divId;
         this.id = "view-" + OSH.Utils.randomUUID();
         this.name = this.id;
+        this.type = this.getType();
 
         this.dataSourceId = -1;
 
+        if(typeof(options) !== "undefined" && typeof(options.cssSelected) !== "undefined") {
+            this.cssSelected = options.cssSelected;
+        }
+
+        // inits the view before adding the viewItem
+        this.init(parentElementDivId,viewItems,options);
+
+        OSH.ViewMap.registerView(this);
+    },
+
+
+    /**
+     * Inits the view component.
+     * @param parentElementDivId The parent html element object to attach/create the view
+     * @param viewItems the list of items to add
+     * @param options [TODO]
+     * @memberof OSH.UI.View
+     */
+    init:function(parentElementDivId,viewItems,options) {
         if(!isUndefinedOrNull(options)) {
             this.options = options;
 
@@ -68,26 +88,6 @@ OSH.UI.View = BaseClass.extend({
             this.css += options.css;
         }
 
-        if(typeof(options) !== "undefined" && typeof(options.cssSelected) !== "undefined") {
-            this.cssSelected = options.cssSelected;
-        }
-
-        // inits the view before adding the viewItem
-        this.init(parentElementDivId,viewItems,options);
-
-        this.type = this.getType();
-
-        OSH.ViewMap.registerView(this);
-    },
-
-    /**
-     * Inits the view component.
-     * @param parentElementDivId The parent html element object to attach/create the view
-     * @param viewItems the list of items to add
-     * @param options [TODO]
-     * @memberof OSH.UI.View
-     */
-    init:function(parentElementDivId,viewItems,options) {
         this.elementDiv = document.createElement("div");
         this.elementDiv.setAttribute("id", this.id);
         this.elementDiv.setAttribute("class", this.css);
@@ -119,30 +119,24 @@ OSH.UI.View = BaseClass.extend({
         }
         this.handleEvents();
 
-        // observes the event associated to the dataSourceId
-        if(typeof(options) !== "undefined" && typeof(options.dataSourceId) !== "undefined") {
-            OSH.EventManager.observe(OSH.EventManager.EVENT.DATA+"-"+options.dataSourceId, function (event) {
-                if (event.reset)
-                    this.reset(); // on data stream reset
-                else
-                    this.setData(options.dataSourceId, event.data);
-            }.bind(this));
-        }
-
         var self = this;
         var observer = new MutationObserver( function( mutations ){
             mutations.forEach( function( mutation ){
                 // Was it the style attribute that changed? (Maybe a classname or other attribute change could do this too? You might want to remove the attribute condition) Is display set to 'none'?
                 if( mutation.attributeName === 'style') {
                     self.onResize();
-
                 }
             });
         } );
 
+        if(!isUndefinedOrNull(this.dataSourceId)) {
+            this.updateObserveData(this.dataSourceId);
+        }
+
         // Attach the mutation observer to blocker, and only when attribute values change
         observer.observe( this.elementDiv, { attributes: true } );
     },
+
 
     /**
      * @instance
@@ -282,7 +276,7 @@ OSH.UI.View = BaseClass.extend({
             if(idx === -1) {
                 this.stylerIdToDatasources[styler.id].push(dataSourceId);
                 // observes the data come in
-                this.observeData(dataSourceId,viewItem);
+                this.observeViewItemData(dataSourceId,viewItem);
                 // OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,this.onReceivedData.bind(this,dataSourceId,viewItem));
                 OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,this.onReceivedSelected.bind(this,dataSourceId,viewItem));
                 //TODO: critical: freeze the view as well
@@ -290,7 +284,25 @@ OSH.UI.View = BaseClass.extend({
         }
     },
 
-    observeData:function(dataSourceId,viewItem){
+    updateObserveData:function(dataSourceId) {
+        if(!isUndefinedOrNull(this.dataSourceId)) {
+            // remove old event
+            OSH.EventManager.remove(OSH.EventManager.EVENT.DATA+"-"+this.dataSourceId);
+
+            this.dataSourceId = dataSourceId;
+            this.options.dataSourceId = dataSourceId;
+
+            // observes the event associated to the dataSourceId
+            OSH.EventManager.observe(OSH.EventManager.EVENT.DATA+"-"+this.dataSourceId, function (event) {
+                if (event.reset)
+                    this.reset(); // on data stream reset
+                else
+                    this.setData(this.dataSourceId, event.data);
+            }.bind(this));
+        }
+    },
+
+    observeViewItemData:function(dataSourceId,viewItem){
         var view = this;
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,function(event){
@@ -444,9 +456,9 @@ OSH.UI.View = BaseClass.extend({
         }.bind(this));
 
         // new version including the id inside the event id
-        OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
+       /* OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
             this.updateViewItem(event.viewItem);
-        }.bind(this));
+        }.bind(this));*/
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
             this.onResize();
