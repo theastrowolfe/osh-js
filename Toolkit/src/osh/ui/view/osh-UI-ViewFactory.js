@@ -39,7 +39,17 @@ OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
                 cssSelected: "video-selected",
                 name: "Video",
                 useWorker: true,
-                useWebWorkerTransferableData: false
+                useWebWorkerTransferableData: false,
+                keepRatio:true
+            };
+            break;
+        }
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
+            props = {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "Video",
+                keepRatio:true
             };
             break;
         }

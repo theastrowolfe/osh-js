@@ -162,7 +162,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                         connectionIds: [],//TODO
                         destroyOnClose: false,
                         modal: false,
-                        keepRatio: true
+                        keepRatio: (!isUndefinedOrNull(currentView.options.keepRatio)) ? currentView.options.keepRatio : false
                     });
 
                     currentView.attachTo(viewDialog.popContentDiv.id);
