@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    height: calc(100% - 20px);
     background-color: black;
+    overflow: hidden;
 }
 
 html {
@@ -29,6 +29,11 @@ p {
     line-height: 1.5;
 }
 
+/** Brand **/
+.brand {
+    background-color:#FFFFFF;
+}
+/** OSH **/
 .osh.dialog .pop-over {
     background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(../images/3JZchqt.png), url(../images/9kxBTzr.jpg);
 }
@@ -52,7 +57,7 @@ p {
 }
 
 .leaflet-container, #container {
-    height: 100%;
+    height:calc(100% - 40px);
     float: right;
 }
 
@@ -82,12 +87,13 @@ p {
 }
 
 #map-container {
-    height:100%;
+    height:calc(100% - 34px);
 }
 
 /** Circle menu **/
 .c-circle-menu {
-    bottom: 12px;
+    bottom: 10px;
+    left: 10px;
 }
 
 .c-circle-menu__mask.is-active {
@@ -106,3 +112,4 @@ p {
     max-height: 315px;
     overflow: auto;
 }
+
