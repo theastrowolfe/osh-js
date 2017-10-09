@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    background-color: black;
+    background-color: white;
     overflow: hidden;
 }
 
@@ -31,7 +31,10 @@ p {
 
 /** Brand **/
 .brand {
-    background-color:#FFFFFF;
+    position: absolute;
+    top: 0;
+    z-index: 99999;
+    background: none;
 }
 /** OSH **/
 .osh.dialog .pop-over {
@@ -56,11 +59,6 @@ p {
     margin-bottom:10px;
 }
 
-.leaflet-container, #container {
-    height:calc(100% - 40px);
-    float: right;
-}
-
 .osh.dialog .app-dialog {
     width: 450px;
     height: 350px;
@@ -76,18 +74,9 @@ p {
 }
 
 
-.leaflet-container {
-    height: 100%;
-    width: 100%;
-}
-
-.leaflet-container .leaflet-marker-pane img {
-    max-width: 32px !important;
-    height:auto !important;
-}
-
 #map-container {
-    height:calc(100% - 34px);
+    height:calc(100% - 19px);
+    margin-top: 38px;
 }
 
 /** Circle menu **/
@@ -113,3 +102,22 @@ p {
     overflow: auto;
 }
 
+
+/** leaflet **/
+.leaflet-top {
+    top: 25px;
+}
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
+
+.leaflet-container .leaflet-marker-pane img {
+    max-width: 32px !important;
+    height:auto !important;
+}
+
+.leaflet-container, #container {
+    height:calc(100% - 40px);
+}
