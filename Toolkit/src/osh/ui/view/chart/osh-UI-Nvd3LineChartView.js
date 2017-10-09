@@ -149,12 +149,10 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		this.svgChart = d3.select('#' + this.divId + ' svg'); //Select the <svg> element you want to render the chart in.
 
 		var self =this;
-		OSH.EventManager.observeDiv(this.divId,"click",function(event){
-			OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-				dataSourcesIds: self.getDataSourcesId(),
-				entityId : self.entityId
-			});
-		});
+
+        /**
+		 * entityId : styler.viewItem.entityId
+         */
 
 		if(!isUndefinedOrNull(options) && !isUndefinedOrNull(options.initData) && options.initData) {
             this.svgChart
@@ -197,6 +195,16 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 			this.svgChart
 					.datum([this.data]) //Populate the <svg> element with chart data...
 					.call(this.chart);
+
+            OSH.EventManager.observeDiv(this.divId,"click",function(event){
+
+                var dataSourcesIds = [];
+                var entityId;
+				OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
+					dataSourcesIds: styler.getDataSourcesIds(),
+					entityId : styler.viewItem.entityId
+				});
+            });
 
 		} else {
 			this.data.color = styler.color;

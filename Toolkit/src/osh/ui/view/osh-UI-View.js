@@ -277,9 +277,7 @@ OSH.UI.View = BaseClass.extend({
                 this.stylerIdToDatasources[styler.id].push(dataSourceId);
                 // observes the data come in
                 this.observeViewItemData(dataSourceId,viewItem);
-                // OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,this.onReceivedData.bind(this,dataSourceId,viewItem));
-                OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,this.onReceivedSelected.bind(this,dataSourceId,viewItem));
-                //TODO: critical: freeze the view as well
+                this.observeViewItemSelectedData(dataSourceId,viewItem);
             }
         }
     },
@@ -310,21 +308,46 @@ OSH.UI.View = BaseClass.extend({
                 if (event.reset)
                     return;
 
-            // we check selected dataSource only when the selected entity is not set
-            var selected = false;
-            if (typeof view.selectedEntity !== "undefined") {
-                selected = (viewItem.entityId === view.selectedEntity);
-            }
-            else {
-                selected = (view.selectedDataSources.indexOf(dataSourceId) > -1);
-            }
-
-            //TODO: maybe done into the styler?
             viewItem.styler.setData(dataSourceId, event.data, view, {
-                selected: selected
+                selected: viewItem.styler.selected
             });
 
             view.lastRec[dataSourceId] = event.data;
+        });
+    },
+
+    observeViewItemSelectedData:function(datasourceBindId,viewItem,event) {
+        var view = this;
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,function(event){
+            var selected = false;
+            if(!isUndefinedOrNull(event.entityId)) {
+                selected = (viewItem.entityId === event.entityId);
+            } else {
+                //TODO:intersection algo
+                //TODO/BUG: from styler.getDataSourceIds()
+                // it seems the viewItem.styler instance does not have this function while using the entityEditor
+                var stylerDsIds = [];
+                for ( var i in viewItem.styler.dataSourceToStylerMap) {
+                    stylerDsIds.push(i);
+                }
+
+                //var stylerDsIds = viewItem.styler.getDataSourcesId();
+                for(var i =0; i < stylerDsIds.length;i++) {
+                    if(event.dataSourcesIds.indexOf(stylerDsIds[i]) > -1) {
+                        selected = true;
+                        break;
+                    }
+                }
+            }
+
+            viewItem.styler.selected = selected;
+
+            if (datasourceBindId in view.lastRec) {
+                viewItem.styler.setData(datasourceBindId, view.lastRec[datasourceBindId], view, {
+                    selected: selected
+                });
+            }
         });
     },
 
