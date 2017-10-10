@@ -121,3 +121,10 @@ p {
 .leaflet-container, #container {
     height:calc(100% - 40px);
 }
+
+/** NVD3 **/
+.osh.view.chart-view {
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 100%;
+}

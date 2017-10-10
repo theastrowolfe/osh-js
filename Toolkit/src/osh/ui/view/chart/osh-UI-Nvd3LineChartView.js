@@ -119,11 +119,11 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		this.chart.xAxis //Chart x-axis settings
 		.axisLabel(this.xLabel).tickFormat(function(d) {
 			return d3.time.format.utc('%H:%M:%SZ')(new Date(d));
-		});
+		}).axisLabelDistance(5);
 
 		this.chart.yAxis //Chart y-axis settings
 		.axisLabel(this.yLabel).tickFormat(d3.format('.02f'))
-		.axisLabelDistance(15);
+		.axisLabelDistance(5);
 
 		this.css = document.getElementById(this.divId).className;
 
@@ -154,6 +154,7 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 		 * entityId : styler.viewItem.entityId
          */
 
+        this.chart.legend.margin().bottom = 25;
 		if(!isUndefinedOrNull(options) && !isUndefinedOrNull(options.initData) && options.initData) {
             this.svgChart
                 .datum([{
@@ -191,7 +192,7 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 				y : styler.y,
 				x : styler.x
 			});
-			
+
 			this.svgChart
 					.datum([this.data]) //Populate the <svg> element with chart data...
 					.call(this.chart);
