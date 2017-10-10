@@ -283,7 +283,15 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         switch(viewInstance.type) {
             case OSH.UI.View.ViewType.MAP:  editView = new OSH.UI.Panel.EntityMapEditPanel("",options);break;
             case OSH.UI.View.ViewType.CHART:  editView = new OSH.UI.Panel.EntityChartEditPanel("",options);break;
-            case OSH.UI.View.ViewType.VIDEO:  editView = new OSH.UI.Panel.EntityVideoEditPanel("",options);break;
+            case OSH.UI.View.ViewType.VIDEO:  {
+                if(viewInstance instanceof OSH.UI.MjpegView) {
+                    editView = new OSH.UI.Panel.EntityMJPEGVideoEditPanel("", options);
+                } else {
+                    editView = new OSH.UI.Panel.EntityVideoEditPanel("", options);
+                }
+                break;
+            }
+            default:break;
         }
 
         OSH.Asserts.checkIsDefineOrNotNull(editView);

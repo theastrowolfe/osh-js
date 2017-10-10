@@ -662,3 +662,38 @@ OSH.Helper.HtmlHelper.fireEvent = function(node, eventName) {
         node.fireEvent("on" + eventName, event);
     }
 };
+
+OSH.Helper.HtmlHelper.addCheckbox = function(parentElt, label,defaultValue) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var checkboxElt = document.createElement("input");
+    checkboxElt.setAttribute("id",id+"");
+    checkboxElt.setAttribute("class","input-checkbox");
+    checkboxElt.setAttribute("type","checkbox");
+    checkboxElt.setAttribute("name",""+id);
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue) {
+        checkboxElt.setAttribute("checked","");
+    }
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    liElt.appendChild(checkboxElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return id;
+};

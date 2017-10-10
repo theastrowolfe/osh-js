@@ -403,3 +403,7 @@ input[type="color"] {
 .osh .input-text + .input-color {
     margin-left: 4px;
 }
+
+.osh .input-checkbox {
+
+}
