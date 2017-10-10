@@ -37,6 +37,7 @@
 
 .osh .entity-editor .ds-line {
     width:100%;
+    line-height: 30px;
 }
 
 .osh .entity-editor .ds-line > span{
