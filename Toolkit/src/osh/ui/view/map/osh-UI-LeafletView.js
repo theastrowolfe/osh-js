@@ -362,6 +362,11 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
         }
 
         var marker = this.markers[markerId];
+
+        if(!isUndefinedOrNull(styler.viewItem)) {
+            marker.bindPopup(styler.viewItem.name);
+        }
+
         // updates position
         var lon = styler.location.x;
         var lat = styler.location.y;

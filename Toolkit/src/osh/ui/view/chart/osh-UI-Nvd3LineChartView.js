@@ -208,6 +208,9 @@ OSH.UI.Nvd3LineChartView = OSH.UI.ChartView.extend({
 
 		} else {
 			this.data.color = styler.color;
+			if(!isUndefinedOrNull(styler.viewItem.name)) {
+				this.data.key  = styler.viewItem.name;
+			}
 			this.data.values.push({
 				y : styler.y,
 				x : styler.x
