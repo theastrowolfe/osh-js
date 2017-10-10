@@ -40,6 +40,27 @@ OSH.UI.Panel.EntityNoViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.exten
         }
 
         this.dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
+
+        this.initDefaultData(datasourceArr);
+    },
+
+    initDefaultData: function(datasourceArr) {
+        // init default datasource if any
+        OSH.Asserts.checkIsDefineOrNotNull(this.dsListBoxId);
+
+        if(!isUndefinedOrNull(this.view.dataSourceId)) {
+            var idx = -1;
+            for(var i=0;i < datasourceArr.length;i++) {
+                if(datasourceArr[i].id === this.view.dataSourceId) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            if(idx > -1) {
+                document.getElementById(this.dsListBoxId).options.selectedIndex = idx;
+            }
+        }
     },
 
     getProperties:function() {
