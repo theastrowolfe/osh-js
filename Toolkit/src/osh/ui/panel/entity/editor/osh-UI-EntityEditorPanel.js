@@ -151,41 +151,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             var viewId = currentView.id;
 
             if(currentView.hash !== 0x0000) {
-                if (isUndefinedOrNull(currentView.dialog) || !currentView.dialog.in) {
-                    var viewDialog = new OSH.UI.Panel.DialogPanel("", {
-                        draggable: true,
-                        css: "app-dialog", //TBD into edit view
-                        name: currentView.name,
-                        show: true,
-                        dockable: false,
-                        closeable: true,
-                        connectionIds: [],//TODO
-                        destroyOnClose: false,
-                        modal: false,
-                        keepRatio: (!isUndefinedOrNull(currentView.options.keepRatio)) ? currentView.options.keepRatio : false
-                    });
-
-                    currentView.attachTo(viewDialog.popContentDiv.id);
-                    currentView.dialog = {
-                        in : true,
-                        closed:false
-                    };
-
-                    viewDialog.onClose = function() {
-                        currentView.dialog.closed = true;
-                    };
-
-                    viewId=viewDialog.id;
-                } else if(currentView.dialog.closed){
-                    // show dialog
-                    var parentDialog = OSH.Utils.getSomeParentTheClass(currentView.elementDiv,"dialog");
-                    if(!isUndefinedOrNull(parentDialog)) {
-                        viewId = parentDialog.id;
-                        OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW, {
-                            viewId: viewId
-                        });
-                    }
-                }
+                this.saveDialog(currentView);
             }
 
             menuItems.push({
@@ -214,6 +180,44 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
 
         // starts streaming
         this.entity.dataProviderController.connectAll();
+    },
+
+    saveDialog:function(view){
+        if (isUndefinedOrNull(view.dialog) || !view.dialog.in) {
+            var viewDialog = new OSH.UI.Panel.DialogPanel("", {
+                draggable: true,
+                css: "app-dialog", //TBD into edit view
+                name: view.name,
+                show: true,
+                dockable: false,
+                closeable: true,
+                connectionIds: [],//TODO
+                destroyOnClose: false,
+                modal: false,
+                keepRatio: (!isUndefinedOrNull(view.options.keepRatio)) ? view.options.keepRatio : false
+            });
+
+            view.attachTo(viewDialog.popContentDiv.id);
+            view.dialog = {
+                in : true,
+                closed:false
+            };
+
+            viewDialog.onClose = function() {
+                view.dialog.closed = true;
+            };
+
+            viewId=viewDialog.id;
+        } else if(view.dialog.closed){
+            // show dialog
+            var parentDialog = OSH.Utils.getSomeParentTheClass(view.elementDiv,"dialog");
+            if(!isUndefinedOrNull(parentDialog)) {
+                viewId = parentDialog.id;
+                OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW, {
+                    viewId: viewId
+                });
+            }
+        }
     },
 
     //**************************************************************//

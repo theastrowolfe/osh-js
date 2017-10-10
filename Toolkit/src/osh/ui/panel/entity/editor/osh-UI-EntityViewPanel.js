@@ -312,14 +312,29 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
             for(i=0;i < this.views.length;i++) {
                 if (this.views[i].id === clonedView.id) {
+                    var viewProperties =  editView.getProperties();
+
                     if(viewInstance.type === OSH.UI.View.ViewType.VIDEO) {
-                        var viewProperties =  editView.getProperties();
                         this.views[i].updateObserveData(viewProperties.datasourceId);
                     } else {
                         this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
                         this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
                     }
-                    this.views[i].updateProperties(editView.getProperties());
+                    this.views[i].updateProperties(viewProperties);
+                    if(OSH.Utils.hasOwnNestedProperty(viewProperties,"name")) {
+                        //TODO: dupplicated values, should only handle 1 property
+                        this.views[i].name = viewProperties.name;
+                        this.views[i].options.name = viewProperties.name;
+                        // updates dialog name
+                        if (this.views[i].hash !== 0x0000 && !isUndefinedOrNull(this.views[i].dialog)) { // this is not an existing view
+                            var parentDialogElt = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv, "dialog");
+                            var spanElt = parentDialogElt.querySelector(".header").querySelector("span");
+                            if (!isUndefinedOrNull(spanElt)) {
+                                spanElt.innerHTML = viewProperties.name;
+                            }
+                        }
+                    }
+
                     break;
                 }
             }
