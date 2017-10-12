@@ -153,7 +153,7 @@ OSH.UI.Panel.ColorPanel = OSH.UI.Panel.StylerPanel.extend({
                 low: null,
                 high: null,
                 default: null,
-                datasourceIdx: null,
+                datasourceId: null,
                 observableIdx: null
             }
         };

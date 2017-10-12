@@ -204,15 +204,9 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         }
 
         // creates the panel corresponding to the view type
-        var viewInstance;
-
-        if(properties.type === OSH.UI.View.ViewType.MAP || properties.type === OSH.UI.View.ViewType.CHART) {
-            viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties);
-        } else {
-            viewInstance = OSH.UI.ViewFactory.getDefaultSimpleViewInstance(viewInstanceType, defaultViewProperties);
-        }
-
+        var viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties);
         viewInstance.hash = properties.hash;
+
         return viewInstance;
     },
 
@@ -322,12 +316,8 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                 if (this.views[i].id === clonedView.id) {
                     var viewProperties =  editView.getProperties();
 
-                    if(viewInstance.type === OSH.UI.View.ViewType.VIDEO) {
-                        this.views[i].updateObserveData(viewProperties.datasourceId);
-                    } else {
-                        this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
-                        this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
-                    }
+                    this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
+                    this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
                     this.views[i].updateProperties(viewProperties);
                     if(OSH.Utils.hasOwnNestedProperty(viewProperties,"name")) {
                         //TODO: dupplicated values, should only handle 1 property
@@ -339,6 +329,15 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                             var spanElt = parentDialogElt.querySelector(".header").querySelector("span");
                             if (!isUndefinedOrNull(spanElt)) {
                                 spanElt.innerHTML = viewProperties.name;
+                            }
+                            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
+                                var popOverElt = parentDialogElt.querySelector(".pop-over");
+                                var containsKeepRatio = OSH.Utils.containsCss(popOverElt,"keep-ratio-w");
+                                if(containsKeepRatio && !viewProperties.keepRatio) {
+                                    OSH.Utils.removeCss(popOverElt,"keep-ratio-w");
+                                } else if(!containsKeepRatio && viewProperties.keepRatio) {
+                                    OSH.Utils.addCss(popOverElt,"keep-ratio-w");
+                                }
                             }
                         }
                     }

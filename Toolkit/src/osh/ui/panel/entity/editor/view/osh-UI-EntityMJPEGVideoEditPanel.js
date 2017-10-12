@@ -16,9 +16,5 @@
 
 OSH.UI.Panel.EntityMJPEGVideoEditPanel = OSH.UI.Panel.EntityVideoEditPanel.extend({
 
-    buildViewProperties: function() {
-        this._super();
 
-        this.keepRatioCheckbox = OSH.Helper.HtmlHelper.addCheckbox(this.viewPropertiesElt,"Keep ratio",true);
-    }
 });

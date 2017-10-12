@@ -14,6 +14,31 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.Panel.EntityVideoEditPanel = OSH.UI.Panel.EntityNoViewItemsEditPanel.extend({
+OSH.UI.Panel.EntityVideoEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
 
+    buildViewProperties: function() {
+        this._super();
+
+        this.keepRatioCheckboxId = OSH.Helper.HtmlHelper.addCheckbox(this.viewPropertiesElt,"Keep ratio",this.view.options.keepRatio);
+        this.showFpsCheckboxId = OSH.Helper.HtmlHelper.addCheckbox(this.viewPropertiesElt,"Show fps",this.view.options.showFps);
+    },
+
+    getStylerList:function() {
+        return [OSH.UI.Styler.Factory.TYPE.VIDEO];
+    },
+
+    getStylerPanelInstance:function(properties) {
+        return new OSH.UI.Panel.StylerVideoPanel("",properties);
+    },
+
+    getProperties:function() {
+        var superProperties = this._super();
+
+        OSH.Utils.copyProperties({
+            showFps:  document.getElementById(this.showFpsCheckboxId).checked,
+            keepRatio: document.getElementById(this.keepRatioCheckboxId).checked
+        },superProperties,true);
+
+        return superProperties;
+    },
 });
