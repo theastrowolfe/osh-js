@@ -344,6 +344,16 @@ OSH.Utils.removeCss = function(div,css) {
 };
 
 /**
+ * Check if a div element contains some css class
+ * @param div the div element
+ * @param className the className to search
+ * @return {boolean}
+ */
+OSH.Utils.containsCss = function(div, className) {
+    return div.className.indexOf(className) > -1;
+};
+
+/**
  * Replace a css class from a the div given as argument.
  * @param div the div to replace the class from
  * @param css the css class to replace
