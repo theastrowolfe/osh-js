@@ -61,6 +61,7 @@ OSH.Buffer = BaseClass.extend({
     // defines a status to stop the buffer after stop() calling.
     // If start() method is called, this variable should be set to TRUE
     this.stop = false;
+    this.isStarted = false;
     this.bufferingState = false;
   },
 
@@ -93,10 +94,13 @@ OSH.Buffer = BaseClass.extend({
    * @instance
    */
   start: function() {
-    this.stop = false;
-    this.startObservers();
-    this.startRealTime = new Date().getTime();
-    this.processSyncData();
+    if(!this.isStarted) {
+        this.stop = false;
+        this.isStarted = true;
+        this.startObservers();
+        this.startRealTime = new Date().getTime();
+        this.processSyncData();
+    }
   },
 
   /**
@@ -107,6 +111,7 @@ OSH.Buffer = BaseClass.extend({
   stop: function() {
     this.stopObservers();
     this.stop = true;
+    this.isStarted = false;
   },
 
   /**
@@ -139,6 +144,7 @@ OSH.Buffer = BaseClass.extend({
    * @instance
    */
   startDataSource: function(dataSourceId) {
+    this.start();
     this.buffers[dataSourceId].status = BUFFER_STATUS.NOT_START_YET;
     this.buffers[dataSourceId].lastRecordTime = Date.now();
   },
