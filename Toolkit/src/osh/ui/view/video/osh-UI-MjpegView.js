@@ -20,17 +20,26 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.MjpegView("containerId", {
-    dataSourceId: datasource.id,
-    entityId : entity.id,
+ var videoView = new OSH.UI.MjpegView("containerId", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "H264 ViDEO",
+        entityId:entityId
+    }],{
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
 });
  */
 OSH.UI.MjpegView = OSH.UI.VideoView.extend({
-    initialize: function (parentElementDivId, options) {
-        this._super(parentElementDivId, options);
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
         // creates video tag element
         this.imgTag = document.createElement("img");
@@ -38,7 +47,7 @@ OSH.UI.MjpegView = OSH.UI.VideoView.extend({
 
         // rotation option
         this.rotation = 0;
-        if (typeof(options) != "undefined" && typeof(options.rotation) != "undefined") {
+        if (!isUndefinedOrNull(options) && !isUndefinedOrNull(options.rotation)) {
             this.rotation = options.rotation * Math.PI / 180;
             this.canvas = document.createElement('canvas');
             this.canvas.width = 640;
@@ -52,45 +61,19 @@ OSH.UI.MjpegView = OSH.UI.VideoView.extend({
             document.getElementById(this.divId).appendChild(this.imgTag);
             OSH.Utils.addCss(document.getElementById(this.divId), "video");
         }
-
-        // adds listener
-        var self = this;
-        OSH.EventManager.observeDiv(this.divId, "click", function (event) {
-            OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
-                dataSourcesIds: [self.dataSourceId],
-                entityId: self.entityId
-            });
-        });
     },
 
     /**
      *
-     * @param $super
-     * @param dataSourceId
-     * @param data
+     * @param styler
      * @instance
      * @memberof OSH.UI.MjpegView
      */
-    setData: function (dataSourceId, data) {
+    updateFrame: function (styler) {
+        this._super(styler);
         var oldBlobURL = this.imgTag.src;
-        this.imgTag.src = data.data;
+        this.imgTag.src = styler.frame;
         window.URL.revokeObjectURL(oldBlobURL);
-    },
-
-    /**
-     *
-     * @param $super
-     * @param dataSourceIds
-     * @param entityId
-     * @instance
-     * @memberof OSH.UI.MjpegView
-     */
-    selectDataView: function (dataSourceIds, entityId) {
-        if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-            document.getElementById(this.divId).setAttribute("class", "video " + this.css + " " + this.cssSelected);
-        } else {
-            document.getElementById(this.divId).setAttribute("class", "video " + this.css);
-        }
     },
 
     /**
@@ -99,14 +82,6 @@ OSH.UI.MjpegView = OSH.UI.VideoView.extend({
      */
     reset: function () {
         this.imgTag.src = "";
-    },
-
-    updateProperties: function (properties) {
-        if (!isUndefinedOrNull(properties)) {
-            if(!isUndefinedOrNull(properties.keepRatio)) {
-                this.keepRatio = properties.keepRatio;
-            }
-        }
     }
 });
 

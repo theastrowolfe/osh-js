@@ -21,8 +21,8 @@
  * @augments OSH.UI.View
  */
 OSH.UI.H264View = OSH.UI.VideoView.extend({
-	initialize : function(parentElementDivId, options) {
-		this._super(parentElementDivId,options);
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
 		var width = "640";
 		var height = "480";
@@ -57,15 +57,6 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
 		this.video.setAttribute("height", height);
 		var domNode = document.getElementById(this.divId);
 		domNode.appendChild(this.video);
-
-		// adds listener
-		var self = this;
-		OSH.EventManager.observeDiv(this.divId,"click",function(event){
-			OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-				dataSourcesIds: [self.dataSourceId],
-				entityId : self.entityId
-			});
-		});
 	},
 
 	/**
@@ -78,14 +69,15 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
 		this.avcWs.decode(fullNal);
 	},
 
-	/**
-	 *
-	 * @param dataSourceId
-	 * @param data
-	 * @instance
-	 * @memberof OSH.UI.H264View
-	 */
-	setData : function(dataSourceId, data) {
+    /**
+     *
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.H264View
+     */
+    updateFrame: function (styler) {
+        this._super(styler);
+
 		this.computeFullNalFromRaw(data.data, function(nal) {
 			var nalType = nal[0] & 0x1F;
 			//7 => PPS
@@ -150,21 +142,5 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
 				}
 			}
 		}
-	},
-
-	/**
-	 *
-	 * @param $super
-	 * @param dataSourceIds
-	 * @param entityId
-	 * @instance
-	 * @memberof OSH.UI.H264View
-	 */
-	selectDataView: function(dataSourceIds,entityId) {
-	    if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-	      document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
-	    } else {
-	      document.getElementById(this.divId).setAttribute("class",this.css);
-	    }
 	}
 });

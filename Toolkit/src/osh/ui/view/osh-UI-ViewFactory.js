@@ -106,7 +106,7 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
 
     switch (viewInstanceType) {
         case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
-
+            viewInstance = new OSH.UI.FFMPEGView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : {
@@ -119,6 +119,14 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
             viewInstance = new OSH.UI.Nvd3LineChartView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
+            viewInstance = new OSH.UI.FFMPEGView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
+            viewInstance = new OSH.UI.MjpegView("",[],defaultProperties);
         }
             break;
         default:

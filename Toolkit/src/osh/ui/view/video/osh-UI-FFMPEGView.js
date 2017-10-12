@@ -20,8 +20,18 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
-    dataSourceId: videoDataSource.id,
+ var videoView = new OSH.UI.FFMPEGView("videoContainer-id", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "H264 ViDEO",
+        entityId:entityId
+    }], {
     css: "video",
     cssSelected: "video-selected",
     name: "Video",
@@ -29,37 +39,17 @@
 });
  */
 OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
-    initialize: function (divId, options) {
-        this._super(divId, options);
-
-        this.fps = 0;
-        var width = "640";
-        var height = "480";
-
-        this.nbFrames = 0;
-        /*
-         for 1920 x 1080 @ 25 fps = 7 MB/s
-         1 frame = 0.28MB
-         178 frames = 50MB
-         */
-        this.FLUSH_LIMIT  = 200;
-
-        this.statistics = {
-            videoStartTime: 0,
-            videoPictureCounter: 0,
-            windowStartTime: 0,
-            windowPictureCounter: 0,
-            fps: 0,
-            fpsMin: 1000,
-            fpsMax: -1000,
-            fpsSinceStart: 0
-        };
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
         this.useWorker = OSH.Utils.isWebWorker();
         this.resetCalled = true;
         this.useWebWorkerTransferableData = false;
 
-        if (typeof options != "undefined") {
+        var width = 1920;
+        var height = 1080;
+
+        if (!isUndefinedOrNull(options)) {
             if (options.width) {
                 width = options.width;
             }
@@ -68,7 +58,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
                 height = options.height;
             }
 
-            this.useWorker = (typeof options.useWorker != "undefined") && (options.useWorker) && (OSH.Utils.isWebWorker());
+            this.useWorker = (!isUndefinedOrNull(options.useWorker)) && (options.useWorker) && (OSH.Utils.isWebWorker());
 
             if(!isUndefinedOrNull(options.adjust) && options.adjust) {
                 var divElt = document.getElementById(this.divId);
@@ -85,20 +75,14 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
             }
         }
 
-
         // create webGL canvas
         this.yuvCanvas = new YUVCanvas({width: width, height: height, contextOptions: {preserveDrawingBuffer: true}});
         var domNode = document.getElementById(this.divId);
+
         domNode.appendChild(this.yuvCanvas.canvasElement);
 
         // add selection listener
         var self = this;
-        OSH.EventManager.observeDiv(this.divId, "click", function (event) {
-            OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
-                dataSourcesIds: [self.dataSourceId],
-                entityId: self.entityId
-            });
-        });
 
         if (this.useWorker) {
             this.initFFMPEG_DECODER_WORKER();
@@ -109,13 +93,14 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      *
-     * @param dataSourceId
-     * @param data
+     * @param styler
      * @instance
      * @memberof OSH.UI.FFMPEGView
      */
-    setData: function (dataSourceId, data) {
-        var pktData = data.data;
+    updateFrame: function (styler) {
+        this._super(styler);
+
+        var pktData = styler.frame;
         var pktSize = pktData.length;
 
         this.resetCalled = false;
@@ -124,13 +109,13 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
             this.decodeWorker(pktSize, pktData);
         } else {
             var decodedFrame = this.decode(pktSize, pktData);
-            if(typeof decodedFrame != "undefined") {
+            if(!isUndefinedOrNull(decodedFrame)) {
                 // adjust canvas size to fit to the decoded frame
-                if(decodedFrame.frame_width != this.yuvCanvas.width) {
+                if(decodedFrame.frame_width !== this.yuvCanvas.width) {
                     this.yuvCanvas.canvasElement.width = decodedFrame.frame_width;
                     this.yuvCanvas.width = decodedFrame.frame_width;
                 }
-                if(decodedFrame.frame_height != this.yuvCanvas.height) {
+                if(decodedFrame.frame_height !== this.yuvCanvas.height) {
                     this.yuvCanvas.canvasElement.height = decodedFrame.frame_height;
                     this.yuvCanvas.height = decodedFrame.frame_height;
                 }
@@ -158,23 +143,6 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
 
     /**
-     *
-     * @param $super
-     * @param dataSourceIds
-     * @param entityId
-     * @instance
-     * @memberof OSH.UI.FFMPEGView
-     */
-    selectDataView: function (dataSourceIds, entityId) {
-        if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-            document.getElementById(this.divId).setAttribute("class", this.css + " " + this.cssSelected);
-        } else {
-            document.getElementById(this.divId).setAttribute("class", this.css);
-        }
-    },
-
-
-    /**
      * @instance
      * @memberof OSH.UI.FFMPEGView
      */
@@ -194,51 +162,6 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
             vDataPerRow: 1,
             vRowCnt: 1
         });
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.FFMPEGView
-     */
-    updateStatistics: function () {
-        this.nbFrames++;
-
-        var s = this.statistics;
-        s.videoPictureCounter += 1;
-        s.windowPictureCounter += 1;
-        var now = Date.now();
-        if (!s.videoStartTime) {
-            s.videoStartTime = now;
-        }
-        var videoElapsedTime = now - s.videoStartTime;
-        s.elapsed = videoElapsedTime / 1000;
-        if (videoElapsedTime < 1000) {
-            return;
-        }
-
-        if (!s.windowStartTime) {
-            s.windowStartTime = now;
-            return;
-        } else if ((now - s.windowStartTime) > 1000) {
-            var windowElapsedTime = now - s.windowStartTime;
-            var fps = (s.windowPictureCounter / windowElapsedTime) * 1000;
-            s.windowStartTime = now;
-            s.windowPictureCounter = 0;
-
-            if (fps < s.fpsMin) s.fpsMin = fps;
-            if (fps > s.fpsMax) s.fpsMax = fps;
-            s.fps = fps;
-        }
-
-        fps = (s.videoPictureCounter / videoElapsedTime) * 1000;
-        s.fpsSinceStart = fps;
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.FFMPEGView
-     */
-    onAfterDecoded: function () {
     },
 
     //-- FFMPEG DECODING PART
@@ -423,5 +346,5 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
             frameUData: new Uint8Array(Module.HEAPU8.buffer, frameUDataPtr, frame_width / 2 * frame_height / 2),
             frameVData: new Uint8Array(Module.HEAPU8.buffer, frameVDataPtr, frame_width / 2 * frame_height / 2)
         };
-    },
+    }
 });

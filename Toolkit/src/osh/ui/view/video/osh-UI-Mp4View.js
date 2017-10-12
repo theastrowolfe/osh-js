@@ -20,137 +20,142 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.Mp4View("videoContainer-id", {
-    dataSourceId: videoDataSource.id,
+ var videoView = new OSH.UI.Mp4View("videoContainer-id", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "MP4 ViDEO",
+        entityId:entityId
+    }]
+    , {
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
  });
  */
 OSH.UI.Mp4View = OSH.UI.VideoView.extend({
-  initialize: function(parentElementDivId,options) {
-    this._super(parentElementDivId,options);
+    initialize: function (divId, viewItems, options) {
+        this._super(divId, viewItems, options);
 
-    var width = "640";
-    var height = "480";
+        var width = "640";
+        var height = "480";
 
-    var width = "640";
-    var height = "480";
+        // creates video tag element
+        this.video = document.createElement("video");
+        this.video.setAttribute("control", '');
 
-    this.codecs = "avc1.64001E";
-    //this.codecs="avc1.42401F";
-    //this.codecs = 'avc1.42E01E';
+        // appends <video> tag to <div>
+        document.getElementById(this.divId).appendChild(this.video);
 
-      if(typeof options != "undefined" ) {
-      if (options.css) {
-        this.css = options.css;
-      }
+        this.init = false;
+        this.mp4box = new MP4Box();
+    },
 
-      //this.codecs="avc1.42401F";
+    /**
+     *
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.Mp4View
+     */
+    updateFrame: function (styler) {
+        var frame = styler.frame;
+        if (!this.init) {
+            this.init = true;
+            frame.fileStart = 0;
 
-      if (options.codecs) {
-        this.codecs = options.codecs;
-      }
+            var self = this;
+
+            this.mp4box.onError = function (e) {
+                console.error("MP4 error");
+            };
+            this.mp4box.onReady = function (info) {
+                OSH.Asserts.checkArrayIndex(info.tracks, 0);
+                self.createMediaSource(info.tracks[0],function(sourcebuffer){
+                    self.sourcebuffer = sourcebuffer;
+                });
+            };
+            self.mp4box.appendBuffer(frame);
+            self.mp4box.flush();
+        } else if(!isUndefinedOrNull(this.sourcebuffer)){
+            console.log("append");
+            if (this.sourcebuffer.updating || this.queue.length > 0) {
+                this.queue.push(frame);
+            } else {
+                this.sourcebuffer.appendBuffer(frame);
+            }
+        }
+    },
+
+    createMediaSource: function (mp4track,callback) {
+        if (!'MediaSource' in window) {
+            throw new ReferenceError('There is no MediaSource property in window object.');
+        }
+
+        var track_id = mp4track.id;
+        var codec = mp4track.codec;
+        var mime = 'video/mp4; codecs=\"' + codec + '\"';
+
+        if (!MediaSource.isTypeSupported(mime)) {
+            console.log('Can not play the media. Media of MIME type ' + mime + ' is not supported.');
+            throw ('Media of type ' + mime + ' is not supported.');
+        }
+
+        this.queue = [];
+        var mediaSource = new MediaSource();
+        this.video.src =  window.URL.createObjectURL(mediaSource);
+
+        mediaSource.addEventListener('sourceopen', function(e) {
+            mediaSource.duration = 10000000;
+            var playPromise = this.video.play();
+
+            // In browsers that don’t yet support this functionality,
+            // playPromise won’t be defined.
+
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    // Automatic playback started!
+                }).catch(function(error) {
+                    // Automatic playback failed.
+                    // Show a UI element to let the user manually start playback.
+                });
+            }
+
+
+            /**
+             * avc1.42E01E: H.264 Constrained Baseline Profile Level 3
+             avc1.4D401E: H.264 Main Profile Level 3
+             avc1.64001E: H.264 High Profile Level 3
+             */
+            var sourcebuffer = mediaSource.addSourceBuffer(mime);
+
+            sourcebuffer.addEventListener('updatestart', function(e) {
+                /*console.log('updatestart: ' + mediaSource.readyState);*/
+                if(this.queue.length > 0 && !this.buffer.updating) {
+                    sourcebuffer.appendBuffer(this.queue.shift());
+                }
+            }.bind(this));
+            sourcebuffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
+            sourcebuffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
+
+            sourcebuffer.addEventListener('updateend', function() { // Note: Have tried 'updateend'
+                if(this.queue.length > 0) {
+                    sourcebuffer.appendBuffer(this.queue.shift());
+                }
+            }.bind(this));
+
+            callback(sourcebuffer);
+        }.bind(this), false);
+
+        mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
+
     }
 
-    // creates video tag element
-    this.video = document.createElement("video");
-    this.video.setAttribute("control", '');
-    // appends <video> tag to <div>
-    document.getElementById(this.divId).appendChild(this.video);
-
-    // adds listener
-    var self = this;
-    OSH.EventManager.observeDiv(this.divId,"click",function(event){
-      OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-        dataSourcesIds: [self.dataSourceId],
-        entityId : self.entityId
-      });
-    });
-
-    // creates MediaSource object
-    this.mediaSource = new MediaSource();
-    this.buffer = null;
-    this.queue = [];
-
-    this.video.src = window.URL.createObjectURL(this.mediaSource);
-
-    this.mediaSource.addEventListener('sourceopen', function(e) {
-      this.mediaSource.duration = 10000000;
-      this.video.play();
-
-        /**
-         * avc1.42E01E: H.264 Constrained Baseline Profile Level 3
-           avc1.4D401E: H.264 Main Profile Level 3
-           avc1.64001E: H.264 High Profile Level 3
-         */
-      this.buffer = this.mediaSource.addSourceBuffer('	video/mp4; codecs="avc1.64001E"; profiles="isom,iso2,avc1,iso6,mp41"');
-
-      var mediaSource = this.mediaSource;
-
-      this.buffer.addEventListener('updatestart', function(e) {
-        /*console.log('updatestart: ' + mediaSource.readyState);*/
-        if(this.queue.length > 0 && !this.buffer.updating) {
-          this.buffer.appendBuffer(this.queue.shift());
-        }
-      }.bind(this));
-      this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
-      this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
-
-      this.buffer.addEventListener('updateend', function() { // Note: Have tried 'updateend'
-        if(this.queue.length > 0) {
-          this.buffer.appendBuffer(this.queue.shift());
-        }
-      }.bind(this));
-    }.bind(this), false);
-
-     var mediaSource = this.mediaSource;
-
-    this.mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
-
-    OSH.EventManager.observeDiv(this.divId, "click", function (event) {
-        OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
-            dataSourcesIds: [self.dataSourceId],
-            entityId: self.entityId
-        });
-    });
-
-  },
-
-  /**
-   *
-   * @param dataSourceId
-   * @param data
-   * @instance
-   * @memberof OSH.UI.Mp4View
-   */
-  setData: function(dataSourceId,data) {
-      if (this.buffer.updating || this.queue.length > 0) {
-        this.queue.push(data.data);
-      } else {
-        this.buffer.appendBuffer(data.data);
-      }
-      /*if(!this.buffer.updating) {
-          this.buffer.appendBuffer(data.data);
-      }*/
-  },
-
-  /**
-   *
-   * @param $super
-   * @param dataSourceIds
-   * @param entityId
-   * @instance
-   * @memberof OSH.UI.Mp4View
-   */
-  selectDataView: function(dataSourceIds, entityId) {
-	  if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-		  document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
-	  } else {
-          document.getElementById(this.divId).setAttribute("class",this.css);
-	  }
-  }
 });

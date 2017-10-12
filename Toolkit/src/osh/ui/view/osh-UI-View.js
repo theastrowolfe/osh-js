@@ -33,9 +33,6 @@ OSH.UI.View = BaseClass.extend({
         this.stylerToObj = {};
         this.stylerIdToStyler = {};
         this.lastRec = {};
-        this.selectedDataSources = [];
-        this.xyz = [];
-        this.dataSources = [];
         this.stylerIdToDatasources = {};
 
         //this.divId = divId;
@@ -43,16 +40,12 @@ OSH.UI.View = BaseClass.extend({
         this.name = this.id;
         this.type = this.getType();
 
-        this.dataSourceId = -1;
-
         if(typeof(options) !== "undefined" && typeof(options.cssSelected) !== "undefined") {
             this.cssSelected = options.cssSelected;
         }
 
         // inits the view before adding the viewItem
         this.init(parentElementDivId,viewItems,options);
-
-        OSH.ViewMap.registerView(this);
     },
 
 
@@ -67,11 +60,6 @@ OSH.UI.View = BaseClass.extend({
         if(!isUndefinedOrNull(options)) {
             this.options = options;
 
-            // sets dataSourceId
-            if(!isUndefinedOrNull(options.dataSourceId)) {
-                this.dataSourceId = options.dataSourceId;
-            }
-
             if(!isUndefinedOrNull(options.entityId)) {
                 this.entityId = options.entityId;
             }
@@ -79,15 +67,22 @@ OSH.UI.View = BaseClass.extend({
             if(!isUndefinedOrNull(options.name)) {
                 this.name = options.name;
             }
+        } else {
+            this.options = {};
         }
         this.css = "osh view ";
 
         this.cssSelected = "";
 
-        if(typeof(options) !== "undefined" && typeof(options.css) !== "undefined") {
-            this.css += options.css;
-        }
+        if(!isUndefinedOrNull(options)) {
+            if(!isUndefinedOrNull(options.css)) {
+                this.css += options.css;
+            }
 
+            if(!isUndefinedOrNull(options.cssSelected)) {
+                this.cssSelected = options.cssSelected;
+            }
+        }
         this.elementDiv = document.createElement("div");
         this.elementDiv.setAttribute("id", this.id);
         this.elementDiv.setAttribute("class", this.css);
@@ -128,10 +123,6 @@ OSH.UI.View = BaseClass.extend({
                 }
             });
         } );
-
-        if(!isUndefinedOrNull(this.dataSourceId)) {
-            this.updateObserveData(this.dataSourceId);
-        }
 
         // Attach the mutation observer to blocker, and only when attribute values change
         observer.observe( this.elementDiv, { attributes: true } );
@@ -254,7 +245,6 @@ OSH.UI.View = BaseClass.extend({
         if (viewItem.hasOwnProperty("contextmenu")) {
             this.contextMenus.push(viewItem.contextmenu);
         }
-        //for(var dataSourceId in styler.dataSourceToStylerMap) {
     },
 
     observeDatasourceStyler:function(viewItem) {
@@ -279,24 +269,6 @@ OSH.UI.View = BaseClass.extend({
                 this.observeViewItemData(dataSourceId,viewItem);
                 this.observeViewItemSelectedData(dataSourceId,viewItem);
             }
-        }
-    },
-
-    updateObserveData:function(dataSourceId) {
-        if(!isUndefinedOrNull(this.dataSourceId)) {
-            // remove old event
-            OSH.EventManager.remove(OSH.EventManager.EVENT.DATA+"-"+this.dataSourceId);
-
-            this.dataSourceId = dataSourceId;
-            this.options.dataSourceId = dataSourceId;
-
-            // observes the event associated to the dataSourceId
-            OSH.EventManager.observe(OSH.EventManager.EVENT.DATA+"-"+this.dataSourceId, function (event) {
-                if (event.reset)
-                    this.reset(); // on data stream reset
-                else
-                    this.setData(this.dataSourceId, event.data);
-            }.bind(this));
         }
     },
 
@@ -349,27 +321,6 @@ OSH.UI.View = BaseClass.extend({
                 });
             }
         });
-    },
-
-    onReceivedSelected:function(datasourceBindId,viewItem,event) {
-        var view = OSH.ViewMap.getView(this.id); // get sync view
-
-        // we check selected dataSource only when the selected entity is not set
-        var selected = false;
-        if (typeof event.entityId !== "undefined") {
-            selected = (viewItem.entityId === event.entityId);
-            view.selectedEntity = event.entityId;
-        }
-        else {
-            selected = (event.dataSourcesIds.indexOf(datasourceBindId) > -1);
-            view.selectedDataSources = event.dataSourcesIds;
-        }
-
-        if (datasourceBindId in view.lastRec) {
-            viewItem.styler.setData(datasourceBindId, view.lastRec[datasourceBindId], view, {
-                selected: selected
-            });
-        }
     },
 
     /**
@@ -428,7 +379,6 @@ OSH.UI.View = BaseClass.extend({
         }
     },
 
-    //TODO: not working. need to remove observationon the old DS
     removeOldViewItemsDatasource:function(viewItem) {
         OSH.Asserts.checkIsDefineOrNotNull(viewItem);
         OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
@@ -495,25 +445,7 @@ OSH.UI.View = BaseClass.extend({
         }.bind(this));
     },
 
-    /**
-     * Should be called after receiving osh:SELECT_VIEW event
-     * @param $super
-     * @param dataSourcesIds
-     * @param entitiesIds
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    selectDataView: function (dataSourcesIds,entityId) {
-        if(typeof this.dataSources !== "undefined") {
-            this.selectedDataSources = dataSourcesIds;
-            // set the selected entity even if it is undefined
-            // this is handled by the setData function
-            this.selectedEntity = entityId;
-            for (var j = 0; j < this.dataSources.length; j++) {
-                this.setData(this.dataSources[j], this.lastRec[this.dataSources[j]]);
-            }
-        }
-    },
+    selectDataView:function() {},
 
     /**
      *
@@ -523,9 +455,6 @@ OSH.UI.View = BaseClass.extend({
      */
     getDataSourcesId: function() {
         var res = [];
-        if(this.dataSourceId !== -1) {
-            res.push(this.dataSourceId);
-        }
 
         // check for stylers
         for(var i = 0; i < this.viewItems.length;i++) {

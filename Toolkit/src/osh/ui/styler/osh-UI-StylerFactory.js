@@ -27,7 +27,8 @@ OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property
 OSH.UI.Styler.Factory.TYPE = {
     MARKER:"Marker",
     POLYLINE:"Polyline",
-    LINE_PLOT: "LinePlot"
+    LINE_PLOT: "LinePlot",
+    VIDEO: "Video"
 };
 
 
@@ -283,7 +284,6 @@ OSH.UI.Styler.Factory.getThresholdColor = function(datasource, observableIdx,
             handler: colorTemplateHandlerFn
         }
     };
-
 };
 
 OSH.UI.Styler.Factory.getCustomColorFunc = function(dataSourceIdsArray,colorFnStr) {
@@ -325,6 +325,27 @@ OSH.UI.Styler.Factory.getSelectedColorFunc = function(dataSourceIdsArray,default
     };
 };
 
+// VIDEO
+OSH.UI.Styler.Factory.getVideoFunc = function(datasource, observableIdx) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+
+    var videoTemplate = "return rec"; // ==
+
+    var argsVideoTemplateHandlerFn = ['rec', 'timeStamp', 'options', videoTemplate];
+    var videoTemplateHandlerFn = Function.apply(null, argsVideoTemplateHandlerFn);
+
+    return {
+        frameFunc : {
+            dataSourceIds: [datasource.id],
+            handler: videoTemplateHandlerFn
+        }
+    };
+
+};
+
 
 OSH.UI.Styler.Factory.getTypeFromInstance = function(stylerInstance) {
     if(stylerInstance instanceof OSH.UI.Styler.PointMarker){
@@ -333,6 +354,8 @@ OSH.UI.Styler.Factory.getTypeFromInstance = function(stylerInstance) {
         return OSH.UI.Styler.Factory.TYPE.POLYLINE;
     } else if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
         return OSH.UI.Styler.Factory.TYPE.LINE_PLOT;
+    } else if(stylerInstance instanceof OSH.UI.Styler.Video){
+        return OSH.UI.Styler.Factory.TYPE.VIDEO;
     } else {
         throw new OSH.Exception.Exception("No type available for the instance "+stylerInstance);
     }
@@ -345,6 +368,8 @@ OSH.UI.Styler.Factory.getNewInstanceFromType = function(type) {
         return new OSH.UI.Styler.PointMarker({});
     } else if(type === OSH.UI.Styler.Factory.TYPE.POLYLINE) {
         return new OSH.UI.Styler.Polyline({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.VIDEO) {
+        return new OSH.UI.Styler.Video({});
     } else {
         throw new OSH.Exception.Exception("No styler instance available for the type "+type);
     }
