@@ -1,0 +1,14 @@
+{
+  "name": "mp4Box",
+  "homepage": "https://github.com/gpac/mp4box.js",
+  "version": "0.3.16",
+  "_release": "0.3.16",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.16",
+    "commit": "077ecb0e13172c75def1c41b4ed8297dbadc4c3b"
+  },
+  "_source": "https://github.com/gpac/mp4box.js.git",
+  "_target": "^0.3.15",
+  "_originalSource": "https://github.com/gpac/mp4box.js.git"
+}
