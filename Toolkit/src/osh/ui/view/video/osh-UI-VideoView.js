@@ -53,18 +53,8 @@ OSH.UI.VideoView = OSH.UI.View.extend({
         if(isUndefinedOrNull(options.keepRatio)) {
             this.options.keepRatio = false;
         }
-        this.updateKeepRatio();
+
         this.updateShowFps();
-    },
-
-    updateKeepRatio:function() {
-        var contains = OSH.Utils.containsCss(this.elementDiv,"keep-ratio-w");
-
-        if(this.options.keepRatio && !contains) {
-            OSH.Utils.addCss(this.elementDiv,"keep-ratio-w");
-        } else if(!this.options.keepRatio &&  contains) {
-            OSH.Utils.removeCss(this.elementDiv,"keep-ratio-w");
-        }
     },
 
     updateShowFps:function() {
@@ -180,10 +170,6 @@ OSH.UI.VideoView = OSH.UI.View.extend({
     updateProperties: function (properties) {
         this._super(properties);
         if (!isUndefinedOrNull(properties)) {
-            if(!isUndefinedOrNull(properties.keepRatio)) {
-                this.options.keepRatio = properties.keepRatio;
-                this.updateKeepRatio();
-            }
             if(!isUndefinedOrNull(properties.showFps)) {
                 this.options.showFps = properties.showFps;
                 this.updateShowFps();

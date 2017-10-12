@@ -126,8 +126,19 @@ OSH.UI.View = BaseClass.extend({
 
         // Attach the mutation observer to blocker, and only when attribute values change
         observer.observe( this.elementDiv, { attributes: true } );
+
+        this.updateKeepRatio();
     },
 
+    updateKeepRatio:function() {
+        var contains = OSH.Utils.containsCss(this.elementDiv,"keep-ratio-w");
+
+        if(this.options.keepRatio && !contains) {
+            OSH.Utils.addCss(this.elementDiv,"keep-ratio-w");
+        } else if(!this.options.keepRatio &&  contains) {
+            OSH.Utils.removeCss(this.elementDiv,"keep-ratio-w");
+        }
+    },
 
     /**
      * @instance
@@ -479,7 +490,14 @@ OSH.UI.View = BaseClass.extend({
         return OSH.UI.View.ViewType.UNDEFINED;
     },
 
-    updateProperties:function(properties) {}
+    updateProperties:function(properties) {
+        if (!isUndefinedOrNull(properties)) {
+            if(!isUndefinedOrNull(properties.keepRatio)) {
+                this.options.keepRatio = properties.keepRatio;
+                this.updateKeepRatio();
+            }
+        }
+    }
 });
 
 OSH.UI.View.ViewType = {
