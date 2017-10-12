@@ -39,7 +39,9 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
    document.getElementById("add-entity-button").onclick = function(event){
      var entityEditorView = new OSH.UI.Panel.EntityEditorPanel("",{
      viewContainer: "map-container",
-     services: ["http://sensiasoft.net:8181/sensorhub/sos","http://localhost:8181/sensorhub/sos"]
+     services: ["http://sensiasoft.net:8181/sensorhub/sos",
+         "http://localhost:8181/sensorhub/sos",
+         "http://localhost:8182/sensorhub/sos"]
      });
 
      var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
