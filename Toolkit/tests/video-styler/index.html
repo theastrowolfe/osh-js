@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>Foscam tasking test</title>
+
+    <!-- VENDOR -->
+    <script type="text/javascript" src="../../vendor/yuvcanvas/YUVCanvas.js"></script>
+    <script type="text/javascript" src="../../vendor/mp4Box/dist/mp4box.all.min.js"></script>
+    <script type="text/javascript" src="vendor/jimp.min.js"></script>
+    <!--script type="text/javascript" src="js/workers/ffmpeg-h264.js"></script-->
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/dialog.css"/>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerVideo.js"></script>
+
+    <style>
+
+        .osh.view.video {
+            width: 450px;
+            height: 338px;
+            border: solid 1px lightgrey;
+        }
+
+        .osh.view.video canvas {
+            width: inherit;
+            height: auto;
+        }
+
+        .video-selected {
+            border-radius: 3px;
+            box-shadow: 0px 0px 0px 8px rgba(50, 205, 50, 0.5);
+        }
+
+        .videoElement {
+            padding: 5px 5px 5px 5px;
+            background: radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);
+        }
+
+        #video-container {
+            display: flex;
+            flex-flow: row wrap;
+        }
+
+        #video-mjpeg .video > img{
+            width: inherit;
+            height:auto;
+        }
+    </style>
+</head>
+<body id="body">
+<div id="video-container">
+    <div class="blockElt">
+        <div id="video-h264" class="videoElement"></div>
+    </div>
+    <div class="blockElt">
+        <div id="stats-mp4" class="stats"></div>
+        <div id="video-mp4" class="videoElement"></div>
+    </div>
+    <div class="blockElt">
+        <div id="stats-mjpeg" class="stats"></div>
+        <div id="video-mjpeg" class="videoElement"></div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    window.OSH.BASE_WORKER_URL = "../../src/osh/ui/view/video/workers";
+
+    // We can add a group of dataSources and set the options
+    var dataReceiverController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor: 1
+    });
+
+
+    function createH264() {
+        var video_datasource_H264 = new OSH.DataReceiver.VideoH264("FFMPEG h264 ", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "localhost:8181/sensorhub/sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+            startTime: "now",
+            endTime: "2055-08-11T20:18:05.451Z",
+            offeringID: "urn:mysos:offering:foscam-r2",
+            syncMasterTime: false,
+            bufferingTime: 0
+        });
+
+        var video_view_H264 = new OSH.UI.FFMPEGView("video-h264", [{
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [video_datasource_H264.id],
+                        handler: function (rec, timestamp, options) {
+                           //some frame processing
+                           return rec;
+                        }
+                    }
+                }),
+                name: "H264 ViDEO"
+            }],
+            {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "Android Video",
+                useWorker: true,
+                useWebWorkerTransferableData: false,
+                width: 1920,
+                height: 1080,
+                showFps:true
+            });
+        dataReceiverController.addDataSource(video_datasource_H264);
+        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE, {dataSourcesId: [video_datasource_H264.id]});
+    }
+
+    function createMP4() {
+        var video_datasource_MP4 = new OSH.DataReceiver.VideoMp4("MP4", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "localhost:8181/sensorhub/sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+            startTime: "now",
+            endTime: "2055-08-11T20:18:05.451Z",
+            offeringID: "urn:mysos:offering:foscam-r2",
+            syncMasterTime: false,
+            bufferingTime: 0,
+            responseFormat:"video/mp4"
+        });
+        console.log(video_datasource_MP4.buildUrl(video_datasource_MP4.properties));
+
+        var video_view_MP4 = new OSH.UI.Mp4View("video-mp4", [{
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [video_datasource_MP4.id],
+                        handler: function (rec, timestamp, options) {
+                            return rec;
+                        }
+                    }
+                }),
+                name: "MP4 ViDEO"
+            }],
+            {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "Mp4 Video",
+                width: 1920,
+                height: 1080
+            });
+        dataReceiverController.addDataSource(video_datasource_MP4);
+        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE, {dataSourcesId: [video_datasource_MP4.id]});
+
+        video_view_MP4.onAfterDecoded = function () {
+            document.getElementById("stats-mp4").innerHTML = "Fps: " + this.statistics.fps + "";
+        }
+    }
+
+    function createMJPEG() {
+        var video_datasource_MJPEG = new OSH.DataReceiver.VideoMjpeg("MJPEG", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: ""+3,
+            syncMasterTime: false,
+            bufferingTime: 200
+        });
+
+        var video_view_MJPEG = new OSH.UI.MjpegView("video-mjpeg", [{
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [video_datasource_MJPEG.id],
+                        handler: function (rec, timestamp, options) {
+                            return rec;
+                        }
+                    }
+                }),
+                name: "MJPEG ViDEO"
+            }],
+            {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "MJPEG Video",
+                width: 1920,
+                height: 1080
+            });
+        dataReceiverController.addDataSource(video_datasource_MJPEG);
+        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE, {dataSourcesId: [video_datasource_MJPEG.id]});
+
+        video_view_MJPEG.onAfterDecoded = function () {
+            document.getElementById("stats-mjpeg").innerHTML = "Fps: " + video_view_MJPEG.statistics.fps + "";
+        }
+    }
+
+    createH264();
+    //createMP4();
+    createMJPEG();
+</script>
+
+</body>
+</html>

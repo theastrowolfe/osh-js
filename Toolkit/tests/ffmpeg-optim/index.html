@@ -14,10 +14,14 @@
     <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
     <!-- OSH buffer sync lib -->
     <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
 
     <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
 
+
+
     <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
 
     <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
     <!-- OSH controller lib -->
@@ -43,6 +47,9 @@
 
     <!--script type="text/javascript" src="js/workers-dev/osh-UI-FFMPEGView.js"></script-->
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerVideo.js"></script>
 
     <style>
 
@@ -122,7 +129,7 @@
         var videoDataSource = new OSH.DataReceiver.VideoH264("H264 video " + i, {
             protocol: "ws",
             service: "SOS",
-            endpointUrl: "localhost:8182/sensorhub/sos",
+            endpointUrl: "localhost:8181/sensorhub/sos",
             observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
             //offeringID: "urn:android:device:5da60da96b568172-sos",
             startTime: "now",
@@ -139,8 +146,18 @@
 
         console.log(videoDataSource.buildUrl(videoDataSource.properties));
 
-        var videoView_1 = new OSH.UI.FFMPEGView(videoElt.id, {
-            dataSourceId: videoDataSource.id,
+        var videoView_1 = new OSH.UI.FFMPEGView(videoElt.id, [{
+            styler: new OSH.UI.Styler.Video({
+                frameFunc: {
+                    dataSourceIds: [videoDataSource.id],
+                    handler: function (rec, timestamp, options) {
+                        return rec;
+                    }
+                }
+            }),
+            name: "H264 ViDEO"
+        }],
+        {
             css: "video",
             cssSelected: "video-selected",
             name: "Android Video",
