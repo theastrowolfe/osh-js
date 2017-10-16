@@ -124,11 +124,20 @@ var X2JS_RESOURCES_FILES = [];
 // END X2JS
 
 
+// MP4BOX
+
+var MP4BOX_SRC = ["vendor/mp4Box/dist/mp4box.all.js"];
+var MP4BOX_SRC_DEBUG = MP4BOX_SRC;
+var MP4BOX_CSS = [];
+var MP4BOX_RESOURCES_DIR = {};
+var MP4BOX_RESOURCES_FILES = [];
+
+// END MP4BOX
 Array.prototype.pushAll=function(array) {
     for(var i=0;i < array.length;i++) {
         this.push(array[i]);
     }
-}
+};
 
 var ALL_VENDOR_SRC = [];
 var ALL_VENDOR_DEBUG = [];
@@ -138,7 +147,7 @@ var ALL_VENDOR_RESOURCES_FILES = [];
 var VENDOR_CSS_EXTRA_PARAMS = "/*EXTRA CSS PARAMS\n*/";
 var WORKERS_FILES = [];
 
-if(argv.cesium) {
+if(argv.cesium || argv.all) {
     ALL_VENDOR_SRC.pushAll(CESIUM_SRC);
     ALL_VENDOR_DEBUG.pushAll(CESIUM_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(CESIUM_CSS);
@@ -147,7 +156,7 @@ if(argv.cesium) {
     VENDOR_CSS_EXTRA_PARAMS += '@import "Widgets/widgets.css";';
 }
 
-if(argv.ffmpeg) {
+if(argv.ffmpeg || argv.all) {
     ALL_VENDOR_SRC.pushAll(FFMPEG_SRC);
     ALL_VENDOR_DEBUG.pushAll(FFMPEG_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(FFMPEG_CSS);
@@ -156,7 +165,7 @@ if(argv.ffmpeg) {
     WORKERS_FILES.pushAll(["./src/osh/ui/view/video/workers/osh-UI-FFMPEGViewWorker.js","vendor/ffmpeg/ffmpeg-h264.js"]);
 }
 
-if(argv.nvd3) {
+if(argv.nvd3 || argv.all) {
     ALL_VENDOR_SRC.pushAll(NVD3_SRC);
     ALL_VENDOR_DEBUG.pushAll(NVD3_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(NVD3_CSS);
@@ -164,35 +173,46 @@ if(argv.nvd3) {
     ALL_VENDOR_RESOURCES_FILES.pushAll(NVD3_RESOURCES_FILES);
 }
 
-if(argv.nouislider) {
+if(argv.nouislider || argv.all) {
     ALL_VENDOR_SRC.pushAll(NOUISLIDER_SRC);
     ALL_VENDOR_DEBUG.pushAll(NOUISLIDER_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(NOUISLIDER_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(NOUISLIDER_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(NOUISLIDER_RESOURCES_FILES);}
+    ALL_VENDOR_RESOURCES_FILES.pushAll(NOUISLIDER_RESOURCES_FILES);
+}
 
-if(argv.ol3) {
+if(argv.ol3 || argv.all) {
     ALL_VENDOR_SRC.pushAll(OL3_SRC);
     ALL_VENDOR_DEBUG.pushAll(OL3_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(OL3_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(OL3_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(OL3_RESOURCES_FILES);}
+    ALL_VENDOR_RESOURCES_FILES.pushAll(OL3_RESOURCES_FILES);
+}
 
-if(argv.leaflet) {
+if(argv.leaflet || argv.all) {
     ALL_VENDOR_SRC.pushAll(LEAFLET_SRC);
     ALL_VENDOR_DEBUG.pushAll(LEAFLET_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(LEAFLET_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(LEAFLET_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(LEAFLET_RESOURCES_FILES);}
+    ALL_VENDOR_RESOURCES_FILES.pushAll(LEAFLET_RESOURCES_FILES);
+}
 
-if(argv.tree) {
+if(argv.mp4 || argv.all) {
+    ALL_VENDOR_SRC.pushAll(MP4BOX_SRC);
+    ALL_VENDOR_DEBUG.pushAll(MP4BOX_SRC_DEBUG);
+    ALL_VENDOR_CSS.pushAll(MP4BOX_CSS);
+    ALL_VENDOR_RESOURCES_DIR.push(MP4BOX_RESOURCES_DIR);
+    ALL_VENDOR_RESOURCES_FILES.pushAll(MP4BOX_RESOURCES_FILES);
+}
+
+if(argv.tree || argv.all) {
     ALL_VENDOR_SRC.pushAll(TREE_SRC);
     ALL_VENDOR_DEBUG.pushAll(TREE_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(TREE_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(TREE_RESOURCES_DIR);
     ALL_VENDOR_RESOURCES_FILES.pushAll(TREE_RESOURCES_FILES);}
 
-if(argv.x2js) {
+if(argv.x2js || argv.all) {
     ALL_VENDOR_SRC.pushAll(X2JS_SRC);
     ALL_VENDOR_DEBUG.pushAll(X2JS_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(X2JS_CSS);
