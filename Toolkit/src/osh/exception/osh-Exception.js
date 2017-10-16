@@ -14,24 +14,30 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.Exception.Exception = BaseClass.extend({
-    initialize:function(message,errorObj) {
-        this.message = message;
-        if(!isUndefined(errorObj)) {
-            this.originalError = errorObj;
-        }
-    },
+OSH.Exception.Exception = function(msg,errorObj) {
+    var error = Error.apply(this, arguments);
+    error.name = this.name = 'OSH Exception';
 
-    getError:function() {
-        if(!isUndefinedOrNull(this.originalError)) {
-            return this.originalError;
-        } else {
-            return "No original error reported";
-        }
+    this.message = error.message;
+    this.originalErrorObject = errorObj;
+    this.stack = error.stack;
 
-    },
+    return this;
+};
 
-    getMessage:function() {
-        return this.message;
-    }
+OSH.Exception.Exception.prototype = Object.create(Error.prototype, {
+    constructor: { value: OSH.Exception.Exception }
 });
+
+
+OSH.Exception.Exception.prototype.printStackTrace = function() {
+    return this.stack;
+};
+
+OSH.Exception.Exception.prototype.getMessage = function() {
+    return this.message;
+};
+
+OSH.Exception.Exception.prototype.getOriginalError = function() {
+    return this.originalErrorObject;
+};

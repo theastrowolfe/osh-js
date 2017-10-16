@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <title>Exception logger test</title>
 
+
     <!-- VENDOR -->
     <script type="text/javascript" src="vendor/YUVCanvas.js"></script>
-
-    <script type="text/javascript" src="vendor/ffmpeg-h264.js"></script>
+    <script type="text/javascript" src="../../vendor/mp4Box/dist/mp4box.all.min.js"></script>
 
     <!-- OSH Core -->
     <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
@@ -34,119 +34,109 @@
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
     <script type="text/javascript"
-    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
 
     <script type="text/javascript" src="../../src/osh/datasender/osh-DataSender-DataSink.js"></script>
     <script type="text/javascript" src="../../src/osh/datasender/osh-DataSender-PtzTasking.js"></script>
     <script type="text/javascript" src="../../src/osh/datasender/osh-DataSender-FoscamPtzTasking.js"></script>
 
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/tasking/osh-UI-PtzTaskingView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-DialogView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/dialog/osh-UI-MultiDialogView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="../../src/css/osh-tasking.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/osh-dialog.css"/>
-    <style>
 
-        .video {
-            width: inherit;
-            height:inherit;
-        }
+    <script type="text/javascript" src="js/a.js"></script>
+    <script type="text/javascript" src="js/b.js"></script>
 
-        .video img{
-            width: inherit;
-            height:inherit;
-        }
-
-        .video canvas{
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-selected {
-            border-radius: 3px;
-            box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
-        }
-
-        .dialog-multidialog {
-            width: 540px;
-            height:350px;
-        }
-    </style>
 </head>
 <body id="body">
-<h2>Foscam tasking test</h2>
-<div id="ptz"></div>
 <script type="text/javascript">
+    /*var replayFactor = 3;
+
+    //---------- DATASOURCE ------------//
     try {
-        var videoIdCount = 0;
-
-        // We can add a group of dataSources and set the options
-        var dataReceiverController = new OSH.DataReceiver.DataReceiverController({
-            replayFactor: 1
-        });
-
-        var ptzTasking = new OSH.DataSender.FoscamPtzTasking("Ptz", {
-            protocol: "http",
-            service: "SPS",
-            version: "2.0",
-            endpointUrl: "localhost:8182/sensorhub/sps",
-            offeringID: "urn:uuid:61807149-5d9e-4602-ab10-f872276e7fd3"
-        });
-
-        var taskingView = new OSH.UI.PtzTaskingView("ptz", {
-            dataSenderId: ptzTasking.id,
-            presets: ["Reset", "TopMost", "BottomMost", "LeftMost", "RightMost"]
-        });
-
-
-        // OSH connect
-        var videoDataSource = new OSH.DataReceiver.VideoH264("H264 video " + videoIdCount, {
+        var videoDataSource = new OSH.DataReceiver.VideoMp4("Mp4 H264", {
             protocol: "ws",
             service: "SOS",
-            endpointUrl: "localhost:8182/sensorhub/sos",
-            offeringID: "urn:mysos:offering:foscam-r2",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:a0e0eac2fea3f614-sos",
             observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
-            startTime: "now",
-            endTime: "2055-08-11T20:18:05.451Z",
+            startTime: "2016-08-11T20:17:30.402Z",
+            endTime: "2016-08-11T20:18:05.451Z",
             syncMasterTime: false,
-            bufferingTime: 0
+            bufferingTime: 0,
+            replaySpeed: 1,
+            responseFormat: "video/mp4"
         });
 
-        var videoView = new OSH.UI.FFMPEGView("video-container", {
+        //------------ VIEW -----------------//
+
+        // Video 1 View
+        var videoView = new OSH.UI.Mp4View("Mp4Container", {
             dataSourceId: videoDataSource.id,
             css: "video",
             cssSelected: "video-selected",
             name: "Android Video",
             useWorker: true,
-            width: 1280,
-            height: 720
+            width: 1920,
+            height: 1080
         });
 
-        var videoDialog = new OSH.UI.MultiDialogView(document.body.id, {
-            draggable: true,
-            css: "dialog-multidialog",
-            name: "Multi dialog",
-            show: true,
-            dockable: false,
-            closeable: false,
-            keepRatio: true,
-            connectionIds: [videoDataSource.id]
+        //---------------------------------------------------------------//
+        //--------------------- Creates DataProvider --------------------//
+        //---------------------------------------------------------------//
+
+        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+            replayFactor: 1
         });
 
-        // attach the leaflet view to the dialog
-        videoView.attachTo(videoDialog.popContentDiv.id);
+        // We can add a group of dataSources and set the options
+        dataProviderController.addDataSource(videoDataSource);
 
-        // append tasking view to dialog
-        videoDialog.appendView(taskingView.divId);
+        //---------------------------------------------------------------//
+        //---------------------------- Starts ---------------------------//
+        //---------------------------------------------------------------//
 
-        dataReceiverController.addDataSource(videoDataSource);
-        dataReceiverController.connectAll();
+        // starts streaming
+        dataProviderController.connectAll();
     } catch (exception) {
-
+        console.log(exception);
     }
+
+
+    try{
+        //throw new OSH.Exception.Exception("New test exception");
+        throw new Error("New test exception");
+    } catch(exception) {
+        console.log("exception caught");
+        console.log(exception);
+    }*/
+
+    //aNoCapture();
+
+    function osh() {
+        try {
+            aNoCapture();
+        } catch (exception) {
+            console.error("Has been caught correctly");
+            console.error(exception.printStackTrace());
+            console.error(exception.getMessage());
+            console.error(exception.getOriginalError());
+        }
+    }
+
+   /* function error() {
+        try {
+            aNoCaptureWithError();
+        } catch (exception) {
+            console.error("Has been caught correctly");
+            console.error(exception);
+        }
+    }
+
+    error();*/
+    osh();
 </script>
 
 </body>
