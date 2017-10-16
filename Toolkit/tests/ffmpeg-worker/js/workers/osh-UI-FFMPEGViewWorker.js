@@ -2,6 +2,16 @@ importScripts("ffmpeg-h264.js");
 // register all compiled codecs
 Module.ccall('avcodec_register_all');
 
+
+self.nbFrames = 0;
+/*
+ for 1920 x 1080 @ 25 fps = 7 MB/s
+ 1 frame = 0.28MB
+ 178 frames = 50MB
+ */
+self.FLUSH_LIMIT  = 200;
+
+
 // find h264 decoder
 var codec = Module.ccall('avcodec_find_decoder_by_name', 'number', ['string'], ["h264"]);
 if (codec == 0) {
@@ -18,6 +28,7 @@ if (ret < 0) {
 }
 
 
+
 // allocate packet
 self.av_pkt = Module._malloc(96);
 self.av_pktData = Module._malloc(1024 * 3000);
@@ -25,7 +36,7 @@ _av_init_packet(self.av_pkt);
 Module.setValue(self.av_pkt + 24, self.av_pktData, '*');
 
 // allocate video frame
-self.av_frame = _avcodec_alloc_frame();
+self.av_frame = _av_frame_alloc();
 if (!self.av_frame)
     alert("Could not allocate video frame");
 
@@ -41,8 +52,21 @@ self.onmessage = function (e) {
             decodedFrame.frameUData.buffer,
             decodedFrame.frameVData.buffer
         ]);
+        self.nbFrames++;
+
+        //check for flush
+       // checkFlush();
+        //TODO: flush is causing "Missing reference picture" for a couple of the next frames
     }
 };
+
+function checkFlush() {
+    if(self.nbFrames >= self.FLUSH_LIMIT) {
+        self.nbFrames = 0;
+        _avcodec_flush_buffers(self.av_ctx);
+        console.log("flush");
+    }
+}
 
 function innerWorkerDecode(pktSize, pktData) {
     // prepare packet

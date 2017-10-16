@@ -46,12 +46,20 @@ OSH.UI.VideoView = OSH.UI.View.extend({
     init:function(parentElementDivId,viewItems,options) {
         this._super(parentElementDivId,viewItems,options);
 
-        // defines default options if not defined
-        if(isUndefinedOrNull(options.showFps)) {
-            this.options.showFps = false;
-        }
-        if(isUndefinedOrNull(options.keepRatio)) {
-            this.options.keepRatio = false;
+
+        this.options.showFps = false;
+        this.options.keepRatio = false;
+
+        OSH.Utils.addCss(this.elementDiv,"video");
+
+        if(!isUndefinedOrNull(options)) {
+            // defines default options if not defined
+            if (!isUndefinedOrNull(options.showFps)) {
+                this.options.showFps = options.showFps;
+            }
+            if (!isUndefinedOrNull(options.keepRatio)) {
+                this.options.keepRatio = options.keepRatio;
+            }
         }
 
         this.updateShowFps();
@@ -144,7 +152,6 @@ OSH.UI.VideoView = OSH.UI.View.extend({
 
     /**
      *
-     * @param $super
      * @param dataSourceIds
      * @param entityId
      * @instance

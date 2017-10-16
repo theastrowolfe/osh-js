@@ -133,6 +133,7 @@ var MP4BOX_RESOURCES_DIR = {};
 var MP4BOX_RESOURCES_FILES = [];
 
 // END MP4BOX
+
 Array.prototype.pushAll=function(array) {
     for(var i=0;i < array.length;i++) {
         this.push(array[i]);

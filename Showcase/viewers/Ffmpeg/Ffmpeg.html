@@ -11,27 +11,6 @@
      -->
 
     <div id="FfmpegContainer" style="height:100%;width:100%"></div>
-    <style>
-        .video-ffmpeg {
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-ffmpeg img{
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-ffmpeg canvas{
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-selected {
-            border-radius: 3px;
-            box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
-        }
-    </style>
     <script>
         window.OSH.BASE_WORKER_URL = "js/workers/";
 
@@ -43,27 +22,39 @@
             protocol: "ws",
             service: "SOS",
             endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
-            offeringID: "urn:android:device:a0e0eac2fea3f614-sos",
+            offeringID: "urn:mysos:solo:video2",
             observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
-            startTime: "2016-08-11T20:17:30.402Z",
-            endTime: "2016-08-11T20:18:05.451Z",
+            startTime: "2015-12-19T21:04:25.829Z",
+            endTime: "2015-12-19T21:09:19.793Z",
             syncMasterTime: false,
             bufferingTime: 0,
-            replaySpeed:1
+            replaySpeed: 1
         });
 
         //------------ VIEW -----------------//
 
         // Video 1 View
-        var videoView = new OSH.UI.FFMPEGView("FfmpegContainer", {
-            dataSourceId: videoDataSource.id,
+        var videoView = new OSH.UI.FFMPEGView("FfmpegContainer", [
+            {
+                name: "video view item",
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [videoDataSource.id],
+                        handler: function (rec, timestamp, options) {
+                            return rec;
+                        }
+                    }
+                })
+            }
+        ],{
             css: "video-ffmpeg",
             cssSelected: "video-selected",
             name: "Android Video",
-            useWorker:true,
-            useWebWorkerTransferableData:true,
-            width:1920,
-            height:1080
+            useWorker: true,
+            useWebWorkerTransferableData: true,
+            width: 1920,
+            height: 1080,
+            keepRatio: true
         });
 
         //---------------------------------------------------------------//
@@ -71,7 +62,7 @@
         //---------------------------------------------------------------//
 
         var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-            replayFactor : 1
+            replayFactor: 1
         });
 
         // We can add a group of dataSources and set the options

@@ -12,24 +12,10 @@
 
     <div id="MjpegContainer" style="height:100%;width:100%"></div>
     <style>
-        .video-mjpeg {
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-mjpeg img{
-            width: inherit;
-            height:inherit;
-        }
-
-        .video-mjpeg canvas{
-            width: inherit;
-            height:inherit;
-        }
-
         .video-selected {
             border-radius: 3px;
-            box-shadow: 0px 0px 0px 8px rgba(50,205,50,0.5);
+            box-shadow: 0px 0px 0px 8px rgba(50, 205, 50, 0.5);
+            color:green;
         }
     </style>
     <script>
@@ -44,7 +30,7 @@
             observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
             startTime: "2015-02-16T07:58:00Z",
             endTime: "2015-02-16T08:09:00Z",
-            replaySpeed: replayFactor+"",
+            replaySpeed: replayFactor + "",
             syncMasterTime: false,
             bufferingTime: 200
         });
@@ -52,20 +38,33 @@
         //------------ VIEW -----------------//
 
         // Video 1 View
-        var videoView = new OSH.UI.MjpegView("MjpegContainer", {
-            dataSourceId: androidPhoneVideoDataSource.id,
-            css: "video-mjpeg",
-            cssSelected: "video-selected",
-            name: "Android Video",
-            keepRatio: true
-        });
+        var videoView = new OSH.UI.MjpegView("MjpegContainer",
+            [
+                {
+                    name: "video view item",
+                    styler: new OSH.UI.Styler.Video({
+                        frameFunc: {
+                            dataSourceIds: [androidPhoneVideoDataSource.id],
+                            handler: function (rec, timestamp, options) {
+                                return rec;
+                            }
+                        }
+                    })
+                }
+            ]
+            , {
+                css: "video-mjpeg",
+                cssSelected: "video-selected",
+                name: "Android Video",
+                keepRatio: true
+            });
 
         //---------------------------------------------------------------//
         //--------------------- Creates DataProvider --------------------//
         //---------------------------------------------------------------//
 
         var dataProviderController = new OSH.DataReceiver.DataReceiverController({
-            replayFactor : replayFactor
+            replayFactor: replayFactor
         });
 
         // We can add a group of dataSources and set the options
