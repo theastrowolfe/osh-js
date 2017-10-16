@@ -412,6 +412,16 @@ input[type="color"] {
     position:relative; /* allow displaying FPS info **/
 }
 
+.osh.view.video > canvas {
+    width:100%;
+    height:100%;
+}
+
+.osh.view.video > img {
+    width:100%;
+    height:100%;
+}
+
 .osh.view.video > .stats {
     position: absolute;
     margin-left: 5px;
@@ -420,6 +430,18 @@ input[type="color"] {
     padding: 3px;
     right: 0;
     top: 0;
+}
+
+.osh.view.keep-ratio-w {
+    height: auto !important;
+}
+
+.osh.view.keep-ratio-w.video > canvas {
+    height:auto;
+}
+
+.osh.view.keep-ratio-w.video > img {
+    height:auto;
 }
 
 .osh.view.video-selected {

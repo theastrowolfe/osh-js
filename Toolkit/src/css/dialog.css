@@ -83,10 +83,6 @@
     height: calc(100% - 45px);
 }
 
-.osh.dialog .keep-ratio-w {
-    height: auto !important;
-}
-
 .osh.dialog .keep-ratio-h {
 }
 
