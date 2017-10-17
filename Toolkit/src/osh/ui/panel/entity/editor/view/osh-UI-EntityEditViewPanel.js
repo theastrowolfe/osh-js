@@ -27,18 +27,18 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
             this.entityId = this.options.entityId;
         }
 
-        OSH.Utils.addCss(this.divElt,"edit-view");
+        OSH.Utils.addCss(this.elementDiv,"edit-view");
 
 
         // creates view properties div
         this.viewPropertiesElt = document.createElement("div");
         this.viewPropertiesElt.setAttribute("class","view-properties");
-        this.divElt.appendChild(this.viewPropertiesElt);
+        this.elementDiv.appendChild(this.viewPropertiesElt);
 
         // creates content div
         this.contentElt = document.createElement("div");
         this.contentElt.setAttribute("class","content-properties");
-        this.divElt.appendChild(this.contentElt);
+        this.elementDiv.appendChild(this.contentElt);
 
         this.buildViewProperties();
 
@@ -74,8 +74,8 @@ OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
     },
 
     buildContainer: function(containerArr) {
-        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.divElt,"Container");
-        this.containerDivId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",containerArr);
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.elementDiv,"Container");
+        this.containerDivId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"",containerArr);
 
         OSH.Helper.HtmlHelper.HTMLListBoxSetSelected(document.getElementById(this.containerDivId),this.view.container);
 

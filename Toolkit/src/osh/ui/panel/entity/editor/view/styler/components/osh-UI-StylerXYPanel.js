@@ -22,7 +22,7 @@ OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
         var self = this;
 
         this.contentElt = document.createElement("div");
-        this.divElt.appendChild(this.contentElt);
+        this.elementDiv.appendChild(this.contentElt);
 
         OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Default values");
 

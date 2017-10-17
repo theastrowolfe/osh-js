@@ -20,11 +20,11 @@ OSH.UI.Panel.EntityInfoPanel = OSH.UI.Panel.extend({
     },
 
     initPanel:function() {
-        this.nameTagId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Name","My entity","entity name");
-        this.iconTagId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Icon","images/cameralook.png","icon path");
-        this.descriptionTagId = OSH.Helper.HtmlHelper.addInputText(this.divElt,"Description url","","description here");
+        this.nameTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Name","My entity","entity name");
+        this.iconTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Icon","images/cameralook.png","icon path");
+        this.descriptionTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Description url","","description here");
 
-        OSH.Utils.addCss(this.divElt,"info");
+        OSH.Utils.addCss(this.elementDiv,"info");
     },
 
     loadInfos:function(infos){

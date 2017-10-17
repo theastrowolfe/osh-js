@@ -19,19 +19,20 @@ OSH.UI.Panel = BaseClass.extend({
     initialize: function (parentElementDivId,options) {
         this.divId = "panel-"+OSH.Utils.randomUUID();
         this.options = options;
-        this.divElt = document.createElement("div");
-        this.divElt.setAttribute("class", " osh panel ");
-        this.divElt.setAttribute("id", this.divId);
+        this.elementDiv = document.createElement("div");
+        this.elementDiv.setAttribute("class", "osh panel");
+        this.elementDiv.setAttribute("id", this.divId);
 
         if(!isUndefinedOrNull(parentElementDivId) && parentElementDivId !== "") {
-            document.getElementById(parentElementDivId).appendChild(this.divElt);
+            document.getElementById(parentElementDivId).appendChild(this.elementDiv);
         } else {
-            document.body.appendChild(this.divElt);
+            document.body.appendChild(this.elementDiv);
         }
 
         this.componentListeners = [];
 
         this.initPanel();
+        this.handleEvents();
     },
 
     initPanel:function() {},
@@ -58,7 +59,7 @@ OSH.UI.Panel = BaseClass.extend({
     },
 
     getAsHTML:function() {
-        return this.divElt.outerHTML;
+        return this.elementDiv.outerHTML;
     },
 
     /**
@@ -68,12 +69,14 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     attachTo : function(divId) {
-        if(typeof this.divElt.parentNode !== "undefined") {
+        if(typeof this.elementDiv.parentNode !== "undefined") {
             // detach from its parent
-            this.divElt.parentNode.removeChild(this.divElt);
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
         }
-        document.getElementById(divId).appendChild(this.divElt);
-
+        document.getElementById(divId).appendChild(this.elementDiv);
+        if(this.elementDiv.style.display === "none") {
+            this.elementDiv.style.display = "block";
+        }
         this.onResize();
     },
 
@@ -184,5 +187,34 @@ OSH.UI.Panel = BaseClass.extend({
         for (i = element.options.length - 1; i > 0; i--) {
             element.remove(i);
         }
+    },
+
+    /**
+     * Show the view by removing display:none style if any.
+     * @param properties
+     * @instance
+     * @memberof OSH.UI.View
+     */
+    show: function(properties) {
+    },
+
+    /**
+     *
+     * @param properties
+     * @instance
+     * @memberof OSH.UI.View
+     */
+    shows: function(properties) {
+    },
+
+    handleEvents:function() {
+        // observes the SHOW event
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
+            this.show(event);
+        }.bind(this));
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
+            this.onResize();
+        }.bind(this));
     }
 });

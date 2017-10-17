@@ -40,7 +40,7 @@ OSH.UI.Panel.SaveDialogPanel = OSH.UI.Panel.DialogPanel.extend({
 
         OSH.EventManager.observeDiv(this.saveButtonId,"click",this.onSaveClickButtonHandler.bind(this));
 
-        OSH.Utils.addCss(this.divElt,"save-dialog");
+        OSH.Utils.addCss(this.elementDiv,"save-dialog");
 
     },
 

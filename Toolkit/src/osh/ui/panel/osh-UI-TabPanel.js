@@ -23,7 +23,7 @@ OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
         this.mainElt = document.createElement("main");
         this.mainElt.setAttribute("class","tab-panel");
 
-        this.divElt.appendChild(this.mainElt);
+        this.elementDiv.appendChild(this.mainElt);
 
         this.sectionNb = 0;
 

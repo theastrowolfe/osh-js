@@ -1,14 +1,20 @@
-.osh .panel .tab-panel > section {
+.osh.panel {
+    background-color:transparent;
+    margin:0 0;
+    padding:0 0;
+}
+
+.osh.panel .tab-panel > section {
     display: none;
     padding: 20px 0 0;
     border-top: 1px solid #ddd;
 }
 
-.osh .panel .tab-panel > input {
+.osh.panel .tab-panel > input {
     display: none;
 }
 
-.osh .panel .tab-panel > label {
+.osh.panel .tab-panel > label {
     display: inline-block;
     margin: 0 0 -1px;
     padding: 15px 25px;
@@ -19,63 +25,63 @@
     border: 1px solid transparent;
 }
 
-.osh .panel .tab-panel > label:before {
+.osh.panel .tab-panel > label:before {
     font-family: fontawesome;
     font-weight: normal;
     margin-right: 10px;
 }
 
-.osh .panel .tab-panel > label:hover {
+.osh.panel .tab-panel > label:hover {
     color: #888;
     cursor: pointer;
 }
 
-.osh .panel .tab-panel > input:disabled + label {
+.osh.panel .tab-panel > input:disabled + label {
     color: #dfdfdf;
 }
 
-.osh .panel .tab-panel > input:checked + label {
+.osh.panel .tab-panel > input:checked + label {
     color: #000;
     border: 1px solid #ddd;
     border-top: 2px solid orange;
     border-bottom: 1px solid #fff;
 }
 
-.osh .panel .tab-panel .show-tab {
+.osh.panel .tab-panel .show-tab {
     display:block;
     height: inherit;
 }
 
-.osh .panel .tab-panel .hide-tab {
+.osh.panel .tab-panel .hide-tab {
     display:none;
 }
 
 @media screen and (max-width: 650px) {
-    .osh .panel .tab-panel > label {
+    .osh.panel .tab-panel > label {
         font-size: 0;
     }
-    .osh .panel .tab-panel > label:before {
+    .osh.panel .tab-panel > label:before {
         margin: 0;
         font-size: 18px;
     }
 }
 
 @media screen and (max-width: 400px) {
-    .osh .panel .tab-panel > label {
+    .osh.panel .tab-panel > label {
         padding: 15px;
     }
 }
 
 /** line - left/right position **/
-.osh .panel .line-left {
+.osh.panel .line-left {
     float:left;
 }
 
-.osh .panel .line-right {
+.osh.panel .line-right {
     float:right;
 }
 
-.osh .panel {
+.osh.panel {
     height:inherit;
 }
 

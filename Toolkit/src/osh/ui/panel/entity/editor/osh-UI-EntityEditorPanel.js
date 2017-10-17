@@ -56,7 +56,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         this.tabPanel.addTab("Data Sources",this.createDSPanel());
         this.tabPanel.addTab("Views",this.createViewPanel());
 
-        entityEditor.appendChild(this.tabPanel.divElt);
+        entityEditor.appendChild(this.tabPanel.elementDiv);
         OSH.Helper.HtmlHelper.addHTMLLine(entityEditor);
 
         var createButtonElt = document.createElement("button");
@@ -95,12 +95,12 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
         filePanel.loadPropertiesHandler = function(properties) {
             this.restoreSavedProperties(properties);
          }.bind(this);
-        return filePanel.divElt;
+        return filePanel.elementDiv;
     },
 
     createInfoPanel:function() {
         this.infoPanel = new OSH.UI.Panel.EntityInfoPanel();
-        return this.infoPanel.divElt;
+        return this.infoPanel.elementDiv;
     },
 
     createDSPanel:function() {
@@ -110,7 +110,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
            this.entity.dataProviderController.updateDataSource(datasource);
        }.bind(this);
 
-       return this.datasourcePanel.divElt;
+       return this.datasourcePanel.elementDiv;
     },
 
     createViewPanel: function() {
@@ -119,7 +119,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             entityId:this.entity.id
         });
 
-        return this.viewPanel.divElt;
+        return this.viewPanel.elementDiv;
     },
 
     initDatasources: function() {

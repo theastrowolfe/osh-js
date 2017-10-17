@@ -27,7 +27,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
         var viewContainer = OSH.Utils.randomUUID();
         var createButtonId = OSH.Utils.randomUUID();
 
-       var selectEltId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"",[],"Select a view");
+       var selectEltId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"",[],"Select a view");
        this.selectElt = document.getElementById(selectEltId);
 
        var buttonElt = document.createElement("button");
@@ -37,10 +37,10 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
        this.containerElt = document.createElement("div");
        this.containerElt.setAttribute("class","view-container");
 
-       this.divElt.appendChild(buttonElt);
-       this.divElt.appendChild(this.containerElt);
+       this.elementDiv.appendChild(buttonElt);
+       this.elementDiv.appendChild(this.containerElt);
 
-       OSH.Utils.addCss(this.divElt,"views");
+       OSH.Utils.addCss(this.elementDiv,"views");
 
        // listeners
        OSH.EventManager.observeElement(buttonElt,"click",this.onAddViewClickHandler.bind(this));

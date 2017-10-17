@@ -98,8 +98,8 @@ OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
             });
         });
 
-        this.divElt.appendChild(loadDivElt);
-        this.divElt.appendChild(divSaveElt);
+        this.elementDiv.appendChild(loadDivElt);
+        this.elementDiv.appendChild(divSaveElt);
     },
 
     saveProperties: function(properties,fileName) {

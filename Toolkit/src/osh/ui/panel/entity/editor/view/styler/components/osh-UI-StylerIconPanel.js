@@ -21,7 +21,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initPanel:function() {
         // type
-        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"Icon type", [
+        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"Icon type", [
             "None",
             "Fixed",
             "Threshold",
@@ -30,7 +30,7 @@ OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
         ]);
 
         this.content = document.createElement("div");
-        this.divElt.appendChild(this.content);
+        this.elementDiv.appendChild(this.content);
 
         this.properties = {};
 

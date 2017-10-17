@@ -27,10 +27,10 @@ OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
         this.locationPanel = new OSH.UI.Panel.LocationPanel("",this.options);
         this.iconPanel = new OSH.UI.Panel.IconPanel("",this.options);
 
-        tabPanel.addTab("Location",this.locationPanel.divElt);
-        tabPanel.addTab("Icon",this.iconPanel.divElt);
+        tabPanel.addTab("Location",this.locationPanel.elementDiv);
+        tabPanel.addTab("Icon",this.iconPanel.elementDiv);
 
-        this.divElt.appendChild(tabPanel.divElt);
+        this.elementDiv.appendChild(tabPanel.elementDiv);
     },
 
     getStyler:function() {

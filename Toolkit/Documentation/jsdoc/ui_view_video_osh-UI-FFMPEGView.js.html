@@ -2609,12 +2609,12 @@ OSH.UI.FFMPEGView = OSH.UI.View.extend({
             this.useWorker = (typeof options.useWorker != "undefined") &amp;&amp; (options.useWorker) &amp;&amp; (OSH.Utils.isWebWorker());
 
             if(options.adjust) {
-                var divElt = document.getElementById(this.divId);
-                if(divElt.offsetWidth &lt; width) {
-                    width = divElt.offsetWidth;
+                var elementDiv = document.getElementById(this.divId);
+                if(elementDiv.offsetWidth &lt; width) {
+                    width = elementDiv.offsetWidth;
                 }
-                if(divElt.offsetHeight &lt; height) {
-                    height = divElt.offsetHeight;
+                if(elementDiv.offsetHeight &lt; height) {
+                    height = elementDiv.offsetHeight;
                 }
             }
 

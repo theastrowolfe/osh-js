@@ -26,9 +26,9 @@ OSH.UI.Panel.StylerPolylinePanel = OSH.UI.Panel.StylerPanel.extend({
         // tab elements
         this.locationPanel = new OSH.UI.Panel.LocationPanel("",this.options);
 
-        tabPanel.addTab("Location",this.locationPanel.divElt);
+        tabPanel.addTab("Location",this.locationPanel.elementDiv);
 
-        this.divElt.appendChild(tabPanel.divElt);
+        this.elementDiv.appendChild(tabPanel.elementDiv);
     },
 
     getStyler:function() {

@@ -26,9 +26,9 @@ OSH.UI.Panel.StylerVideoPanel = OSH.UI.Panel.StylerPanel.extend({
         // tab elements
         this.videoPanel = new OSH.UI.Panel.VideoPanel("",this.options);
 
-        tabPanel.addTab("Video",this.videoPanel.divElt);
+        tabPanel.addTab("Video",this.videoPanel.elementDiv);
 
-        this.divElt.appendChild(tabPanel.divElt);
+        this.elementDiv.appendChild(tabPanel.elementDiv);
     },
 
     getStyler:function() {

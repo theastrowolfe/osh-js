@@ -21,14 +21,14 @@ OSH.UI.Panel.ColorPanel = OSH.UI.Panel.StylerPanel.extend({
 
     initPanel:function() {
         // type
-        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.divElt,"Color type", [
+        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"Color type", [
             "None",
             "Fixed",
             "Threshold"
         ]);
 
         this.content = document.createElement("div");
-        this.divElt.appendChild(this.content);
+        this.elementDiv.appendChild(this.content);
 
         this.properties = {};
 

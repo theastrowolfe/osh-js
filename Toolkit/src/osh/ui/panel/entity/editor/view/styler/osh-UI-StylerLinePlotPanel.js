@@ -27,10 +27,10 @@ OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
         this.valesPanel = new OSH.UI.Panel.XYPanel("",this.options);
         this.colorPanel = new OSH.UI.Panel.ColorPanel("",this.options);
 
-        tabPanel.addTab("Values",this.valesPanel.divElt);
-        tabPanel.addTab("Color",this.colorPanel.divElt);
+        tabPanel.addTab("Values",this.valesPanel.elementDiv);
+        tabPanel.addTab("Color",this.colorPanel.elementDiv);
 
-        this.divElt.appendChild(tabPanel.divElt);
+        this.elementDiv.appendChild(tabPanel.elementDiv);
     },
 
     getStyler:function() {

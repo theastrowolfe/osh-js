@@ -37,8 +37,8 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         // listeners
         OSH.EventManager.observeDiv(this.addDsButtonId,"click",this.onAddDataSourceButtonClickHandler.bind(this));
 
-        this.divElt.appendChild(buttonElt);
-        this.divElt.appendChild(divContainer);
+        this.elementDiv.appendChild(buttonElt);
+        this.elementDiv.appendChild(divContainer);
 
         this.datasources = {};
         this.nbDatasources = 0;

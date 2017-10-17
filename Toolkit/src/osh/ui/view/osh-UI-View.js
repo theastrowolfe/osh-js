@@ -23,8 +23,9 @@
  * @param {string} options - The options
  * @abstract
  */
-OSH.UI.View = BaseClass.extend({
+OSH.UI.View = OSH.UI.Panel.extend({
     initialize: function (parentElementDivId, viewItems,options) {
+        this._super(parentElementDivId, options);
         // list of stylers
         this.stylers = [];
         this.contextMenus = [];
@@ -70,7 +71,7 @@ OSH.UI.View = BaseClass.extend({
         } else {
             this.options = {};
         }
-        this.css = "osh view ";
+        this.css = "view ";
 
         this.cssSelected = "";
 
@@ -83,10 +84,8 @@ OSH.UI.View = BaseClass.extend({
                 this.cssSelected = options.cssSelected;
             }
         }
-        this.elementDiv = document.createElement("div");
-        this.elementDiv.setAttribute("id", this.id);
-        this.elementDiv.setAttribute("class", this.css);
-        this.divId = this.id;
+
+        OSH.Utils.addCss(this.elementDiv,this.css);
 
         var div = document.getElementById(parentElementDivId);
 
@@ -149,32 +148,6 @@ OSH.UI.View = BaseClass.extend({
     },
 
     /**
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    onResize:function() {
-    },
-
-    /**
-     *
-     * @param divId
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    attachTo : function(divId) {
-        if(typeof this.elementDiv.parentNode !== "undefined") {
-            // detach from its parent
-            this.elementDiv.parentNode.removeChild(this.elementDiv);
-        }
-        document.getElementById(divId).appendChild(this.elementDiv);
-        if(this.elementDiv.style.display === "none") {
-            this.elementDiv.style.display = "block";
-        }
-
-        this.onResize();
-    },
-
-    /**
      *
      * @param options
      * @instance
@@ -212,24 +185,6 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     setData: function(dataSourceId,data) {},
-
-    /**
-     * Show the view by removing display:none style if any.
-     * @param properties
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    show: function(properties) {
-    },
-
-    /**
-     *
-     * @param properties
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    shows: function(properties) {
-    },
 
     /**
      * Add viewItem to the view
@@ -417,11 +372,6 @@ OSH.UI.View = BaseClass.extend({
             this.selectDataView(event.dataSourcesIds,event.entityId);
         }.bind(this));
 
-        // observes the SHOW event
-        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
-            this.show(event);
-        }.bind(this));
-
         // deprecated
         OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM,function(event){
             if(typeof event.viewId !== "undefined" && event.viewId === this.id) {
@@ -443,10 +393,6 @@ OSH.UI.View = BaseClass.extend({
        /* OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
             this.updateViewItem(event.viewItem);
         }.bind(this));*/
-
-        OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
-            this.onResize();
-        }.bind(this));
 
         var self = this;
         OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT+"-"+this.divId,function(event){
