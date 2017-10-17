@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.MjpegView("containerId", [{
+ var videoView = new OSH.UI.View.MjpegView("containerId", [{
         styler: new OSH.UI.Styler.Video({
             frameFunc: {
                 dataSourceIds: [videoDataSource.id],
@@ -37,7 +37,7 @@
     name: "Video"
 });
  */
-OSH.UI.MjpegView = OSH.UI.VideoView.extend({
+OSH.UI.View.MjpegView = OSH.UI.View.VideoView.extend({
     initialize: function (divId, viewItems,options) {
         this._super(divId, viewItems,options);
 
@@ -67,7 +67,7 @@ OSH.UI.MjpegView = OSH.UI.VideoView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.MjpegView
+     * @memberof OSH.UI.View.MjpegView
      */
     updateFrame: function (styler) {
         this._super(styler);
@@ -78,7 +78,7 @@ OSH.UI.MjpegView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.MjpegView
+     * @memberof OSH.UI.View.MjpegView
      */
     reset: function () {
         this.imgTag.src = "";

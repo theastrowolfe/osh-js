@@ -151,7 +151,7 @@
 
         OSH.UI.Styler.Factory.createMarkerStyler([androidPhoneGpsDataSource, androidPhoneOrientationDataSource], function (styler) {
             //------------ VIEW -----------------//
-            var leafletMapView = new OSH.UI.LeafletView("leafletOrientEntityMap",
+            var leafletMapView = new OSH.UI.View.LeafletView("leafletOrientEntityMap",
                 [{
                     styler: styler,
                     entityId: androidEntity.id,

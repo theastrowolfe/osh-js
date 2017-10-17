@@ -110,7 +110,7 @@
 	    var streetsLayer  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
 	    
 	    // creates OSH View
-		var leafletView = new OSH.UI.LeafletView("container",{
+		var leafletView = new OSH.UI.View.LeafletView("container",{
 			baseLayers: {
 				"My BaseLayer Mapbox Street":streetsLayer
 			},

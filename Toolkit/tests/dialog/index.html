@@ -130,7 +130,7 @@
     //------------ VIEW -----------------//
 
     // Video 1 View
-    var videoView = new OSH.UI.FFMPEGView("", {
+    var videoView = new OSH.UI.View.FFMPEGView("", {
         dataSourceId: videoDataSource.id,
         css: "video-ffmpeg",
         cssSelected: "video-selected",
@@ -151,7 +151,7 @@
     videoView.attachTo(videoDialog.popContentDiv.id);
 
     // Video 2 view
-    var videoMjpegView = new OSH.UI.MjpegView("", {
+    var videoMjpegView = new OSH.UI.View.MjpegView("", {
         dataSourceId: androidPhoneVideoDataSource.id,
         css: "video",
         cssSelected: "video-selected",

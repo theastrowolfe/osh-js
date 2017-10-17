@@ -46,7 +46,7 @@
         //------------ VIEW -----------------//
 
         // Video 1 View
-        var videoView = new OSH.UI.MjpegView("", [
+        var videoView = new OSH.UI.View.MjpegView("", [
             {
                 name: "video view item",
                 styler: new OSH.UI.Styler.Video({
@@ -79,7 +79,7 @@
         // attach the leaflet view to the dialog
         videoView.attachTo(videoDialog.popContentDiv.id);
 
-        var ptzView = new OSH.UI.PtzTaskingView("",{});
+        var ptzView = new OSH.UI.View.PtzTaskingView("",{});
 
         videoDialog.appendView(ptzView.divId);
 

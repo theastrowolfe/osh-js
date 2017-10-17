@@ -18,9 +18,9 @@
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.MapView
+ * @augments OSH.UI.View.MapView
  * @example
- var leafletMapView = new OSH.UI.LeafletView("",
+ var leafletMapView = new OSH.UI.View.LeafletView("",
  [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -50,7 +50,7 @@
  }]
  );
  */
-OSH.UI.LeafletView = OSH.UI.MapView.extend({
+OSH.UI.View.LeafletView = OSH.UI.View.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
 
@@ -63,7 +63,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      * @param $super
      * @param options
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     beforeAddingItems: function (options) {
         // inits the map
@@ -73,7 +73,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initEvents: function () {
         // removes default right click
@@ -91,7 +91,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      *
      * @param options
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initMap: function (options) {
 
@@ -156,7 +156,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      *
      * @returns {{}}
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     getDefaultBaseLayers: function () {
         return {};
@@ -195,7 +195,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initLayers: function () {
         // create the tile layer with correct attribution
@@ -300,7 +300,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     addPolyline: function (properties) {
         var polylinePoints = [];
@@ -327,7 +327,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      * Remove marker from the map
      * @param styler
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     removeMarker:function(styler) {
         if(styler.id in this.stylerIdToStyler) {
@@ -341,7 +341,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     updateMarker: function (styler) {
         var markerId = 0;
@@ -398,7 +398,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     updatePolyline: function (styler) {
         var polylineId = 0;
@@ -447,7 +447,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      * @param $super
      * @param parentElement
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     attachTo:function(parentElement) {
         this._super(parentElement);
@@ -459,7 +459,7 @@ OSH.UI.LeafletView = OSH.UI.MapView.extend({
      *
      * @param $super
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     onResize:function($super) {
         this._super();

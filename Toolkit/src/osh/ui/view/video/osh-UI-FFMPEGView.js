@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.FFMPEGView("videoContainer-id", [{
+ var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", [{
         styler: new OSH.UI.Styler.Video({
             frameFunc: {
                 dataSourceIds: [videoDataSource.id],
@@ -38,7 +38,7 @@
     useWorker:true
 });
  */
-OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
+OSH.UI.View.FFMPEGView = OSH.UI.View.VideoView.extend({
     initialize: function (divId, viewItems,options) {
         this._super(divId, viewItems,options);
 
@@ -95,7 +95,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     updateFrame: function (styler) {
         this._super(styler);
@@ -144,7 +144,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     reset: function () {
         _avcodec_flush_buffers(this.av_ctx);
@@ -174,7 +174,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * The worker code is located at the location js/workers/FFMPEGViewWorker.js.
      * This location cannot be changed. Be sure to have the right file at the right place.
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      * @param callback
      */
     initFFMPEG_DECODER_WORKER: function (callback) {
@@ -220,7 +220,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param pktSize
      * @param pktData
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decodeWorker: function (pktSize, pktData) {
         var data = {
@@ -251,7 +251,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     initFFMEG_DECODER: function () {
         // register all compiled codecs
@@ -300,7 +300,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param pktData
      * @returns {{frame_width: *, frame_height: *, frameYDataPtr: *, frameUDataPtr: *, frameVDataPtr: *, frameYData: Uint8Array, frameUData: Uint8Array, frameVData: Uint8Array}}
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decode: function (pktSize, pktData) {
         if(pktSize > this.maxPktSize) {

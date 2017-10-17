@@ -367,6 +367,7 @@ OSH.UI.View = OSH.UI.Panel.extend({
      * @memberof OSH.UI.View
      */
     handleEvents: function() {
+        this._super();
         // observes the selected event
         OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,function(event){
             this.selectDataView(event.dataSourcesIds,event.entityId);

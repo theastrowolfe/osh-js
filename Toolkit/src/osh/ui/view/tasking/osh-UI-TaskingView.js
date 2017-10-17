@@ -15,7 +15,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.TaskingView = OSH.UI.View.extend({
+OSH.UI.View.TaskingView = OSH.UI.View.extend({
 
     initialize : function(parentElementDivId, properties) {
         this._super(parentElementDivId, [], properties);

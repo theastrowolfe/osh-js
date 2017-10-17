@@ -121,7 +121,7 @@
             bufferingTime: 0
         });
 
-        var video_view_H264 = new OSH.UI.FFMPEGView("video-h264", [{
+        var video_view_H264 = new OSH.UI.View.FFMPEGView("video-h264", [{
                 styler: new OSH.UI.Styler.Video({
                     frameFunc: {
                         dataSourceIds: [video_datasource_H264.id],
@@ -162,7 +162,7 @@
         });
         console.log(video_datasource_MP4.buildUrl(video_datasource_MP4.properties));
 
-        var video_view_MP4 = new OSH.UI.Mp4View("video-mp4", [{
+        var video_view_MP4 = new OSH.UI.View.Mp4View("video-mp4", [{
                 styler: new OSH.UI.Styler.Video({
                     frameFunc: {
                         dataSourceIds: [video_datasource_MP4.id],
@@ -202,7 +202,7 @@
             bufferingTime: 200
         });
 
-        var video_view_MJPEG = new OSH.UI.MjpegView("video-mjpeg", [{
+        var video_view_MJPEG = new OSH.UI.View.MjpegView("video-mjpeg", [{
                 styler: new OSH.UI.Styler.Video({
                     frameFunc: {
                         dataSourceIds: [video_datasource_MJPEG.id],

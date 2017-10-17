@@ -285,7 +285,7 @@
             });
 
             // Video 1 View
-            var videoView = new OSH.UI.FFMPEGView("", {
+            var videoView = new OSH.UI.View.FFMPEGView("", {
                 dataSourceId: videoDataSource.id,
                 css: "video-livetasking",
                 cssSelected: "",
@@ -334,7 +334,7 @@
             }
 
 
-            var ptzView  = new OSH.UI.PtzTaskingView("",{
+            var ptzView  = new OSH.UI.View.PtzTaskingView("",{
                 dataSenderId:ptzTasking.id,
                 presets:["Reset","TopMost","BottomMost","LeftMost","RightMost"]
             });

@@ -92,7 +92,7 @@
         offeringID: "urn:uuid:61807149-5d9e-4602-ab10-f872276e7fd3"
     });
 
-    var taskingView = new OSH.UI.PtzTaskingView("ptz",{
+    var taskingView = new OSH.UI.View.PtzTaskingView("ptz",{
         dataSenderId:ptzTasking.id,
         presets:["Reset","TopMost","BottomMost","LeftMost","RightMost"]
     });
@@ -111,7 +111,7 @@
         bufferingTime: 0
     });
 
-    var videoView = new OSH.UI.FFMPEGView("video-container", {
+    var videoView = new OSH.UI.View.FFMPEGView("video-container", {
         dataSourceId: videoDataSource.id,
         css: "video",
         cssSelected: "video-selected",

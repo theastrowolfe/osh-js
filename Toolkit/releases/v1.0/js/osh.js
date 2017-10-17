@@ -4990,7 +4990,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
             swapId: this.swapId
         });
 
-        var videoView = new OSH.UI.MjpegView(dialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(dialog.popContentDiv.id, {
             dataSourceId: videoDataSource.id,
             css: "video",
             cssSelected: "video-selected",
@@ -5043,7 +5043,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
             swapId: this.swapId
         });
 
-        var videoView = new OSH.UI.FFMPEGView(dialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(dialog.popContentDiv.id, {
             dataSourceId: videoDataSource.getId(),
             css: "video",
             cssSelected: "video-selected",
@@ -5268,7 +5268,7 @@ OSH.UI.EntityTreeView = Class.create(OSH.UI.View,{
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var cesiumMapView = new OSH.UI.CesiumView("",
+ var cesiumMapView = new OSH.UI.View.CesiumView ("",
  [{
 	styler :  pointMarker,
 	contextMenuId: circularContextMenuId,
@@ -5298,7 +5298,7 @@ OSH.UI.EntityTreeView = Class.create(OSH.UI.View,{
  }]
  );
  */
-OSH.UI.CesiumView = Class.create(OSH.UI.View, {
+OSH.UI.View.CesiumView  = Class.create(OSH.UI.View, {
 	
 	initialize : function($super, divId,viewItems, properties) {
 		$super(divId,viewItems,properties);
@@ -5316,7 +5316,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param timeStamp
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 */
 	updateMarker : function(styler,timeStamp,options) {
 		var markerId = 0;
@@ -5357,7 +5357,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param timeStamp
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 *
 	 */
     updateDrapedImage: function(styler,timeStamp,options) {
@@ -5435,7 +5435,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param $super
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 */
 	beforeAddingItems: function ($super, options) {
 		this.markers = {};
@@ -5494,7 +5494,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param properties
 	 * @returns {string}
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 */
 	addMarker : function(properties) {
 		
@@ -5544,7 +5544,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param id
 	 * @param properties
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 */
 	updateMapMarker: function(id, properties) {
 		var lon = properties.lon;
@@ -5600,7 +5600,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 	 * @param lon
 	 * @returns {Number|undefined}
 	 * @instance
-	 * @memberof OSH.UI.CesiumView
+	 * @memberof OSH.UI.View.CesiumView
 	 */
 	getAltitude : function(lat, lon) {
 		var position = Cesium.Cartesian3.fromDegrees(lon, lat, 0, this.viewer.scene.globe.ellipsoid, new Cesium.Cartesian3());
@@ -5617,7 +5617,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var leafletMapView = new OSH.UI.LeafletView("",
+ var leafletMapView = new OSH.UI.View.LeafletView("",
  [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -5647,7 +5647,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
  }]
  );
  */
-OSH.UI.LeafletView = Class.create(OSH.UI.View, {
+OSH.UI.View.LeafletView = Class.create(OSH.UI.View, {
     initialize: function ($super, divId, viewItems, options) {
         $super(divId, viewItems, options);
 
@@ -5660,7 +5660,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      * @param $super
      * @param options
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     beforeAddingItems: function ($super, options) {
         // inits the map
@@ -5670,7 +5670,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initEvents: function () {
         // removes default right click
@@ -5688,7 +5688,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      *
      * @param options
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initMap: function (options) {
 
@@ -5753,7 +5753,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      *
      * @returns {{}}
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     getDefaultBaseLayers: function () {
         return {};
@@ -5794,7 +5794,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     initLayers: function () {
         // create the tile layer with correct attribution
@@ -5889,7 +5889,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     addPolyline: function (properties) {
         var polylinePoints = [];
@@ -5916,7 +5916,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     updateMarker: function (styler) {
         var markerId = 0;
@@ -5966,7 +5966,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     updatePolyline: function (styler) {
         var polylineId = 0;
@@ -6015,7 +6015,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      * @param $super
      * @param divId
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     attachTo:function($super,divId) {
         $super(divId);
@@ -6027,7 +6027,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View, {
      *
      * @param $super
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     onResize:function($super) {
         this.map.invalidateSize();
@@ -6104,7 +6104,7 @@ L.Map = L.Map.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  */
-OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
+OSH.UI.View.OpenLayerView = Class.create(OSH.UI.View, {
     initialize: function ($super, divId, viewItems, options) {
         $super(divId, viewItems, options);
     },
@@ -6114,7 +6114,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      * @param $super
      * @param options
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     beforeAddingItems: function ($super, options) {
         // inits the map
@@ -6124,7 +6124,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     initEvents: function () {
         // removes default right click
@@ -6188,7 +6188,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     updateMarker: function (styler) {
         var markerId = 0;
@@ -6237,7 +6237,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     updatePolyline: function (styler) {
         var polylineId = 0;
@@ -6277,7 +6277,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      *
      * @param options
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     initMap: function (options) {
 
@@ -6399,7 +6399,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      *
      * @returns {Object}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     getDefaultBaseLayers: function () {
         return {};
@@ -6410,7 +6410,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      *
      * @returns {Array}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     getDefaultLayers: function () {
         var osm = new ol.layer.Tile({
@@ -6427,7 +6427,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     addMarker: function (properties) {
         //create marker
@@ -6479,7 +6479,7 @@ OSH.UI.OpenLayerView = Class.create(OSH.UI.View, {
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     addPolyline: function (properties) {
         var polylinePoints = [];
@@ -7080,7 +7080,7 @@ var htmlTaskingComponent =
  * @augments OSH.UI.View
  *
  */
-OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
+OSH.UI.View.PtzTaskingView = Class.create(OSH.UI.View, {
     initialize: function ($super, divId, options) {
         $super(divId);
         var width = "640";
@@ -7138,7 +7138,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      *
      * @param interval
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     removeInterval: function(interval) {
         if(this.timerIds.length > 0) {
@@ -7150,7 +7150,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onTiltClick: function (value) {
         this.tilt += value;
@@ -7162,7 +7162,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onPanClick: function(value) {
         this.pan += value;
@@ -7174,7 +7174,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onZoomClick: function(value) {
         this.zoom += value;
@@ -7188,7 +7188,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      * @param rtilt
      * @param rzoom
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onChange: function(rpan, rtilt, rzoom) {
         var properties = {
@@ -7206,7 +7206,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
      *
      * @param observer
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     register: function(observer) {
         this.observers.push(observer);
@@ -7220,7 +7220,7 @@ OSH.UI.PtzTaskingView = Class.create(OSH.UI.View, {
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
-var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
+var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", {
     dataSourceId: videoDataSource.id,
     css: "video",
     cssSelected: "video-selected",
@@ -7228,7 +7228,7 @@ var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
     useWorker:true
 });
  */
-OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
+OSH.UI.View.FFMPEGView = Class.create(OSH.UI.View, {
     initialize: function ($super, divId, options) {
         $super(divId, [], options);
 
@@ -7288,7 +7288,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
      * @param dataSourceId
      * @param data
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     setData: function (dataSourceId, data) {
         var pktData = data.data;
@@ -7325,7 +7325,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
      * @param dataSourceIds
      * @param entityId
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     selectDataView: function ($super, dataSourceIds, entityId) {
         if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
@@ -7338,7 +7338,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     reset: function () {
         _avcodec_flush_buffers(this.av_ctx);
@@ -7361,7 +7361,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     updateStatistics: function () {
         var s = this.statistics;
@@ -7397,7 +7397,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     onAfterDecoded: function () {
     },
@@ -7410,7 +7410,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      * @param callback
      */
     initFFMPEG_DECODER_WORKER: function (callback) {
@@ -7545,7 +7545,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
      * @param pktSize
      * @param pktData
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decodeWorker: function (pktSize, pktData) {
         var transferableData = {
@@ -7562,7 +7562,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     initFFMEG_DECODER: function () {
         // register all compiled codecs
@@ -7609,7 +7609,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
      * @param pktData
      * @returns {{frame_width: *, frame_height: *, frameYDataPtr: *, frameUDataPtr: *, frameVDataPtr: *, frameYData: Uint8Array, frameUData: Uint8Array, frameVData: Uint8Array}}
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decode: function (pktSize, pktData) {
         // prepare packet
@@ -7656,7 +7656,7 @@ OSH.UI.FFMPEGView = Class.create(OSH.UI.View, {
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  */
-OSH.UI.H264View = Class.create(OSH.UI.View, {
+OSH.UI.View.H264View = Class.create(OSH.UI.View, {
 	initialize : function($super, divId, options) {
 		$super(divId,[],options);
 
@@ -7708,7 +7708,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 	 *
 	 * @param fullNal
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	decode : function(fullNal) {
 		this.avcWs.decode(fullNal);
@@ -7719,7 +7719,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 	 * @param dataSourceId
 	 * @param data
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	setData : function(dataSourceId, data) {
 		this.computeFullNalFromRaw(data.data, function(nal) {
@@ -7744,7 +7744,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 	 * @param data
 	 * @param callback
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	computeFullNalFromRaw : function(data, callback) {
 		if (!(data && data.length)) {
@@ -7794,7 +7794,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 	 * @param dataSourceIds
 	 * @param entityId
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	selectDataView: function($super,dataSourceIds,entityId) {
 	    if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
@@ -7810,7 +7810,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
-var videoView = new OSH.UI.MjpegView("containerId", {
+var videoView = new OSH.UI.View.MjpegView("containerId", {
     dataSourceId: datasource.id,
     entityId : entity.id,
     css: "video",
@@ -7818,7 +7818,7 @@ var videoView = new OSH.UI.MjpegView("containerId", {
     name: "Video"
 });
  */
-OSH.UI.MjpegView = Class.create(OSH.UI.View,{
+OSH.UI.View.MjpegView = Class.create(OSH.UI.View,{
   initialize: function($super,divId,options) {
     $super(divId,[],options);
 
@@ -7845,7 +7845,7 @@ OSH.UI.MjpegView = Class.create(OSH.UI.View,{
    * @param dataSourceId
    * @param data
    * @instance
-   * @memberof OSH.UI.MjpegView
+   * @memberof OSH.UI.View.MjpegView
    */
   setData: function($super,dataSourceId,data) {
       var oldBlobURL = this.imgTag.src;
@@ -7859,7 +7859,7 @@ OSH.UI.MjpegView = Class.create(OSH.UI.View,{
    * @param dataSourceIds
    * @param entityId
    * @instance
-   * @memberof OSH.UI.MjpegView
+   * @memberof OSH.UI.View.MjpegView
    */
   selectDataView: function($super,dataSourceIds,entityId) {
     if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
@@ -7871,7 +7871,7 @@ OSH.UI.MjpegView = Class.create(OSH.UI.View,{
 
   /**
    * @instance
-   * @memberof OSH.UI.MjpegView
+   * @memberof OSH.UI.View.MjpegView
    */
   reset: function() {
       this.imgTag.src = "";
@@ -7885,14 +7885,14 @@ OSH.UI.MjpegView = Class.create(OSH.UI.View,{
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.Mp4View("videoContainer-id", {
+ var videoView = new OSH.UI.View.Mp4View("videoContainer-id", {
     dataSourceId: videoDataSource.id,
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
  });
  */
-OSH.UI.Mp4View = Class.create(OSH.UI.View,{
+OSH.UI.View.Mp4View = Class.create(OSH.UI.View,{
   initialize: function($super,divId,options) {
     $super(divId,[],options);
     
@@ -7978,7 +7978,7 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
    * @param dataSourceId
    * @param data
    * @instance
-   * @memberof OSH.UI.Mp4View
+   * @memberof OSH.UI.View.Mp4View
    */
   setData: function(dataSourceId,data) {
       if (this.buffer.updating || this.queue.length > 0) {
@@ -7994,7 +7994,7 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
    * @param dataSourceIds
    * @param entityId
    * @instance
-   * @memberof OSH.UI.Mp4View
+   * @memberof OSH.UI.View.Mp4View
    */
   selectDataView: function($super,dataSourceIds, entityId) {
 	  if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {

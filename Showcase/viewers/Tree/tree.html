@@ -193,7 +193,7 @@
         });
 
         //------------ VIEW -----------------//
-        var leafletMapView = new OSH.UI.LeafletView("",
+        var leafletMapView = new OSH.UI.View.LeafletView("",
             [{
                 styler: pointMarker,
                 name: "Android Phone GPS"
@@ -222,7 +222,7 @@
 
         leafletMapView.attachTo(mapDialog.popContentDiv.id);
 
-        var videoView = new OSH.UI.MjpegView("", [
+        var videoView = new OSH.UI.View.MjpegView("", [
             {
                 name: "video view item",
                 styler: new OSH.UI.Styler.Video({

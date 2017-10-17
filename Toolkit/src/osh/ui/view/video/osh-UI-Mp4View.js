@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.Mp4View("videoContainer-id", [{
+ var videoView = new OSH.UI.View.Mp4View("videoContainer-id", [{
         styler: new OSH.UI.Styler.Video({
             frameFunc: {
                 dataSourceIds: [videoDataSource.id],
@@ -38,7 +38,7 @@
     name: "Video"
  });
  */
-OSH.UI.Mp4View = OSH.UI.VideoView.extend({
+OSH.UI.View.Mp4View = OSH.UI.View.VideoView.extend({
     initialize: function (divId, viewItems, options) {
         this._super(divId, viewItems, options);
 
@@ -60,7 +60,7 @@ OSH.UI.Mp4View = OSH.UI.VideoView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.Mp4View
+     * @memberof OSH.UI.View.Mp4View
      */
     updateFrame: function (styler) {
         var frame = styler.frame;

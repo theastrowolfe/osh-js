@@ -378,7 +378,7 @@ OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM,{viewItem:viewItem,vi
 <p>If you have created a new view, the abstract <code>OSH.UI.View</code> already observe this event.</p>
 <h3 id="ptz_send_request">PTZ_SEND_REQUEST</h3>
 <p>This event allows one to send PTZ request to the <code>OSH.DataSender.DataSink</code> through the Event Manager. 
-The generic <code>OSH.UI.PtzTaskingView</code> already fire this event. If you want to use your own view:</p>
+The generic <code>OSH.UI.View.PtzTaskingView</code> already fire this event. If you want to use your own view:</p>
 <pre><code class="javascript"> OSH.EventManager.fire(OSH.EventManager.EVENT.PTZ_SEND_REQUEST+&quot;-&quot;+&lt;data sender id&gt;,{
     cmdData : {rpan:&lt;rpan&gt;,rtilt:&lt;rtitl&gt;,rzoom:&lt;rzoom&gt;,preset:&lt;preset&gt;},
     onSuccess:function(event){console.log(&quot;Failed to send request: &quot;+event);},
@@ -501,7 +501,7 @@ Some implementation are available:</p>
 <pre><code class="javascript">getCommandData: function (values) {...}
 </code></pre>
 
-<p>The <a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.PtzTaskingView.html">OSH.UI.PtzTaskingView</a> is a generic view allowing to task any kind of component.
+<p>The <a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.View.PtzTaskingView.html">OSH.UI.View.PtzTaskingView</a> is a generic view allowing to task any kind of component.
 It offers a control panel sending events observed by the <code>OSH.DataSender.PtzTasking</code>.
 The <code>onChange</code> function of the PtzTaskingView can be overrided by another view to add more control on the command sent:</p>
 <pre><code class="javascript">onChange: function(rpan, rtilt, rzoom,preset) {
@@ -641,7 +641,7 @@ A wrapper has been implemented within the Toolkit and provides some useful funct
 <li>use webworker</li>
 <li>increase performance by using transferable objects</li>
 </ul>
-<p>One can use the <a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/jsdoc/OSH.UI.FFMPEGView.html">OSH.UI.FFMPEGView</a> and build the library using --ffmpeg argument to Gulp such as:</p>
+<p>One can use the <a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/jsdoc/OSH.UI.View.FFMPEGView.html">OSH.UI.View.FFMPEGView</a> and build the library using --ffmpeg argument to Gulp such as:</p>
 <pre><code class="bash">$ gulp build --ffmpeg
 </code></pre>
 

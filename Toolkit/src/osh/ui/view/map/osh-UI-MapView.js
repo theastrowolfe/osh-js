@@ -15,7 +15,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.MapView = OSH.UI.View.extend({
+OSH.UI.View.MapView = OSH.UI.View.extend({
 
     initialize : function(parentElementDivId,viewItems, properties) {
         this._super(parentElementDivId, viewItems, properties);

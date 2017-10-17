@@ -42,7 +42,7 @@ function init() {
     //-------------------- Markers on Map View  --------------------//
     //--------------------------------------------------------------//
     // leaflet map view
-    var mapView = new OSH.UI.CesiumView("main-container",
+    var mapView = new OSH.UI.View.CesiumView ("main-container",
         [{
         	name: "KHTX Weather Radar",
         	entityId : nexradEntity.id,

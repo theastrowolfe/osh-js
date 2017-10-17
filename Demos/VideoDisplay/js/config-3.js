@@ -107,7 +107,7 @@ function init() {
     });
 
     // Video 1 View
-    var videoView = new OSH.UI.MjpegView(videoDialog.popContentDiv.id, {
+    var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
         dataSourceId: androidPhoneVideoDataSource.getId(),
         entityId : androidEntity.id,
         css: "video",
@@ -116,7 +116,7 @@ function init() {
     });
 
     // Video 2 View
-    var videoView2 = new OSH.UI.MjpegView(videoDialog2.popContentDiv.id, {
+    var videoView2 = new OSH.UI.View.MjpegView(videoDialog2.popContentDiv.id, {
         dataSourceId: androidPhoneVideoDataSource.getId(),
         entityId : androidEntity.id,
         css: "video",
@@ -198,7 +198,7 @@ function init() {
         }
     });
 
-    var leafletMapView = new OSH.UI.LeafletView("",
+    var leafletMapView = new OSH.UI.View.LeafletView("",
         [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -228,7 +228,7 @@ function init() {
             }]
     );
 
-    var cesiumMapView = new OSH.UI.CesiumView("",
+    var cesiumMapView = new OSH.UI.View.CesiumView ("",
         [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -322,7 +322,7 @@ function init() {
     var currentIdView = "";
     var mainDiv = document.getElementById("center-container");
 
-    var leafletMainView = new OSH.UI.LeafletView("",
+    var leafletMainView = new OSH.UI.View.LeafletView("",
         [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -352,7 +352,7 @@ function init() {
             }]
     );
 
-    var cesiumMainMapView = new OSH.UI.CesiumView("",
+    var cesiumMainMapView = new OSH.UI.View.CesiumView ("",
         [{
             styler :  pointMarker,
             contextMenuId: circularContextMenuId,
@@ -472,7 +472,7 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
         keepRatio:true
     });
 
-    var ptzView = new OSH.UI.PtzTaskingView();
+    var ptzView = new OSH.UI.View.PtzTaskingView();
 
     // by default the view is hidden because no div id has been defined
     // ptzDialog.appendView(ptzView.divId);

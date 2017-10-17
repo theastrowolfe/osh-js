@@ -193,7 +193,7 @@ OSH.UI.Panel = BaseClass.extend({
      * Show the view by removing display:none style if any.
      * @param properties
      * @instance
-     * @memberof OSH.UI.View
+     * @memberof OSH.UI.Panel
      */
     show: function(properties) {
     },
@@ -202,7 +202,7 @@ OSH.UI.Panel = BaseClass.extend({
      *
      * @param properties
      * @instance
-     * @memberof OSH.UI.View
+     * @memberof OSH.UI.Panel
      */
     shows: function(properties) {
     },

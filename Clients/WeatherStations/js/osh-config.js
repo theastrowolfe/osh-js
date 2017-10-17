@@ -22,7 +22,7 @@ function init() {
     //--------------------------------------------------------------//
     //-------------------------  Map View  -------------------------//
     //--------------------------------------------------------------//
-    var leafletMapView = new OSH.UI.LeafletView("main-container", [],
+    var leafletMapView = new OSH.UI.View.LeafletView("main-container", [],
         {autoZoomOnFirstMarker: true}
     );
     

@@ -18,9 +18,9 @@
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.MapView
+ * @augments OSH.UI.View.MapView
  */
-OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
+OSH.UI.View.OpenLayerView = OSH.UI.View.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
         this.onResize();
@@ -31,7 +31,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      * @param $super
      * @param options
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     beforeAddingItems: function (options) {
         // inits the map
@@ -45,7 +45,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     initEvents: function () {
         // removes default right click
@@ -109,7 +109,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     updateMarker: function (styler) {
         var markerId = 0;
@@ -158,7 +158,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     updatePolyline: function (styler) {
         var polylineId = 0;
@@ -198,7 +198,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @param options
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     initMap: function (options) {
 
@@ -325,7 +325,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @returns {Object}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     getDefaultBaseLayers: function () {
         return {};
@@ -336,7 +336,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @returns {Array}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     getDefaultLayers: function () {
         var osm = new ol.layer.Tile({
@@ -353,7 +353,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     addMarker: function (properties) {
         //create marker
@@ -405,7 +405,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      * @param styler
      * @returns {string} the id of the newly created marker, or the id of the marker if it already exists from the current styler
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     createMarkerFromStyler: function (styler) {
         //This method is intended to create a marker object only for the OpenLayerView. It does not actually add it
@@ -455,7 +455,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      * @param properties
      * @returns {string}
      * @instance
-     * @memberof OSH.UI.OpenLayerView
+     * @memberof OSH.UI.View.OpenLayerView
      */
     addPolyline: function (properties) {
         var polylinePoints = [];
@@ -499,7 +499,7 @@ OSH.UI.OpenLayerView = OSH.UI.MapView.extend({
      *
      * @param $super
      * @instance
-     * @memberof OSH.UI.LeafletView
+     * @memberof OSH.UI.View.LeafletView
      */
     onResize:function($super) {
         this._super();

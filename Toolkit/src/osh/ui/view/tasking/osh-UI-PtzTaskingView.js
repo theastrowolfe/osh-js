@@ -52,7 +52,7 @@ htmlTaskingComponent += "            <\/li>";
 htmlTaskingComponent += "</ul>";
 htmlTaskingComponent += "<\/div>";
 
-OSH.UI.PtzTaskingView = OSH.UI.View.extend({
+OSH.UI.View.PtzTaskingView = OSH.UI.View.extend({
     initialize: function (divId, options) {
         this._super(divId,[],options);
         var width = "640";
@@ -127,7 +127,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      *
      * @param presets array
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     addPresets:function(presetsArr) {
         var selectTag = document.querySelector('#'+this.rootTag.id+ "  .ptz-right  .ptz-select-style  .ptz-presets");
@@ -142,7 +142,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      * @instance
      */
     onSelectedPresets : function(event) {
@@ -155,7 +155,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      *
      * @param interval
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     removeInterval: function(interval) {
         if(this.timerIds.length > 0) {
@@ -167,7 +167,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onTiltClick: function (value) {
         this.tilt += value;
@@ -179,7 +179,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      * @param tiltValue the titl value
      * @param panValue the panValue value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onTiltPanClick:function(tiltValue,panValue) {
         this.tilt += tiltValue;
@@ -192,7 +192,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onPanClick: function(value) {
         this.pan += value;
@@ -203,7 +203,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      *
      * @param value
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onZoomClick: function(value) {
         this.zoom += value;
@@ -216,7 +216,7 @@ OSH.UI.PtzTaskingView = OSH.UI.View.extend({
      * @param rtilt
      * @param rzoom
      * @instance
-     * @memberof OSH.UI.PtzTaskingView
+     * @memberof OSH.UI.View.PtzTaskingView
      */
     onChange: function(rpan, rtilt, rzoom,preset) {
         OSH.EventManager.fire(OSH.EventManager.EVENT.PTZ_SEND_REQUEST+"-"+this.dataSenderId,{

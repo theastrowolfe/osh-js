@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  */
-OSH.UI.H264View = OSH.UI.VideoView.extend({
+OSH.UI.View.H264View = OSH.UI.View.VideoView.extend({
     initialize: function (divId, viewItems,options) {
         this._super(divId, viewItems,options);
 
@@ -63,7 +63,7 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
 	 *
 	 * @param fullNal
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	decode : function(fullNal) {
 		this.avcWs.decode(fullNal);
@@ -73,7 +73,7 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
      *
      * @param styler
      * @instance
-     * @memberof OSH.UI.H264View
+     * @memberof OSH.UI.View.H264View
      */
     updateFrame: function (styler) {
         this._super(styler);
@@ -100,7 +100,7 @@ OSH.UI.H264View = OSH.UI.VideoView.extend({
 	 * @param data
 	 * @param callback
 	 * @instance
-	 * @memberof OSH.UI.H264View
+	 * @memberof OSH.UI.View.H264View
 	 */
 	computeFullNalFromRaw : function(data, callback) {
 		if (!(data && data.length)) {

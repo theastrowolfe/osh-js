@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
+ var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", {
     dataSourceId: videoDataSource.id,
     css: "video",
     cssSelected: "video-selected",
@@ -28,7 +28,7 @@
     useWorker:true
 });
  */
-OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
+OSH.UI.OpenH264View = OSH.UI.View.VideoView.extend({
     initialize: function (divId, options) {
         this._super(divId, options);
 
@@ -112,7 +112,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
      * @param dataSourceId
      * @param data
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     setData: function (dataSourceId, data) {
         this.decodeWorker(data.data);
@@ -162,7 +162,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
      * @param dataSourceIds
      * @param entityId
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     selectDataView: function (dataSourceIds, entityId) {
         if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
@@ -175,7 +175,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     reset: function () {
         _avcodec_flush_buffers(this.av_ctx);
@@ -197,7 +197,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     updateStatistics: function () {
         this.nbFrames++;
@@ -235,7 +235,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     onAfterDecoded: function () {
     },
@@ -250,7 +250,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
      * The worker code is located at the location js/workers/FFMPEGViewWorker.js.
      * This location cannot be changed. Be sure to have the right file at the right place.
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      * @param callback
      */
     initFFMPEG_DECODER_WORKER: function (callback) {
@@ -329,7 +329,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
      * @param pktSize
      * @param pktData
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decodeWorker: function (pktData) {
         var data = {
@@ -344,7 +344,7 @@ OSH.UI.OpenH264View = OSH.UI.VideoView.extend({
      * @param data
      * @param callback
      * @instance
-     * @memberof OSH.UI.H264View
+     * @memberof OSH.UI.View.H264View
      */
     computeFullNalFromRaw : function(data, callback) {
         if (!(data && data.length)) {

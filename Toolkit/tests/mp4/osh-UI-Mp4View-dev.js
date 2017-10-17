@@ -20,14 +20,14 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.Mp4View("videoContainer-id", {
+ var videoView = new OSH.UI.View.Mp4View("videoContainer-id", {
     dataSourceId: videoDataSource.id,
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
  });
  */
-OSH.UI.Mp4View = OSH.UI.View.extend({
+OSH.UI.View.Mp4View = OSH.UI.View.extend({
     initialize: function (divId, options) {
         this._super(divId, [], options);
 
@@ -96,7 +96,7 @@ OSH.UI.Mp4View = OSH.UI.View.extend({
      * @param dataSourceId
      * @param data
      * @instance
-     * @memberof OSH.UI.Mp4View
+     * @memberof OSH.UI.View.Mp4View
      */
     setData: function (dataSourceId, data) {
         if (!this.sourceBuffer.updating){
@@ -110,7 +110,7 @@ OSH.UI.Mp4View = OSH.UI.View.extend({
      * @param dataSourceIds
      * @param entityId
      * @instance
-     * @memberof OSH.UI.Mp4View
+     * @memberof OSH.UI.View.Mp4View
      */
     selectDataView: function (dataSourceIds, entityId) {
         if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {

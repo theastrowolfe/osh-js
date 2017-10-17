@@ -245,7 +245,7 @@ encoded frames.
 //--------------------------------------------------------------//
 
     
-var soloVideoView = new OSH.UI.FFMPEGView("videoViewDivId", {
+var soloVideoView = new OSH.UI.View.FFMPEGView("videoViewDivId", {
     dataSourceId: soloVideo.getId(),
     entityId : soloEntity.id,
     css: "video",
@@ -462,7 +462,7 @@ var imageDrapingStyler = new OSH.UI.Styler.ImageDraping({
 Now you have setup the 3D view:
 
 ```javascript
- var mapView = new OSH.UI.CesiumView("cesiumViewId", [
+ var mapView = new OSH.UI.View.CesiumView ("cesiumViewId", [
 {
      name: "3DR Solo",
      entityId: soloEntity.id,
@@ -544,7 +544,7 @@ var soloVideoDialog = new OSH.UI.DialogPanel("dialog-main-container", { // put t
     swapId: "main-container"
 });
 
-var soloVideoView = new OSH.UI.FFMPEGView(soloVideoDialog.popContentDiv.id, { // put the view into the dialog
+var soloVideoView = new OSH.UI.View.FFMPEGView(soloVideoDialog.popContentDiv.id, { // put the view into the dialog
     dataSourceId: soloVideo.getId(),
     entityId : soloEntity.id,
     css: "video",
@@ -569,7 +569,7 @@ var altChartDialog = new OSH.UI.DialogPanel("dialog-main-container", {
 var altChartView = new OSH.UI.Nvd3CurveChartView(altChartDialog.popContentDiv.id, ...);
 
 // Cesium view is plugged as background 
-var mapView = new OSH.UI.CesiumView("main-container",...)
+var mapView = new OSH.UI.View.CesiumView ("main-container",...)
 ```
  
 #### <a id="osh-by-example-context-menu"></a>Context Menu 
@@ -586,7 +586,7 @@ var soloMarkerMenuId = "solo-marker-menu";
 var menuGroupId = "allmenus";
 
 // cesium map view
-var mapView = new OSH.UI.CesiumView("main-container", [{
+var mapView = new OSH.UI.View.CesiumView ("main-container", [{
   name: "3DR Solo",
   entityId: soloEntity.id,
   styler: pointMarker,

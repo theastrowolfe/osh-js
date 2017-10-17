@@ -162,7 +162,7 @@ If you have created a new view, the abstract `OSH.UI.View` already observe this 
 ### PTZ_SEND_REQUEST
 
 This event allows one to send PTZ request to the `OSH.DataSender.DataSink` through the Event Manager. 
-The generic `OSH.UI.PtzTaskingView` already fire this event. If you want to use your own view:
+The generic `OSH.UI.View.PtzTaskingView` already fire this event. If you want to use your own view:
 
 ```javascript
  OSH.EventManager.fire(OSH.EventManager.EVENT.PTZ_SEND_REQUEST+"-"+<data sender id>,{
@@ -305,7 +305,7 @@ Some implementation are available:
 getCommandData: function (values) {...}
 ```
 
-The [OSH.UI.PtzTaskingView](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.PtzTaskingView.html) is a generic view allowing to task any kind of component.
+The [OSH.UI.View.PtzTaskingView](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.View.PtzTaskingView.html) is a generic view allowing to task any kind of component.
 It offers a control panel sending events observed by the `OSH.DataSender.PtzTasking`.
 The `onChange` function of the PtzTaskingView can be overrided by another view to add more control on the command sent:
 
@@ -463,7 +463,7 @@ A wrapper has been implemented within the Toolkit and provides some useful funct
 - use webworker
 - increase performance by using transferable objects
 
-One can use the [OSH.UI.FFMPEGView](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/jsdoc/OSH.UI.FFMPEGView.html) and build the library using --ffmpeg argument to Gulp such as:
+One can use the [OSH.UI.View.FFMPEGView](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/jsdoc/OSH.UI.View.FFMPEGView.html) and build the library using --ffmpeg argument to Gulp such as:
 
 ```bash
 $ gulp build --ffmpeg

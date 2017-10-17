@@ -3,11 +3,11 @@ window.CESIUM_BASE_URL = 'vendor/';
 
 OSH.Helper.HtmlHelper.onDomReady (function(){
     //------------ VIEW -----------------//
-    var leafletMapView = new OSH.UI.LeafletView("map-container",[],{
+    var leafletMapView = new OSH.UI.View.LeafletView("map-container",[],{
         name:"2D Map"
     });
 
-    var cesiumMapView = new OSH.UI.CesiumView("", [],{
+    var cesiumMapView = new OSH.UI.View.CesiumView ("", [],{
             name:"3D Map"
         }
     );

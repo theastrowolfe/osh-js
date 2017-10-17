@@ -85,11 +85,11 @@ OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,view
 
     switch (viewInstanceType) {
         case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
-            viewInstance = new OSH.UI.FFMPEGView("",cloneProperties);
+            viewInstance = new OSH.UI.View.FFMPEGView("",cloneProperties);
         }
         break;
         case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
-            viewInstance = new OSH.UI.MjpegView("",cloneProperties);
+            viewInstance = new OSH.UI.View.MjpegView("",cloneProperties);
         }
             break;
         default:break;
@@ -106,27 +106,27 @@ OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultPr
 
     switch (viewInstanceType) {
         case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
-            viewInstance = new OSH.UI.FFMPEGView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.FFMPEGView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : {
-            viewInstance = new OSH.UI.LeafletView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.LeafletView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.CESIUM : {
-            viewInstance = new OSH.UI.CesiumView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.CesiumView ("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
-            viewInstance = new OSH.UI.Nvd3LineChartView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.Nvd3LineChartView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
-            viewInstance = new OSH.UI.FFMPEGView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.FFMPEGView("",[],defaultProperties);
         }
             break;
         case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
-            viewInstance = new OSH.UI.MjpegView("",[],defaultProperties);
+            viewInstance = new OSH.UI.View.MjpegView("",[],defaultProperties);
         }
             break;
         default:

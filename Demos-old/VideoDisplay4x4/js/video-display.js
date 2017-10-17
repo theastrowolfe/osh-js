@@ -61,9 +61,9 @@ function init() {
     };
 
     // creates views
-    var mapView = new OSH.UI.LeafletView("top-left");
+    var mapView = new OSH.UI.View.LeafletView("top-left");
 
-    var videoView = new OSH.UI.VideoView("top-right",{
+    var videoView = new OSH.UI.View.VideoView("top-right",{
         dataSourceId:androidPhoneVideoDataSource.getId(),
         format: "mjpeg",
         css:"video",
@@ -77,7 +77,7 @@ function init() {
         xLabel : 'Time'
     });
 
-    var taskingView = new OSH.UI.TaskingView("bottom-right",{
+    var taskingView = new OSH.UI.View.TaskingView("bottom-right",{
         dataSourceId : taskingVideoDataSource.getId()
     });
 

@@ -37,7 +37,7 @@ function init() {
     //--------------------------------------------------------------//
     //-------------------------  Map View  -------------------------//
     //--------------------------------------------------------------//
-    var leafletMapView = new OSH.UI.LeafletView("main-container", [],
+    var leafletMapView = new OSH.UI.View.LeafletView("main-container", [],
         {autoZoomOnFirstMarker: true}
     );
     
@@ -104,7 +104,7 @@ function init() {
         offeringID: "urn:dahua:cam:1G0215CGAK00046"
     });
     
-    var taskingView = new OSH.UI.PtzTaskingView("tasking-container",{});
+    var taskingView = new OSH.UI.View.PtzTaskingView("tasking-container",{});
     taskingView.register(dahua1Tasking);
     //taskingView.register(axis1Tasking);
     
@@ -305,7 +305,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -329,7 +329,7 @@ function init() {
                 connectionIds: [flirVideo.getId()]
             });
             
-            var flirVideoView = new OSH.UI.MjpegView(flirVideoDialog.popContentDiv.id, {
+            var flirVideoView = new OSH.UI.View.MjpegView(flirVideoDialog.popContentDiv.id, {
                 dataSourceId: flirVideo.getId(),
                 entityId : entity.id,
                 css: "video",
@@ -479,7 +479,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.MjpegView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -625,7 +625,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -788,7 +788,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -916,7 +916,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.MjpegView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -1054,7 +1054,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",

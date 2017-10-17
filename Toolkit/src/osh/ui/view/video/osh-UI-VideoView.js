@@ -15,7 +15,7 @@
 
  ******************************* END LICENSE BLOCK ***************************/
 
-OSH.UI.VideoView = OSH.UI.View.extend({
+OSH.UI.View.VideoView = OSH.UI.View.extend({
 
     initialize : function(parentElementDivId, viewItems,properties) {
         this._super(parentElementDivId, viewItems, properties);
@@ -95,7 +95,7 @@ OSH.UI.VideoView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.VideoView
+     * @memberof OSH.UI.View.VideoView
      */
     updateStatistics: function () {
         this.nbFrames++;
@@ -133,7 +133,7 @@ OSH.UI.VideoView = OSH.UI.View.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.VideoView
+     * @memberof OSH.UI.View.VideoView
      */
     onAfterDecoded: function () {
     },
@@ -155,7 +155,7 @@ OSH.UI.VideoView = OSH.UI.View.extend({
      * @param dataSourceIds
      * @param entityId
      * @instance
-     * @memberof OSH.UI.H264View
+     * @memberof OSH.UI.View.H264View
      */
     selectDataView: function(dataSourceIds,entityId) {
         var currentDataSources= this.getDataSourcesId();

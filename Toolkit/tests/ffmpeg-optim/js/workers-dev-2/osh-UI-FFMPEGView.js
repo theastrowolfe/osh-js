@@ -20,7 +20,7 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.FFMPEGView("videoContainer-id", {
+ var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", {
     dataSourceId: videoDataSource.id,
     css: "video",
     cssSelected: "video-selected",
@@ -28,7 +28,7 @@
     useWorker:true
 });
  */
-OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
+OSH.UI.View.FFMPEGView = OSH.UI.View.VideoView.extend({
     initialize: function (divId, options) {
         this._super(divId, options);
 
@@ -105,7 +105,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param dataSourceId
      * @param data
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     setData: function (dataSourceId, data) {
         var pktData = data.data;
@@ -129,7 +129,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param dataSourceIds
      * @param entityId
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     selectDataView: function (dataSourceIds, entityId) {
         if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
@@ -142,7 +142,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     reset: function () {
         _avcodec_flush_buffers(this.av_ctx);
@@ -164,7 +164,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     updateStatistics: function () {
         var s = this.statistics;
@@ -200,7 +200,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     onAfterDecoded: function () {
     },
@@ -215,7 +215,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * The worker code is located at the location js/workers/FFMPEGViewWorker.js.
      * This location cannot be changed. Be sure to have the right file at the right place.
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      * @param callback
      */
     initFFMPEG_DECODER_WORKER: function (callback) {
@@ -280,7 +280,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param pktSize
      * @param pktData
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decodeWorker: function (pktSize, pktData) {
         // the transferableData actually transfer the ownership of the object to or from the web worker.
@@ -314,7 +314,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
 
     /**
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     initFFMEG_DECODER: function () {
         // register all compiled codecs
@@ -363,7 +363,7 @@ OSH.UI.FFMPEGView = OSH.UI.VideoView.extend({
      * @param pktData
      * @returns {{frame_width: *, frame_height: *, frameYDataPtr: *, frameUDataPtr: *, frameVDataPtr: *, frameYData: Uint8Array, frameUData: Uint8Array, frameVData: Uint8Array}}
      * @instance
-     * @memberof OSH.UI.FFMPEGView
+     * @memberof OSH.UI.View.FFMPEGView
      */
     decode: function (pktSize, pktData) {
         if(pktSize > this.maxPktSize) {
