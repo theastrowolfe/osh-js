@@ -6901,13 +6901,13 @@ new OSH.UI.Loading();
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var rangeSlider = new OSH.UI.RangeSlider("rangeSlider-container",{
+ var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider-container",{
         startTime: "2015-02-16T07:58:00Z",
         endTime: "2015-02-16T08:09:00Z",
         refreshRate:1
  });
  */
-OSH.UI.RangeSlider = Class.create(OSH.UI.View, {
+OSH.UI.Panel.RangeSliderPanel = Class.create(OSH.UI.View, {
 	initialize: function ($super, divId, options) {
 		$super(divId, [], options);
 
@@ -7023,7 +7023,7 @@ OSH.UI.RangeSlider = Class.create(OSH.UI.View, {
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	deactivate:function() {
 		this.slider.setAttribute('disabled', true);
@@ -7040,7 +7040,7 @@ OSH.UI.RangeSlider = Class.create(OSH.UI.View, {
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	activate: function() {
 		this.slider.removeAttribute('disabled');

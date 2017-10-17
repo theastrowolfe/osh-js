@@ -294,7 +294,7 @@ function init() {
     var contextCircularMenu = new OSH.UI.ContextMenu.CircularMenu({id : circularContextMenuId,groupId: androidMenuGroupId,items : menuItems});
     var contextStackMenu = new OSH.UI.ContextMenu.StackMenu({id : stackContextMenuId,groupId: androidMenuGroupId,items : menuItems});
 
-    var rangeSlider = new OSH.UI.RangeSlider("rangeSlider",{
+    var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider",{
         startTime: "2015-02-16T07:58:00Z",
         endTime: "2015-02-16T08:09:00Z",
         refreshRate:1

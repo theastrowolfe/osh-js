@@ -20,16 +20,16 @@
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var rangeSlider = new OSH.UI.RangeSlider("rangeSlider-container",{
+ var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider-container",{
         startTime: "2015-02-16T07:58:00Z",
         endTime: "2015-02-16T08:09:00Z",
         refreshRate:1, // rate of data received
         dataSourcesId: [someDataSource.id],
  });
  */
-OSH.UI.RangeSlider = OSH.UI.View.extend({
+OSH.UI.Panel.RangeSliderPanel = OSH.UI.Panel.extend({
 	initialize: function (parentElementDivId, options) {
-		this._super(parentElementDivId, [], options);
+		this._super(parentElementDivId, options);
 
 		this.slider = document.createElement("div");
 		var activateButtonDiv = document.createElement("div");
@@ -150,7 +150,7 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	deactivate:function() {
 		this.slider.setAttribute('disabled', true);
@@ -167,14 +167,10 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	activate: function() {
 		this.slider.removeAttribute('disabled');
 		this.lock = true;
-	},
-
-    getType: function()  {
-        return OSH.UI.View.ViewType.RANGE_SLIDER;
-    }
+	}
 });

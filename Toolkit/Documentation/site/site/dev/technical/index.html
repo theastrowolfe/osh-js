@@ -303,7 +303,7 @@ OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + &quot;-&quot; + &lt;datas
 
 <h3 id="current_master_time">CURRENT_MASTER_TIME</h3>
 <p>The <code>CURRENT_MASTER_TIME</code> allows to send the current timestamp being processed. This is sent by the buffer after processing (at the same time as the DATA event) and it is observed
-by the <code>OSH.UI.RangeSlider</code> view to move the slider cursor.</p>
+by the <code>OSH.UI.Panel.RangeSliderPanel</code> view to move the slider cursor.</p>
 <h3 id="select_view">SELECT_VIEW</h3>
 <p>The <code>SELECT_VIEW</code> event is sent to select a view. It contains a data source id array and an entity id:</p>
 <pre><code class="javascript"> OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
@@ -357,7 +357,7 @@ The event is postfixed with the <code>contextMenuId</code> like:</p>
 
 <h3 id="current_master_time_1">CURRENT_MASTER_TIME</h3>
 <p>This event is internally used to send event from the buffer to any component wanting get the current synchronized time. This is currenlty used by the 
-<code>OSH.UI.RangeSlider</code> view.</p>
+<code>OSH.UI.Panel.RangeSliderPanel</code> view.</p>
 <h3 id="add_view_item">ADD_VIEW_ITEM</h3>
 <p>There are two ways to add a view item to your view:</p>
 <ul>

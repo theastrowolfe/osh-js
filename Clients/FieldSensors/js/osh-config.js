@@ -112,7 +112,7 @@ function init() {
     //--------------------------------------------------------------//
     //------------------------ Time Slider  ------------------------//
     //--------------------------------------------------------------//
-    var rangeSlider = new OSH.UI.RangeSlider("rangeSlider",{
+    var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider",{
         startTime: "2016-08-30T18:20:00Z",
         endTime: "2016-08-30T19:22:00Z",
         refreshRate:1

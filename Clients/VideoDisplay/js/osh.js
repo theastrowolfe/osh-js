@@ -8738,13 +8738,13 @@ new OSH.UI.Loading();
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var rangeSlider = new OSH.UI.RangeSlider("rangeSlider-container",{
+ var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider-container",{
         startTime: "2015-02-16T07:58:00Z",
         endTime: "2015-02-16T08:09:00Z",
         refreshRate:1
  });
  */
-OSH.UI.RangeSlider = OSH.UI.View.extend({
+OSH.UI.Panel.RangeSliderPanel = OSH.UI.View.extend({
 	initialize: function (divId, options) {
 		this._super(divId, [], options);
 
@@ -8860,7 +8860,7 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	deactivate:function() {
 		this.slider.setAttribute('disabled', true);
@@ -8877,7 +8877,7 @@ OSH.UI.RangeSlider = OSH.UI.View.extend({
 
 	/**
 	 * @instance
-	 * @memberof OSH.UI.RangeSlider
+	 * @memberof OSH.UI.Panel.RangeSliderPanel
 	 */
 	activate: function() {
 		this.slider.removeAttribute('disabled');

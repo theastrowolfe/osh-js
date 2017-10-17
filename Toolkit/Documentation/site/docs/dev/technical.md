@@ -70,7 +70,7 @@ OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + <datasourceId>, fun
 ### CURRENT_MASTER_TIME
 
 The `CURRENT_MASTER_TIME` allows to send the current timestamp being processed. This is sent by the buffer after processing (at the same time as the DATA event) and it is observed
-by the `OSH.UI.RangeSlider` view to move the slider cursor.
+by the `OSH.UI.Panel.RangeSliderPanel` view to move the slider cursor.
 
 ### SELECT_VIEW
 
@@ -137,7 +137,7 @@ OSH.EventManager.fire(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE, {dataSources
 ### CURRENT_MASTER_TIME
 
 This event is internally used to send event from the buffer to any component wanting get the current synchronized time. This is currenlty used by the 
-`OSH.UI.RangeSlider` view.
+`OSH.UI.Panel.RangeSliderPanel` view.
 
 ### ADD_VIEW_ITEM
 

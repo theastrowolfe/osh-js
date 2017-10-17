@@ -676,7 +676,7 @@ Html Layout:
 Since it uses EventManager to communicate, you have only to instantiate a new Object
 
 ```javascript
- var rangeSlider = new OSH.UI.RangeSlider("rangeSlider",{
+ var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider",{
     startTime: "2015-02-16T07:58:00Z",
     endTime: "2015-02-16T08:09:00Z",
     refreshRate:1
@@ -684,5 +684,5 @@ Since it uses EventManager to communicate, you have only to instantiate a new Ob
 ```
 For real-time we would set:
 ```javascript
- var rangeSlider = new OSH.UI.RangeSlider("rangeSlider");
+ var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider");
 ```
