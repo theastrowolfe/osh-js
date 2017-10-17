@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- VENDOR -->
+    <script type="text/javascript" src="../../vendor/interact.js/dist/interact.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-dialog.css"/>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerVideo.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        #dialog-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .draggable {
+            cursor: -webkit-grab;
+            cursor: -moz-grab;
+            cursor: grab;
+        }
+
+        .draggable.getting--dragged {
+            cursor: -webkit-grabbing;
+            cursor: -moz-grabbing;
+            cursor: grabbing;
+        }
+
+        /** DIALOG CSS **/
+        .osh.dialog {
+            width: 450px;
+            height: 300px;
+            background-color: #29e;
+            color: white;
+            box-sizing: border-box;
+            background: radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75));
+            border: 1px solid #bbbbbb;
+            border-radius: 6px;
+            box-shadow: 0 0 7px #000000;
+            z-index: 1020;
+            -webkit-transform: translate(0px, 0px);
+            transform: translate(0px, 0px);
+        }
+
+        .osh.dialog .dialog-header {
+            height: 25px;
+            background: red;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            padding-right:5px;
+            padding-bottom: 4px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .osh.dialog .dialog-header > .line-left {
+            float: left;
+            padding-left: 15px;
+            padding-top: 4px;
+        }
+
+        .osh.dialog .dialog-header > .line-right {
+            float: right;
+        }
+
+        .osh.dialog .dialog-content {
+            background: yellow;
+            height: calc(100% - 50px); /* 25px of the header + 25px of the footer*/
+        }
+
+        .osh.dialog .dialog-footer {
+            height: 25px;
+            background: black;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .osh.dialog .dialog-header-icon {
+            display: inline-block;
+            font-family: FontAwesome;
+            padding: 2px 2px 4px 6px;
+            margin: 0 0px 0 2px;
+            cursor: pointer;
+            color: #c3c3c3;
+        }
+
+        .osh.dialog .dialog-header-icon:hover {
+            color: #676767;
+            cursor:pointer;
+        }
+
+        .icon-pin:before {
+            content: "\f08d";
+        }
+    </style>
+</head>
+<body id="body">
+<div id="dialog-container"></div>
+<script type="text/javascript">
+
+    OSH.UI.Panel.NewDialogPanel = OSH.UI.Panel.extend({
+        initialize: function (parentElementDivId, options) {
+            this._super(parentElementDivId, options);
+        },
+
+        initPanel: function () {
+            this.checkOptions();
+
+            // adds OSH css
+            OSH.Utils.addCss(this.elementDiv, "dialog");
+
+            // creates header
+            this.headerElt = this.createHeader();
+
+            // creates content
+            this.contentElt = this.createContent();
+
+            // creates footer
+            this.footerElt = this.createFooter();
+
+            this.elementDiv.appendChild(this.headerElt);
+            this.elementDiv.appendChild(this.contentElt);
+            this.elementDiv.appendChild(this.footerElt);
+
+            this.initDragAndDrop();
+        },
+
+        checkOptions:function() {
+            // checks title
+            if(!isUndefined(this.options) && !isUndefined(this.options.title)) {
+                this.title = this.options.title;
+            } else {
+                this.title = "Untitled"; // default value
+            }
+
+            // checks closeable
+            if(!isUndefined(this.options) && !isUndefined(this.options.closeable)) {
+                this.closeable = this.options.closeable;
+            } else {
+                this.closeable = false; // default value
+            }
+
+            // checks connected & connectionIds
+            if(!isUndefined(this.options) && !isUndefined(this.options.connectionIds)) {
+                this.connectionIds = this.options.connectionIds;
+                this.connected = true;
+            } else {
+                this.connected = false;  // default value
+                this.connectionIds = []; // default value
+            }
+
+            // checks pin
+            if(!isUndefined(this.options) && !isUndefined(this.options.pinContainerId)) {
+                this.pinContainerId = this.options.pinContainerId;
+            } else {
+                this.pinContainerId = null; // default value
+            }
+
+            // checks swap
+            if(!isUndefined(this.options) && !isUndefined(this.options.swapContainerId)) {
+                this.swapContainerId = this.options.swapContainerId;
+                this.swap = false;
+            } else {
+                this.swapContainerId = null; // default value
+                this.swap = false;
+            }
+
+            // checks destroy on close
+            if(!isUndefined(this.options) && !isUndefined(this.options.destroyOnClose)) {
+                this.destroyOnClose = this.options.destroyOnClose;
+            } else {
+                this.destroyOnClose = false; // default value
+            }
+
+            // checks modal
+            if(!isUndefined(this.options) && !isUndefined(this.options.modal)) {
+                this.modal = this.options.modal;
+            } else {
+                this.modal = false; // default value
+            }
+        },
+
+        createHeader: function () {
+            var dialogHeaderElt = document.createElement("div");
+            dialogHeaderElt.setAttribute("class", "dialog-header");
+
+            // creates line
+            // // Left element
+            var spanLeftElt = document.createElement("span");
+            spanLeftElt.setAttribute("class","line-left");
+            spanLeftElt.innerHTML = this.title;
+
+            // // Right element
+            var tableRightElt = document.createElement("table");
+            tableRightElt.setAttribute("class","line-right");
+            var tbodyElt = document.createElement("tbody");
+            var trElt = document.createElement("tr");
+
+            if(!isUndefinedOrNull(this.swapContainerId)) {
+                // adds swap icon
+                var tdElt = document.createElement("td");
+
+                var swapIconElt = document.createElement("i");
+                swapIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-pin")
+
+                tdElt.appendChild(swapIconElt);
+                trElt.appendChild(tdElt);
+
+                // adds listener
+                this.addListener(swapIconElt,"click",this.swapClickHandler.bind(this));
+            }
+
+            tbodyElt.appendChild(trElt);
+            tableRightElt.appendChild(tbodyElt);
+
+            dialogHeaderElt.appendChild(spanLeftElt);
+            dialogHeaderElt.appendChild(tableRightElt);
+
+            return dialogHeaderElt;
+        },
+
+        createContent: function () {
+            var dialogContentElt = document.createElement("div");
+            dialogContentElt.setAttribute("class", "dialog-content");
+
+            return dialogContentElt;
+        },
+
+        createFooter: function () {
+            var dialogFooterElt = document.createElement("div");
+            dialogFooterElt.setAttribute("class", "dialog-footer");
+
+            return dialogFooterElt;
+        },
+
+        initDragAndDrop: function () {
+            interact(this.elementDiv)
+                .draggable({
+                    // enable inertial throwing
+                    inertia: true,
+                    // keep the element within the area of it's parent
+                    restrict: {
+                        restriction: "parent",
+                        endOnly: true,
+                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+                    },
+                    // enable autoScroll
+                    autoScroll: true,
+
+                    // call this function on every dragmove event
+                    onmove: dragMoveListener,
+                    // call this function on every dragend event
+                    onend: function (event) {
+                    }
+                })
+                .resizable({
+                    preserveAspectRatio: true,
+                    edges: {left: true, right: true, bottom: true, top: true},
+                    margin: 10
+                })
+                .on('resizemove', function (event) {
+                    var target = event.target,
+                        x = (parseFloat(target.getAttribute('data-x')) || 0),
+                        y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                    // update the element's style
+                    target.style.width = event.rect.width + 'px';
+                    target.style.height = event.rect.height + 'px';
+
+                    // translate when resizing from top or left edges
+                    x += event.deltaRect.left;
+                    y += event.deltaRect.top;
+
+                    target.style.webkitTransform = target.style.transform =
+                        'translate(' + x + 'px,' + y + 'px)';
+
+                    target.setAttribute('data-x', x);
+                    target.setAttribute('data-y', y);
+                });
+
+            function dragMoveListener(event) {
+                var target = event.target,
+                    // keep the dragged position in the data-x/data-y attributes
+                    x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                    y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                // translate the element
+                target.style.webkitTransform =
+                    target.style.transform =
+                        'translate(' + x + 'px, ' + y + 'px)';
+
+                // update the posiion attributes
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            }
+
+            // this is used later in the resizing and gesture demos
+            window.dragMoveListener = dragMoveListener;
+        },
+
+        //------------ HANDLERS -----------------//
+        swapClickHandler:function() {
+
+        }
+    });
+
+    var dialog = new OSH.UI.Panel.NewDialogPanel("dialog-container",{
+        swapContainerId:""
+    });
+</script>
+
+</body>
+</html>
