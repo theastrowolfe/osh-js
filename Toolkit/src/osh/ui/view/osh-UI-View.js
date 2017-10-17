@@ -71,13 +71,13 @@ OSH.UI.View = OSH.UI.Panel.extend({
         } else {
             this.options = {};
         }
-        this.css = "view ";
+        this.css = "view";
 
         this.cssSelected = "";
 
         if(!isUndefinedOrNull(options)) {
             if(!isUndefinedOrNull(options.css)) {
-                this.css += options.css;
+                this.css += " "+options.css;
             }
 
             if(!isUndefinedOrNull(options.cssSelected)) {

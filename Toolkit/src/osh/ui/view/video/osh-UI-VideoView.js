@@ -46,7 +46,6 @@ OSH.UI.View.VideoView = OSH.UI.View.extend({
     init:function(parentElementDivId,viewItems,options) {
         this._super(parentElementDivId,viewItems,options);
 
-
         this.options.showFps = false;
         this.options.keepRatio = false;
 

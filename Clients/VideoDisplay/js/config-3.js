@@ -92,12 +92,12 @@ function init() {
     //--------------------------------------------------------//
 
     // creates Dialog Views
-    var videoDialog         = createPtzDialog("dialog-main-container",[androidPhoneVideoDataSource.id],"Android Video 1",true);
-    var videoDialog2        = createPtzDialog("dialog-main-container",[androidPhoneVideoDataSource.id],"Android Video 2",false);
+    var videoDialog         = createPtzDialog("dialog-main-container",[androidPhoneVideoDataSource.id],"Android Video 1",true,true);
+    var videoDialog2        = createPtzDialog("dialog-main-container",[androidPhoneVideoDataSource.id],"Android Video 2",false,true);
     // var chartDialog         = createDialog("dialog-main-container",[weatherDataSource.id],"Chart Weather",true);
-    var leafletMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Leaflet 2D",true);
-    var cesiumMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Cesium 3D",true);
-    var entityTreeDialog    = new OSH.UI.DialogPanel(document.body.id,{
+    var leafletMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Leaflet 2D",true,false);
+    var cesiumMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Cesium 3D",true,false);
+    var entityTreeDialog    = new OSH.UI.Panel.DialogPanel(document.body.id,{
         css: "tree-dialog",
         name: "Entities",
         show:true,
@@ -107,21 +107,44 @@ function init() {
     });
 
     // Video 1 View
-    var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
-        dataSourceId: androidPhoneVideoDataSource.getId(),
-        entityId : androidEntity.id,
-        css: "video",
+    var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, [
+        {
+            name: "video view item",
+            entityId: androidEntity.id,
+            styler: new OSH.UI.Styler.Video({
+                frameFunc: {
+                    dataSourceIds: [androidPhoneVideoDataSource.id],
+                    handler: function (rec, timestamp, options) {
+                        return rec;
+                    }
+                }
+            })
+        }
+    ], {
         cssSelected: "video-selected",
-        name: "Android Video"
+        name: "Android Video",
+        keepRatio:true
+
     });
 
     // Video 2 View
-    var videoView2 = new OSH.UI.View.MjpegView(videoDialog2.popContentDiv.id, {
-        dataSourceId: androidPhoneVideoDataSource.getId(),
-        entityId : androidEntity.id,
-        css: "video",
+    var videoView2 = new OSH.UI.View.MjpegView(videoDialog2.popContentDiv.id, [
+        {
+            name: "Android Video 2",
+            entityId: androidEntity.id,
+            styler: new OSH.UI.Styler.Video({
+                frameFunc: {
+                    dataSourceIds: [androidPhoneVideoDataSource.id],
+                    handler: function (rec, timestamp, options) {
+                        return rec;
+                    }
+                }
+            })
+        }
+    ], {
         cssSelected: "video-selected",
-        name: "Android Video 2"
+        name: "Android Video 2",
+        keepRatio:true
     });
 
     // Chart View
@@ -382,7 +405,7 @@ function init() {
             }]
     );
 
-    var discoveryDialog    = new OSH.UI.DialogPanel(document.body.id,{
+    var discoveryDialog    = new OSH.UI.Panel.DialogPanel(document.body.id,{
         css: "discovery-dialog",
         name: "Discovery",
         show:false,
@@ -437,7 +460,7 @@ function init() {
 }
 
 function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
-    var ptzDialog = new OSH.UI.MultiDialogPanel(containerDivId, {
+    var ptzDialog = new OSH.UI.Panel.MultiDialogPanel(containerDivId, {
         draggable: false,
         css: "dialog-view",
         name: title,
@@ -458,8 +481,8 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
 
 }
 
-function createDialog(containerDivId,dataSources,title,defaultShow) {
-    return new OSH.UI.DialogPanel(containerDivId, {
+function createDialog(containerDivId,dataSources,title,defaultShow,keepRatio) {
+    return new OSH.UI.Panel.DialogPanel(containerDivId, {
         draggable: false,
         css: "dialog-view",
         name: title,
@@ -467,6 +490,7 @@ function createDialog(containerDivId,dataSources,title,defaultShow) {
         dockable: true,
         closeable: true,
         connectionIds : dataSources ,
-        swapId: "center-container"
+        swapId: "center-container",
+        keepRatio:keepRatio
     });
 }

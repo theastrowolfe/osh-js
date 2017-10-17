@@ -90,11 +90,6 @@ a.navbar-brand:hover {
     margin-right: 5px;
 }
 
-.osh.dialog .dialog-view {
-    width: 300px;
-    height: 200px;
-}
-
 .chart-view {
     overflow:hidden;
 }
@@ -134,4 +129,18 @@ a.navbar-brand:hover {
 
 .discovery-view {
     background-color:#FFF;
+}
+
+.osh.panel.view.tree-container {
+    background-color:#FFF;
+}
+
+.osh.dialog .dialog-view.keep-ratio-w {
+    width:300px;
+    height:auto;
+}
+
+.osh.dialog .dialog-view {
+    width: 300px;
+    height: 220px;
 }

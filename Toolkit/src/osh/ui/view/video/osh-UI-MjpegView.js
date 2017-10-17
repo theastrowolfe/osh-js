@@ -59,7 +59,6 @@ OSH.UI.View.MjpegView = OSH.UI.View.VideoView.extend({
         } else {
             // appends <img> tag to <div>
             document.getElementById(this.divId).appendChild(this.imgTag);
-            OSH.Utils.addCss(document.getElementById(this.divId), "video");
         }
     },
 
