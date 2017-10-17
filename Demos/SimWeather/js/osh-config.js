@@ -76,7 +76,7 @@ function init() {
         closeable: true
     });
 
-    var discoveryView = new OSH.UI.DiscoveryView("",{
+    var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["http://" + hostName + ":8181/"],
         css: "discovery-view",
         dataReceiverController: dataSourceController,
@@ -85,10 +85,10 @@ function init() {
         views: [{
             name: 'Leaflet 2D Map',
             viewId: leafletMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         },{
             name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
         }]
     });
 

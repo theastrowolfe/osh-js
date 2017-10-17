@@ -47,7 +47,7 @@
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-H264View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js"></script>
-    <script type="text/javascript" src="../../src/osh/ui/view/discovery/osh-UI-DiscoveryView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/discovery/osh-UI-DiscoveryPanel.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../src/css/osh-common.css"/>
     <link rel="stylesheet" type="text/css" href="../../src/css/osh-dialog.css"/>
@@ -117,7 +117,7 @@
 <div id="dialog-main-container" class="video-main-container"></div>
 
 <script type="text/javascript">
-    var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
+    var discoveryView = new OSH.UI.Panel.DiscoveryPanel("discovery-container",{
         services: ["http://sensiasoft.net:8181/sensorhub/sos"]
     });
 

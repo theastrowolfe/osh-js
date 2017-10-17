@@ -46,7 +46,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
 
     onAddDataSourceButtonClickHandler: function(event) {
         // init discovery view
-        var discoveryView = new OSH.UI.DiscoveryView("",{
+        var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
             services: this.options.services
         });
 
@@ -114,7 +114,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
 
         OSH.EventManager.observeDiv(editId,"click",function(event) {
             // init discovery view
-            var discoveryView = new OSH.UI.DiscoveryView("",{
+            var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
                 services: self.options.services
             });
 

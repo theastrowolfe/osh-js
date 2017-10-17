@@ -391,7 +391,7 @@ function init() {
         closeable: true
     });
 
-    var discoveryView = new OSH.UI.DiscoveryView("",{
+    var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["http://localhost:8181/","http://sensiasoft.net:8181/"]
     });
 

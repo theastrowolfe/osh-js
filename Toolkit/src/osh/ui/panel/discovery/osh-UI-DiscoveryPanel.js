@@ -16,20 +16,20 @@
 
 /**
  * @classdesc
- * @class OSH.UI.DiscoveryView
+ * @class OSH.UI.Panel.DiscoveryPanel
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
-var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
+var discoveryView = new OSH.UI.Panel.DiscoveryPanel("discovery-container",{
     services: ["http://sensiasoft.net:8181/"]
 });
 
 //------ More complex example
- var discoveryView = new OSH.UI.DiscoveryView("",{
+ var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["http://sensiasoft.net:8181/"] // server list
     });
  */
-OSH.UI.DiscoveryView = OSH.UI.View.extend({
+OSH.UI.Panel.DiscoveryPanel = OSH.UI.Panel.extend({
 
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
@@ -230,7 +230,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedService : function(event) {
@@ -287,7 +287,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedOffering : function(event) {
@@ -345,7 +345,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedObsProperty: function(event) {
@@ -375,7 +375,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param event
      * @returns {boolean}
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onFormSubmit : function(event) {
@@ -473,7 +473,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param tagId
      * @param objectsArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addObjectsToSelect:function(tagId,objectsArr) {
@@ -492,7 +492,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param tagId
      * @param valuesArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValuesToSelect:function(tagId,valuesArr) {
@@ -513,7 +513,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param parent
      * @param object
      * @param disable indicate if the the option will be disabled
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValueToSelect:function(tagId,value,parent,object,disable) {
@@ -540,7 +540,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param tagId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     removeAllFromSelect:function(tagId) {

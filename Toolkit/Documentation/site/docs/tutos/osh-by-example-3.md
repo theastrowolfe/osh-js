@@ -28,7 +28,7 @@ For now, the discovery service is able to:
 The view allows you to extend the basic functionnality to fit as much as possible to your needs:
 
 ```javascript
- var discoveryView = new OSH.UI.DiscoveryView("",{
+ var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["<host1>","<host2>"],
         css: "discovery-view",
         dataReceiverController:dataProviderController,
@@ -37,20 +37,20 @@ The view allows you to extend the basic functionnality to fit as much as possibl
         views: [{
             name: 'Leaflet 2D Map',
             viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         }, {
             name: 'Cesium 3D Globe',
             viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         },{
             name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
         },{
             name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
         },{
             name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
         }
         ]
     });
@@ -65,6 +65,6 @@ The `views` array provides a way to create automatically a view linked to your d
 but you can extend the discovery view to add more.
 
 The `viewId` is the div id to attach your view, you can select an existing one (the one from your application, an existing dialog etc.) 
-or uses the `OSH.UI.DiscoveryView.Type.DIALOG_*` which will popup a new dialog window.
+or uses the `OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_*` which will popup a new dialog window.
 
-[See more types..](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.DiscoveryView.html#.Type)
+[See more types..](http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.Panel.DiscoveryPanel.html#.Type)

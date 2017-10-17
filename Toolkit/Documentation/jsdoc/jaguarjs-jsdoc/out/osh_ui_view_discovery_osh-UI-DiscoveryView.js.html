@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: osh/ui/view/discovery/osh-UI-DiscoveryView.js</title>
+    <title>JSDoc: Source: osh/ui/view/discovery/osh-UI-DiscoveryPanel.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: osh/ui/view/discovery/osh-UI-DiscoveryView.js</h1>
+    <h1 class="page-title">Source: osh/ui/view/discovery/osh-UI-DiscoveryPanel.js</h1>
 
     
 
@@ -28,10 +28,10 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * @classdesc
- * @class OSH.UI.DiscoveryView
+ * @class OSH.UI.Panel.DiscoveryPanel
  * @type {OSH.UI.View}
  */
-OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
+OSH.UI.Panel.DiscoveryPanel = Class.create(OSH.UI.View, {
     initialize: function ($super, divId, properties) {
         $super(divId,[],properties);
 
@@ -169,8 +169,8 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
         }
 
         // fill type
-        for(var type in  OSH.UI.DiscoveryView.Type) {
-            this.addValueToSelect(this.typeSelectTagId,OSH.UI.DiscoveryView.Type[type]);
+        for(var type in  OSH.UI.Panel.DiscoveryPanel.Type) {
+            this.addValueToSelect(this.typeSelectTagId,OSH.UI.Panel.DiscoveryPanel.Type[type]);
         }
 
         // add listeners
@@ -183,7 +183,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedService : function(event) {
@@ -233,7 +233,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedType : function(event) {
@@ -252,7 +252,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      *
      * @param event
      * @returns {boolean}
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onFormSubmit : function(event) {
@@ -303,22 +303,22 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
 
 
         switch(viewTagOption.object.type) {
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG:
             {
                 this.createMJPEGVideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264:
             {
                 this.createH264VideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.MARKER_GPS:
+            case OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS:
             {
                 this.createGPSMarker(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,viewTagOption.object.viewId,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.DIALOG_CHART:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART:
             {
                 this.createChartDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
@@ -332,7 +332,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      *
      * @param tagId
      * @param objectsArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addObjectsToSelect:function(tagId,objectsArr) {
@@ -351,7 +351,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      *
      * @param tagId
      * @param valuesArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValuesToSelect:function(tagId,valuesArr) {
@@ -371,7 +371,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      * @param value
      * @param parent
      * @param object
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValueToSelect:function(tagId,value,parent,object) {
@@ -391,7 +391,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
     /**
      *
      * @param tagId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     removeAllFromSelect:function(tagId) {
@@ -413,7 +413,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      * @param syncMasterTime
      * @param viewId
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createGPSMarker: function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,viewId,entityId) {
@@ -482,7 +482,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createMJPEGVideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -535,7 +535,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createH264VideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -589,7 +589,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createChartDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -654,7 +654,7 @@ OSH.UI.DiscoveryView = Class.create(OSH.UI.View, {
  * The different type of discovery.
  * @type {{MARKER_GPS: string, DIALOG_VIDEO_H264: string, DIALOG_VIDEO_MJPEG: string, DIALOG_CHART: string}}
  */
-OSH.UI.DiscoveryView.Type = {
+OSH.UI.Panel.DiscoveryPanel.Type = {
     MARKER_GPS : "Marker(GPS)",
     DIALOG_VIDEO_H264 : "Video Dialog(H264)",
     DIALOG_VIDEO_MJPEG: "Video Dialog(MJPEG)",
@@ -669,7 +669,7 @@ OSH.UI.DiscoveryView.Type = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="OSH.Buffer.html">Buffer</a></li><li><a href="OSH.DataConnector.AjaxConnector.html">AjaxConnector</a></li><li><a href="OSH.DataConnector.DataConnector.html">DataConnector</a></li><li><a href="OSH.DataConnector.WebSocketDataConnector.html">WebSocketDataConnector</a></li><li><a href="OSH.DataReceiver.Chart.html">Chart</a></li><li><a href="OSH.DataReceiver.DataReceiverController.html">DataReceiverController</a></li><li><a href="OSH.DataReceiver.DataSource.html">DataSource</a></li><li><a href="OSH.DataReceiver.EulerOrientation.html">EulerOrientation</a></li><li><a href="OSH.DataReceiver.LatLonAlt.html">LatLonAlt</a></li><li><a href="OSH.DataReceiver.Nexrad.html">Nexrad</a></li><li><a href="OSH.DataReceiver.OrientationQuaternion.html">OrientationQuaternion</a></li><li><a href="OSH.DataReceiver.VideoH264.html">VideoH264</a></li><li><a href="OSH.DataReceiver.VideoMjpeg.html">VideoMjpeg</a></li><li><a href="OSH.DataReceiver.VideoMp4.html">VideoMp4</a></li><li><a href="OSH.DataSender.DataSenderController.html">DataSenderController</a></li><li><a href="OSH.DataSender.DataSink.html">DataSink</a></li><li><a href="OSH.DataSender.PtzTasking.html">PtzTasking</a></li><li><a href="OSH.DataSender.UavMapTasking.html">UavMapTasking</a></li><li><a href="OSH.EventManager.html">EventManager</a></li><li><a href="OSH.Log.html">Log</a></li><li><a href="OSH.Sensor.html">Sensor</a></li><li><a href="OSH.Server.html">Server</a></li><li><a href="OSH.UI.View.CesiumView .html">CesiumView</a></li><li><a href="OSH.UI.ContextMenu.html">ContextMenu</a></li><li><a href="OSH.UI.ContextMenu.CircularMenu.html">CircularMenu</a></li><li><a href="OSH.UI.ContextMenu.CssMenu.html">CssMenu</a></li><li><a href="OSH.UI.ContextMenu.StackMenu.html">StackMenu</a></li><li><a href="OSH.UI.DialogView.html">DialogPanel</a></li><li><a href="OSH.UI.DiscoveryView.html">DiscoveryView</a></li><li><a href="OSH.UI.EntityTreeView.html">EntityTreeView</a></li><li><a href="OSH.UI.View.FFMPEGView.html">FFMPEGView</a></li><li><a href="OSH.UI.View.H264View.html">H264View</a></li><li><a href="OSH.UI.View.LeafletView.html">LeafletView</a></li><li><a href="OSH.UI.Loading.html">Loading</a></li><li><a href="OSH.UI.View.MjpegView.html">MjpegView</a></li><li><a href="OSH.UI.View.Mp4View.html">Mp4View</a></li><li><a href="OSH.UI.Nvd3CurveChartView.html">Nvd3CurveChartView</a></li><li><a href="OSH.UI.View.OpenLayerView.html">OpenLayerView</a></li><li><a href="OSH.UI.View.PtzTaskingView.html">PtzTaskingView</a></li><li><a href="OSH.UI.RangeSlider.html">RangeSlider</a></li><li><a href="OSH.UI.Styler.html">Styler</a></li><li><a href="OSH.UI.Styler.Curve.html">Curve</a></li><li><a href="OSH.UI.Styler.ImageDraping.html">ImageDraping</a></li><li><a href="OSH.UI.Styler.Nexrad.html">Nexrad</a></li><li><a href="OSH.UI.Styler.PointMarker.html">PointMarker</a></li><li><a href="OSH.UI.Styler.Polyline.html">Polyline</a></li><li><a href="OSH.UI.View.html">View</a></li><li><a href="OSH.Utils.html">Utils</a></li></ul><h3>Namespaces</h3><ul><li><a href="OSH.html">OSH</a></li><li><a href="OSH.DataConnector.html">DataConnector</a></li><li><a href="OSH.DataReceiver.html">DataReceiver</a></li><li><a href="OSH.DataSender.html">DataSender</a></li><li><a href="OSH.UI.html">UI</a></li><li><a href="OSH.Video.html">Video</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BUFFER_STATUS">BUFFER_STATUS</a></li><li><a href="global.html#builtinTypeInfos">builtinTypeInfos</a></li><li><a href="global.html#INITIAL_BUFFERING_TIME">INITIAL_BUFFERING_TIME</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="OSH.Buffer.html">Buffer</a></li><li><a href="OSH.DataConnector.AjaxConnector.html">AjaxConnector</a></li><li><a href="OSH.DataConnector.DataConnector.html">DataConnector</a></li><li><a href="OSH.DataConnector.WebSocketDataConnector.html">WebSocketDataConnector</a></li><li><a href="OSH.DataReceiver.Chart.html">Chart</a></li><li><a href="OSH.DataReceiver.DataReceiverController.html">DataReceiverController</a></li><li><a href="OSH.DataReceiver.DataSource.html">DataSource</a></li><li><a href="OSH.DataReceiver.EulerOrientation.html">EulerOrientation</a></li><li><a href="OSH.DataReceiver.LatLonAlt.html">LatLonAlt</a></li><li><a href="OSH.DataReceiver.Nexrad.html">Nexrad</a></li><li><a href="OSH.DataReceiver.OrientationQuaternion.html">OrientationQuaternion</a></li><li><a href="OSH.DataReceiver.VideoH264.html">VideoH264</a></li><li><a href="OSH.DataReceiver.VideoMjpeg.html">VideoMjpeg</a></li><li><a href="OSH.DataReceiver.VideoMp4.html">VideoMp4</a></li><li><a href="OSH.DataSender.DataSenderController.html">DataSenderController</a></li><li><a href="OSH.DataSender.DataSink.html">DataSink</a></li><li><a href="OSH.DataSender.PtzTasking.html">PtzTasking</a></li><li><a href="OSH.DataSender.UavMapTasking.html">UavMapTasking</a></li><li><a href="OSH.EventManager.html">EventManager</a></li><li><a href="OSH.Log.html">Log</a></li><li><a href="OSH.Sensor.html">Sensor</a></li><li><a href="OSH.Server.html">Server</a></li><li><a href="OSH.UI.View.CesiumView .html">CesiumView</a></li><li><a href="OSH.UI.ContextMenu.html">ContextMenu</a></li><li><a href="OSH.UI.ContextMenu.CircularMenu.html">CircularMenu</a></li><li><a href="OSH.UI.ContextMenu.CssMenu.html">CssMenu</a></li><li><a href="OSH.UI.ContextMenu.StackMenu.html">StackMenu</a></li><li><a href="OSH.UI.DialogView.html">DialogPanel</a></li><li><a href="OSH.UI.Panel.DiscoveryPanel.html">DiscoveryView</a></li><li><a href="OSH.UI.EntityTreeView.html">EntityTreeView</a></li><li><a href="OSH.UI.View.FFMPEGView.html">FFMPEGView</a></li><li><a href="OSH.UI.View.H264View.html">H264View</a></li><li><a href="OSH.UI.View.LeafletView.html">LeafletView</a></li><li><a href="OSH.UI.Loading.html">Loading</a></li><li><a href="OSH.UI.View.MjpegView.html">MjpegView</a></li><li><a href="OSH.UI.View.Mp4View.html">Mp4View</a></li><li><a href="OSH.UI.Nvd3CurveChartView.html">Nvd3CurveChartView</a></li><li><a href="OSH.UI.View.OpenLayerView.html">OpenLayerView</a></li><li><a href="OSH.UI.View.PtzTaskingView.html">PtzTaskingView</a></li><li><a href="OSH.UI.RangeSlider.html">RangeSlider</a></li><li><a href="OSH.UI.Styler.html">Styler</a></li><li><a href="OSH.UI.Styler.Curve.html">Curve</a></li><li><a href="OSH.UI.Styler.ImageDraping.html">ImageDraping</a></li><li><a href="OSH.UI.Styler.Nexrad.html">Nexrad</a></li><li><a href="OSH.UI.Styler.PointMarker.html">PointMarker</a></li><li><a href="OSH.UI.Styler.Polyline.html">Polyline</a></li><li><a href="OSH.UI.View.html">View</a></li><li><a href="OSH.Utils.html">Utils</a></li></ul><h3>Namespaces</h3><ul><li><a href="OSH.html">OSH</a></li><li><a href="OSH.DataConnector.html">DataConnector</a></li><li><a href="OSH.DataReceiver.html">DataReceiver</a></li><li><a href="OSH.DataSender.html">DataSender</a></li><li><a href="OSH.UI.html">UI</a></li><li><a href="OSH.Video.html">Video</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BUFFER_STATUS">BUFFER_STATUS</a></li><li><a href="global.html#builtinTypeInfos">builtinTypeInfos</a></li><li><a href="global.html#INITIAL_BUFFERING_TIME">INITIAL_BUFFERING_TIME</a></li></ul>
 </nav>
 
 <br class="clear">

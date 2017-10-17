@@ -391,7 +391,7 @@ function init() {
         closeable: true
     });
 
-    var discoveryView = new OSH.UI.DiscoveryView("",{
+    var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["http://localhost:8181/","http://sensiasoft.net:8181/"],
         css: "discovery-view",
         dataReceiverController:dataProviderController,
@@ -400,20 +400,20 @@ function init() {
         views: [{
             name: 'Leaflet 2D Map',
             viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         }, {
             name: 'Cesium 3D Globe',
             viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         },{
             name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
         },{
             name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
         },{
             name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
         }
         ]
     });

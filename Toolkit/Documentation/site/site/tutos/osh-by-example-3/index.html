@@ -267,7 +267,7 @@ For now, the discovery service is able to:</p>
 <p><img alt="" src="../../images/discoveryView.png" /></p>
 <h2 id="extends-the-discovery-service-feature">Extends the discovery service feature</h2>
 <p>The view allows you to extend the basic functionnality to fit as much as possible to your needs:</p>
-<pre><code class="javascript"> var discoveryView = new OSH.UI.DiscoveryView(&quot;&quot;,{
+<pre><code class="javascript"> var discoveryView = new OSH.UI.Panel.DiscoveryPanel(&quot;&quot;,{
         services: [&quot;&lt;host1&gt;&quot;,&quot;&lt;host2&gt;&quot;],
         css: &quot;discovery-view&quot;,
         dataReceiverController:dataProviderController,
@@ -276,20 +276,20 @@ For now, the discovery service is able to:</p>
         views: [{
             name: 'Leaflet 2D Map',
             viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         }, {
             name: 'Cesium 3D Globe',
             viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         },{
             name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
         },{
             name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
         },{
             name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
         }
         ]
     });
@@ -303,8 +303,8 @@ the <code>entities</code> property.</p>
 <p>The <code>views</code> array provides a way to create automatically a view linked to your data source. For the moment, only a few views are available
 but you can extend the discovery view to add more.</p>
 <p>The <code>viewId</code> is the div id to attach your view, you can select an existing one (the one from your application, an existing dialog etc.) 
-or uses the <code>OSH.UI.DiscoveryView.Type.DIALOG_*</code> which will popup a new dialog window.</p>
-<p><a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.DiscoveryView.html#.Type">See more types..</a></p>
+or uses the <code>OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_*</code> which will popup a new dialog window.</p>
+<p><a href="http://opensensorhub.github.io/osh-js/Toolkit/Documentation/OSH.UI.Panel.DiscoveryPanel.html#.Type">See more types..</a></p>
               
             </div>
           </div>

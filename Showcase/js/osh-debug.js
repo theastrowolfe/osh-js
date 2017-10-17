@@ -5281,27 +5281,27 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 
 /**
  * @classdesc
- * @class OSH.UI.DiscoveryView
+ * @class OSH.UI.Panel.DiscoveryPanel
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
-var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
+var discoveryView = new OSH.UI.Panel.DiscoveryPanel("discovery-container",{
     services: ["http://sensiasoft.net:8181/"],
     views: [{
         name: 'Video dialog(H264)',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
     },{
         name: 'Video dialog(MJPEG)',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
     },{
         name: 'Chart dialog',
-        type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
     }
     ]
 });
 
 //------ More complex example
- var discoveryView = new OSH.UI.DiscoveryView("",{
+ var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
         services: ["http://sensiasoft.net:8181/"], // server list
         css: "discovery-view",
         dataReceiverController:dataProviderController, // add custom dataProviderController
@@ -5310,25 +5310,25 @@ var discoveryView = new OSH.UI.DiscoveryView("discovery-container",{
         views: [{
             name: 'Leaflet 2D Map',
             viewId: leafletMainView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         }, {
             name: 'Cesium 3D Globe',
             viewId: cesiumMainMapView.id,
-            type : OSH.UI.DiscoveryView.Type.MARKER_GPS
+            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
         },{
             name: 'Video dialog(H264)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
         },{
             name: 'Video dialog(MJPEG)',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
         },{
             name: 'Chart dialog',
-            type : OSH.UI.DiscoveryView.Type.DIALOG_CHART
+            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
         }
         ]
     });
  */
-OSH.UI.DiscoveryView = OSH.UI.View.extend({
+OSH.UI.Panel.DiscoveryPanel = OSH.UI.View.extend({
     initialize: function (parentElementDivId, properties) {
         this._super(parentElementDivId,[],properties);
 
@@ -5471,8 +5471,8 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
         }
 
         // fill type
-        for(var type in  OSH.UI.DiscoveryView.Type) {
-            this.addValueToSelect(this.typeSelectTagId,OSH.UI.DiscoveryView.Type[type]);
+        for(var type in  OSH.UI.Panel.DiscoveryPanel.Type) {
+            this.addValueToSelect(this.typeSelectTagId,OSH.UI.Panel.DiscoveryPanel.Type[type]);
         }
 
         // add listeners
@@ -5485,7 +5485,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedService : function(event) {
@@ -5542,7 +5542,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedOffering : function(event) {
@@ -5574,7 +5574,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param event
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onSelectedType : function(event) {
@@ -5593,7 +5593,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param event
      * @returns {boolean}
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     onFormSubmit : function(event) {
@@ -5644,22 +5644,22 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 
 
         switch(viewTagOption.object.type) {
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_MJPEG:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG:
             {
                 this.createMJPEGVideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.DIALOG_VIDEO_H264:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264:
             {
                 this.createH264VideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.MARKER_GPS:
+            case OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS:
             {
                 this.createGPSMarker(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,viewTagOption.object.viewId,entityId);
                 break;
             }
-            case OSH.UI.DiscoveryView.Type.DIALOG_CHART:
+            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART:
             {
                 this.createChartDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
                 break;
@@ -5673,7 +5673,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param tagId
      * @param objectsArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addObjectsToSelect:function(tagId,objectsArr) {
@@ -5692,7 +5692,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      *
      * @param tagId
      * @param valuesArr
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValuesToSelect:function(tagId,valuesArr) {
@@ -5712,7 +5712,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param value
      * @param parent
      * @param object
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     addValueToSelect:function(tagId,value,parent,object) {
@@ -5735,7 +5735,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
     /**
      *
      * @param tagId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     removeAllFromSelect:function(tagId) {
@@ -5757,7 +5757,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param syncMasterTime
      * @param viewId
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createGPSMarker: function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,viewId,entityId) {
@@ -5826,7 +5826,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createMJPEGVideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -5880,7 +5880,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createH264VideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -5937,7 +5937,7 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
      * @param endTime
      * @param syncMasterTime
      * @param entityId
-     * @memberof OSH.UI.DiscoveryView
+     * @memberof OSH.UI.Panel.DiscoveryPanel
      * @instance
      */
     createChartDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
@@ -6001,10 +6001,10 @@ OSH.UI.DiscoveryView = OSH.UI.View.extend({
 /**
  * The different type of discovery.
  * @type {{MARKER_GPS: string, DIALOG_VIDEO_H264: string, DIALOG_VIDEO_MJPEG: string, DIALOG_CHART: string}}
- * @memberof OSH.UI.DiscoveryView
+ * @memberof OSH.UI.Panel.DiscoveryPanel
  * @instance
  */
-OSH.UI.DiscoveryView.Type = {
+OSH.UI.Panel.DiscoveryPanel.Type = {
     MARKER_GPS : "Marker(GPS)",
     DIALOG_VIDEO_H264 : "Video Dialog(H264)",
     DIALOG_VIDEO_MJPEG: "Video Dialog(MJPEG)",
