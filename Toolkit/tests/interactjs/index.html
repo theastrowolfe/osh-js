@@ -55,6 +55,7 @@
 
         html {
             height: 100%;
+            overflow: hidden;
         }
 
         #dialog-container {
@@ -74,9 +75,41 @@
             cursor: grabbing;
         }
 
+        #swap-container {
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background-color: blue;
+            position:absolute;
+            top: 0;
+            overflow:auto;
+            border:1px solid black;
+        }
+
+        #pin-container {
+            right: 400px;
+            width: 400px;
+            height: 400px;
+            background-color: #00A0B0;
+            position:absolute;
+            top: 0;
+            overflow:auto;
+            border:1px solid black;
+        }
+
+        #swap-container-elt {
+            background-color: blue;
+        }
+
+        #fake-content {
+            background-color:green;
+            height: 100%;
+        }
+
         /** DIALOG CSS **/
         .osh.dialog {
-            width: 450px;
+            position:absolute;
+            width: 290px;
             height: 300px;
             background-color: #29e;
             color: white;
@@ -84,7 +117,7 @@
             background: radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75));
             border: 1px solid #bbbbbb;
             border-radius: 6px;
-            box-shadow: 0 0 7px #000000;
+            box-shadow: 1px -1px 7px 0px #000000;
             z-index: 1020;
             -webkit-transform: translate(0px, 0px);
             transform: translate(0px, 0px);
@@ -114,6 +147,12 @@
         .osh.dialog .dialog-content {
             background: yellow;
             height: calc(100% - 50px); /* 25px of the header + 25px of the footer*/
+            overflow: auto;
+        }
+
+        .osh.dialog .dialog-content div {
+            height:100%;
+            width:100%;
         }
 
         .osh.dialog .dialog-footer {
@@ -126,8 +165,6 @@
         .osh.dialog .dialog-header-icon {
             display: inline-block;
             font-family: FontAwesome;
-            padding: 2px 2px 4px 6px;
-            margin: 0 0px 0 2px;
             cursor: pointer;
             color: #c3c3c3;
         }
@@ -137,23 +174,81 @@
             cursor:pointer;
         }
 
+        .osh.dialog .dialog-header-icon.icon-selected {
+            color: #676767;
+        }
+
+
+        .osh.dialog.minimized {
+            height: 25px !important;
+            transition: height 0.25s linear;
+            -webkit-transition: height 0.25s linear;
+            -moz-transition: height 0.25s linear;
+            -o-transition: height 0.25s linear;
+            -ms-transition: height 0.25s linear;
+        }
+
+        .osh.dialog.minimized > .dialog-header {
+            border-radius: 6px;
+        }
+
+        .icon-swap:before {
+            content:"\f0ec";
+        }
+
         .icon-pin:before {
             content: "\f08d";
+        }
+
+        .icon-minimize:before {
+            content: "\f2d1";
+        }
+
+        .icon-restore:before {
+            content: "\f2d2";
+        }
+        .icon-close:before {
+            content: "\f00d";
         }
     </style>
 </head>
 <body id="body">
 <div id="dialog-container"></div>
+<div id="swap-container">
+    <div id="swap-container-elt"></div>
+</div>
+
+<div id="pin-container">
+</div>
 <script type="text/javascript">
 
+    /**
+     * @classdesc
+     * @class
+     * @type {OSH.UI.Panel}
+     * @augments OSH.UI.Panel
+     * @example
+     var dialogPanel =  new OSH.UI.Panel.DialogPanel(containerDivId, {
+        pinContainerId: "pin-container",
+        swapContainerId: "main-container",
+        title: title,
+        show:false,
+        css: "dialog",
+        draggable: false,
+        resizable: true,
+
+        closeable: true,
+        connectionIds : dataSources ,
+        destroyOnClose: true,
+        modal: false
+    });
+     */
     OSH.UI.Panel.NewDialogPanel = OSH.UI.Panel.extend({
         initialize: function (parentElementDivId, options) {
             this._super(parentElementDivId, options);
         },
 
         initPanel: function () {
-            this.checkOptions();
-
             // adds OSH css
             OSH.Utils.addCss(this.elementDiv, "dialog");
 
@@ -171,101 +266,203 @@
             this.elementDiv.appendChild(this.footerElt);
 
             this.initDragAndDrop();
+
+            this.updateProperties(this.options);
         },
 
-        checkOptions:function() {
-            // checks title
-            if(!isUndefined(this.options) && !isUndefined(this.options.title)) {
-                this.title = this.options.title;
-            } else {
-                this.title = "Untitled"; // default value
+        checkOptions:function(properties) {
+            if(!isUndefinedOrNull(properties)) {
+                // checks title
+                if (!isUndefined(properties.title)) {
+                    this.title = properties.title;
+                } else if(isUndefinedOrNull(this.title)) {
+                    this.title = "Untitled"; // default value
+                }
+
+                // checks show
+                if (!isUndefined(properties.show)) {
+                    this.show = properties.show;
+                } else if(isUndefinedOrNull(this.show)) {
+                    this.show = true; // default value
+                }
+
+                // checks draggable
+                if (!isUndefined(properties.draggable)) {
+                    this.draggable = properties.draggable;
+                } else if(isUndefinedOrNull(this.draggable)) {
+                    this.draggable = true; // default value
+                }
+
+                // checks resizable
+                if (!isUndefined(properties.resizable)) {
+                    this.resizable = properties.resizable;
+                } else if(isUndefinedOrNull(this.resizable)) {
+                    this.resizable = true; // default value
+                }
+
+                // checks closeable
+                if (!isUndefined(properties.closeable)) {
+                    this.closeable = properties.closeable;
+                } else if(isUndefinedOrNull(this.closeable)) {
+                    this.closeable = false; // default value
+                }
+
+                // checks connected & connectionIds
+                if (!isUndefined(properties.connectionIds)) {
+                    this.connectionIds = properties.connectionIds;
+                    this.connected = true;
+                } else if(isUndefinedOrNull(this.connectionIds)) {
+                    this.connected = false;  // default value
+                    this.connectionIds = []; // default value
+                }
+
+                // checks pin
+                if (!isUndefined(properties.pinContainerId)) {
+                    this.pin = {
+                        containerId: this.options.pinContainerId,
+                        originalContainerId: this.elementDiv.parentNode.id,
+                        lastPosition: {
+                            x: 0,
+                            y: 0
+                        }
+                    }
+                } else if(isUndefinedOrNull(this.pin)) {
+                    this.pin = null; // default value
+                }
+
+                // checks swap
+                if (!isUndefined(properties.swapContainerId)) {
+                    var dstElt = document.getElementById(properties.swapContainerId);
+                    if (!isUndefinedOrNull(dstElt)) {
+                        var parentDstElt = dstElt.parentNode;
+                        if (!isUndefinedOrNull(parentDstElt)) {
+                            this.swap = {
+                                swapContainerId: properties.swapContainerId,
+                                position: window.getComputedStyle(dstElt).getPropertyValue('position')
+                            }
+                        }
+                    }
+                } else if(isUndefinedOrNull(this.swap)) {
+                    this.swap = null; // default value
+                }
+
+                // checks destroy on close
+                if (!isUndefined(properties.destroyOnClose)) {
+                    this.destroyOnClose = properties.destroyOnClose;
+                } else if(isUndefinedOrNull(this.destroyOnClose)) {
+                    this.destroyOnClose = false; // default value
+                }
+
+                // checks modal
+                if (!isUndefined(properties.modal)) {
+                    this.modal = properties.modal;
+                } else if(isUndefinedOrNull(this.modal)) {
+                    this.modal = false; // default value
+                }
             }
 
-            // checks closeable
-            if(!isUndefined(this.options) && !isUndefined(this.options.closeable)) {
-                this.closeable = this.options.closeable;
-            } else {
-                this.closeable = false; // default value
-            }
-
-            // checks connected & connectionIds
-            if(!isUndefined(this.options) && !isUndefined(this.options.connectionIds)) {
-                this.connectionIds = this.options.connectionIds;
-                this.connected = true;
-            } else {
-                this.connected = false;  // default value
-                this.connectionIds = []; // default value
-            }
-
-            // checks pin
-            if(!isUndefined(this.options) && !isUndefined(this.options.pinContainerId)) {
-                this.pinContainerId = this.options.pinContainerId;
-            } else {
-                this.pinContainerId = null; // default value
-            }
-
-            // checks swap
-            if(!isUndefined(this.options) && !isUndefined(this.options.swapContainerId)) {
-                this.swapContainerId = this.options.swapContainerId;
-                this.swap = false;
-            } else {
-                this.swapContainerId = null; // default value
-                this.swap = false;
-            }
-
-            // checks destroy on close
-            if(!isUndefined(this.options) && !isUndefined(this.options.destroyOnClose)) {
-                this.destroyOnClose = this.options.destroyOnClose;
-            } else {
-                this.destroyOnClose = false; // default value
-            }
-
-            // checks modal
-            if(!isUndefined(this.options) && !isUndefined(this.options.modal)) {
-                this.modal = this.options.modal;
-            } else {
-                this.modal = false; // default value
-            }
+            this.minimized = false;
         },
 
+        //------- HEADER ---------------//
         createHeader: function () {
             var dialogHeaderElt = document.createElement("div");
             dialogHeaderElt.setAttribute("class", "dialog-header");
 
             // creates line
             // // Left element
-            var spanLeftElt = document.createElement("span");
-            spanLeftElt.setAttribute("class","line-left");
-            spanLeftElt.innerHTML = this.title;
+            this.headerSpanLeftElt = document.createElement("span");
+            this.headerSpanLeftElt.setAttribute("class","line-left");
 
             // // Right element
             var tableRightElt = document.createElement("table");
             tableRightElt.setAttribute("class","line-right");
             var tbodyElt = document.createElement("tbody");
-            var trElt = document.createElement("tr");
+            this.headerTrElt = document.createElement("tr");
 
-            if(!isUndefinedOrNull(this.swapContainerId)) {
-                // adds swap icon
-                var tdElt = document.createElement("td");
+            this.headerTdElts = {};
 
-                var swapIconElt = document.createElement("i");
-                swapIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-pin")
-
-                tdElt.appendChild(swapIconElt);
-                trElt.appendChild(tdElt);
-
-                // adds listener
-                this.addListener(swapIconElt,"click",this.swapClickHandler.bind(this));
-            }
-
-            tbodyElt.appendChild(trElt);
+            tbodyElt.appendChild(this.headerTrElt);
             tableRightElt.appendChild(tbodyElt);
 
-            dialogHeaderElt.appendChild(spanLeftElt);
+            dialogHeaderElt.appendChild(this.headerSpanLeftElt);
             dialogHeaderElt.appendChild(tableRightElt);
 
             return dialogHeaderElt;
         },
+
+        updateProperties:function(properties) {
+            this.checkOptions(properties);
+
+            this.headerSpanLeftElt.innerHTML = this.title;
+
+            if(!isUndefinedOrNull(this.swap) && isUndefinedOrNull(this.headerTrElt.swap)) {
+                this.headerTrElt.swap = this.addSwapIcon(this.headerTrElt);
+            }
+
+            if(!isUndefinedOrNull(this.pin) && isUndefinedOrNull(this.headerTrElt.pin)) {
+                this.headerTrElt.pin = this.addPinIcon(this.headerTrElt);
+                this.pin.position = window.getComputedStyle(this.interact.target).getPropertyValue('position');
+            }
+
+            if(isUndefinedOrNull(this.headerTrElt.minimize)) {
+                this.headerTrElt.minimize = this.addMinimizeIcon(this.headerTrElt);
+            }
+
+            this.setVisible(this.show);
+            this.interact.draggable(this.draggable);
+            this.interact.resizable(this.resizable);
+        },
+
+        addSwapIcon:function(parentElt) {
+            // adds swap icon
+            var tdElt = document.createElement("td");
+
+            var swapIconElt = document.createElement("i");
+            swapIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-swap");
+
+            tdElt.appendChild(swapIconElt);
+            parentElt.appendChild(tdElt);
+
+            // adds listener
+            this.addListener(swapIconElt,"click",this.swapHandler.bind(this));
+
+            return swapIconElt;
+        },
+
+        addPinIcon:function(parentElt) {
+            // adds pin icon
+            var tdElt = document.createElement("td");
+
+            var pinIconElt = document.createElement("i");
+            pinIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-pin");
+
+            tdElt.appendChild(pinIconElt);
+            parentElt.appendChild(tdElt);
+
+
+            // adds listener
+            this.addListener(pinIconElt,"click",this.pinHandler.bind(this));
+
+            return pinIconElt;
+        },
+
+        addMinimizeIcon:function(parentElt) {
+            // adds minimize icon
+            var tdElt = document.createElement("td");
+
+            var minimizeIconElt = document.createElement("i");
+            minimizeIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-minimize");
+
+            tdElt.appendChild(minimizeIconElt);
+            parentElt.appendChild(tdElt);
+
+            // adds listener
+            this.addListener(minimizeIconElt,"click",this.minimizeHandler.bind(this));
+
+            return minimizeIconElt;
+        },
+        //------- END HEADER ---------------//
 
         createContent: function () {
             var dialogContentElt = document.createElement("div");
@@ -282,14 +479,14 @@
         },
 
         initDragAndDrop: function () {
-            interact(this.elementDiv)
+            this.interact = interact(this.elementDiv)
                 .draggable({
                     // enable inertial throwing
                     inertia: true,
                     // keep the element within the area of it's parent
                     restrict: {
                         restriction: "parent",
-                        endOnly: true,
+                        endOnly: false,
                         elementRect: {top: 0, left: 0, bottom: 1, right: 1}
                     },
                     // enable autoScroll
@@ -326,18 +523,18 @@
                     target.setAttribute('data-y', y);
                 });
 
+            var self = this;
+
             function dragMoveListener(event) {
                 var target = event.target,
                     // keep the dragged position in the data-x/data-y attributes
                     x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
                     y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-                // translate the element
                 target.style.webkitTransform =
                     target.style.transform =
                         'translate(' + x + 'px, ' + y + 'px)';
 
-                // update the posiion attributes
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
             }
@@ -347,14 +544,191 @@
         },
 
         //------------ HANDLERS -----------------//
-        swapClickHandler:function() {
+        swapHandler:function() {
+            // swap only content
+            if(!isUndefinedOrNull(this.swap)) {
+                this.swapWith(this.swap.swapContainerId)
+            }
+        },
 
+        pinHandler:function() {
+            var parentId = this.elementDiv.parentNode.id;
+
+            if(parentId === this.pin.containerId) {
+                // unpin: dialog -> original container
+                this.unpin();
+            } else {
+                // pin: dialog -> dest container
+                this.pinTo(this.pin.containerId);
+            }
+        },
+
+        minimizeHandler:function() {
+            if(!this.minimized) {
+                this.minimize();
+            } else {
+                this.restore();
+            }
+        },
+
+        //---------- FUNCTIONS ----------------//
+        swapWith:function(dstContainerId) {
+            // removes content from dst
+            var dstContainerElt = document.getElementById(dstContainerId);
+            OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
+
+            // removes content from dst container
+            var childrenDst = [];
+            var i;
+            for(i=0;i < dstContainerElt.children.length;i++) {
+                childrenDst.push(dstContainerElt.removeChild(dstContainerElt.children[i]));
+            }
+
+            // removes content from dialog
+            var childrenDialog = [];
+            for(i=0;i < this.contentElt.children.length;i++) {
+                childrenDialog.push(this.contentElt.removeChild(this.contentElt.children[i]));
+            }
+
+            // swap
+            for(i=0;i < childrenDialog.length;i++) {
+                dstContainerElt.appendChild(childrenDialog[i]);
+            }
+
+            for(i=0;i < childrenDst.length;i++) {
+                this.contentElt.appendChild(childrenDst[i]);
+            }
+
+          /*  // overrides any position because it has to be relative
+            firstRemovedElt.style.position = "relative";
+
+            // applies saved position
+            secondRemovedElt.style.position = this.swap.position;*/
+        },
+
+        pinTo:function(containerId) {
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
+
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
+
+            var dstContainerElt = document.getElementById(containerId);
+            OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
+
+            dstContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
+
+            this.interact.draggable(false);
+
+            // store last position
+            this.pin.lastPosition.x = (parseFloat(this.interact.target.getAttribute('data-x')) || 0);
+            this.pin.lastPosition.y = (parseFloat(this.interact.target.getAttribute('data-y')) || 0);
+
+            // set dst position
+            this.setPosition(0,0);
+            this.interact.target.style.position = "relative";
+
+            OSH.Utils.addCss(this.headerTrElt.pin,"icon-selected");
+        },
+
+        unpin:function() {
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
+
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
+
+            var originalContainerElt = document.getElementById(this.pin.originalContainerId);
+            OSH.Asserts.checkIsDefineOrNotNull(originalContainerElt);
+
+            originalContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
+            this.interact.draggable(this.draggable);
+
+            // restore position before pinning
+            this.setPosition(this.pin.lastPosition.x ,this.pin.lastPosition.y);
+
+            // restore style before pinning
+            OSH.Asserts.checkIsDefineOrNotNull(this.pin.position);
+            this.interact.target.style.position = this.pin.position;
+
+            OSH.Utils.removeCss(this.headerTrElt.pin,"icon-selected");
+        },
+
+        minimize:function() {
+            OSH.Utils.addCss(this.elementDiv,"minimized");
+          //  OSH.Utils.addCss(this.contentElt,"hide");
+          //  OSH.Utils.addCss(this.footerElt,"hide");
+
+            OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-minimize","icon-restore");
+            this.minimized = true;
+            this.interact.resizable(false);
+        },
+
+        restore:function() {
+            OSH.Utils.removeCss(this.elementDiv,"minimized");
+            OSH.Utils.removeCss(this.contentElt,"hide");
+            OSH.Utils.removeCss(this.footerElt,"hide");
+
+            OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-restore","icon-minimize");
+            this.minimized = false;
+            this.interact.resizable(this.draggable);
+        },
+
+        setPosition:function(x,y) {
+            this.interact.target.style.webkitTransform =
+                this.interact.target.style.transform =
+                    'translate(' + x + 'px, ' + y + 'px)';
+
+            this.interact.target.setAttribute('data-x', x);
+            this.interact.target.setAttribute('data-y', y);
         }
     });
 
     var dialog = new OSH.UI.Panel.NewDialogPanel("dialog-container",{
-        swapContainerId:""
+        swapContainerId:"swap-container-elt",
+        pinContainerId: "swap-container"
     });
+
+    // test for swapping
+    var div = document.createElement("div");
+    div.setAttribute("id","fake-content");
+
+    dialog.contentElt.appendChild(div);
+
+
+    var dialog2 = new OSH.UI.Panel.NewDialogPanel("dialog-container",{
+        swapContainerId:"swap-container",
+        pinContainerId: "swap-container",
+        show:true,
+        draggable:false,
+        resizable:false
+    });
+
+    // test for swapping
+    var div2 = document.createElement("div");
+    div2.setAttribute("id","fake-content");
+
+    dialog2.contentElt.appendChild(div2);
+
+    dialog2.pinTo("pin-container");
+    dialog2.swapWith("swap-container");
+    dialog2.swapWith("swap-container");
+
+    dialog2.updateProperties({
+        resizable:true,
+        draggable:true
+    });
+    /*setTimeout(function () {
+        dialog2.pinTo("pin-container");
+        dialog2.swapWith("swap-container");
+
+        setTimeout(function () {
+            dialog2.unpin();
+            dialog2.swapWith("swap-container");
+            dialog2.updateProperties({
+                resizable:true,
+                draggable:true
+            });
+        },2000);
+    },2000);*/
 </script>
 
 </body>
