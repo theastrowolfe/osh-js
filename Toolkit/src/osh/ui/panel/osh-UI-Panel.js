@@ -31,6 +31,11 @@ OSH.UI.Panel = BaseClass.extend({
 
         this.componentListeners = [];
 
+        if(!isUndefinedOrNull(options)) {
+            if(!isUndefinedOrNull(options.css)) {
+                OSH.Utils.addCss(this.elementDiv,options.css);
+            }
+        }
         this.initPanel();
         this.handleEvents();
     },
@@ -216,5 +221,16 @@ OSH.UI.Panel = BaseClass.extend({
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
             this.onResize();
         }.bind(this));
+    },
+
+    setVisible:function(isVisible) {
+        if(!isVisible) {
+            this.elementDiv.style.displayOld = window.getComputedStyle(this.elementDiv).getPropertyValue('display');
+            this.elementDiv.style.display = "none";
+        } else if(!isUndefinedOrNull(this.elementDiv.style.displayOld)) {
+            this.elementDiv.style.display = this.elementDiv.style.displayOld;
+        } else {
+            this.elementDiv.style.display = "block";
+        }
     }
 });
