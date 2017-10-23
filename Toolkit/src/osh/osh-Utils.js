@@ -378,7 +378,9 @@ OSH.Utils.addCss = function(div,css) {
 
   OSH.Asserts.checkIsDefineOrNotNull(div.className);
 
-  if(!div.className.includes(css)) {
+  var split = div.className.split(" ");
+  if(isUndefinedOrNull(split) ||
+      (!isUndefinedOrNull(split) && split.length > 0 && split.indexOf(css)  === -1)) {
       div.setAttribute("class", div.className + " " + css);
   }
 };

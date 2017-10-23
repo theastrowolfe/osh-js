@@ -43,6 +43,7 @@
 .osh .entity-editor .ds-line > span{
     margin-left: 15px;
     font-size: 17px;
+    color:#000000;
 }
 
 .osh .entity-editor .ds-line > .control {

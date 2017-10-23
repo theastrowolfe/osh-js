@@ -418,8 +418,8 @@ input[type="color"] {
 }
 
 .osh.view.video > img {
-    width:100%;
-    height:100%;
+    width:initial;
+    height:initial;
 }
 
 .osh.view.video > .stats {
@@ -437,10 +437,12 @@ input[type="color"] {
 }
 
 .osh.view.keep-ratio-w.video > canvas {
+    width:100%;
     height:auto;
 }
 
 .osh.view.keep-ratio-w.video > img {
+    width:100%;
     height:auto;
 }
 

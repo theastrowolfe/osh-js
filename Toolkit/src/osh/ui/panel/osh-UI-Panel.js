@@ -74,11 +74,21 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     attachTo : function(divId) {
+       this.attachToElement(document.getElementById(divId));
+    },
+
+    /**
+     *
+     * @param divId
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    attachToElement : function(element) {
         if(typeof this.elementDiv.parentNode !== "undefined") {
             // detach from its parent
             this.elementDiv.parentNode.removeChild(this.elementDiv);
         }
-        document.getElementById(divId).appendChild(this.elementDiv);
+        element.appendChild(this.elementDiv);
         if(this.elementDiv.style.display === "none") {
             this.elementDiv.style.display = "block";
         }
@@ -201,6 +211,7 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     show: function(properties) {
+        this.setVisible(properties.show);
     },
 
     /**
@@ -213,14 +224,16 @@ OSH.UI.Panel = BaseClass.extend({
     },
 
     handleEvents:function() {
+        var self = this;
+
         // observes the SHOW event
-        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
-            this.show(event);
-        }.bind(this));
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW+"-"+this.divId,function(event){
+            self.show(event);
+        });
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
-            this.onResize();
-        }.bind(this));
+            self.onResize();
+        });
     },
 
     setVisible:function(isVisible) {

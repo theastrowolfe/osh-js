@@ -46,17 +46,17 @@ OSH.Helper.HtmlHelper.onDomReady (function(){
 
      var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
          css: "dialog-entity",
-         name: "Create new Entity",
+         title: "Create new Entity",
          show:true,
-         pinContainerId: "dialog-container",
+         pinContainerId: "pin-container",
          draggable:true,
          closeable:true,
          destroyOnClose:true
      });
 
-     entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);
+     entityEditorView.attachToElement(entityEditorDialog.contentElt);
 
-     entityEditorDialog.pin();
+     entityEditorDialog.pinTo("pin-container");
      //entityEditorDialog.minimize();
      menu.closeMenu();
    };

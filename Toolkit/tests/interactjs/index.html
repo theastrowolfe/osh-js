@@ -35,6 +35,7 @@
     <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
 
     <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
 
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
@@ -106,109 +107,9 @@
             height: 100%;
         }
 
-        /** DIALOG CSS **/
-        .osh.dialog {
-            position:absolute;
-            width: 290px;
-            height: 300px;
-            background-color: #29e;
-            color: white;
-            box-sizing: border-box;
-            background: radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75));
-            border: 1px solid #bbbbbb;
-            border-radius: 6px;
-            box-shadow: 1px -1px 7px 0px #000000;
-            z-index: 1020;
-            -webkit-transform: translate(0px, 0px);
-            transform: translate(0px, 0px);
-        }
-
-        .osh.dialog .dialog-header {
-            height: 25px;
-            background: red;
-            border-top-left-radius: 6px;
-            border-top-right-radius: 6px;
-            padding-right:5px;
-            padding-bottom: 4px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .osh.dialog .dialog-header > .line-left {
-            float: left;
-            padding-left: 15px;
-            padding-top: 4px;
-        }
-
-        .osh.dialog .dialog-header > .line-right {
-            float: right;
-        }
-
-        .osh.dialog .dialog-content {
-            background: yellow;
-            height: calc(100% - 50px); /* 25px of the header + 25px of the footer*/
-            overflow: auto;
-        }
-
-        .osh.dialog .dialog-content div {
-            height:100%;
-            width:100%;
-        }
-
-        .osh.dialog .dialog-footer {
-            height: 25px;
-            background: black;
-            border-bottom-left-radius: 6px;
-            border-bottom-right-radius: 6px;
-        }
-
-        .osh.dialog .dialog-header-icon {
-            display: inline-block;
-            font-family: FontAwesome;
-            cursor: pointer;
-            color: #c3c3c3;
-        }
-
-        .osh.dialog .dialog-header-icon:hover {
-            color: #676767;
-            cursor:pointer;
-        }
-
-        .osh.dialog .dialog-header-icon.icon-selected {
-            color: #676767;
-        }
-
-
-        .osh.dialog.minimized {
-            height: 25px !important;
-            transition: height 0.25s linear;
-            -webkit-transition: height 0.25s linear;
-            -moz-transition: height 0.25s linear;
-            -o-transition: height 0.25s linear;
-            -ms-transition: height 0.25s linear;
-        }
-
-        .osh.dialog.minimized > .dialog-header {
-            border-radius: 6px;
-        }
-
-        .icon-swap:before {
-            content:"\f0ec";
-        }
-
-        .icon-pin:before {
-            content: "\f08d";
-        }
-
-        .icon-minimize:before {
-            content: "\f2d1";
-        }
-
-        .icon-restore:before {
-            content: "\f2d2";
-        }
-        .icon-close:before {
-            content: "\f00d";
+        .dialog-test {
+            width:290px;
+            min-height:200px;
         }
     </style>
 </head>
@@ -222,469 +123,13 @@
 </div>
 <script type="text/javascript">
 
-    /**
-     * @classdesc
-     * @class
-     * @type {OSH.UI.Panel}
-     * @augments OSH.UI.Panel
-     * @example
-     var dialogPanel =  new OSH.UI.Panel.DialogPanel(containerDivId, {
-        pinContainerId: "pin-container",
-        swapContainerId: "main-container",
-        title: title,
-        show:false,
-        css: "dialog",
-        draggable: false,
-        resizable: true,
-
-        closeable: true,
-        connectionIds : dataSources ,
-        destroyOnClose: true,
-        modal: false
-    });
-     */
-    OSH.UI.Panel.NewDialogPanel = OSH.UI.Panel.extend({
-        initialize: function (parentElementDivId, options) {
-            this._super(parentElementDivId, options);
-        },
-
-        initPanel: function () {
-            // adds OSH css
-            OSH.Utils.addCss(this.elementDiv, "dialog");
-
-            // creates header
-            this.headerElt = this.createHeader();
-
-            // creates content
-            this.contentElt = this.createContent();
-
-            // creates footer
-            this.footerElt = this.createFooter();
-
-            this.elementDiv.appendChild(this.headerElt);
-            this.elementDiv.appendChild(this.contentElt);
-            this.elementDiv.appendChild(this.footerElt);
-
-            this.initDragAndDrop();
-
-            this.updateProperties(this.options);
-        },
-
-        checkOptions:function(properties) {
-            if(!isUndefinedOrNull(properties)) {
-                // checks title
-                if (!isUndefined(properties.title)) {
-                    this.title = properties.title;
-                } else if(isUndefinedOrNull(this.title)) {
-                    this.title = "Untitled"; // default value
-                }
-
-                // checks show
-                if (!isUndefined(properties.show)) {
-                    this.show = properties.show;
-                } else if(isUndefinedOrNull(this.show)) {
-                    this.show = true; // default value
-                }
-
-                // checks draggable
-                if (!isUndefined(properties.draggable)) {
-                    this.draggable = properties.draggable;
-                } else if(isUndefinedOrNull(this.draggable)) {
-                    this.draggable = true; // default value
-                }
-
-                // checks resizable
-                if (!isUndefined(properties.resizable)) {
-                    this.resizable = properties.resizable;
-                } else if(isUndefinedOrNull(this.resizable)) {
-                    this.resizable = true; // default value
-                }
-
-                // checks closeable
-                if (!isUndefined(properties.closeable)) {
-                    this.closeable = properties.closeable;
-                } else if(isUndefinedOrNull(this.closeable)) {
-                    this.closeable = false; // default value
-                }
-
-                // checks connected & connectionIds
-                if (!isUndefined(properties.connectionIds)) {
-                    this.connectionIds = properties.connectionIds;
-                    this.connected = true;
-                } else if(isUndefinedOrNull(this.connectionIds)) {
-                    this.connected = false;  // default value
-                    this.connectionIds = []; // default value
-                }
-
-                // checks pin
-                if (!isUndefined(properties.pinContainerId)) {
-                    this.pin = {
-                        containerId: this.options.pinContainerId,
-                        originalContainerId: this.elementDiv.parentNode.id,
-                        lastPosition: {
-                            x: 0,
-                            y: 0
-                        }
-                    }
-                } else if(isUndefinedOrNull(this.pin)) {
-                    this.pin = null; // default value
-                }
-
-                // checks swap
-                if (!isUndefined(properties.swapContainerId)) {
-                    var dstElt = document.getElementById(properties.swapContainerId);
-                    if (!isUndefinedOrNull(dstElt)) {
-                        var parentDstElt = dstElt.parentNode;
-                        if (!isUndefinedOrNull(parentDstElt)) {
-                            this.swap = {
-                                swapContainerId: properties.swapContainerId,
-                                position: window.getComputedStyle(dstElt).getPropertyValue('position')
-                            }
-                        }
-                    }
-                } else if(isUndefinedOrNull(this.swap)) {
-                    this.swap = null; // default value
-                }
-
-                // checks destroy on close
-                if (!isUndefined(properties.destroyOnClose)) {
-                    this.destroyOnClose = properties.destroyOnClose;
-                } else if(isUndefinedOrNull(this.destroyOnClose)) {
-                    this.destroyOnClose = false; // default value
-                }
-
-                // checks modal
-                if (!isUndefined(properties.modal)) {
-                    this.modal = properties.modal;
-                } else if(isUndefinedOrNull(this.modal)) {
-                    this.modal = false; // default value
-                }
-            }
-
-            this.minimized = false;
-        },
-
-        //------- HEADER ---------------//
-        createHeader: function () {
-            var dialogHeaderElt = document.createElement("div");
-            dialogHeaderElt.setAttribute("class", "dialog-header");
-
-            // creates line
-            // // Left element
-            this.headerSpanLeftElt = document.createElement("span");
-            this.headerSpanLeftElt.setAttribute("class","line-left");
-
-            // // Right element
-            var tableRightElt = document.createElement("table");
-            tableRightElt.setAttribute("class","line-right");
-            var tbodyElt = document.createElement("tbody");
-            this.headerTrElt = document.createElement("tr");
-
-            this.headerTdElts = {};
-
-            tbodyElt.appendChild(this.headerTrElt);
-            tableRightElt.appendChild(tbodyElt);
-
-            dialogHeaderElt.appendChild(this.headerSpanLeftElt);
-            dialogHeaderElt.appendChild(tableRightElt);
-
-            return dialogHeaderElt;
-        },
-
-        updateProperties:function(properties) {
-            this.checkOptions(properties);
-
-            this.headerSpanLeftElt.innerHTML = this.title;
-
-            if(!isUndefinedOrNull(this.swap) && isUndefinedOrNull(this.headerTrElt.swap)) {
-                this.headerTrElt.swap = this.addSwapIcon(this.headerTrElt);
-            }
-
-            if(!isUndefinedOrNull(this.pin) && isUndefinedOrNull(this.headerTrElt.pin)) {
-                this.headerTrElt.pin = this.addPinIcon(this.headerTrElt);
-                this.pin.position = window.getComputedStyle(this.interact.target).getPropertyValue('position');
-            }
-
-            if(isUndefinedOrNull(this.headerTrElt.minimize)) {
-                this.headerTrElt.minimize = this.addMinimizeIcon(this.headerTrElt);
-            }
-
-            this.setVisible(this.show);
-            this.interact.draggable(this.draggable);
-            this.interact.resizable(this.resizable);
-        },
-
-        addSwapIcon:function(parentElt) {
-            // adds swap icon
-            var tdElt = document.createElement("td");
-
-            var swapIconElt = document.createElement("i");
-            swapIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-swap");
-
-            tdElt.appendChild(swapIconElt);
-            parentElt.appendChild(tdElt);
-
-            // adds listener
-            this.addListener(swapIconElt,"click",this.swapHandler.bind(this));
-
-            return swapIconElt;
-        },
-
-        addPinIcon:function(parentElt) {
-            // adds pin icon
-            var tdElt = document.createElement("td");
-
-            var pinIconElt = document.createElement("i");
-            pinIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-pin");
-
-            tdElt.appendChild(pinIconElt);
-            parentElt.appendChild(tdElt);
-
-
-            // adds listener
-            this.addListener(pinIconElt,"click",this.pinHandler.bind(this));
-
-            return pinIconElt;
-        },
-
-        addMinimizeIcon:function(parentElt) {
-            // adds minimize icon
-            var tdElt = document.createElement("td");
-
-            var minimizeIconElt = document.createElement("i");
-            minimizeIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-minimize");
-
-            tdElt.appendChild(minimizeIconElt);
-            parentElt.appendChild(tdElt);
-
-            // adds listener
-            this.addListener(minimizeIconElt,"click",this.minimizeHandler.bind(this));
-
-            return minimizeIconElt;
-        },
-        //------- END HEADER ---------------//
-
-        createContent: function () {
-            var dialogContentElt = document.createElement("div");
-            dialogContentElt.setAttribute("class", "dialog-content");
-
-            return dialogContentElt;
-        },
-
-        createFooter: function () {
-            var dialogFooterElt = document.createElement("div");
-            dialogFooterElt.setAttribute("class", "dialog-footer");
-
-            return dialogFooterElt;
-        },
-
-        initDragAndDrop: function () {
-            this.interact = interact(this.elementDiv)
-                .draggable({
-                    // enable inertial throwing
-                    inertia: true,
-                    // keep the element within the area of it's parent
-                    restrict: {
-                        restriction: "parent",
-                        endOnly: false,
-                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
-                    },
-                    // enable autoScroll
-                    autoScroll: true,
-
-                    // call this function on every dragmove event
-                    onmove: dragMoveListener,
-                    // call this function on every dragend event
-                    onend: function (event) {
-                    }
-                })
-                .resizable({
-                    preserveAspectRatio: true,
-                    edges: {left: true, right: true, bottom: true, top: true},
-                    margin: 10
-                })
-                .on('resizemove', function (event) {
-                    var target = event.target,
-                        x = (parseFloat(target.getAttribute('data-x')) || 0),
-                        y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-                    // update the element's style
-                    target.style.width = event.rect.width + 'px';
-                    target.style.height = event.rect.height + 'px';
-
-                    // translate when resizing from top or left edges
-                    x += event.deltaRect.left;
-                    y += event.deltaRect.top;
-
-                    target.style.webkitTransform = target.style.transform =
-                        'translate(' + x + 'px,' + y + 'px)';
-
-                    target.setAttribute('data-x', x);
-                    target.setAttribute('data-y', y);
-                });
-
-            var self = this;
-
-            function dragMoveListener(event) {
-                var target = event.target,
-                    // keep the dragged position in the data-x/data-y attributes
-                    x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                    y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-                target.style.webkitTransform =
-                    target.style.transform =
-                        'translate(' + x + 'px, ' + y + 'px)';
-
-                target.setAttribute('data-x', x);
-                target.setAttribute('data-y', y);
-            }
-
-            // this is used later in the resizing and gesture demos
-            window.dragMoveListener = dragMoveListener;
-        },
-
-        //------------ HANDLERS -----------------//
-        swapHandler:function() {
-            // swap only content
-            if(!isUndefinedOrNull(this.swap)) {
-                this.swapWith(this.swap.swapContainerId)
-            }
-        },
-
-        pinHandler:function() {
-            var parentId = this.elementDiv.parentNode.id;
-
-            if(parentId === this.pin.containerId) {
-                // unpin: dialog -> original container
-                this.unpin();
-            } else {
-                // pin: dialog -> dest container
-                this.pinTo(this.pin.containerId);
-            }
-        },
-
-        minimizeHandler:function() {
-            if(!this.minimized) {
-                this.minimize();
-            } else {
-                this.restore();
-            }
-        },
-
-        //---------- FUNCTIONS ----------------//
-        swapWith:function(dstContainerId) {
-            // removes content from dst
-            var dstContainerElt = document.getElementById(dstContainerId);
-            OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
-
-            // removes content from dst container
-            var childrenDst = [];
-            var i;
-            for(i=0;i < dstContainerElt.children.length;i++) {
-                childrenDst.push(dstContainerElt.removeChild(dstContainerElt.children[i]));
-            }
-
-            // removes content from dialog
-            var childrenDialog = [];
-            for(i=0;i < this.contentElt.children.length;i++) {
-                childrenDialog.push(this.contentElt.removeChild(this.contentElt.children[i]));
-            }
-
-            // swap
-            for(i=0;i < childrenDialog.length;i++) {
-                dstContainerElt.appendChild(childrenDialog[i]);
-            }
-
-            for(i=0;i < childrenDst.length;i++) {
-                this.contentElt.appendChild(childrenDst[i]);
-            }
-
-          /*  // overrides any position because it has to be relative
-            firstRemovedElt.style.position = "relative";
-
-            // applies saved position
-            secondRemovedElt.style.position = this.swap.position;*/
-        },
-
-        pinTo:function(containerId) {
-            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
-            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
-
-            this.elementDiv.parentNode.removeChild(this.elementDiv);
-
-            var dstContainerElt = document.getElementById(containerId);
-            OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
-
-            dstContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
-
-            this.interact.draggable(false);
-
-            // store last position
-            this.pin.lastPosition.x = (parseFloat(this.interact.target.getAttribute('data-x')) || 0);
-            this.pin.lastPosition.y = (parseFloat(this.interact.target.getAttribute('data-y')) || 0);
-
-            // set dst position
-            this.setPosition(0,0);
-            this.interact.target.style.position = "relative";
-
-            OSH.Utils.addCss(this.headerTrElt.pin,"icon-selected");
-        },
-
-        unpin:function() {
-            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
-            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
-
-            this.elementDiv.parentNode.removeChild(this.elementDiv);
-
-            var originalContainerElt = document.getElementById(this.pin.originalContainerId);
-            OSH.Asserts.checkIsDefineOrNotNull(originalContainerElt);
-
-            originalContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
-            this.interact.draggable(this.draggable);
-
-            // restore position before pinning
-            this.setPosition(this.pin.lastPosition.x ,this.pin.lastPosition.y);
-
-            // restore style before pinning
-            OSH.Asserts.checkIsDefineOrNotNull(this.pin.position);
-            this.interact.target.style.position = this.pin.position;
-
-            OSH.Utils.removeCss(this.headerTrElt.pin,"icon-selected");
-        },
-
-        minimize:function() {
-            OSH.Utils.addCss(this.elementDiv,"minimized");
-          //  OSH.Utils.addCss(this.contentElt,"hide");
-          //  OSH.Utils.addCss(this.footerElt,"hide");
-
-            OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-minimize","icon-restore");
-            this.minimized = true;
-            this.interact.resizable(false);
-        },
-
-        restore:function() {
-            OSH.Utils.removeCss(this.elementDiv,"minimized");
-            OSH.Utils.removeCss(this.contentElt,"hide");
-            OSH.Utils.removeCss(this.footerElt,"hide");
-
-            OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-restore","icon-minimize");
-            this.minimized = false;
-            this.interact.resizable(this.draggable);
-        },
-
-        setPosition:function(x,y) {
-            this.interact.target.style.webkitTransform =
-                this.interact.target.style.transform =
-                    'translate(' + x + 'px, ' + y + 'px)';
-
-            this.interact.target.setAttribute('data-x', x);
-            this.interact.target.setAttribute('data-y', y);
-        }
-    });
-
-    var dialog = new OSH.UI.Panel.NewDialogPanel("dialog-container",{
-        swapContainerId:"swap-container-elt",
-        pinContainerId: "swap-container"
+    var dialog = new OSH.UI.Panel.DialogPanel("dialog-container",{
+        title: "Non modal 1",
+        swapContainerId:"swap-container",
+        pinContainerId: "swap-container",
+        destroyOnClose:true,
+        modal:false,
+        css:"dialog-test"
     });
 
     // test for swapping
@@ -694,28 +139,8 @@
     dialog.contentElt.appendChild(div);
 
 
-    var dialog2 = new OSH.UI.Panel.NewDialogPanel("dialog-container",{
-        swapContainerId:"swap-container",
-        pinContainerId: "swap-container",
-        show:true,
-        draggable:false,
-        resizable:false
-    });
-
     // test for swapping
-    var div2 = document.createElement("div");
-    div2.setAttribute("id","fake-content");
 
-    dialog2.contentElt.appendChild(div2);
-
-    dialog2.pinTo("pin-container");
-    dialog2.swapWith("swap-container");
-    dialog2.swapWith("swap-container");
-
-    dialog2.updateProperties({
-        resizable:true,
-        draggable:true
-    });
     /*setTimeout(function () {
         dialog2.pinTo("pin-container");
         dialog2.swapWith("swap-container");
@@ -729,6 +154,95 @@
             });
         },2000);
     },2000);*/
+    // display the dialog after closing
+    dialog.onClose = function() {
+        setTimeout(function () {
+            OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW+"-"+dialog.divId,{show: true});
+        },1000);
+    };
+
+        var replayFactor = 3;
+
+        //---------- DATASOURCE ------------//
+        var androidPhoneVideoDataSource = new OSH.DataReceiver.VideoMjpeg("android-Video", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: replayFactor + "",
+            syncMasterTime: false,
+            bufferingTime: 200
+        });
+
+        //------------ VIEW -----------------//
+
+        var dialog2 = new OSH.UI.Panel.DialogPanel("dialog-container",{
+            title: "Modal 2",
+            swapContainerId:"swap-container",
+            pinContainerId: "swap-container",
+            show:true,
+            draggable:false,
+            resizable:false,
+            closeable:true,
+            modal:true,
+            connectionIds:[androidPhoneVideoDataSource.id],
+            css:"dialog-test",
+            keepRatio:true
+        });
+
+        // Video 1 View
+        var videoView = new OSH.UI.View.MjpegView("",
+            [
+                {
+                    name: "video view item",
+                    styler: new OSH.UI.Styler.Video({
+                        frameFunc: {
+                            dataSourceIds: [androidPhoneVideoDataSource.id],
+                            handler: function (rec, timestamp, options) {
+                                return rec;
+                            }
+                        }
+                    })
+                }
+            ]
+            , {
+                css: "video-mjpeg",
+                cssSelected: "video-selected",
+                name: "Android Video",
+                keepRatio: true
+            });
+
+        videoView.attachToElement(dialog2.contentElt);
+        //---------------------------------------------------------------//
+        //--------------------- Creates DataProvider --------------------//
+        //---------------------------------------------------------------//
+
+        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+            replayFactor: replayFactor
+        });
+
+        // We can add a group of dataSources and set the options
+        dataProviderController.addDataSource(androidPhoneVideoDataSource);
+
+        //---------------------------------------------------------------//
+        //---------------------------- Starts ---------------------------//
+        //---------------------------------------------------------------//
+
+        // starts streaming
+        dataProviderController.connectAll();
+
+        // some tests on dialog
+        dialog2.pinTo("pin-container");
+        dialog2.swapWith("swap-container");
+        dialog2.swapWith("swap-container");
+
+        dialog2.updateProperties({
+            resizable:true,
+            draggable:true
+        });
 </script>
 
 </body>
