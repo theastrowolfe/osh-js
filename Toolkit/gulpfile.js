@@ -23,7 +23,6 @@ var WORKERS_OUT_DIR = OUT_DIR+"/js/workers";
 
 //--- VENDOR SRC ---//
 
-
 // CESIUM
 
 var CESIUM_SRC = ["vendor/cesium/Build/Cesium/Cesium.js","vendor/cesium-draw-helper/DrawHelper.js","vendor/cesium-wfst/cesium-wfst.js"];
@@ -123,16 +122,35 @@ var X2JS_RESOURCES_FILES = [];
 
 // END X2JS
 
+// CLONE
 
-// MP4BOX
+var CLONE_SRC = ["vendor/clone/clone.js"];
+var CLONE_SRC_DEBUG = CLONE_SRC;
+var CLONE_CSS = [];
+var CLONE_RESOURCES_DIR = {};
+var CLONE_RESOURCES_FILES = [];
 
-var MP4BOX_SRC = ["vendor/mp4Box/dist/mp4box.all.js"];
-var MP4BOX_SRC_DEBUG = MP4BOX_SRC;
-var MP4BOX_CSS = [];
-var MP4BOX_RESOURCES_DIR = {};
-var MP4BOX_RESOURCES_FILES = [];
+// END CLONE
 
-// END MP4BOX
+//  FILESAVER
+
+var FILESAVER_SRC = ["vendor/FileSaver.js/FileSaver.min.js"];
+var FILESAVER_SRC_DEBUG = ["vendor/FileSaver.js/FileSaver.js"];
+var FILESAVER_CSS = [];
+var FILESAVER_RESOURCES_DIR = {};
+var FILESAVER_RESOURCES_FILES = [];
+
+//  END FILESAVER
+
+//  JSBEAUTIFY
+
+var JSBEAUTIFY_SRC = ["vendor/js-beautify/js/lib/beautify-css.js","vendor/js-beautify/js/lib/beautify-html.js","vendor/js-beautify/js/lib/beautify.js"];
+var JSBEAUTIFY_SRC_DEBUG = JSBEAUTIFY_SRC;
+var JSBEAUTIFY_CSS = [];
+var JSBEAUTIFY_RESOURCES_DIR = {};
+var JSBEAUTIFY_RESOURCES_FILES = [];
+
+//  END JSBEAUTIFY
 
 Array.prototype.pushAll=function(array) {
     for(var i=0;i < array.length;i++) {
@@ -198,28 +216,43 @@ if(argv.leaflet || argv.all) {
     ALL_VENDOR_RESOURCES_FILES.pushAll(LEAFLET_RESOURCES_FILES);
 }
 
-if(argv.mp4 || argv.all) {
-    ALL_VENDOR_SRC.pushAll(MP4BOX_SRC);
-    ALL_VENDOR_DEBUG.pushAll(MP4BOX_SRC_DEBUG);
-    ALL_VENDOR_CSS.pushAll(MP4BOX_CSS);
-    ALL_VENDOR_RESOURCES_DIR.push(MP4BOX_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(MP4BOX_RESOURCES_FILES);
-}
-
 if(argv.tree || argv.all) {
     ALL_VENDOR_SRC.pushAll(TREE_SRC);
     ALL_VENDOR_DEBUG.pushAll(TREE_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(TREE_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(TREE_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(TREE_RESOURCES_FILES);}
+    ALL_VENDOR_RESOURCES_FILES.pushAll(TREE_RESOURCES_FILES);
+}
 
 if(argv.x2js || argv.all) {
     ALL_VENDOR_SRC.pushAll(X2JS_SRC);
     ALL_VENDOR_DEBUG.pushAll(X2JS_SRC_DEBUG);
     ALL_VENDOR_CSS.pushAll(X2JS_CSS);
     ALL_VENDOR_RESOURCES_DIR.push(X2JS_RESOURCES_DIR);
-    ALL_VENDOR_RESOURCES_FILES.pushAll(X2JS_RESOURCES_FILES);}
+    ALL_VENDOR_RESOURCES_FILES.pushAll(X2JS_RESOURCES_FILES);
+}
 
+if(argv.entityEditor || argv.all) {
+    ALL_VENDOR_SRC.pushAll(CLONE_SRC);
+    ALL_VENDOR_SRC.pushAll(FILESAVER_SRC);
+    ALL_VENDOR_SRC.pushAll(JSBEAUTIFY_SRC);
+
+    ALL_VENDOR_DEBUG.pushAll(CLONE_SRC_DEBUG);
+    ALL_VENDOR_DEBUG.pushAll(FILESAVER_SRC_DEBUG);
+    ALL_VENDOR_DEBUG.pushAll(JSBEAUTIFY_SRC_DEBUG);
+
+    ALL_VENDOR_CSS.pushAll(CLONE_CSS);
+    ALL_VENDOR_CSS.pushAll(FILESAVER_CSS);
+    ALL_VENDOR_CSS.pushAll(JSBEAUTIFY_CSS);
+
+    ALL_VENDOR_RESOURCES_DIR.push(CLONE_RESOURCES_DIR);
+    ALL_VENDOR_RESOURCES_DIR.push(FILESAVER_RESOURCES_DIR);
+    ALL_VENDOR_RESOURCES_DIR.push(JSBEAUTIFY_RESOURCES_DIR);
+
+    ALL_VENDOR_RESOURCES_FILES.pushAll(CLONE_RESOURCES_FILES);
+    ALL_VENDOR_RESOURCES_FILES.pushAll(FILESAVER_RESOURCES_FILES);
+    ALL_VENDOR_RESOURCES_FILES.pushAll(JSBEAUTIFY_RESOURCES_FILES);
+}
 //--- END VENDOR SRC ---//
 
 //--- OSH SRC ---//
@@ -228,6 +261,8 @@ var OSH_SRC = [];
 OSH_SRC.push('./src/osh/osh-BaseClass.js');
 OSH_SRC.push('./src/osh/osh-Template.js');
 OSH_SRC.push('./src/osh/osh-Browser.js');
+OSH_SRC.push('./src/osh/exception/osh-Exception.js');
+OSH_SRC.push('./src/osh/osh-Asserts.js');
 OSH_SRC.push('./src/osh/osh-Utils.js');
 OSH_SRC.push('./src/osh/helper/osh-HtmlHelper.js');
 OSH_SRC.push('./src/osh/osh-Browser.js');
@@ -258,6 +293,30 @@ OSH_SRC.push('./src/osh/discovery/osh-Sensor.js');
 OSH_SRC.push('./src/osh/discovery/osh-Server.js');
 OSH_SRC.push('./src/osh/ui/panel/osh-UI-Panel.js');
 OSH_SRC.push('./src/osh/ui/panel/osh-UI-TabPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/dialog/osh-UI-DialogPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/dialog/osh-UI-MultiDialogPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/dialog/osh-UI-SaveDialogPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/osh-UI-EntityInfoPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/osh-UI-EntityViewPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/osh-UI-EntityFilePanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/osh-UI-EntityDatasourcePanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/osh-UI-EntityEditorPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityEditViewPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityViewItemsEditPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityMapEditPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityVideoEditPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityChartEditPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/osh-UI-EntityMJPEGVideoEditPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerVideoPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerPolylinePanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerMarkerPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/osh-UI-StylerLinePlotPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerColorPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerIconPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerLocationPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerVideoPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-StylerXYPanel.js');
 OSH_SRC.push('./src/osh/log/osh-Log.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-View.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-ViewFactory.js');
@@ -272,39 +331,37 @@ OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-StackMenu.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-Styler.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerImageDraping.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerLinePlot.js');
+OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerVideo.js');
 
-if(argv.cesium) {
+if(argv.cesium || argv.all) {
     OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerNexrad.js');
 }
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerPolyline.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerPointMarker.js');
-if(argv.nvd3) {
+if(argv.nvd3 || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/chart/osh-UI-Nvd3LineChartView.js');
 }
 OSH_SRC.push('./src/osh/ui/view/discovery/osh-UI-DiscoveryView.js');
-if(argv.tree) {
+if(argv.tree || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/entity/osh-UI-EntityTreeView.js');
 }
-if(argv.cesium) {
+if(argv.cesium || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/map/osh-UI-CesiumView.js');
 }
-if(argv.leaflet) {
+if(argv.leaflet || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/map/osh-UI-LeafletView.js');
 }
-if(argv.ol3) {
+if(argv.ol3 || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/map/osh-UI-OpenLayerView.js');
 }
-OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-DialogPanel.js');
-OSH_SRC.push('./src/osh/ui/view/dialog/osh-UI-MultiDialogPanel.js');
-OSH_SRC.push('./src/osh/ui/view/osh-UI-Loading.js');
-if(argv.nouislider) {
+if(argv.nouislider || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/osh-UI-RangeSlider.js');
 }
 OSH_SRC.push('./src/osh/ui/view/tasking/osh-UI-PtzTaskingView.js');
-if(argv.ffmpeg) {
+if(argv.ffmpeg || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/video/osh-UI-FFMPEGView.js');
 }
-if(argv.broadway) {
+if(argv.broadway || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/video/osh-UI-H264View.js');
 }
 OSH_SRC.push('./src/osh/ui/view/video/osh-UI-MjpegView.js');
@@ -314,8 +371,8 @@ OSH_SRC.push('./src/osh/ui/view/video/osh-UI-Mp4View.js');
 
 var OSH_CSS = ["src/css/*.css"];
 var OSH_RESOURCES_DIR = {
-        "./src/css/font-awesome-4.7.0/" : "css/font-awesome-4.7.0/",
-        "./src/images/" : "images"
+    "./src/css/font-awesome-4.7.0/" : "css/font-awesome-4.7.0/",
+    "./src/images/" : "images"
 };
 
 var OSH_RESOURCES_FILES = [];
@@ -324,6 +381,7 @@ gulp.task('build','build a distributable osh-js instance',['debug','minify'],fun
     // ...
 }, {
     options: {
+        'all': 'Build with all vendors',
         'ffmpeg': 'Include FFMPEG library. This library provides FFmpeg builds ported to JavaScript using Emscripten project. ' +
         'Builds are optimized for in-browser use: minimal size for faster loading, asm.js, performance tunings, etc. This is a fork ' +
         'from Kagami/ffmpeg.js: https://github.com/sensiasoft/ffmpeg.js\n',
@@ -335,6 +393,7 @@ gulp.task('build','build a distributable osh-js instance',['debug','minify'],fun
         'vector data and markers loaded from any source: https://openlayers.org/\n',
         'nouislider': 'This library is responsible for displaying the RangeSlider bar.It is lightweight JavaScript range slider, ' +
         'originally developed to be a jQuery UI alternative: https://github.com/leongersen/noUiSlider\n',
+        'entityEditor': 'Include some librairies used into the entity editor functionnality\n',
         'tree': 'This library is responsible for displaying the Entity Tree View. It is a pure Javascript TreeView Component: https://github.com/rafaelthca/aimaraJS\n'
     }
 });
@@ -378,8 +437,8 @@ gulp.task('debug-osh-css', false,function() {
 gulp.task('debug-vendor-js', false,function() {
     // makes all in one file
     return gulp.src(ALL_VENDOR_DEBUG)
-            .pipe(concat('vendor-debug.js'))
-            .pipe(gulp.dest(OUT_DIR+"/vendor/"));
+        .pipe(concat('vendor-debug.js'))
+        .pipe(gulp.dest(OUT_DIR+"/vendor/"));
 });
 
 gulp.task('debug-vendor-css', false,["init-vendor-css-file"],function() {
@@ -435,7 +494,7 @@ gulp.task('copy-osh-resources', false,function() {
     }
 
     return gulp.src(OSH_RESOURCES_FILES)
-          .pipe(gulp.dest(OUT_DIR));
+        .pipe(gulp.dest(OUT_DIR));
 });
 
 gulp.task('copy-vendor-resources', false,function() {

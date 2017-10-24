@@ -49,6 +49,7 @@
     "FileSaver.js":"https://github.com/eligrey/FileSaver.js.git#^1.3.3",
     "Blob.js":"https://github.com/eligrey/Blob.js.git#079824b6c118fbcd0b99c561d57ad192d2c6619b",
     "HTML5-Color-Picker":"https://github.com/NC22/HTML5-Color-Picker.git#a2e2bae2ee1c71b593a52ad2974411030c48bdab",
-    "mp4Box":"./vendor-local/mp4Box"
+    "mp4Box":"./vendor-local/mp4Box",
+    "clone":"./vendor-local/clone"
   }
 }
