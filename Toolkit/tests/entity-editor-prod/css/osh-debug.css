@@ -1,0 +1,1927 @@
+/* Demo by http://creative-punch.net */
+
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.circular-menu-container {
+    position:absolute;
+    z-index:9999;
+    top:0;
+}
+
+.circular-menu {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.open.circular-menu {
+    display:block;
+}
+
+.close.circular-menu-container {
+    display:none;
+}
+
+.close.circular-menu {
+    display:none;
+}
+
+.circular-menu-circle {
+    width: 150px;
+    height: 150px;
+    opacity: 0;
+
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    transform: scale(0);
+
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open.circular-menu-circle {
+    -webkit-transform: scale(1.0);
+    -moz-transform: scale(1.0);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 20px 1px #777;
+    border-radius:130px;
+    background-color:#777;
+    filter: alpha(opacity=60);
+    /* IE */
+    -moz-opacity: 0.6;
+    /* Mozilla */
+    opacity: 0.6;
+}
+
+.circular-menu-circle a {
+    color: white;
+    display: block;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    position: absolute;
+    text-align: center;
+}
+
+.circular-menu-circle a:hover {
+    color: #eef;
+    text-decoration: none;
+}
+
+.open.menu-button {
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.close.menu-button {
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open.circular-menu-container{
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+    display:block;
+}
+
+.close.circular-menu-container{
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+    display:none;
+}
+
+
+.circular-menu-button {
+    position: absolute;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
+    text-decoration: none;
+    text-align: center;
+    color: #444 !important;
+    border-radius: 50%;
+    display: block;
+    height: 40px;
+    width: 40px;
+    background: #FFF;
+    padding: 7px !important;
+    text-decoration: none;
+}
+
+.circular-menu a {
+    text-decoration: none;
+}
+
+/*.circular-menu-circle .fa:hover{
+    color:forestgreen;
+}*/
+
+.circular-menu-button:hover {
+    color: #0078A8 !important;
+}
+.circular-menu-circle a {
+    font-size:2em;
+}
+
+.circular-menu-circle a:hover {
+    font-size:2.7em;
+}
+
+.circular-menu-label {
+    display:none;
+}
+
+.circular-menu-button.fa.fa-times {
+    padding: 6px !important; /** TODO: to fix**/
+}
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.osh {}
+
+.osh.view {
+    width:100%;
+    height: inherit;
+}
+
+.osh .horizontal-titled-line {
+    overflow: hidden;
+    text-align: center;
+    color:#525252;
+    font-size: 15px;
+}
+
+.osh .horizontal-titled-line:before,
+.osh .horizontal-titled-line:after {
+    background-color: #c4c4c4;
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+.osh .horizontal-titled-line:before {
+    right: 0.5em;
+    margin-left: -50%;
+}
+.osh .horizontal-titled-line:after {
+    left: 0.5em;
+    margin-right: -50%;
+}
+
+.osh .horizontal-line {
+    border-bottom: 1px solid #c4c4c4;
+    padding: 4px;
+    margin-bottom: 2px;
+}
+
+/** Select box **/
+.osh .select-style {
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: #fff;
+    position: relative;
+    min-width: 30px;
+    margin-top: -1px;
+}
+
+.osh .select-style:before {
+    font-family: FontAwesome;
+    content: "\f0d7";
+    font-size: 25px;
+    display: inline-block;
+    position: absolute;
+    pointer-events: none;
+    right: 5px;
+    color: #777;
+    top:4px;
+}
+
+.osh .select-style select {
+    padding: 5px 8px;
+    padding-right: 25px;
+    width: 100%;
+    background-color: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius: 2px;
+}
+
+.osh .select-style select:focus {
+    outline: none;
+}
+
+/** Form **/
+.osh:-moz-placeholder {
+    color: #777;
+}
+
+.osh::-webkit-input-placeholder {
+    color: #777;
+}
+
+.osh*:focus {outline: none;}
+
+body {font: 14px/21px "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", sans-serif;}
+.form_hint, .required_notification {font-size: 11px;}
+
+.osh li > label {
+    width:146px;
+    margin-top: 3px;
+    display:inline-block;
+    float:left;
+    padding:3px;
+}
+.osh .input-text {
+    padding:5px 8px;
+    width:195px;
+}
+
+.osh .input-text, .osh select {
+    border:1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius:2px;
+}
+.osh .input-text:focus, .osh select:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
+}
+/* Button Style */
+.osh button.submit {
+    background-color: #056BA6;
+    background: -webkit-gradient(linear, left top, left bottom, from(#056BA6), to(#055690));
+    background: -webkit-linear-gradient(top, #056BA6, #055690);
+    background: -moz-linear-gradient(top, #056BA6, #055690);
+    background: -ms-linear-gradient(top, #056BA6, #055690);
+    background: -o-linear-gradient(top, #056BA6, #055690);
+    background: linear-gradient(top, #056BA6, #055690);
+    border: 1px solid #056BA6;
+    border-bottom: 1px solid #056BA6;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    box-shadow: inset 0 1px 0 0 #056BA6;
+    -webkit-box-shadow: 0 1px 0 0 #056BA6 inset ;
+    -moz-box-shadow: 0 1px 0 0 #056BA6 inset;
+    -ms-box-shadow: 0 1px 0 0 #056BA6 inset;
+    -o-box-shadow: 0 1px 0 0 #056BA6 inset;
+    color: white;
+    font-weight: bold;
+    padding: 6px 20px;
+    text-align: center;
+    text-shadow: 0 -1px 0 #056BA6;
+    display:table;
+    margin:0px auto 0px auto;
+}
+.osh button.submit:hover {
+    opacity:.85;
+    cursor: pointer;
+}
+.osh button.submit:active {
+    border: 1px solid #056BA6;
+    box-shadow: 0 0 10px 5px #056BA6 inset;
+    -webkit-box-shadow:0 0 10px 5px #056BA6 inset ;
+    -moz-box-shadow: 0 0 10px 5px #056BA6 inset;
+    -ms-box-shadow: 0 0 10px 5px #056BA6 inset;
+    -o-box-shadow: 0 0 10px 5px #056BA6 inset;
+
+}
+
+.osh .input-text, .osh select { /* add this to the already existing style */
+    -moz-transition: padding .25s;
+    -webkit-transition: padding .25s;
+    -o-transition: padding .25s;
+    transition: padding .25s;
+}
+
+.osh .input-text {
+    padding-right: 5px;
+    /*width: calc(100% - 146px);*/ /* width - label (140px) */
+    width:150px;
+}
+
+.osh select {
+    padding-right: 25px;
+}
+
+.osh select:focus  {
+    padding-right: 25px;
+}
+
+.osh .input-text:required {
+    background: #fff url(../images/red_asterisk.png) no-repeat 98% center;
+}
+
+::-webkit-validation-bubble-message {
+    padding: 1em;
+}
+
+.osh input:focus:invalid{ /* when a field is considered invalid by the browser */
+    background: #fff url(../images/invalid.png) no-repeat 98% center;
+    box-shadow: 0 0 5px #d45252;
+    border-color: #b03535
+}
+
+.osh .form_hint {
+    background: #d45252;
+    border-radius: 3px 3px 3px 3px;
+    color: white;
+    margin-left: calc(100% - 161px);
+    margin-top: -25px;
+    padding: 1px 6px;
+    z-index: 999; /* hints stay above all other elements */
+    position: absolute; /* allows proper formatting if hint is two lines */
+    display: none;
+}
+
+.osh .form_hint::before {
+    content: "\25C0"; /* left point triangle in escaped unicode */
+    color:#d45252;
+    position: absolute;
+    top:1px;
+    left:-6px;
+}
+
+.osh .input-checkbox {
+    margin-top:10px;
+
+}
+.osh .input-text:focus + .form_hint {display: inline;}
+.osh .input-text:required:valid + .form_hint {background: #28921f;} /* change form hint color when valid */
+.osh .input-text:required:valid + .form_hint::before {color:#28921f;} /* change form hint arrow color when valid */
+.osh .input-text::placeholder {
+    font-style: italic;
+}
+
+.osh .required_notification {
+    color: #d45252;
+    display: inline;
+    float: right;
+}
+
+.osh li.osh-li > label {
+    width: 146px;
+    margin-top: 3px;
+    display: inline-block;
+    float: left;
+    padding: 3px;
+}
+
+.osh ul.osh-ul {
+    list-style-type:none;
+    list-style-position:outside;
+    margin:0px;
+    padding:0px;
+}
+.osh li.osh-li {
+    padding:12px;
+    position:relative;
+}
+
+.osh button.submit:disabled {
+    color: #aaa;
+    opacity:1;
+    cursor: auto;
+}
+
+.osh .hide {
+    display:none !important;
+}
+
+.osh .listbox-multiple {
+    border: 1px solid #c4c4c4;
+    width: 100%;
+    max-height: 110px;
+    overflow: auto;
+    padding: 10px;
+}
+
+.osh .listbox-multiple > label {
+    min-width: 230px;
+    margin-top: 3px;
+    display: inline-block;
+    padding: 3px;
+}
+
+/** INPUT TEXT + UOM **/
+
+.osh .input-text.input-uom {
+    width: calc(100% - 185px);
+}
+
+.osh .input-text.input-uom + .uom {
+    width: 32px;
+    height: 32px;
+    float: right;
+    padding-top: 5px;
+}
+/** FILE CHOOSER INPUT **/
+
+.osh .input-file-text:not(.preview) {
+    padding:5px 8px;
+    width: calc(100% - 146px); /* width - label (140px) */
+}
+
+.osh .input-file-text.preview {
+    padding:5px 8px;
+    width: calc(100% - 210px); /* width - label (140px) */
+}
+
+.osh .input-file-text + .preview {
+    max-width: 27px;
+    max-height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    margin-left: 5px;
+}
+
+.osh .input-file-text + .preview  > img{
+    max-width: 27px;
+    max-height: 24px;
+}
+
+.osh .input-file-text {
+    border:1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius:2px;
+    -moz-transition: padding .25s;
+    -webkit-transition: padding .25s;
+    -o-transition: padding .25s;
+    transition: padding .25s;
+}
+.osh .input-file-text:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
+}
+
+.osh .input-file {
+    display :none;
+}
+
+.osh label.input-file-label-for {
+    width: 16px !important;
+    height: 16px;
+    bottom: 0;
+    margin-right: 14px;
+}
+
+.osh .input-file-i:hover {
+    color:#056BA6;
+}
+.osh .input-file-i:before {
+    content: "\f093";
+    font-size:1.25em;
+}
+.osh .input-file-i {
+    margin-top: 0px;
+}
+
+.osh .text-area {
+    width: calc(100% - 10px) !important;
+    height: 100px;
+    overflow: auto;
+    padding: 5px;
+}
+
+/** DISABLED BEHAVIOR **/
+.fa.disabled,
+.fa[disabled],
+.disabled > .fa,
+[disabled] > .fa {
+    color: lightgrey;
+    /*or*/ opacity: 0.5;
+}
+
+/** COLOR picker **/
+input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 27px;
+    height: 27px;
+    position: fixed;
+}
+.osh input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.osh input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+.osh .input-text {
+    padding-right: 5px;
+    /* width: calc(100% - 146px); */
+    width: 150px;
+}
+
+.osh .input-color {
+    -moz-transition: padding .25s;
+    -webkit-transition: padding .25s;
+    -o-transition: padding .25s;
+    transition: padding .25s;
+    border: 1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius: 2px;
+    padding: 1px;
+}
+
+.osh .input-text + .input-color {
+    margin-left: 4px;
+}
+
+.osh .input-checkbox {
+
+}
+
+.osh.view.video {
+    position:relative; /* allow displaying FPS info **/
+}
+
+.osh.view.video > canvas {
+    width:100%;
+    height:100%;
+}
+
+.osh.view.video > img {
+    width:100%;
+    height:100%;
+}
+
+.osh.view.video > .stats {
+    position: absolute;
+    margin-left: 5px;
+    background-color: white;
+    opacity: 0.5;
+    padding: 3px;
+    right: 0;
+    top: 0;
+}
+
+.osh.view.keep-ratio-w {
+    height: auto !important;
+}
+
+.osh.view.keep-ratio-w.video > canvas {
+    height:auto;
+}
+
+.osh.view.keep-ratio-w.video > img {
+    height:auto;
+}
+
+.osh.view.video-selected {
+    border-radius: 3px;
+    box-shadow: 0px 0px 0px 8px rgba(50, 205, 50, 0.5);
+}
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.osh.dialog .pop-over {
+    position: relative;
+    background-color: rgba(5, 107, 166, 0.6);
+    min-height: 30px;
+    min-width: 100px;
+    border: 1px solid #bbbbbb;
+    border-radius: 6px;
+    box-shadow: 0 0 7px #000000;
+    z-index: 1020;
+    overflow:hidden;
+    /*height:auto !important;*/
+    /*width:100%;*/
+    text-align: left;
+}
+
+.osh.dialog .pop-over.minimized {
+    height:0px !important;
+}
+
+.osh.dialog .pop-over-selected {
+    background-color: rgba(0, 160, 0, 0.6);
+}
+
+.osh.dialog .pop-inner{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+}
+
+.osh.dialog .pop-content {
+    width:inherit;
+    position: static;
+    margin-top:8px;
+    margin-bottom:5px;
+    flex:1;
+    height: calc(100% - 8px);
+}
+
+.osh.dialog .pop-footer {
+    height:45px;
+}
+
+.osh.dialog .resizable {
+    resize: both;   /* Options: horizontal, vertical, both */
+}
+
+
+/** HANDLE extra div **/
+.osh.dialog .pop-extra {
+    position: static;
+    margin-top:8px;
+    margin-bottom:5px;
+    flex: 2;
+}
+
+.osh.dialog .pop-extra-el {
+    margin-left:5px;
+    flex: 3;
+}
+
+.osh.dialog .pop-extra-el .fa-2x {
+    font-size: 1.75em;
+}
+
+.osh.dialog .pop-extra-el>i {
+    cursor: pointer;
+    width:100%;
+    padding-top:2px;
+}
+
+.osh.dialog .pop-extra-collapse + div {
+    display:none !important;
+}
+
+.osh.dialog .pop-extra-show + div {
+    display: block !important;
+    margin-left: 25px;
+}
+
+.osh.dialog .no-keep-ratio {
+    height: calc(100% - 45px);
+}
+
+.osh.dialog .keep-ratio-h {
+}
+
+/** Adjust content without scroll + keep ratio **/
+.osh.dialog .pop-inner {
+    /*height: calc(100% - 30px);*/
+    height:100%;
+}
+
+.osh.dialog .pop-inner .video {
+    width: inherit;
+    height: inherit;
+}
+
+.osh.dialog .pop-inner .video > img {
+    width: inherit;
+    height: inherit;
+}
+
+.osh.dialog .pop-inner .video > canvas {
+    width: inherit;
+    height: inherit;
+}
+
+
+/** line - left/right position **/
+.osh.dialog .header > .line-left {
+    float: left;
+    padding-left: 15px;
+    padding-top: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFF;
+}
+
+.osh.dialog .header > .line-right {
+    float:right;
+}
+
+.osh.dialog .header .pop-icon {
+    display:inline-block;
+    font-family: FontAwesome;
+    padding: 2px 2px 4px 6px;
+    margin: 0 0px 0 2px;
+    cursor: pointer;
+    color: #c3c3c3;
+}
+
+.osh.dialog .header .pop-icon:hover {
+    color: #676767;
+    cursor:pointer;
+}
+
+.osh.dialog .header .pop-icon-close:before {
+    content:"\f00d";
+}
+
+.osh.dialog .header .pop-icon.pop-icon-close {
+    font-size: 18px;
+}
+
+.osh.dialog .header .pop-icon-min:before {
+    content:"\f2d1";
+}
+
+.osh.dialog .header .pop-icon-max:before {
+    content:"\f2d2";
+}
+
+.osh.dialog .header .pop-icon-pin:before {
+    content:"\f08d";
+    color: #676767;
+}
+
+.osh.dialog .header .pop-icon-unpin:before {
+    content:"\f08d";
+}
+
+.osh.dialog .header .pop-icon-pin:hover:before {
+    color: #c3c3c3;
+}
+
+.osh.dialog .header .pop-icon-connect:before {
+    content:"\f1e6";
+    color:green;
+}
+
+.osh.dialog .header .pop-icon-connect:hover:before {
+    color:red;
+}
+
+.osh.dialog .header .pop-icon-disconnect:before {
+    content:"\f1e6";
+    color:red;
+}
+
+.osh.dialog .header .pop-icon-disconnect:hover:before {
+    color:green;
+}
+
+.osh.dialog .header .pop-icon-swap:before {
+    content:"\f0ec";
+}
+
+.osh.dialog .header {
+    padding-right: 5px;
+}
+
+/** MODAL PART **/
+.osh.dialog.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 99999;
+    opacity:1;
+    -webkit-transition: opacity 4000ms ease-in;
+    -moz-transition: opacity 4000ms ease-in;
+    transition: opacity 4000ms ease-in;
+
+}
+
+.osh.dialog.modal :target {
+    opacity:1;
+    pointer-events: auto;
+}
+
+.osh.dialog.modal > div {
+    position: relative;
+    margin: 10% auto;
+    pointer-events: auto;
+}
+
+.osh.dialog.modal > .pop-over {
+    background-color: #519fcc;
+    opacity: 1;
+}
+
+html.osh.dialog.modal, body.osh.dialog.modal {
+    pointer-events: none;
+}
+
+.osh.dialog.closed  {
+    display:none;
+}
+
+
+.osh.dialog.modal.closed  {
+    display:none;
+}
+
+html.osh.dialog.modal.closed, body.osh.dialog.modal.closed  {
+    pointer-events: auto;
+}
+
+.osh.dialog .save-dialog {
+
+}
+
+.osh.dialog .save-dialog button.submit.save {
+    margin: 11px auto 15px auto;
+}
+
+.osh.dialog .save-dialog > .pop-inner {
+    height: initial;
+    min-height: calc(100% - 100px);
+}
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.osh .discovery-view {
+    overflow:auto;
+}
+
+.osh .discovery-form li:first-child, .osh .osh .discovery-form li:last-child {
+    border-bottom:1px solid #777;
+}
+
+.osh .discovery-form li {
+    border-bottom: 1px solid #eee;
+}
+
+.osh .discovery-form h2 {
+    margin:0;
+    display: inline;
+}
+
+/** Advanced panel **/
+.osh .discovery-form .advanced{
+    margin-top: 15px;
+    margin-left: 15px;
+    z-index: 15;
+}
+
+.osh .discovery-form .details {
+    padding: 0 0 0 15px;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox] {
+    display:none;
+}
+
+.osh .discovery-form .advanced  > input[type=checkbox] +  label {
+
+}
+
+.osh .discovery-form .advanced  > input[type=checkbox] +  label:hover {
+    color: #057fa9;
+    cursor:pointer;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox] +  label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f196";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox]:checked + label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f147";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox] + label + .details {
+    display:none;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox]:checked + label + .details {
+    display:block;
+}
+
+.osh .discovery-form .advanced > input[type=checkbox]:checked + label + .details {
+
+}
+
+.osh .discovery-form .advanced > input[type=checkbox]:checked + label + .details > li:first-child {
+    border-bottom: 1px solid #eee;
+}
+
+.osh .discovery-form .input-text {
+    width: calc(100% - 146px)
+}
+.osh .edit-styler {
+
+}
+
+.osh .edit-styler .listbox-multiple {
+    height:110px;
+}
+.osh .edit-view {
+
+}
+
+/** create button **/
+.osh .edit-view .button-edit {
+    margin-top: 12px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    display: table;
+}
+
+.osh .edit-view button.submit {
+    display: inline; /** display the data sources ADD button to the left **/
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.osh .edit-view > .styler-section > .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-left: 12px;
+    margin-bottom: 15px;
+}
+.osh .edit-view .styler-section {
+    padding-top:12px;
+}
+
+/** line - left/right position **/
+.osh .edit-view .line-left {
+    float:left;
+}
+
+.osh .edit-view .line-right {
+    float:right;
+}
+
+.osh .edit-view .ds-line {
+    width:100%;
+}
+
+.osh .edit-view .ds-line > span{
+    margin-left: 15px;
+    font-size: 17px;
+}
+
+.osh .edit-view .ds-line > .control {
+    margin-left:-15px;
+    margin-top:-2px;
+}
+
+.osh .edit-view .ds-line > .control .edit {
+    padding-right: 15px;
+}
+
+.osh .edit-view .ds-line > .control .edit:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .edit-view .ds-line > .control .delete {
+    padding-right: 15px;
+}
+
+.osh .edit-view .ds-line > .control .delete:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .edit-view .ds-line > .control .fa-2x {
+    font-size: 1.5em;
+}
+
+.osh .edit-view .styler-container {
+    height:150px;
+    overflow:auto;
+}
+
+
+.osh .edit-view .listbox-multiple > label {
+    padding: 0px;
+    font-size: 15px;
+}
+
+.osh .edit-view .listbox-multiple {
+    height: 90px;
+}
+
+.osh .dialog-edit-view li.osh-li {
+    padding-top:0px;
+}
+
+.osh .dialog-edit-view .horizontal-titled-line {
+    padding-bottom:12px;
+}
+.osh .entity-editor {
+    /*margin: 0 auto; => center?*/
+    /*background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);*/
+    /*background-color: rgba(5, 107, 166, 0.6);*/
+    min-height: calc(100% + 30px);
+    height:inherit;
+}
+
+.osh .entity-editor button.submit {
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.osh .entity-editor .view-container {
+    clear: both;
+    height: calc(100% + 45px);
+    overflow: auto;
+}
+
+.osh .entity-editor .datasource-container {
+    clear: both;
+    height: calc(100% + 45px);
+    overflow: auto;
+}
+
+.osh .entity-editor  section .select-style {
+    width: 200px;
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+
+/** DataSource tab**/
+.osh .entity-editor .tab-panel {
+    height:calc(100% - 50px);
+}
+
+.osh .entity-editor .ds-line {
+    width:100%;
+    line-height: 30px;
+}
+
+.osh .entity-editor .ds-line > span{
+    margin-left: 15px;
+    font-size: 17px;
+}
+
+.osh .entity-editor .ds-line > .control {
+    margin-left:-15px;
+    margin-top:-2px;
+}
+
+.osh .entity-editor .ds-line > .control .edit {
+    padding-right: 15px;
+}
+
+.osh .entity-editor  .ds-line > .control .edit:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .entity-editor  .ds-line > .control .delete {
+    padding-right: 15px;
+}
+
+.osh .entity-editor  .ds-line > .control .delete:disabled {
+    color:red;
+}
+
+.osh .entity-editor .fa.disabled, .osh .entity-editor .fa[disabled],
+    .osh .entity-editor .disabled > .osh .entity-editor .fa,
+    .osh .entity-editor [disabled] > .fa {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.osh .entity-editor  .ds-line > .control .delete:hover {
+    color: #056BA6;
+    cursor:pointer;
+}
+
+.osh .entity-editor  .ds-line > .control .fa-2x {
+    font-size: 1.5em;
+}
+
+.osh .entity-editor  .add-view-button {
+    margin-left: 15px;
+    margin-top:-12px; /* padding osh-ul value */
+}
+
+/** create button **/
+.osh .panel .entity-editor .create {
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    display: table;
+}
+
+.osh .entity-editor .info .input-text {
+    width:200px;
+}
+
+.osh .entity-editor .datasource {}
+
+.osh .entity-editor .views {}
+
+.osh .dialog-edit-view .view-item-line  > input{
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px
+}
+
+.osh .dialog-edit-view .view-item-line  > .select-style {
+    float:right;
+}
+
+.osh .dialog-edit-view .viewItem-container {
+    max-height: 115px;
+    overflow: auto;
+}
+
+.osh .dialog-edit-view .edit-view .input-text {
+     width: calc(100% - 146px);
+}
+
+.osh .entity-editor .load-settings.input-file-text:not(.preview) {
+    width: calc(100% - 50px);
+}
+
+.osh .entity-editor .load-button {
+    margin-top: 10px;
+    margin-right: 50px;
+    float: left;
+}
+
+.osh .entity-editor .load-button + .osh-ul {
+    margin-left: 146px;
+}
+
+.osh .entity-editor div.save {
+    clear:both;
+}
+
+.osh .entity-editor div.save .input-text{
+    width: 238px;
+}
+
+.osh .entity-editor button.submit.save-entity-button {
+    margin: auto;
+    margin-top: 12px;
+}
+
+.osh.edit-view > .view-properties  {
+    height: 190px;
+    overflow: auto;
+}
+
+.osh.edit-view > .content-properties  {
+    height: 188px;
+}
+.loading-container {
+    position:absolute;
+    height:52px;
+    width:100%;
+    background-color:#FFF;
+    opacity: 0.7;
+    top:0px;
+    z-index: 999999;
+    cursor:default;
+}
+
+.loading-dot-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    margin-top:2px;
+}
+.loading-dot {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(5, 107, 166, 0.6);
+    border-radius: 50%;
+    float: left;
+    margin: 0 5px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    -webkit-animation: fx 1000ms ease infinite 0ms;
+    animation: fx 1000ms ease infinite 0ms;
+}
+.loading-dot:nth-child(2) {
+    -webkit-animation: fx 1000ms ease infinite 300ms;
+    animation: fx 1000ms ease infinite 300ms;
+}
+.loading-dot:nth-child(3) {
+    -webkit-animation: fx 1000ms ease infinite 600ms;
+    animation: fx 1000ms ease infinite 600ms;
+}
+@-webkit-keyframes fx {
+    50% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@keyframes fx {
+    50% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.loading-label {
+    color: black;
+    font-size: 30px;
+    margin-left:-12px;
+    color:#292929;
+}
+
+.loading-dot-section-1{
+    float:left;
+}
+
+.loading-dot-section-2{
+    float:left;
+    margin-left: 10px;
+    margin-top: 15px;
+}
+.osh-log{
+    position:absolute;
+    width:280px;
+    height:365px;
+    background-color:#000;
+    color: #ffffff;
+}
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.noUi-tooltip {
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px 0px #777;
+    background-color: #777;
+    filter: alpha(opacity=80);
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    border: none;
+    color: #FFF;
+    width: 100px;
+    height: 23px;
+    padding: 2px 2px 2px 2px;
+}
+.noUi-horizontal .noUi-handle-lower .noUi-tooltip {
+    top: 35px;
+}
+
+.noUi-horizontal .noUi-handle-upper .noUi-tooltip {
+    top: 35px;
+}
+
+.noUi-connect {
+    background-color: rgba(5, 107, 166, 0.6);
+}
+
+.noUi-tooltip:after {
+    bottom: -14px;
+    margin-left: -10px;
+    border-top: 10px solid #fff;
+}
+
+.noUi-tooltip:after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    margin-left: -9px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: none;
+    border-bottom: 10px solid #777;
+}
+
+.noUi-pips-horizontal {
+    height:0px !important;
+}
+
+
+.noUi-handle:active {
+    background-color: rgba(5, 107, 166, 0.6);
+    box-shadow:none;
+    border:none;
+}
+
+
+.noUi-horizontal {
+    width: calc(100% - 50px);
+}
+
+/** put range and control button side by side **/
+
+.osh-rangeslider-slider{
+    float:left;
+}
+
+.osh-rangeslider-control {
+    float: left;
+    width: 30px;
+    margin-left: 20px;
+}
+
+.osh-rangeslider-control-select {
+    float: left;
+    width: 30px;
+    margin-left: 20px;
+}
+
+.osh-rangeslider-control a{
+    text-decoration: none;
+}
+
+.osh-rangeslider-control-select a{
+    text-decoration: none;
+}
+
+.osh-rangeslider-control a:after {
+    font-family: FontAwesome;
+    content: "\f044";
+    vertical-align: middle;
+    font-size:30px;
+}
+
+.osh-rangeslider-control-select a:after{
+    font-family: FontAwesome;
+    content: "\f046";
+    vertical-align: middle;
+    font-size:30px;
+}
+
+.osh.panel {
+    background-color:transparent;
+    margin:0 0;
+    padding:0 0;
+    border: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.osh.panel .tab-panel > section {
+    display: none;
+    padding: 20px 0 0;
+    border-top: 1px solid #ddd;
+}
+
+.osh.panel .tab-panel > input {
+    display: none;
+}
+
+.osh.panel .tab-panel > label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px;
+    font-weight: 900;
+    font-size: 15px;
+    text-align: center;
+    color: #bbb;
+    border: 1px solid transparent;
+}
+
+.osh.panel .tab-panel > label:before {
+    font-family: fontawesome;
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+.osh.panel .tab-panel > label:hover {
+    color: #888;
+    cursor: pointer;
+}
+
+.osh.panel .tab-panel > input:disabled + label {
+    color: #dfdfdf;
+}
+
+.osh.panel .tab-panel > input:checked + label {
+    color: #000;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff;
+}
+
+.osh.panel .tab-panel .show-tab {
+    display:block;
+    height: inherit;
+}
+
+.osh.panel .tab-panel .hide-tab {
+    display:none;
+}
+
+@media screen and (max-width: 650px) {
+    .osh.panel .tab-panel > label {
+        font-size: 0;
+    }
+    .osh.panel .tab-panel > label:before {
+        margin: 0;
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .osh.panel .tab-panel > label {
+        padding: 15px;
+    }
+}
+
+/** line - left/right position **/
+.osh.panel .line-left {
+    float:left;
+}
+
+.osh.panel .line-right {
+    float:right;
+}
+
+.osh.panel {
+    height:inherit;
+}
+
+
+
+/* Demo by http://creative-punch.net */
+
+@import "font-awesome-4.7.0/css/font-awesome.min.css";
+
+.stack-menu-container {
+    position: absolute;
+    width: 150px;
+    overflow-y: hidden;
+    overflow-x:hidden;
+    box-shadow: 7px 7px 10px 2px #777;
+    text-align: center;
+    z-index:9999;
+    border-radius: 3px;
+    top:0;
+}
+
+.stack-menu {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.open.stack-menu {
+    box-shadow: 0px 0px 20px 1px #777;
+    background-color: #777;
+    filter: alpha(opacity=80);
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    height: 100%;
+    cursor: pointer;
+}
+
+.close.stack-menu-container {
+    display:none;
+}
+
+.close.stack-menu {
+    display:none;
+}
+
+.stack-menu-circle {
+    height: 100%;
+    opacity: 0;
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open.stack-menu-circle {
+    padding-left: 10px;
+    padding-top: 10px;
+    background-color: #777;
+    filter: alpha(opacity=80);
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+}
+
+.stack-menu-circle a {
+    color: white;
+    line-height: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+    text-align:left;
+}
+
+.stack-menu-circle a:hover {
+    color: #eef;
+    text-decoration: none;
+}
+
+.open.stack-menu-button {
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.close.stack-menu-button {
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+}
+
+.open.stack-menu-container{
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+    display:block;
+}
+
+.close.stack-menu-container{
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+    display:none;
+}
+
+.stack-menu-button {
+    text-decoration: none;
+    text-align: center;
+    color: #f5f5f5 !important;
+    text-decoration: none;
+    scale: 0.5;
+    text-align: center !important;
+    padding-top: 7px !important;
+    padding-right: 5px !important;
+    border-top: solid 1px;
+    margin-left: -10px !important;
+    margin-top:2px;
+}
+
+.stack-menu a {
+    text-decoration: none;
+}
+
+.stack-menu-button:hover {
+    color: #0078A8 !important;
+    margin-left:-10px !important;
+    -webkit-transform: none;
+    -moz-transform: none;
+    transform:none;
+}
+
+.stack-menu-circle a:hover {
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    transform: scale(1.2);
+    margin-left:15px;
+    cursor:default;
+}
+
+.stack-menu-label {
+    margin-left:10px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+}
+.ptz {
+    height: 164px;
+    width: 164px;
+    overflow: hidden;
+    background: url(../images/tasking/yt.png) no-repeat;
+    position: relative;
+}
+
+.ptz .moveUp {
+    width: 22px;
+    height: 12px;
+    position: absolute;
+    left: 70px;
+    top: 23px;
+    cursor: pointer;
+    background: url(../images/tasking/fxp_r2_c5a.gif) 0px no-repeat;
+}
+
+.ptz .moveTopLeft {
+    width: 13px;
+    height: 12px;
+    position: absolute;
+    left: 42px;
+    top: 42px;
+    cursor: pointer;
+    background: url(../images/tasking/fxp_r3_c3.gif) 0px no-repeat;
+}
+
+.ptz .moveTopRight {
+    background: url(../images/tasking/fxp_r3_c7.gif) no-repeat;
+    width: 13px;
+    height: 12px;
+    position: absolute;
+    left: 110px;
+    top: 42px;
+}
+
+.ptz .moveLeft {
+    background: url(../images/tasking/fxp_r5_c2.gif) no-repeat;
+    width: 12px;
+    height: 22px;
+    position: absolute;
+    left: 23px;
+    top: 70px;
+}
+
+.ptz .reset {
+    width: 55px;
+    height: 55px;
+    position: absolute;
+    left: 54px;
+    top: 55px;
+    cursor: pointer;
+    background: url(../images/tasking/fxp_r5_c5.png) 0px no-repeat;
+}
+
+.ptz .moveRight {
+    width: 12px;
+    height: 22px;
+    position: absolute;
+    left: 128px;
+    top: 70px;
+    cursor: pointer;
+    background: url(../images/tasking/fxp_r5_c8.gif) 0px no-repeat;
+}
+
+.ptz .moveBottomLeft {
+    width: 12px;
+    height: 13px;
+    position: absolute;
+    left: 42px;
+    top: 110px;
+    cursor: pointer;
+    background: url(../images/tasking/fxp_r7_c3.gif) 0px no-repeat;
+}
+
+.ptz .moveBottomRight {
+    background: url(../images/tasking/fxp_r7_c7.gif) -24px no-repeat;
+    width: 13px;
+    height: 12px;
+    position: absolute;
+    left: 110px;
+    top: 110px;
+}
+
+.ptz .moveDown {
+    background: url(../images/tasking/fxp_r8_c5.gif) no-repeat;
+    width: 22px;
+    height: 12px;
+    position: absolute;
+    left: 70px;
+    top: 129px;
+}
+
+/** HOVER  + active PART **/
+.ptz .moveUp:hover {
+    background: url(../images/tasking/fxp_r2_c5a.gif) -22px no-repeat;
+}
+.ptz .moveUp:active {
+    background: url(../images/tasking/fxp_r2_c5a.gif) -44px no-repeat;
+}
+
+.ptz .moveDown:hover {
+    background: url(../images/tasking/fxp_r8_c5.gif) -22px no-repeat;
+}
+
+.ptz .moveDown:active {
+    background: url(../images/tasking/fxp_r8_c5.gif) -44px no-repeat;
+}
+
+.ptz .moveRight:hover {
+    background: url(../images/tasking/fxp_r5_c8.gif) -11px no-repeat;
+}
+
+.ptz .moveRight:active {
+    background: url(../images/tasking/fxp_r5_c8.gif) -23px no-repeat;
+}
+
+.ptz .moveLeft:hover {
+    background: url(../images/tasking/fxp_r5_c2.gif) -12px no-repeat;
+}
+
+.ptz .moveLeft:active {
+    background: url(../images/tasking/fxp_r5_c2.gif) -24px no-repeat;
+}
+
+.ptz .moveTopLeft:hover {
+    background: url(../images/tasking/fxp_r3_c3.gif) -13px no-repeat;
+}
+
+.ptz .moveTopLeft:active {
+    background: url(../images/tasking/fxp_r3_c3.gif) -26px no-repeat;
+}
+
+.ptz .moveTopRight:hover {
+    background: url(../images/tasking/fxp_r3_c7.gif) -13px no-repeat;
+}
+
+.ptz .moveTopRight:active {
+    background: url(../images/tasking/fxp_r3_c7.gif) -26px no-repeat;
+}
+
+.ptz .moveBottomLeft:hover {
+    background: url(../images/tasking/fxp_r7_c3.gif) -11px no-repeat;
+}
+
+.ptz .moveBottomLeft:active {
+    background: url(../images/tasking/fxp_r7_c3.gif) -24px no-repeat;
+}
+
+.ptz .moveBottomRight:hover {
+    background: url(../images/tasking/fxp_r7_c7.gif) -12px no-repeat;
+}
+
+.ptz .moveBottomRight:active {
+    background: url(../images/tasking/fxp_r7_c7.gif) -0px no-repeat;
+}
+
+.ptz .reset:hover {
+    background: url(../images/tasking/fxp_r5_c5.png) -54px no-repeat;
+}
+.ptz .reset:active {
+    background: url(../images/tasking/fxp_r5_c5.png) -109px no-repeat;
+}
+
+.ptz{
+    width:165px;
+    height:165px;
+    float:left;
+    margin-bottom: 20px;
+}
+
+.ptz-right {
+    height:165px;
+    width:200px;
+    margin-left: 25px;
+    float:left;
+}
+
+.ptz-right .ptz-select-style {
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: #fff;
+    position: relative;
+}
+
+.ptz-right .ptz-select-style:before {
+    font-family: FontAwesome;
+    content: "\f0d7";
+    font-size: 25px;
+    display: inline-block;
+    position: absolute;
+    pointer-events: none;
+    right: 10px;
+    color: #777;
+    top:0px;
+}
+
+.ptz-right .ptz-select-style select {
+    padding: 4px 8px;
+    width: 100%;
+    background-color: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius: 2px;
+}
+
+.ptz-right .ptz-select-style select:focus {
+    outline: none;
+}
+
+/** Form **/
+.ptz-right:-moz-placeholder {
+    color: #777;
+}
+
+.ptz-right::-webkit-input-placeholder {
+    color: #777;
+}
+
+.ptz-right*:focus {outline: none;}
+
+.ptz-right ul {
+    list-style-type:none;
+    list-style-position:outside;
+    margin:0px;
+    padding:0px;
+}
+.ptz-right li{
+    padding:0px 0px 8px 0px;
+    border-bottom:1px solid #eee;
+    position:relative;
+}
+
+.ptz-right li:first-child, .ptz-right li:last-child {
+    border-bottom:1px solid #777;
+}
+
+.ptz-right label {
+    width: 60px;
+    margin-top: 3px;
+    display: inline-block;
+    float: left;
+    padding: 3px;
+}
+
+.ptz-right .input-text, .ptz-right select {
+    border:1px solid #aaa;
+    box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
+    border-radius:2px;
+}
+.ptz-right .input-text:focus, .ptz-right select:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
+}
+
+.discovery-form .input-text, .discovery-form select { /* add this to the already existing style */
+    -moz-transition: padding .25s;
+    -webkit-transition: padding .25s;
+    -o-transition: padding .25s;
+    transition: padding .25s;
+}
+
+.ptz-right select {
+    padding-right: 21px;
+}
+
+.ptz-right select:focus  {
+    padding-right: 21px;
+}
+
+/** ZOOM Button **/
+.ptz-zoom {
+    float:left;
+    margin-top: 15px;
+    margin-right: 15px;
+}
+
+.ptz-zoom .ptz-zoom-in{
+    font-size: 2.2em;
+    color: #7c7c7c;
+    text-shadow: 1px 1px 1px #333333;
+}
+
+.ptz-zoom .fa:hover{
+    color: #626262;
+    text-shadow: 1px 1px 1px #6a6a6a;
+}
+
+.ptz-zoom .fa:active{
+    color: #464646;
+}
+
+.ptz-zoom .ptz-zoom-out{
+    font-size: 2.2em;
+    color: #7c7c7c;
+    text-shadow: 1px 1px 1px #333333;
+}
+
+.ptz-zoom-bar {
+    background-color: #7c7c7c;
+    height: 60px;
+    width: 4px;
+    border-radius: 20px;
+    margin: 0px 0px 0px 12px;
+}
+
+
+.icon_tree {
+    max-width: 16px;
+    max-height: 16px;
+}

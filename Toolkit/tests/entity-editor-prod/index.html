@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/osh.min.css"/>
+    <script type="text/javascript" src="js/osh.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            height: calc(100% - 20px);
+            background-color: black;
+        }
+
+        html {
+            height: calc(100% - 0px);
+        }
+
+        *, *:before, *:after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        h1 {
+            padding: 50px 0;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        p {
+            margin: 0 0 20px;
+            line-height: 1.5;
+        }
+
+        .osh.dialog .pop-over {
+            background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(images/3JZchqt.png), url(images//9kxBTzr.jpg);
+        }
+
+        .dialog-entity {
+            width:430px;
+            height:400px;
+            margin-bottom:10px;
+        }
+
+        .dialog-discovery {
+            width:430px;
+            height:515px;
+            margin-bottom:10px;
+        }
+
+        .dialog-edit-view {
+            width:430px;
+            height:490px;
+            margin-bottom:10px;
+        }
+
+        .leaflet-container, #container {
+            height: 100%;
+            float: right;
+        }
+
+        .osh.dialog .app-dialog {
+            width: 450px;
+            height: 350px;
+        }
+
+        #dialog-container {
+            position: absolute;
+            float: left;
+            width: calc(50% - 5px);
+            margin-left: 50px;
+        }
+
+        #dialog-container-2 {
+            position: absolute;
+            float: left;
+            width: calc(50% - 5px);
+            margin-left: 50px;
+        }
+
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .leaflet-container .leaflet-marker-pane img {
+            max-width: 32px !important;
+            height:auto;
+        }
+
+        #map-container {
+            height:100%;
+        }
+
+        #map-container-2 {
+            height:100%;
+        }
+
+        #left {
+            width:calc(50% - 5px);
+            height: 100%;
+            float:left;
+            margin-right: 10px;
+        }
+
+        #right{
+            width:calc(50% - 5px);
+            height: 100%;
+            float:right;
+        }
+
+        .chart-view {
+            
+        }
+    </style>
+</head>
+
+<body id="body">
+<div id="left">
+    <div id="dialog-container"></div>
+    <div id="map-container"></div>
+    <div id="container"></div>
+</div>
+<div id="right">
+    <div id="dialog-container-2"></div>
+    <div id="map-container-2"></div>
+    <div id="container-2"></div>
+</div>
+<script type="text/javascript">
+    window.OSH.BASE_WORKER_URL = "js/sub/workers";
+    window.CESIUM_BASE_URL = 'vendor/';
+
+
+    function create() {
+        /** CREATE NEW ENTITY **/
+
+        var androidPhoneGpsDataSource = new OSH.DataReceiver.JSON("android-GPS", {
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+            offeringID: "urn:android:device:060693280a28e015-sos",
+            observedProperty: "http://sensorml.com/ont/swe/property/Location",
+            startTime: "2015-02-16T07:58:00Z",
+            endTime: "2015-02-16T08:09:00Z",
+            replaySpeed: 3 + "",
+            syncMasterTime: true,
+            bufferingTime: 1000,
+            timeShift: -16000
+        });
+
+
+        //------------- STYLER ---------//
+        var pointMarker = new OSH.UI.Styler.PointMarker({
+            location: {
+                x: 1.42376557,
+                y: 43.61758626,
+                z: 100
+            },
+            locationFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                handler: function (rec) {
+                    return {
+                        x: rec.location.lon,
+                        y: rec.location.lat,
+                        z: rec.location.alt
+                    };
+                }
+            },
+            icon: 'images/cameralook.png',
+            iconFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                handler: function (rec, timeStamp, options) {
+                    if (options.selected) {
+                        return 'images/cameralook-selected.png'
+                    } else {
+                        return 'images/cameralook.png';
+                    }
+                    ;
+                }
+            }
+        });
+
+        //------------ VIEW -----------------//
+        var leafletMapView = new OSH.UI.View.LeafletView("map-container",
+            [{
+                styler: pointMarker,
+                name: "Android Phone GPS"
+            },
+                {
+                    styler: new OSH.UI.Styler.Polyline({
+                        locationFunc: {
+                            dataSourceIds: [androidPhoneGpsDataSource.getId()],
+                            handler: function (rec) {
+                                return {
+                                    x: rec.location.lon,
+                                    y: rec.location.lat,
+                                    z: rec.location.alt
+                                };
+                            }
+                        },
+                        color: 'rgba(0,0,255,0.5)',
+                        weight: 10,
+                        opacity: .5,
+                        smoothFactor: 1,
+                        maxPoints: 200
+                    }),
+                    name: "Android Phone GPS Path"
+                }]
+            ,{
+                name:"Leaflet - Test map"
+            });
+
+        var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+            replayFactor : 3
+        });
+
+        // We can add a group of dataSources and set the options
+        dataProviderController.addDataSource(androidPhoneGpsDataSource);
+
+        //---------------------------------------------------------------//
+        //---------------------------- Starts ---------------------------//
+        //---------------------------------------------------------------//
+
+        // starts streaming
+        //DEBUG: dataProviderController.connectAll();
+
+        var entityEditorView = new OSH.UI.Panel.EntityEditorPanel("",{
+            viewContainer: "container",
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+        });
+
+        var entityEditorDialog    = new OSH.UI.Panel.DialogPanel("dialog-container",{
+            /*  css: "dialog-entity",
+             name: "Entity",
+             show:true,
+             draggable:true,
+             dockable: false,
+             closeable: true,*/
+
+            css: "dialog-entity",
+            name: "Create new Entity",
+            show:true,
+            pinContainerId: "dialog-container",
+            draggable:true
+        });
+
+        entityEditorView.attachTo(entityEditorDialog.popContentDiv.id);
+
+        entityEditorDialog.pin();
+        //entityEditorDialog.minimize();
+    }
+    function edit() {
+        //-------------------------//
+        /** EDIT EXISTING ENTITY **/
+        //-------------------------//
+
+        var androidPhoneGpsDataSource2 = new OSH.DataReceiver.JSON("android-GPS", {
+                protocol: "ws",
+                service: "SOS",
+                endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+                offeringID: "urn:android:device:060693280a28e015-sos",
+                observedProperty: "http://sensorml.com/ont/swe/property/Location",
+                startTime: "2015-02-16T07:58:00Z",
+                endTime: "2015-02-16T08:09:00Z",
+                replaySpeed: 3 + "",
+                syncMasterTime: true,
+                bufferingTime: 1000,
+                timeShift: -16000
+            });
+
+
+        var dataProviderController2 = new OSH.DataReceiver.DataReceiverController({
+            replayFactor : 3
+        });
+
+        // We can add a group of dataSources and set the options
+        dataProviderController2.addDataSource(androidPhoneGpsDataSource2);
+
+        // creates entity
+        var newEntity = {
+            id : "Entity-"+OSH.Utils.randomUUID(),
+            dataSources : [androidPhoneGpsDataSource2.id],
+            datacontroller: dataProviderController2
+        };
+
+        //------------- STYLER ---------//
+        var pointMarker2 = new OSH.UI.Styler.PointMarker({
+            location: {
+                x: 1.42376557,
+                y: 43.61758626,
+                z: 100
+            },
+            locationFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                handler: function (rec) {
+                    return {
+                        x: rec.location.lon,
+                        y: rec.location.lat,
+                        z: rec.location.alt
+                    };
+                }
+            },
+            icon: 'images/cameralook.png',
+            iconFunc: {
+                dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                handler: function (rec, timeStamp, options) {
+                    if (options.selected) {
+                        return 'images/cameralook-selected.png'
+                    } else {
+                        return 'images/cameralook.png';
+                    }
+                    ;
+                }
+            }
+        });
+
+        //------------ VIEW -----------------//
+        var leafletMapView2 = new OSH.UI.View.LeafletView("map-container-2",
+            [{
+                styler: pointMarker2,
+                name: "Android Phone GPS",
+                entityId:newEntity.id
+            },
+                {
+                    styler: new OSH.UI.Styler.Polyline({
+                        locationFunc: {
+                            dataSourceIds: [androidPhoneGpsDataSource2.getId()],
+                            handler: function (rec) {
+                                return {
+                                    x: rec.location.lon,
+                                    y: rec.location.lat,
+                                    z: rec.location.alt
+                                };
+                            }
+                        },
+                        color: 'rgba(0,0,255,0.5)',
+                        weight: 10,
+                        opacity: .5,
+                        smoothFactor: 1,
+                        maxPoints: 200
+                    }),
+                    name: "Android Phone GPS Path",
+                    entityId:newEntity.id
+                }]
+            ,{
+                name:"Leaflet - Test map - EDIT"
+            });
+
+        // starts streaming
+       //DEBUG: dataProviderController2.connectAll();
+
+        var entityEditorView2 = new OSH.UI.Panel.EntityEditorPanel("",{
+            viewContainer: "container-2",
+            entity:newEntity,
+            services: ["http://sensiasoft.net:8181/sensorhub/sos"]
+        });
+
+        var entityEditorDialog2    = new OSH.UI.Panel.DialogPanel("dialog-container-2",{
+            css: "dialog-entity",
+            name: "Edit Entity",
+            show:true,
+            pinContainerId: "dialog-container-2",
+            draggable:true
+        });
+
+        entityEditorDialog2.pin();
+        entityEditorDialog2.minimize();
+
+        entityEditorView2.attachTo(entityEditorDialog2.popContentDiv.id);
+
+        // add geoJSON test feature
+        // 1424073849000
+        // https://cdn.dribbble.com/users/220498/avatars/mini/7544be7cf4ee9c2294b953b8e4534c17.jpeg?1479139677
+        var geojsonFeature = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Polygon",
+                         "coordinates": [[[1.3973128795623777,43.592374168438646],[1.3988900184631345,43.592374168438646],
+                                        [1.3988900184631345,43.5941380474202],[1.3973128795623777,43.5941380474202],
+                                        [1.3973128795623777,43.592374168438646]]]
+                    }
+                }
+            ]
+        };
+
+        L.geoJSON(geojsonFeature).addTo(leafletMapView2.map);
+    }
+
+    create();
+    edit();
+</script>
+
+</body>
+</html>

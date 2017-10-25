@@ -2,7 +2,7 @@
     /*margin: 0 auto; => center?*/
     /*background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);*/
     /*background-color: rgba(5, 107, 166, 0.6);*/
-    min-height: calc(100% + 30px);
+    min-height: 100%;
     height:inherit;
 }
 
