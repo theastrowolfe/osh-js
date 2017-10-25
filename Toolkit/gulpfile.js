@@ -283,14 +283,16 @@ OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js');
 OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js');
 OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiver-DataSourceJSON.js');
 OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiver-DataSourceChart.js');
+OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiver-DataSourceFactory.js');
 OSH_SRC.push('./src/osh/datareceiver/osh-DataReceiverController.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSender-DataSink.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSender-PtzTasking.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSender-FoscamPtzTasking.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSender-UavMapTasking.js');
 OSH_SRC.push('./src/osh/datasender/osh-DataSenderController.js');
-OSH_SRC.push('./src/osh/discovery/osh-Sensor.js');
-OSH_SRC.push('./src/osh/discovery/osh-Server.js');
+OSH_SRC.push('./src/osh/server/osh-Server.js');
+OSH_SRC.push('./src/osh/parsers/osh-SWEJSonParser.js');
+OSH_SRC.push('./src/osh/parsers/osh-SWEXmlParser.js');
 OSH_SRC.push('./src/osh/ui/panel/osh-UI-Panel.js');
 OSH_SRC.push('./src/osh/ui/panel/osh-UI-TabPanel.js');
 OSH_SRC.push('./src/osh/ui/panel/dialog/osh-UI-DialogPanel.js');
@@ -320,10 +322,10 @@ OSH_SRC.push('./src/osh/ui/panel/entity/editor/view/styler/components/osh-UI-Sty
 OSH_SRC.push('./src/osh/log/osh-Log.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-View.js');
 OSH_SRC.push('./src/osh/ui/view/osh-UI-ViewFactory.js');
-OSH_SRC.push('./src/osh/ui/view/chart/osh-ui-ChartView.js');
-OSH_SRC.push('./src/osh/ui/view/map/osh-ui-MapView.js');
-OSH_SRC.push('./src/osh/ui/view/tasking/osh-ui-TaskingView.js');
-OSH_SRC.push('./src/osh/ui/view/video/osh-ui-VideoView.js');
+OSH_SRC.push('./src/osh/ui/view/chart/osh-UI-ChartView.js');
+OSH_SRC.push('./src/osh/ui/view/map/osh-UI-MapView.js');
+OSH_SRC.push('./src/osh/ui/view/tasking/osh-UI-TaskingView.js');
+OSH_SRC.push('./src/osh/ui/view/video/osh-UI-VideoView.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-CssMenu.js');
 OSH_SRC.push('./src/osh/ui/contextmenu/osh-UI-ContextMenu-CircularMenu.js');
@@ -332,6 +334,9 @@ OSH_SRC.push('./src/osh/ui/styler/osh-UI-Styler.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerImageDraping.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerLinePlot.js');
 OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerVideo.js');
+OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerFactory.js');
+OSH_SRC.push('./src/osh/ui/panel/discovery/osh-UI-DiscoveryPanel.js');
+OSH_SRC.push('./src/osh/ui/panel/rangeslider/osh-UI-DiscoveryPanel.js');
 
 if(argv.cesium || argv.all) {
     OSH_SRC.push('./src/osh/ui/styler/osh-UI-StylerNexrad.js');
@@ -364,6 +369,7 @@ if(argv.ffmpeg || argv.all) {
 if(argv.broadway || argv.all) {
     OSH_SRC.push('./src/osh/ui/view/video/osh-UI-H264View.js');
 }
+
 OSH_SRC.push('./src/osh/ui/view/video/osh-UI-MjpegView.js');
 OSH_SRC.push('./src/osh/ui/view/video/osh-UI-Mp4View.js');
 
