@@ -87,7 +87,13 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             var item =  this.items[i];
             this.bindEvents[item.id] = item.viewId;
             document.getElementById(item.id).onclick = function(event){
+                //TODO:deprecated
                 OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW, {
+                    viewId: this.bindEvents[event.target.id]
+                });
+
+
+                OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW+"-"+this.bindEvents[event.target.id], {
                     viewId: this.bindEvents[event.target.id]
                 });
             }.bind(this);

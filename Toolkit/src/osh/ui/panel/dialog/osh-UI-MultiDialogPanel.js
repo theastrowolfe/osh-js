@@ -22,7 +22,19 @@
  */
 OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
 
-    initialize:function(parentElementDivId, options) {
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+        this.properties = properties;
+    },
+
+    initPanel: function () {
+        this._super();
+    },
+
+    appendView:function(parentElement,properties) {
+
+    }
+    /*initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId,options);
         // add extra part
         this.popExtraDiv = document.createElement("div");
@@ -30,7 +42,7 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
         this.popExtraDiv.setAttribute("id","pop-extra-id-"+OSH.Utils.randomUUID());
 
         this.flexDiv.appendChild(this.popExtraDiv);
-    },
+    },*/
 
     /**
      * Appends a new view to the existing dialog.
@@ -38,7 +50,7 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
      * @instance
      * @memberof OSH.UI.MultiDialogPanel
      */
-    appendView:function(parentElement,properties) {
+    /*appendView:function(parentElement,properties) {
         //console.log(this.popContentDiv);
         //remove from parent
         var divToAdd = document.getElementById(parentElement);
@@ -85,5 +97,5 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
         //if(!isUndefinedOrNull(this.divToAdd) && this.divToAdd.style.display === "none") {
         //   this.divToAdd.style.display = "block";
         //  }
-    }
+    }*/
 });

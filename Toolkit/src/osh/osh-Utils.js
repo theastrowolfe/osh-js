@@ -373,7 +373,16 @@ OSH.Utils.replaceCss = function(div,oldCss,newCss) {
  * @memberof OSH.Utils
  */
 OSH.Utils.addCss = function(div,css) {
-  div.setAttribute("class",div.className+" "+css);
+  OSH.Asserts.checkIsDefineOrNotNull(div);
+  OSH.Asserts.checkIsDefineOrNotNull(css);
+
+  OSH.Asserts.checkIsDefineOrNotNull(div.className);
+
+  var split = div.className.split(" ");
+  if(isUndefinedOrNull(split) ||
+      (!isUndefinedOrNull(split) && split.length > 0 && split.indexOf(css)  === -1)) {
+      div.setAttribute("class", div.className + " " + css);
+  }
 };
 
 OSH.Utils.removeLastCharIfExist = function(value,char) {
@@ -543,7 +552,7 @@ OSH.Utils.destroyElement = function(element) {
 };
 
 OSH.Utils.getChildNumber = function(node) {
-    return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+    return Array.prototype.indexOf.call(node.parentNode.children, node);
 };
 
 OSH.Utils.searchPropertyByValue = function(object, propertyValue, resultArray) {

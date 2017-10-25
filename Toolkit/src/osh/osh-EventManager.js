@@ -61,6 +61,8 @@ OSH.EventManager.remove = function(eventName) {
  * @memberof OSH.EventManager
  */
 OSH.EventManager.observeDiv = function(divId, eventName, fnCallback) {
+   OSH.Asserts.checkIsDefineOrNotNull(divId);
+
    OSH.Helper.HtmlHelper.onDomReady(function() {
         elem = document.getElementById(divId);
         // use native dom event listener
@@ -113,5 +115,6 @@ OSH.EventManager.EVENT = {
     RESIZE:"resize",
     PTZ_SEND_REQUEST:"ptzSendRequest",
     EXCEPTION_MESSAGE:"exception_message",
-    LOG:"log"
+    LOG:"log",
+    SHOW:"show"
 };

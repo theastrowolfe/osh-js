@@ -77,7 +77,7 @@ function init() {
         closeable: true
     });
     
-    var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.popContentDiv.id, treeItems,
+    var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.contentElt.id, treeItems,
         {
             css: "tree-container"
         }
@@ -155,7 +155,7 @@ function init() {
         }]
     });
 
-    discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+    discoveryView.attachToElement(discoveryDialog.contentElt);
 
     $("add-entity-button").on("click",function(event){
         discoveryDialog.show({
@@ -305,7 +305,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -329,7 +329,7 @@ function init() {
                 connectionIds: [flirVideo.getId()]
             });
             
-            var flirVideoView = new OSH.UI.View.MjpegView(flirVideoDialog.popContentDiv.id, {
+            var flirVideoView = new OSH.UI.View.MjpegView(flirVideoDialog.contentElt.id, {
                 dataSourceId: flirVideo.getId(),
                 entityId : entity.id,
                 css: "video",
@@ -479,7 +479,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -625,7 +625,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -649,7 +649,7 @@ function init() {
             });
             
             var count = 0;
-            var heartRateView = new OSH.UI.Nvd3CurveChartView(heartRateDialog.popContentDiv.id,
+            var heartRateView = new OSH.UI.Nvd3CurveChartView(heartRateDialog.contentElt.id,
             [{
                 styler: new OSH.UI.Styler.Curve({
                     valuesFunc: {
@@ -788,7 +788,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -916,7 +916,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -1054,7 +1054,7 @@ function init() {
             connectionIds: [videoData.getId()]
         });
         
-        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(videoDialog.contentElt.id, {
             dataSourceId: videoData.getId(),
             entityId : entity.id,
             css: "video",
@@ -1078,7 +1078,7 @@ function init() {
         });
         
         var count = 0;
-        var altChartView = new OSH.UI.Nvd3CurveChartView(altChartDialog.popContentDiv.id,
+        var altChartView = new OSH.UI.Nvd3CurveChartView(altChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {

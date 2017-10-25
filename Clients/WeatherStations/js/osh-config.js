@@ -46,7 +46,7 @@ function init() {
         closeable: true
     });
     
-    var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.popContentDiv.id, treeItems,
+    var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.contentElt.id, treeItems,
         {
             css: "tree-container"
         }
@@ -92,7 +92,7 @@ function init() {
         }]
     });
 
-    discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+    discoveryView.attachToElement(discoveryDialog.contentElt);
 
     $("add-entity-button").on("click",function(event){
         discoveryDialog.show({
@@ -193,7 +193,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var pressureChartView = new OSH.UI.Nvd3CurveChartView(pressureChartDialog.popContentDiv.id,
+        var pressureChartView = new OSH.UI.Nvd3CurveChartView(pressureChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {
@@ -227,7 +227,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var tempChartView = new OSH.UI.Nvd3CurveChartView(tempChartDialog.popContentDiv.id,
+        var tempChartView = new OSH.UI.Nvd3CurveChartView(tempChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {
@@ -261,7 +261,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var humidChartView = new OSH.UI.Nvd3CurveChartView(humidChartDialog.popContentDiv.id,
+        var humidChartView = new OSH.UI.Nvd3CurveChartView(humidChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {
@@ -295,7 +295,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var rainChartView = new OSH.UI.Nvd3CurveChartView(rainChartDialog.popContentDiv.id,
+        var rainChartView = new OSH.UI.Nvd3CurveChartView(rainChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {
@@ -329,7 +329,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(windSpeedChartDialog.popContentDiv.id,
+        var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(windSpeedChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {
@@ -363,7 +363,7 @@ function init() {
             connectionIds: [weatherData.getId()]
         });
 
-        var windDirChartView = new OSH.UI.Nvd3CurveChartView(windDirChartDialog.popContentDiv.id,
+        var windDirChartView = new OSH.UI.Nvd3CurveChartView(windDirChartDialog.contentElt.id,
         [{
             styler: new OSH.UI.Styler.Curve({
                 valuesFunc: {

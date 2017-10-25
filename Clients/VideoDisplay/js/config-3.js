@@ -99,15 +99,14 @@ function init() {
     var cesiumMapDialog         = createDialog("dialog-main-container",[androidPhoneGpsDataSource.id,androidPhoneOrientationDataSource.id],"Cesium 3D",true,false);
     var entityTreeDialog    = new OSH.UI.Panel.DialogPanel(document.body.id,{
         css: "tree-dialog",
-        name: "Entities",
+        title: "Entities",
         show:true,
         draggable:true,
-        dockable: false,
         closeable: false
     });
 
     // Video 1 View
-    var videoView = new OSH.UI.View.MjpegView(videoDialog.popContentDiv.id, [
+    var videoView = new OSH.UI.View.MjpegView("", [
         {
             name: "video view item",
             entityId: androidEntity.id,
@@ -127,8 +126,10 @@ function init() {
 
     });
 
+    videoView.attachToElement(videoDialog.contentElt);
+
     // Video 2 View
-    var videoView2 = new OSH.UI.View.MjpegView(videoDialog2.popContentDiv.id, [
+    var videoView2 = new OSH.UI.View.MjpegView("", [
         {
             name: "Android Video 2",
             entityId: androidEntity.id,
@@ -147,8 +148,10 @@ function init() {
         keepRatio:true
     });
 
+    videoView2.attachToElement(videoDialog2.contentElt);
+
     // Chart View
-    /*var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv.id,
+    /*var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.contentElt.id,
      [{
      styler: new OSH.UI.Styler.Curve({
      valuesFunc: {
@@ -172,7 +175,7 @@ function init() {
      }
      );*/
 
-    var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.popContentDiv.id,
+    var entityTreeView = new OSH.UI.EntityTreeView("",
         [{
             entity : androidEntity,
             path: "Sensors/Toulouse",
@@ -183,6 +186,8 @@ function init() {
             css: "tree-container"
         }
     );
+
+    entityTreeView.attachToElement(entityTreeDialog.contentElt);
 
     var pointMarker = new OSH.UI.Styler.PointMarker({
         location : {
@@ -281,8 +286,8 @@ function init() {
             }]
     );
 
-    leafletMapView.attachTo(leafletMapDialog.popContentDiv.id);
-    cesiumMapView.attachTo(cesiumMapDialog.popContentDiv.id);
+    leafletMapView.attachToElement(leafletMapDialog.contentElt);
+    cesiumMapView.attachToElement(cesiumMapDialog.contentElt);
 
     //-----------------------------------------------------------//
     //----------------- Creates Contextual Menus------------------//
@@ -418,7 +423,7 @@ function init() {
         services: ["http://localhost:8181/","http://sensiasoft.net:8181/"]
     });
 
-    discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+    discoveryView.attachToElement(discoveryDialog.contentElt);
 
     document.getElementById("2D-view-button").onclick = function(event) {
         if(currentIdView != leafletMainView.divId){
@@ -455,7 +460,7 @@ function init() {
     //---------------------------------------------------------------//
 
     // starts streaming
-    dataProviderController.connectAll();
+   dataProviderController.connectAll();
 
 }
 
@@ -463,12 +468,12 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
     var ptzDialog = new OSH.UI.Panel.MultiDialogPanel(containerDivId, {
         draggable: false,
         css: "dialog-view",
-        name: title,
+        title: title,
         show:false,
-        dockable: true,
+        pinContainerId: containerDivId,
         closeable: true,
         connectionIds : dataSources ,
-        swapId: "center-container",
+        swapContainerId: "center-container",
         keepRatio:true
     });
 
@@ -487,10 +492,10 @@ function createDialog(containerDivId,dataSources,title,defaultShow,keepRatio) {
         css: "dialog-view",
         name: title,
         show:false,
-        dockable: true,
+        pinContainerId: containerDivId,
         closeable: true,
         connectionIds : dataSources ,
-        swapId: "center-container",
+        swapContainerId: "center-container",
         keepRatio:keepRatio
     });
 }

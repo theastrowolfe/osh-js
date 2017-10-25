@@ -8,6 +8,10 @@
     box-shadow: none;
 }
 
+.osh.panel .tab-panel {
+    height: inherit;
+}
+
 .osh.panel .tab-panel > section {
     display: none;
     padding: 20px 0 0;
@@ -53,7 +57,6 @@
 
 .osh.panel .tab-panel .show-tab {
     display:block;
-    height: inherit;
 }
 
 .osh.panel .tab-panel .hide-tab {

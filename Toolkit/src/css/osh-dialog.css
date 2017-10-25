@@ -1,198 +1,116 @@
-@import "font-awesome-4.7.0/css/font-awesome.min.css";
+/** DIALOG CSS **/
+.osh.dialog {
+    color: #000000;
+    position:absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+}
 
-.osh.dialog .pop-over {
-    position: relative;
-    background-color: rgba(5, 107, 166, 0.6);
-    min-height: 30px;
-    min-width: 100px;
+.osh.dialog .fa, .osh.dialog label {
+    color: #000000;
+}
+
+.osh.dialog .dialog-inner {
+    position:fixed;
+    background-color: #29e;
+    color: white;
+    box-sizing: border-box;
+    background: radial-gradient(rgba(161, 222, 240, 0.9), rgba(64, 129, 147, 0.9));
     border: 1px solid #bbbbbb;
     border-radius: 6px;
-    box-shadow: 0 0 7px #000000;
+    box-shadow: 3px -4px 7px 0px rgba(0, 0, 0, 0.54);
     z-index: 1020;
-    overflow:hidden;
-    /*height:auto !important;*/
-    /*width:100%;*/
-    text-align: left;
-}
-
-.osh.dialog .pop-over.minimized {
-    height:0px !important;
-}
-
-.osh.dialog .pop-over-selected {
-    background-color: rgba(0, 160, 0, 0.6);
-}
-
-.osh.dialog .pop-inner{
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
     display: flex;
     flex-direction: column;
-    width:100%;
 }
 
-.osh.dialog .pop-content {
-    width:inherit;
-    position: static;
-    margin-top:8px;
-    margin-bottom:5px;
-    flex:1;
-    height: calc(100% - 8px);
+.osh.dialog .dialog-header {
+    height: 25px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding-right:5px;
+    padding-bottom: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    flex:0;
 }
 
-.osh.dialog .pop-footer {
-    height:45px;
-}
-
-.osh.dialog .resizable {
-    resize: both;   /* Options: horizontal, vertical, both */
-}
-
-
-/** HANDLE extra div **/
-.osh.dialog .pop-extra {
-    position: static;
-    margin-top:8px;
-    margin-bottom:5px;
-    flex: 2;
-}
-
-.osh.dialog .pop-extra-el {
-    margin-left:5px;
-    flex: 3;
-}
-
-.osh.dialog .pop-extra-el .fa-2x {
-    font-size: 1.75em;
-}
-
-.osh.dialog .pop-extra-el>i {
-    cursor: pointer;
-    width:100%;
-    padding-top:2px;
-}
-
-.osh.dialog .pop-extra-collapse + div {
-    display:none !important;
-}
-
-.osh.dialog .pop-extra-show + div {
-    display: block !important;
-    margin-left: 25px;
-}
-
-.osh.dialog .no-keep-ratio {
-    height: calc(100% - 45px);
-}
-
-.osh.dialog .keep-ratio-h {
-}
-
-/** Adjust content without scroll + keep ratio **/
-.osh.dialog .pop-inner {
-    /*height: calc(100% - 30px);*/
-    height:100%;
-}
-
-.osh.dialog .pop-inner .video {
-    width: inherit;
-    height: inherit;
-}
-
-.osh.dialog .pop-inner .video > img {
-    width: inherit;
-    height: inherit;
-}
-
-.osh.dialog .pop-inner .video > canvas {
-    width: inherit;
-    height: inherit;
-}
-
-
-/** line - left/right position **/
-.osh.dialog .header > .line-left {
+.osh.dialog .dialog-header > .line-left {
     float: left;
     padding-left: 15px;
     padding-top: 4px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #FFF;
 }
 
-.osh.dialog .header > .line-right {
-    float:right;
+.osh.dialog .dialog-header > .line-right {
+    float: right;
 }
 
-.osh.dialog .header .pop-icon {
-    display:inline-block;
+.osh.dialog .dialog-content {
+    height: calc(100% - 32px);
+    overflow: auto;
+    min-height: inherit;
+    width: calc(100% - 0px);
+    flex:1 auto;
+}
+
+.osh.dialog .dialog-content > div {
+    height: 100%;
+}
+
+.osh.dialog .dialog-footer {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    flex:2;
+}
+
+.osh.dialog .dialog-header-icon {
+    display: inline-block;
     font-family: FontAwesome;
-    padding: 2px 2px 4px 6px;
-    margin: 0 0px 0 2px;
     cursor: pointer;
     color: #c3c3c3;
 }
 
-.osh.dialog .header .pop-icon:hover {
+.osh.dialog .dialog-header-icon:hover {
     color: #676767;
     cursor:pointer;
 }
 
-.osh.dialog .header .pop-icon-close:before {
-    content:"\f00d";
-}
-
-.osh.dialog .header .pop-icon.pop-icon-close {
-    font-size: 18px;
-}
-
-.osh.dialog .header .pop-icon-min:before {
-    content:"\f2d1";
-}
-
-.osh.dialog .header .pop-icon-max:before {
-    content:"\f2d2";
-}
-
-.osh.dialog .header .pop-icon-pin:before {
-    content:"\f08d";
+.osh.dialog .dialog-header-icon.icon-selected {
     color: #676767;
 }
 
-.osh.dialog .header .pop-icon-unpin:before {
-    content:"\f08d";
+
+.osh.dialog .minimized {
+    height: 32px !important;
+    min-height: 32px !important;
+    transition: height 0.25s ease-out;
+    -webkit-transition: height 0.25s ease-out;
+    -moz-transition: height 0.25s ease-out;
+    -o-transition: height 0.25s ease-out;
+    -ms-transition: height 0.25s ease-out;
 }
 
-.osh.dialog .header .pop-icon-pin:hover:before {
-    color: #c3c3c3;
+.osh.dialog.closed {
+    display:none !important;
 }
 
-.osh.dialog .header .pop-icon-connect:before {
-    content:"\f1e6";
-    color:green;
-}
-
-.osh.dialog .header .pop-icon-connect:hover:before {
-    color:red;
-}
-
-.osh.dialog .header .pop-icon-disconnect:before {
-    content:"\f1e6";
-    color:red;
-}
-
-.osh.dialog .header .pop-icon-disconnect:hover:before {
-    color:green;
-}
-
-.osh.dialog .header .pop-icon-swap:before {
-    content:"\f0ec";
-}
-
-.osh.dialog .header {
-    padding-right: 5px;
+.osh.dialog .minimized .dialog-header {
+    border-radius: 6px;
 }
 
 /** MODAL PART **/
 .osh.dialog.modal {
+    position: relative;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+.osh.dialog.modal-block {
     position: fixed;
     top: 0;
     right: 0;
@@ -200,42 +118,33 @@
     left: 0;
     background: rgba(0,0,0,0.6);
     z-index: 99999;
-    opacity:1;
-    -webkit-transition: opacity 4000ms ease-in;
-    -moz-transition: opacity 4000ms ease-in;
-    transition: opacity 4000ms ease-in;
-
-}
-
-.osh.dialog.modal :target {
-    opacity:1;
-    pointer-events: auto;
-}
-
-.osh.dialog.modal > div {
-    position: relative;
-    margin: 10% auto;
-    pointer-events: auto;
-}
-
-.osh.dialog.modal > .pop-over {
-    background-color: #519fcc;
     opacity: 1;
+    height: 100%;
+    width: 100%;
 }
 
-html.osh.dialog.modal, body.osh.dialog.modal {
-    pointer-events: none;
+/** ICON**/
+.icon-swap:before {
+    content:"\f0ec";
 }
 
-.osh.dialog.closed  {
-    display:none;
+.icon-pin:before {
+    content: "\f08d";
 }
 
-
-.osh.dialog.modal.closed  {
-    display:none;
+.icon-minimize:before {
+    content: "\f2d1";
 }
 
-html.osh.dialog.modal.closed, body.osh.dialog.modal.closed  {
-    pointer-events: auto;
+.icon-restore:before {
+    content: "\f2d2";
+}
+
+.icon-close {
+    margin-top:2px;
+}
+
+.icon-close:before {
+    content: "\f00d";
+    font-size: 19px;
 }

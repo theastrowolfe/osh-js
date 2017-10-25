@@ -31,7 +31,7 @@ OSH.Exception.Exception.prototype = Object.create(Error.prototype, {
 
 
 OSH.Exception.Exception.prototype.printStackTrace = function() {
-    return this.stack;
+    console.error(this.stack);
 };
 
 OSH.Exception.Exception.prototype.getMessage = function() {

@@ -220,7 +220,7 @@
                 }]
         );
 
-        leafletMapView.attachTo(mapDialog.popContentDiv.id);
+        leafletMapView.attachToElement(mapDialog.contentElt);
 
         var videoView = new OSH.UI.View.MjpegView("", [
             {
@@ -242,7 +242,7 @@
             keepRatio: false
         });
 
-        videoView.attachTo(videoDialog.popContentDiv.id);
+        videoView.attachToElement(videoDialog.contentElt);
 
         var entityTreeView = new OSH.UI.EntityTreeView("tree-container",
             [{

@@ -18,6 +18,7 @@
 OSH.UI.Panel = BaseClass.extend({
     initialize: function (parentElementDivId,options) {
         this.divId = "panel-"+OSH.Utils.randomUUID();
+        this.id = this.divId;
         this.options = options;
         this.elementDiv = document.createElement("div");
         this.elementDiv.setAttribute("class", "osh panel");
@@ -31,6 +32,11 @@ OSH.UI.Panel = BaseClass.extend({
 
         this.componentListeners = [];
 
+        if(!isUndefinedOrNull(options)) {
+            if(!isUndefinedOrNull(options.css)) {
+                OSH.Utils.addCss(this.elementDiv,options.css);
+            }
+        }
         this.initPanel();
         this.handleEvents();
     },
@@ -69,11 +75,21 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     attachTo : function(divId) {
+       this.attachToElement(document.getElementById(divId));
+    },
+
+    /**
+     *
+     * @param divId
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    attachToElement : function(element) {
         if(typeof this.elementDiv.parentNode !== "undefined") {
             // detach from its parent
             this.elementDiv.parentNode.removeChild(this.elementDiv);
         }
-        document.getElementById(divId).appendChild(this.elementDiv);
+        element.appendChild(this.elementDiv);
         if(this.elementDiv.style.display === "none") {
             this.elementDiv.style.display = "block";
         }
@@ -196,6 +212,7 @@ OSH.UI.Panel = BaseClass.extend({
      * @memberof OSH.UI.Panel
      */
     show: function(properties) {
+        this.setVisible(properties.show);
     },
 
     /**
@@ -208,13 +225,26 @@ OSH.UI.Panel = BaseClass.extend({
     },
 
     handleEvents:function() {
+        var self = this;
+
         // observes the SHOW event
-        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
-            this.show(event);
-        }.bind(this));
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW+"-"+this.divId,function(event){
+            self.setVisible(true);
+        });
 
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
-            this.onResize();
-        }.bind(this));
+            self.onResize();
+        });
+    },
+
+    setVisible:function(isVisible) {
+        if(!isVisible) {
+            this.elementDiv.style.displayOld = window.getComputedStyle(this.elementDiv).getPropertyValue('display');
+            this.elementDiv.style.display = "none";
+        } else if(!isUndefinedOrNull(this.elementDiv.style.displayOld)) {
+            this.elementDiv.style.display = this.elementDiv.style.displayOld;
+        } else {
+            this.elementDiv.style.display = "block";
+        }
     }
 });

@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Video display</title>
 
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-
     <!-- START VENDOR -->
     <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
     <script type="text/javascript" src="vendor/vendor.min.js"></script>
@@ -21,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/osh-stackContextMenu.css">
     <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/osh-cicurlarContextMenu.css">
     <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/osh-discovery.css">
-    <link rel="stylesheet" type="text/css" href="css/noUISlider.css">
+    <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/osh-noUISlider.css">
     <link rel="stylesheet" type="text/css" href="../../Toolkit/src/css/osh-tree.css">
     <!-- PTZ -->
     <link rel="stylesheet" href="../../Toolkit/src/css/osh-tasking.css" />
@@ -118,16 +116,9 @@
 </head>
 
 <body onload="init()" id="body">
-<nav class="navbar navbar-default navbar-inverse ">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="http://www.opensensorhub.org/">
-                <img src="https://github.com/sensiasoft/sensorhub/wiki/images/sensorhub_logo_128.png"
-                     style="-webkit-animation-play-state: paused; -webkit-transition: none; transition: none; width:50px;height:50px;">
-                OpenSensorHub</a>
-        </div>
-    </div>
-</nav>
+<div class="brand">
+    <a href="https://opensensorhub.org/" class="site-logo-link" rel="home"><img width="200" height="60" src="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png" class="site-logo attachment-full" alt="" data-size="full" srcset="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png 600w, https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=150&amp;h=45 150w, https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=300&amp;h=90 300w" sizes="(max-width: 600px) 100vw, 600px" data-attachment-id="1588" data-permalink="https://opensensorhub.org/opensensorhub-logo-3/" data-orig-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png" data-orig-size="600,179" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="OpenSensorHub-Logo" data-image-description="" data-medium-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=300" data-large-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=600"></a>
+</div>
 <div id="main-container" class="main-view">
     <div id="center-container" class="center-view"></div>
     <div id="tasking-container" class="tasking-container"></div>

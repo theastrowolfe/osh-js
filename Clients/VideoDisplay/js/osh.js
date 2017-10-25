@@ -5735,7 +5735,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
  * @augments OSH.UI.View
  * @example
 // Chart View
-var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv.id, [{
+var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.contentElt.id, [{
     styler: new OSH.UI.Styler.Curve({
         valuesFunc: {
             dataSourceIds: [weatherDataSource.getId()],
@@ -6488,7 +6488,7 @@ OSH.UI.Panel.DiscoveryPanel = OSH.UI.View.extend({
             swapId: this.swapId
         });
 
-        var videoView = new OSH.UI.View.MjpegView(dialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.MjpegView(dialog.contentElt.id, {
             dataSourceId: videoDataSource.id,
             css: "video",
             cssSelected: "video-selected",
@@ -6541,7 +6541,7 @@ OSH.UI.Panel.DiscoveryPanel = OSH.UI.View.extend({
             swapId: this.swapId
         });
 
-        var videoView = new OSH.UI.View.FFMPEGView(dialog.popContentDiv.id, {
+        var videoView = new OSH.UI.View.FFMPEGView(dialog.contentElt.id, {
             dataSourceId: videoDataSource.getId(),
             css: "video",
             cssSelected: "video-selected",
@@ -6596,7 +6596,7 @@ OSH.UI.Panel.DiscoveryPanel = OSH.UI.View.extend({
         });
 
         // Chart View
-        var chartView = new OSH.UI.Nvd3CurveChartView(dialog.popContentDiv.id,
+        var chartView = new OSH.UI.Nvd3CurveChartView(dialog.contentElt.id,
             [{
                 styler: new OSH.UI.Styler.Curve({
                     valuesFunc: {
@@ -6663,7 +6663,7 @@ OSH.UI.Panel.DiscoveryPanel.Type = {
  * @param {Array} entityItems The entity items array
  * @param {Object} options the {@link OSH.View} options
  * @example
- var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.popContentDiv.id,
+ var entityTreeView = new OSH.UI.EntityTreeView(entityTreeDialog.contentElt.id,
      [{
         entity : androidEntity,
         path: "Sensors/Toulouse",
@@ -8272,15 +8272,15 @@ OSH.UI.DialogPanel = OSH.UI.View.extend({
         this.flexDiv = document.createElement("div");
         this.flexDiv.setAttribute("class","pop-inner");
 
-        this.popContentDiv = document.createElement("div");
-        this.popContentDiv.setAttribute("class","pop-content");
-        this.popContentDiv.setAttribute("id","pop-content-id-"+OSH.Utils.randomUUID());
+        this.contentElt = document.createElement("div");
+        this.contentElt.setAttribute("class","pop-content");
+        this.contentElt.setAttribute("id","pop-content-id-"+OSH.Utils.randomUUID());
 
         if(!this.keepRatio) {
-            OSH.Utils.addCss(this.popContentDiv,"no-keep-ratio");
+            OSH.Utils.addCss(this.contentElt,"no-keep-ratio");
         }
 
-        this.flexDiv.appendChild(this.popContentDiv);
+        this.flexDiv.appendChild(this.contentElt);
         // plugs it into the new draggable dialog
         this.rootTag.appendChild(this.flexDiv);
 
@@ -8374,22 +8374,22 @@ OSH.UI.DialogPanel = OSH.UI.View.extend({
      * @memberof OSH.UI.DialogPanel
      */
     swap:function() {
-        // swap the child of the popContentDiv with the child contained in the the containerDiv
+        // swap the child of the contentElt with the child contained in the the containerDiv
         var containerDivToSwap = document.getElementById(this.divIdToSwap);
         if(containerDivToSwap != "undefined" && containerDivToSwap != null) {
             if(!this.swapped) {
                 // get
-                var popContent = this.popContentDiv.firstChild;
+                var popContent = this.contentElt.firstChild;
                 this.contentViewId = popContent.id;
                 var swapContainerContent = containerDivToSwap.firstChild;
 
                 // remove
                 containerDivToSwap.removeChild(swapContainerContent);
-                this.popContentDiv.removeChild(popContent);
+                this.contentElt.removeChild(popContent);
 
                 // append
                 containerDivToSwap.appendChild(popContent);
-                this.popContentDiv.appendChild(swapContainerContent);
+                this.contentElt.appendChild(swapContainerContent);
                 this.swapped = true;
 
                 // update title
@@ -8400,21 +8400,21 @@ OSH.UI.DialogPanel = OSH.UI.View.extend({
                     // remove css class from dialog
                     OSH.Utils.removeCss(this.rootTag,"keep-ratio-w");
                     // does not keep ratio for the new content
-                    OSH.Utils.addCss(this.popContentDiv,"no-keep-ratio");
+                    OSH.Utils.addCss(this.contentElt,"no-keep-ratio");
                     OSH.Utils.addCss(containerDivToSwap,"keep-ratio-h");
                 }
             } else {
                 // get
-                var popContent = this.popContentDiv.firstChild;
+                var popContent = this.contentElt.firstChild;
                 var swapContainerContent = document.getElementById(this.contentViewId);
 
                 // remove
                 containerDivToSwap.removeChild(swapContainerContent);
-                this.popContentDiv.removeChild(popContent);
+                this.contentElt.removeChild(popContent);
 
                 // append
                 containerDivToSwap.appendChild(popContent);
-                this.popContentDiv.appendChild(swapContainerContent);
+                this.contentElt.appendChild(swapContainerContent);
 
                 // update title
                 document.getElementById(this.titleId).innerText = this.name;
@@ -8424,7 +8424,7 @@ OSH.UI.DialogPanel = OSH.UI.View.extend({
                 if(this.keepRatio) {
                     // remove css class from dialog
                     OSH.Utils.addCss(this.rootTag,"keep-ratio-w");
-                    OSH.Utils.removeCss(this.popContentDiv,"no-keep-ratio");
+                    OSH.Utils.removeCss(this.contentElt,"no-keep-ratio");
                     OSH.Utils.removeCss(containerDivToSwap,"keep-ratio-h");
                 }
             }
@@ -8438,7 +8438,7 @@ OSH.UI.DialogPanel = OSH.UI.View.extend({
                 }
             }
 
-            var everyChild = this.popContentDiv.querySelectorAll("div");
+            var everyChild = this.contentElt.querySelectorAll("div");
             for (var i = 0; i<everyChild.length; i++) {
                 var id = everyChild[i].id;
                 if(id.startsWith("view-")) {
@@ -8621,7 +8621,7 @@ OSH.UI.MultiDialogPanel = OSH.UI.DialogPanel.extend({
      * @memberof OSH.UI.MultiDialogPanel
      */
     appendView:function(divId,properties) {
-        //console.log(this.popContentDiv);
+        //console.log(this.contentElt);
         //remove from parent
         var divToAdd = document.getElementById(divId);
 

@@ -152,6 +152,17 @@ var JSBEAUTIFY_RESOURCES_FILES = [];
 
 //  END JSBEAUTIFY
 
+
+//  INTERACT
+
+var INTERACT_SRC = ["vendor/interact.js/dist/interact.min.js"];
+var INTERACT_SRC_DEBUG = ["vendor/interact.js/dist/interact.js"];
+var INTERACT_CSS = [];
+var INTERACT_RESOURCES_DIR = {};
+var INTERACT_RESOURCES_FILES = [];
+
+//  END JSBEAUTIFY
+
 Array.prototype.pushAll=function(array) {
     for(var i=0;i < array.length;i++) {
         this.push(array[i]);
@@ -166,6 +177,13 @@ var ALL_VENDOR_RESOURCES_FILES = [];
 var VENDOR_CSS_EXTRA_PARAMS = "/*EXTRA CSS PARAMS\n*/";
 var WORKERS_FILES = [];
 
+// BASE PART INCLUDES INTERACT
+ALL_VENDOR_SRC.pushAll(INTERACT_SRC);
+ALL_VENDOR_DEBUG.pushAll(INTERACT_SRC_DEBUG);
+ALL_VENDOR_CSS.pushAll(INTERACT_CSS);
+ALL_VENDOR_RESOURCES_DIR.push(INTERACT_RESOURCES_DIR);
+ALL_VENDOR_RESOURCES_FILES.pushAll(INTERACT_RESOURCES_FILES);
+//
 if(argv.cesium || argv.all) {
     ALL_VENDOR_SRC.pushAll(CESIUM_SRC);
     ALL_VENDOR_DEBUG.pushAll(CESIUM_SRC_DEBUG);

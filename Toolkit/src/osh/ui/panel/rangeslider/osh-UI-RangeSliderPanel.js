@@ -30,122 +30,132 @@
 OSH.UI.Panel.RangeSliderPanel = OSH.UI.Panel.extend({
 	initialize: function (parentElementDivId, options) {
 		this._super(parentElementDivId, options);
+	},
 
-		this.slider = document.createElement("div");
-		var activateButtonDiv = document.createElement("div");
-		var aTagActivateButton = document.createElement("a");
-		activateButtonDiv.appendChild(aTagActivateButton);
+	initPanel:function() {
+		this._super();
+        OSH.Utils.addCss(this.elementDiv,"osh-rangeslider");
+
+        this.slider = document.createElement("div");
+        var activateButtonDiv = document.createElement("div");
+        var aTagActivateButton = document.createElement("i");
+        activateButtonDiv.appendChild(aTagActivateButton);
 
 
-		this.slider.setAttribute("class","osh-rangeslider-slider");
-		activateButtonDiv.setAttribute("class","osh-rangeslider-control");
+        aTagActivateButton.setAttribute("class","fa fa-fw edit-icon");
 
-		var self = this;
+        this.slider.setAttribute("class","slider");
+        activateButtonDiv.setAttribute("class","osh-rangeslider-control");
 
-		activateButtonDiv.addEventListener("click",function(event) {
-			if(activateButtonDiv.className.indexOf("osh-rangeslider-control-select") > -1) {
-				activateButtonDiv.setAttribute("class","osh-rangeslider-control");
-				self.deactivate();
+        this.isActivated = false;
+        var self = this;
+
+        activateButtonDiv.addEventListener("click",function(event) {
+        	if(!self.isActivated) {
+				OSH.Utils.addCss(aTagActivateButton,"selected");
+                self.activate();
 			} else {
-				activateButtonDiv.setAttribute("class","osh-rangeslider-control-select");
-				self.activate();
+                OSH.Utils.removeCss(aTagActivateButton,"selected");
+                self.deactivate();
 			}
-		});
-		document.getElementById(this.divId).appendChild(this.slider);
-		document.getElementById(this.divId).appendChild(activateButtonDiv);
+			self.isActivated = !self.isActivated;
+        });
 
-		var startTime = new Date().getTime();
-		this.endTime = new Date("2055-01-01T00:00:00Z").getTime(); //01/01/2055
-		this.slider.setAttribute('disabled', true);
+        document.getElementById(this.divId).appendChild(this.slider);
+        document.getElementById(this.divId).appendChild(activateButtonDiv);
 
-		this.dataSourcesId = [];
+        var startTime = new Date().getTime();
+        this.endTime = new Date("2055-01-01T00:00:00Z").getTime(); //01/01/2055
+        this.slider.setAttribute('disabled', true);
 
-		this.multi = false;
-		// compute a refresh rate
-		this.dataCount = 0;
-		this.refreshRate = 10;
+        this.dataSourcesId = [];
 
-		if(!isUndefinedOrNull(options)) {
-			if(!isUndefinedOrNull(options.startTime)) {
-				startTime = new Date(options.startTime).getTime();
-				//slider.removeAttribute('disabled');
-			}
+        this.multi = false;
+        // compute a refresh rate
+        this.dataCount = 0;
+        this.refreshRate = 10;
 
-			if(!isUndefinedOrNull(options.endTime)) {
-				this.endTime = new Date(options.endTime).getTime();
-			}
-
-			if(!isUndefinedOrNull(options.dataSourcesId)) {
-				this.dataSourcesId = options.dataSourcesId;
-			}
-			if(!isUndefinedOrNull(options.refreshRate)) {
-				this.refreshRate = options.refreshRate;
-			}
-
-		}
-
-		noUiSlider.create(this.slider, {
-			start: [startTime,this.endTime]/*,timestamp("2015-02-16T08:09:00Z")]*/,
-			range: {
-				min: startTime,
-				max: this.endTime
-			},
-			//step:  1000* 60* 60,
-			format: wNumb({
-				decimals: 0
-			}),
-			behaviour: 'drag',
-			connect: true,
-			tooltips: [
-				wNumb({
-					decimals: 1,
-					edit:function( value ){
-						var date = new Date(parseInt(value)).toISOString();
-						return date.split("T")[1].split("Z")[0];
-					}
-				}),
-				wNumb({
-					decimals: 1,
-					edit:function( value ){
-						var date = new Date(parseInt(value)).toISOString();
-						return date.split("T")[1].split("Z")[0];
-					}
-				})
-			],
-			pips: {
-				mode: 'positions',
-				values: [5,25,50,75],
-				density: 1,
-				//stepped: true,
-				format: wNumb({
-					edit:function( value ){
-						return new Date(parseInt(value)).toISOString().replace(".000Z", "Z");
-					}
-				})
-			}
-		});
-
-		//noUi-handle noUi-handle-lower
-		// start->update->end
-		this.slider.noUiSlider.on("slide", function (values, handle) {
-			self.update = true;
-		});
-
-		// listen for DataSourceId
-		OSH.EventManager.observe(OSH.EventManager.EVENT.CURRENT_MASTER_TIME, function (event) {
-			var filterOk = true;
-
-			if(self.dataSourcesId.length > 0) {
-				if(self.dataSourcesId.indexOf(event.dataSourceId) < 0) {
-					filterOk = false;
-				}
+        if(!isUndefinedOrNull(this.options)) {
+            if(!isUndefinedOrNull(this.options.startTime)) {
+                startTime = new Date(this.options.startTime).getTime();
+                //slider.removeAttribute('disabled');
             }
 
-			if(filterOk && !self.lock && ((++self.dataCount)%self.refreshRate == 0)) {
-				self.slider.noUiSlider.set([event.timeStamp]);
-				self.dataCount = 0;
-			}
-		});
+            if(!isUndefinedOrNull(this.options.endTime)) {
+                this.endTime = new Date(this.options.endTime).getTime();
+            }
+
+            if(!isUndefinedOrNull(this.options.dataSourcesId)) {
+                this.dataSourcesId = this.options.dataSourcesId;
+            }
+            if(!isUndefinedOrNull(this.options.refreshRate)) {
+                this.refreshRate = this.options.refreshRate;
+            }
+
+        }
+
+        noUiSlider.create(this.slider, {
+            start: [startTime,this.endTime]/*,timestamp("2015-02-16T08:09:00Z")]*/,
+            range: {
+                min: startTime,
+                max: this.endTime
+            },
+            //step:  1000* 60* 60,
+            format: wNumb({
+                decimals: 0
+            }),
+            behaviour: 'drag',
+            connect: true,
+            tooltips: [
+                wNumb({
+                    decimals: 1,
+                    edit:function( value ){
+                        var date = new Date(parseInt(value)).toISOString();
+                        return date.split("T")[1].split("Z")[0];
+                    }
+                }),
+                wNumb({
+                    decimals: 1,
+                    edit:function( value ){
+                        var date = new Date(parseInt(value)).toISOString();
+                        return date.split("T")[1].split("Z")[0];
+                    }
+                })
+            ],
+            pips: {
+                mode: 'positions',
+                values: [5,25,50,75],
+                density: 1,
+                //stepped: true,
+                format: wNumb({
+                    edit:function( value ){
+                        return new Date(parseInt(value)).toISOString().replace(".000Z", "Z");
+                    }
+                })
+            }
+        });
+
+        //noUi-handle noUi-handle-lower
+        // start->update->end
+        this.slider.noUiSlider.on("slide", function (values, handle) {
+            self.update = true;
+        });
+
+        // listen for DataSourceId
+        OSH.EventManager.observe(OSH.EventManager.EVENT.CURRENT_MASTER_TIME, function (event) {
+            var filterOk = true;
+
+            if(self.dataSourcesId.length > 0) {
+                if(self.dataSourcesId.indexOf(event.dataSourceId) < 0) {
+                    filterOk = false;
+                }
+            }
+
+            if(filterOk && !self.lock && ((++self.dataCount)%self.refreshRate == 0)) {
+                self.slider.noUiSlider.set([event.timeStamp]);
+                self.dataCount = 0;
+            }
+        });
 	},
 
 	/**

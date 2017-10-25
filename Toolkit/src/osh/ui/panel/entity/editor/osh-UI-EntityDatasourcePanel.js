@@ -66,7 +66,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
 
         });
 
-        discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+        discoveryView.attachToElement(discoveryDialog.contentElt);
     },
 
     addDataSource:function(dataSource) {
@@ -133,7 +133,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
                 keepRatio:false
             });
 
-            discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+            discoveryView.attachToElement(discoveryDialog.contentElt);
 
             // setup existing info
             discoveryView.initDataSource(self.datasources[dataSource.id]);

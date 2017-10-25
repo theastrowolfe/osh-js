@@ -46,10 +46,12 @@ OSH.UI.View.VideoView = OSH.UI.View.extend({
     init:function(parentElementDivId,viewItems,options) {
         this._super(parentElementDivId,viewItems,options);
 
+        OSH.Utils.addCss(this.elementDiv,"video");
+
+        this.css += " video ";
+
         this.options.showFps = false;
         this.options.keepRatio = false;
-
-        OSH.Utils.addCss(this.elementDiv,"video");
 
         if(!isUndefinedOrNull(options)) {
             // defines default options if not defined
@@ -79,7 +81,6 @@ OSH.UI.View.VideoView = OSH.UI.View.extend({
 
             this.statsElt.innerHTML = "Fps: 0";
 
-            OSH.Utils.addCss(this.elementDiv, "video");
             var self = this;
 
             this.onAfterDecoded = function () {
@@ -159,9 +160,9 @@ OSH.UI.View.VideoView = OSH.UI.View.extend({
     selectDataView: function(dataSourceIds,entityId) {
         var currentDataSources= this.getDataSourcesId();
         if(OSH.Utils.isArrayIntersect(dataSourceIds,currentDataSources)) {
-            document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
+            OSH.Utils.addCss(this.elementDiv,this.cssSelected);
         } else {
-            document.getElementById(this.divId).setAttribute("class",this.css);
+            OSH.Utils.removeCss(this.elementDiv,this.cssSelected);
         }
     },
 
