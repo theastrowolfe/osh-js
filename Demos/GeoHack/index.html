@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>OSH Discovery test</title>
+
+    <link rel="stylesheet" type="text/css" href="vendor/vendor.min.css"/>
+    <script type="text/javascript" src="vendor/vendor-debug.js"></script>
+
+    <!-- //TODO:to add into vendor-->
+    <script type="text/javascript" src="../../Toolkit/vendor/HTML5-Color-Picker/html5kellycolorpicker.min.js"></script>
+
+    <!-- Circle menu -->
+    <link rel="stylesheet" type="text/css" href="css/circle-menu.css"/>
+    <script type="text/javascript" src="vendor/circleMenu.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/osh.min.css"/>
+    <script type="text/javascript" src="js/osh-debug.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/geohack.css"/>
+    <script type="text/javascript" src="js/geohack.js"></script>
+
+</head>
+
+<body id="body">
+    <div class="brand">
+        <a href="https://opensensorhub.org/" class="site-logo-link" rel="home"><img width="200" height="60" src="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png" class="site-logo attachment-full" alt="" data-size="full" srcset="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png 600w, https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=150&amp;h=45 150w, https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=300&amp;h=90 300w" sizes="(max-width: 600px) 100vw, 600px" data-attachment-id="1588" data-permalink="https://opensensorhub.org/opensensorhub-logo-3/" data-orig-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png" data-orig-size="600,179" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="OpenSensorHub-Logo" data-image-description="" data-medium-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=300" data-large-file="https://opensensorhub.files.wordpress.com/2017/08/opensensorhub-logo2.png?w=600"></a>
+    </div>
+    <div id="dialog-container"></div>
+    <div id="map-container"></div>
+    <nav class="c-circle-menu js-menu">
+        <button class="c-circle-menu__toggle js-menu-toggle">
+            <span>Toggle</span>
+        </button>
+        <ul class="c-circle-menu__items">
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="3D-view-button">
+                    <img src="images/3d.svg" alt="">
+                </a>
+            </li>
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="2D-view-button">
+                    <img src="images/2d.svg" alt="">
+                </a>
+            </li>
+            <li class="c-circle-menu__item">
+                <a href="#" class="c-circle-menu__link" id="add-entity-button">
+                    <img src="images/add.svg" alt="">
+                </a>
+            </li>
+            <!-- more items here -->
+        </ul>
+        <div class="c-circle-menu__mask js-menu-mask"></div>
+    </nav>
+</body>
+</html>

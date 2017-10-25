@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    background-color: white;
+    overflow: hidden;
+}
+
+html {
+    height: calc(100% - 0px);
+}
+
+*, *:before, *:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+h1 {
+    padding: 50px 0;
+    font-weight: 400;
+    text-align: center;
+}
+
+p {
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+/** Brand **/
+.brand {
+    position: absolute;
+    top: 0;
+    z-index: 99999;
+    background: none;
+}
+/** OSH **/
+.osh.dialog .pop-over {
+    background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(../images/3JZchqt.png), url(../images/9kxBTzr.jpg);
+}
+
+.dialog-entity {
+    width:430px;
+    height:400px;
+    margin-bottom:10px;
+}
+
+.dialog-discovery {
+    width:430px;
+    height:545px;
+    margin-bottom:10px;
+}
+
+.dialog-edit-view {
+    width:430px;
+    height:500px;
+    margin-bottom:10px;
+}
+
+.osh.dialog .app-dialog {
+    width: 450px;
+    height: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+#dialog-container {
+    position: absolute;
+    width: 100%;
+    padding-left: 50px;
+}
+
+
+#map-container {
+    height:calc(100% - 19px);
+    margin-top: 38px;
+}
+
+/** Circle menu **/
+.c-circle-menu {
+    bottom: 10px;
+    left: 10px;
+}
+
+.c-circle-menu__mask.is-active {
+    opacity: 0.3;
+}
+
+.osh.edit-view > .view-properties  {
+    height: 190px;
+}
+
+.osh.edit-view > .content-properties {
+    height:184px;
+}
+
+.osh.dialog .dialog-edit-view .tab-panel .show-tab {
+    max-height: 315px;
+    overflow: auto;
+}
+
+
+/** leaflet **/
+.leaflet-top {
+    top: 25px;
+}
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
+
+.leaflet-container .leaflet-marker-pane img {
+    max-width: 32px !important;
+    height:auto !important;
+}
+
+.leaflet-container, #container {
+    height:calc(100% - 40px);
+}
+
+/** NVD3 **/
+.osh.view.chart-view {
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 100%;
+}
