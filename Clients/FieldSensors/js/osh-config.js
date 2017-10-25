@@ -155,7 +155,7 @@ function init() {
         }]
     });
 
-    discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+    discoveryView.attachToElement(discoveryDialog.contentElt);
 
     $("add-entity-button").on("click",function(event){
         discoveryDialog.show({

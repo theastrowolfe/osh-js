@@ -281,8 +281,8 @@ function init() {
             }]
     );
 
-    leafletMapView.attachTo(leafletMapDialog.popContentDiv.id);
-    cesiumMapView.attachTo(cesiumMapDialog.popContentDiv.id);
+    leafletMapView.attachToElement(leafletMapDialog.contentElt);
+    cesiumMapView.attachToElement(cesiumMapDialog.contentElt);
 
     //-----------------------------------------------------------//
     //----------------- Creates Contextual Menus------------------//
@@ -418,7 +418,7 @@ function init() {
         services: ["http://localhost:8181/","http://sensiasoft.net:8181/"]
     });
 
-    discoveryView.attachTo(discoveryDialog.popContentDiv.id);
+    discoveryView.attachToElement(discoveryDialog.contentElt);
 
     document.getElementById("2D-view-button").onclick = function(event) {
         if(currentIdView != leafletMainView.divId){

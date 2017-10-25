@@ -19,24 +19,23 @@ OSH.UI.Panel.SaveDialogPanel = OSH.UI.Panel.DialogPanel.extend({
         this._super(parentElementDivId, properties);
 
         this.properties = properties;
+    },
 
-        // add template
-        var footerElt = document.createElement("div");
+    initPanel: function () {
+        this._super();
+        var saveButtonId = "dialog-save-button-"+OSH.Utils.randomUUID();
 
-        this.footerContent.appendChild(footerElt);
+        var divButton = document.createElement("div");
+        divButton.setAttribute("class","button-edit");
 
-        this.saveButtonId = OSH.Utils.randomUUID();
+        var button = document.createElement("button");
+        button.setAttribute("id",saveButtonId);
+        button.setAttribute("class","submit save");
+        button.innerHTML = "Save";
 
-        var strVar="";
+        divButton.appendChild(button);
 
-        strVar += "<div class=\"horizontal-line\"><\/div>";
-
-        strVar += "<div class=\"button-edit\">";
-        strVar += "  <button id=\""+this.saveButtonId+"\" class=\"submit save\">Save<\/button>";
-        strVar += "</div>";
-
-
-        footerElt.innerHTML = strVar;
+        this.footerElt .appendChild(divButton);
 
         OSH.EventManager.observeDiv(this.saveButtonId,"click",this.onSaveClickButtonHandler.bind(this));
 

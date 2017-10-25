@@ -212,7 +212,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
             modal:true
         });
 
-        editStylerView.attachTo(editViewDialog.popContentDiv.id);
+        editStylerView.attachToElement(editViewDialog.contentElt);
 
         var self = this;
 

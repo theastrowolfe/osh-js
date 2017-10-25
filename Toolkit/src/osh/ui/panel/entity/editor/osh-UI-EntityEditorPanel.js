@@ -197,7 +197,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
                 keepRatio: (!isUndefinedOrNull(view.options.keepRatio)) ? view.options.keepRatio : false
             });
 
-            view.attachTo(viewDialog.popContentDiv.id);
+            view.attachToElement(viewDialog.contentElt);
             view.dialog = {
                 in : true,
                 closed:false

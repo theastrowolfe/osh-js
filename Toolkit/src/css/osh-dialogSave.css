@@ -6,7 +6,6 @@
     margin: 11px auto 15px auto;
 }
 
-.osh.dialog .save-dialog > .pop-inner {
-    height: initial;
-    min-height: calc(100% - 100px);
+.osh.dialog.save-dialog .button-edit {
+    padding:20px;
 }

@@ -49,7 +49,7 @@ p {
 
 .dialog-discovery {
     width:430px;
-    height:545px;
+    height:490px;
     margin-bottom:10px;
 }
 
@@ -86,7 +86,11 @@ p {
 }
 
 .osh .entity-editor {
-    height: calc(100% - 32px);
+    height:calc(100% - 60px);
+}
+
+.osh.dialog .dialog-entity .dialog-content > div.osh.panel {
+    height:inherit;
 }
 
 /** Circle menu **/
@@ -108,10 +112,8 @@ p {
 }
 
 .osh.dialog .dialog-edit-view .tab-panel .show-tab {
-    max-height: 315px;
     overflow: auto;
 }
-
 
 /** leaflet **/
 .leaflet-top {

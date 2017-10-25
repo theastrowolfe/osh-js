@@ -302,7 +302,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
             modal:true
         });
 
-        editView.attachTo(editViewDialog.popContentDiv.id);
+        editView.attachToElement(editViewDialog.contentElt);
 
         editViewDialog.onSave = function() {
             var clonedView = editView.getView();
