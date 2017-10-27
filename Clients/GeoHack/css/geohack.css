@@ -49,14 +49,13 @@ p {
 
 .dialog-discovery {
     width:430px;
-    height:490px;
+    height:525px;
     margin-bottom:10px;
 }
 
 .dialog-edit-view {
     width:430px;
     height:500px;
-    margin-bottom:10px;
 }
 
 .osh.dialog .app-dialog {

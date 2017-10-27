@@ -187,7 +187,7 @@ OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
             var viewDialog = new OSH.UI.Panel.DialogPanel("", {
                 draggable: true,
                 css: "app-dialog", //TBD into edit view
-                name: view.name,
+                title: view.name,
                 show: true,
                 dockable: false,
                 closeable: true,

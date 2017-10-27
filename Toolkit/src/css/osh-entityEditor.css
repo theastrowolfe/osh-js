@@ -13,13 +13,13 @@
 
 .osh .entity-editor .view-container {
     clear: both;
-    height: calc(100% + 45px);
+    height: 165px;
     overflow: auto;
 }
 
 .osh .entity-editor .datasource-container {
     clear: both;
-    height: calc(100% + 45px);
+    height: 160px;;
     overflow: auto;
 }
 

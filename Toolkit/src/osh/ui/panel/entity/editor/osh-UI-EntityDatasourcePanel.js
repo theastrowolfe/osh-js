@@ -55,7 +55,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
         var discoveryDialog = new OSH.UI.Panel.DialogPanel("", {
             draggable: true,
             css: "dialog-discovery",
-            name: "Discovery",
+            title: "Discovery",
             show:true,
             dockable: false,
             closeable: true,
@@ -123,7 +123,7 @@ OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
             var discoveryDialog = new OSH.UI.Panel.DialogPanel("", {
                 draggable: true,
                 css: "dialog-discovery",
-                name: "Discovery",
+                title: "Discovery",
                 show:true,
                 dockable: false,
                 closeable: true,
