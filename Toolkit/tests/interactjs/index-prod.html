@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- VENDOR -->
+    <script type="text/javascript" src="../../vendor/interact.js/dist/interact.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/panel/dialog/osh-UI-DialogPanel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-panel.css"/>
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-dialog.css"/>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerVideo.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .dialog-container {
+            background: blue;
+            height: 75%;
+            width: 75%;
+        }
+
+        .dialog-test {
+            background: red;
+            width: 300px;
+            height: 220px;
+        }
+
+        .fake-content {
+            width:800px;
+            height:600px;
+            background: red;
+        }
+    </style>
+</head>
+<body id="body">
+<div id="dialog-container" class="dialog-container"></div>
+
+<script type="text/javascript">
+    var replayFactor = 3;
+
+    //---------- DATASOURCE ------------//
+    var androidPhoneVideoDataSource = new OSH.DataReceiver.VideoMjpeg("android-Video", {
+        protocol: "ws",
+        service: "SOS",
+        endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+        offeringID: "urn:android:device:060693280a28e015-sos",
+        observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+        startTime: "2015-02-16T07:58:00Z",
+        endTime: "2015-02-16T08:58:10Z",
+        replaySpeed: replayFactor + "",
+        syncMasterTime: false,
+        bufferingTime: 200
+    });
+
+    // Video 1 View
+    var videoView = new OSH.UI.View.MjpegView("",
+        [
+            {
+                name: "video view item",
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [androidPhoneVideoDataSource.id],
+                        handler: function (rec, timestamp, options) {
+                            return rec;
+                        }
+                    }
+                })
+            }
+        ]
+        , {
+            css: "video-mjpeg",
+            name: "Android Video",
+            keepRatio: true
+        });
+
+    var dialog = new OSH.UI.Panel.DialogPanel("dialog-container",{
+        title: "Non modal 1",
+        swapContainerId:"swap-container",
+        pinContainerId: "swap-container",
+        destroyOnClose:true,
+        modal:false,
+        css:"dialog-test",
+        keepRatio: true
+    });
+
+    videoView.attachToElement(dialog.contentElt);
+
+    var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor: 3
+    });
+
+    // We can add a group of dataSources and set the options
+    dataProviderController.addDataSource(androidPhoneVideoDataSource);
+
+    // starts streaming
+    dataProviderController.connectAll();
+
+    var dialog2 = new OSH.UI.Panel.DialogPanel("dialog-container",{
+        title: "Non modal 2",
+        swapContainerId:"swap-container",
+        pinContainerId: "swap-container",
+        destroyOnClose:true,
+        modal:false,
+        css:"dialog-test",
+        keepRatio: false
+    });
+
+    var fakeContentElt = document.createElement("div");
+    fakeContentElt.setAttribute("class","fake-content");
+
+    dialog2.contentElt.appendChild(fakeContentElt);
+</script>
+
+</body>
+</html>

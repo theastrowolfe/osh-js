@@ -432,10 +432,6 @@ input[type="color"] {
     top: 0;
 }
 
-.osh.view.keep-ratio-w {
-    height: auto !important;
-}
-
 .osh.view.keep-ratio-w.video > canvas {
     width:100%;
     height:auto;

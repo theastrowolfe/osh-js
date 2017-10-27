@@ -47,7 +47,7 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
         this.innerElementDiv.appendChild(this.contentElt);
         this.innerElementDiv.appendChild(this.footerElt);
 
-        this.initDragAndDrop(this.innerElementDiv);
+        this.initDragAndDrop(this.innerElementDiv,this.parentElementDiv);
 
         this.updateProperties(this.options);
     },
@@ -147,6 +147,13 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
             } else if(isUndefinedOrNull(this.modal)) {
                 this.modal = false; // default value
             }
+
+            // checks ratio
+            if (!isUndefined(properties.keepRatio)) {
+                this.keepRatio = properties.keepRatio;
+            } else {
+                this.keepRatio = false;
+            }
         }
 
         this.minimized = false;
@@ -210,6 +217,18 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
 
         if((!isUndefinedOrNull(this.closeable) && this.closeable) && isUndefinedOrNull(this.headerTrElt.closeable)) {
             this.headerTrElt.closeable = this.addCloseIcon(this.headerTrElt);
+        }
+
+        if(this.keepRatio) {
+            this.contentElt.style.overflow = "hidden";
+
+            var style = window.getComputedStyle(this.innerElementDiv);
+            var height = style.getPropertyValue("height");
+
+            if(!isUndefinedOrNull(height)) {
+                this.innerElementDiv.style.height = "initial";
+                this.innerElementDiv.style.minHeight = height;
+            }
         }
 
         this.setModal(this.modal);
@@ -348,14 +367,14 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
      * @instance
      * @memberof OSH.UI.Panel.DialogPanel
      */
-    initDragAndDrop: function (element) {
+    initDragAndDrop: function (element,parentElement) {
         this.interact = interact(element)
             .draggable({
                 // enable inertial throwing
                 inertia: true,
                 // keep the element within the area of it's parent
                 restrict: {
-                    restriction: "parent",
+                    restriction: parentElement,
                     endOnly: false,
                     elementRect: {top: 0, left: 0, bottom: 1, right: 1}
                 },
@@ -512,6 +531,10 @@ OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
 
          // applies saved position
          secondRemovedElt.style.position = this.swap.position;*/
+    },
+
+    pinAuto:function() {
+        this.pinHandler();
     },
 
     /**

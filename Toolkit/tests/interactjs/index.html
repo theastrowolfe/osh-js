@@ -105,19 +105,31 @@
             height: 100%;
         }
 
+        .dialog-test {
+            width:350px;
+            height:250px;
+        }
+
         /** DIALOG CSS **/
         .osh.dialog {
+            color: #000000;
+            position:absolute;
+            top:0;
+            left:0;
             width: 100%;
             height: 100%;
         }
 
-        .osh.dialog {
-            width: 290px;
-            height: 300px;
+        .osh.dialog .fa, .osh.dialog label {
+            color: #000000;
+        }
+
+        .osh.dialog .dialog-inner {
+            position:fixed;
             background-color: #29e;
             color: white;
             box-sizing: border-box;
-            background: radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75));
+            background: radial-gradient(rgba(161, 222, 240, 0.9), rgba(64, 129, 147, 0.9));
             border: 1px solid #bbbbbb;
             border-radius: 6px;
             box-shadow: 3px -4px 7px 0px rgba(0, 0, 0, 0.54);
@@ -130,7 +142,6 @@
 
         .osh.dialog .dialog-header {
             height: 25px;
-            background: red;
             border-top-left-radius: 6px;
             border-top-right-radius: 6px;
             padding-right:5px;
@@ -151,20 +162,17 @@
         }
 
         .osh.dialog .dialog-content {
-            background: yellow;
-            height: calc(100% - 50px); /* 25px of the header + 25px of the footer*/
+            height: calc(100% - 50px);
             overflow: auto;
-            flex: 1 auto;
+            min-height: inherit;
+            width: calc(100% - 0px);
+            flex:1 auto;
         }
 
-        .osh.dialog .dialog-content div {
-            height:100%;
-            width:100%;
+        .osh.dialog .dialog-content > div {
         }
 
         .osh.dialog .dialog-footer {
-            min-height: 25px;
-            background: black;
             border-bottom-left-radius: 6px;
             border-bottom-right-radius: 6px;
             flex:2;
@@ -188,7 +196,8 @@
 
 
         .osh.dialog .minimized {
-            height: 25px !important;
+            height: 32px !important;
+            min-height: 32px !important;
             transition: height 0.25s ease-out;
             -webkit-transition: height 0.25s ease-out;
             -moz-transition: height 0.25s ease-out;
@@ -221,10 +230,8 @@
             background: rgba(0,0,0,0.6);
             z-index: 99999;
             opacity: 1;
-        }
-
-        .modal-allow {
-            pointer-events: auto;
+            height: 100%;
+            width: 100%;
         }
 
         /** ICON**/
@@ -291,9 +298,7 @@
         },
 
         initPanel: function () {
-            // adds OSH css
             OSH.Utils.addCss(this.elementDiv, "dialog");
-
             // creates header
             this.headerElt = this.createHeader();
 
@@ -305,11 +310,17 @@
 
             this.parentElementDiv = this.elementDiv.parentNode;
 
-            this.elementDiv.appendChild(this.headerElt);
-            this.elementDiv.appendChild(this.contentElt);
-            this.elementDiv.appendChild(this.footerElt);
+            // creates inner
+            this.innerElementDiv = document.createElement("div");
+            this.innerElementDiv.setAttribute("class","dialog-inner "+this.options.css);
 
-            this.initDragAndDrop(this.elementDiv);
+            this.elementDiv.appendChild(this.innerElementDiv);
+
+            this.innerElementDiv.appendChild(this.headerElt);
+            this.innerElementDiv.appendChild(this.contentElt);
+            this.innerElementDiv.appendChild(this.footerElt);
+
+            this.initDragAndDrop(this.innerElementDiv);
 
             this.updateProperties(this.options);
         },
@@ -587,7 +598,8 @@
          */
         createContent: function () {
             var dialogContentElt = document.createElement("div");
-            dialogContentElt.setAttribute("class", "dialog-content");
+            dialogContentElt.setAttribute("class", "dialog-content ");
+            dialogContentElt.setAttribute("id", "dialog-content-id-"+OSH.Utils.randomUUID());
 
             return dialogContentElt;
         },
@@ -693,9 +705,7 @@
          * @memberof OSH.UI.Panel.DialogPanel
          */
         pinHandler:function() {
-            var parentId = this.elementDiv.parentNode.id;
-
-            if(parentId === this.pin.containerId) {
+            if(this.pinned) {
                 // unpin: dialog -> original container
                 this.unpin();
             } else {
@@ -806,6 +816,7 @@
                 this.interact.target.style.position = "relative";
 
                 OSH.Utils.addCss(this.headerTrElt.pin, "icon-selected");
+                this.pinned = true;
             }
         },
 
@@ -835,6 +846,7 @@
                 this.interact.target.style.position = this.pin.position;
 
                 OSH.Utils.removeCss(this.headerTrElt.pin, "icon-selected");
+                this.pinned = false;
             }
         },
 
@@ -844,7 +856,7 @@
          * @memberof OSH.UI.Panel.DialogPanel
          */
         minimize:function() {
-            OSH.Utils.addCss(this.elementDiv,"minimized");
+            OSH.Utils.addCss(this.innerElementDiv,"minimized");
             OSH.Utils.addCss(this.contentElt,"hide");
             OSH.Utils.addCss(this.footerElt,"hide");
 
@@ -859,7 +871,7 @@
          * @memberof OSH.UI.Panel.DialogPanel
          */
         restore:function() {
-            OSH.Utils.removeCss(this.elementDiv,"minimized");
+            OSH.Utils.removeCss(this.innerElementDiv,"minimized");
             OSH.Utils.removeCss(this.contentElt,"hide");
             OSH.Utils.removeCss(this.footerElt,"hide");
 
@@ -881,7 +893,7 @@
          */
         close: function () {
             if(this.destroyOnClose) {
-                this.parentElementDiv.removeChild(this.elementDiv);
+                this.elementDiv.parentNode.removeChild(this.elementDiv);
             } else {
                 this.setVisible(false);
             }
@@ -908,7 +920,9 @@
         swapContainerId:"swap-container",
         pinContainerId: "swap-container",
         destroyOnClose:true,
-        modal:false
+        modal:false,
+        css:"dialog-test"
+
     });
 
     // test for swapping
@@ -967,8 +981,9 @@
         draggable:false,
         resizable:false,
         closeable:true,
-        modal:true,
-        connectionIds:[androidPhoneVideoDataSource.id]
+        modal:false,
+        connectionIds:[androidPhoneVideoDataSource.id],
+        css:"dialog-test"
     });
 
     // Video 1 View

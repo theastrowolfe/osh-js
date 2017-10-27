@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- VENDOR -->
+    <script type="text/javascript" src="../../vendor/interact.js/dist/interact.min.js"></script>
+
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-Template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    <script type="text/javascript" src="../../src/osh/helper/osh-HtmlHelper.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-BaseClass.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/exception/osh-Exception.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-Asserts.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-EventMap.js"></script>
+    <script type="text/javascript" src="../../src/osh/osh-EventManager.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-HttpAjaxConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSource.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiverController.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/datareceiver/osh-DataReceiver-DataSourceVideoMjpeg.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/panel/osh-UI-Panel.js"></script>
+
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-VideoView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/video/osh-UI-FFMPEGView.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../src/css/osh-common.css"/>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerVideo.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .fake-content {
+            height: 800px;
+            width: 100%;
+        }
+
+        .dialog-container {
+            background: blue;
+            height: 75%;
+            width: 75%;
+        }
+
+        /** GENERIC**/
+        .dialog {
+            background: red;
+            width: 300px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: yellow;
+            height: 25px;
+            width: 100%;
+        }
+
+        .content {
+            background: green;
+            width: 100%;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .content > .keep-ratio-w {
+            overflow: hidden;
+        }
+
+        .footer {
+            background: grey;
+            height: 25px;
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body id="body">
+<div id="dialog-container" class="dialog-container">
+    <div id="dialog1" class="dialog">
+        <div class="header"></div>
+        <div id="content" class="content">
+            <div class="osh panel video-mjpeg view keep-ratio-w video">
+                <img src="https://image.freepik.com/photos-libre/texture-de-l-39-horizon_1088-693.jpg"/>
+            </div>
+        </div>
+        <div class="footer"></div>
+    </div>
+
+    <div id="dialog2" class="dialog">
+        <div class="header"></div>
+        <div class="content">
+            <div class="fake-content"></div>
+        </div>
+        <div class="footer"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function makeItDraggable(elementId) {
+        OSH.Helper.HtmlHelper.onDomReady(function () {
+            // drag & drop
+            interact(document.getElementById(elementId))
+                .draggable({
+                    // enable inertial throwing
+                    inertia: true,
+                    // keep the element within the area of it's parent
+                    restrict: {
+                        restriction: "parent",
+                        endOnly: false,
+                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+                    },
+                    // enable autoScroll
+                    autoScroll: true,
+
+                    // call this function on every dragmove event
+                    onmove: dragMoveListener,
+                    // call this function on every dragend event
+                    onend: function (event) {
+                    }
+                })
+                .resizable({
+                    preserveAspectRatio: true,
+                    edges: {left: true, right: true, bottom: true, top: true},
+                    margin: 10
+                })
+                .on('resizemove', function (event) {
+                    var target = event.target,
+                        x = (parseFloat(target.getAttribute('data-x')) || 0),
+                        y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                    // update the element's style
+                    target.style.width = event.rect.width + 'px';
+                    target.style.height = event.rect.height + 'px';
+
+                    // translate when resizing from top or left edges
+                    x += event.deltaRect.left;
+                    y += event.deltaRect.top;
+
+                    target.style.webkitTransform = target.style.transform =
+                        'translate(' + x + 'px,' + y + 'px)';
+
+                    target.setAttribute('data-x', x);
+                    target.setAttribute('data-y', y);
+                });
+
+            function dragMoveListener(event) {
+                var target = event.target,
+                    // keep the dragged position in the data-x/data-y attributes
+                    x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                    y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                target.style.webkitTransform =
+                    target.style.transform =
+                        'translate(' + x + 'px, ' + y + 'px)';
+
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            }
+
+            // this is used later in the resizing and gesture demos
+            window.dragMoveListener = dragMoveListener;
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    /*var replayFactor = 3;
+
+    //---------- DATASOURCE ------------//
+    var androidPhoneVideoDataSource = new OSH.DataReceiver.VideoMjpeg("android-Video", {
+        protocol: "ws",
+        service: "SOS",
+        endpointUrl: "sensiasoft.net:8181/sensorhub/sos",
+        offeringID: "urn:android:device:060693280a28e015-sos",
+        observedProperty: "http://sensorml.com/ont/swe/property/VideoFrame",
+        startTime: "2015-02-16T07:58:00Z",
+        endTime: "2015-02-16T07:58:10Z",
+        replaySpeed: replayFactor + "",
+        syncMasterTime: false,
+        bufferingTime: 200
+    });
+
+    //--------- END DATASOURCE ----------//
+
+    // Video 1 View
+    var videoView = new OSH.UI.View.MjpegView("content",
+        [
+            {
+                name: "video view item",
+                styler: new OSH.UI.Styler.Video({
+                    frameFunc: {
+                        dataSourceIds: [androidPhoneVideoDataSource.id],
+                        handler: function (rec, timestamp, options) {
+                            return rec;
+                        }
+                    }
+                })
+            }
+        ]
+        , {
+            css: "video-mjpeg",
+            //cssSelected: "video-selecteddd",
+            name: "Android Video",
+            keepRatio: true
+        });
+
+
+    var dataProviderController = new OSH.DataReceiver.DataReceiverController({
+        replayFactor: 3
+    });
+
+    // We can add a group of dataSources and set the options
+    dataProviderController.addDataSource(androidPhoneVideoDataSource);
+
+    // starts streaming
+    dataProviderController.connectAll();*/
+
+
+    makeItDraggable("dialog1");
+    makeItDraggable("dialog2");
+
+    var dialog1 = document.getElementById("dialog1");
+
+    OSH.Helper.HtmlHelper.onDomReady(function(){
+        /*var style = window.getComputedStyle(dialog1);
+        var height = style.getPropertyValue("height");
+
+        style.minHeight = height;
+        style.height = "initial";
+        console.log(style);
+        console.log(height);*/
+
+        var style = window.getComputedStyle(dialog1);
+        var height = style.getPropertyValue("height");
+
+        dialog1.style.height = "initial";
+        dialog1.style.minHeight = height;
+
+        document.getElementById("content").style.overflow = "hidden";
+    });
+</script>
+
+</body>
+</html>

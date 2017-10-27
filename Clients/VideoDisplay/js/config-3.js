@@ -105,6 +105,12 @@ function init() {
         closeable: false
     });
 
+    // pin by default all dialog
+    videoDialog.pinAuto();
+    videoDialog2.pinAuto();
+    leafletMapDialog.pinAuto();
+    cesiumMapDialog.pinAuto();
+
     // Video 1 View
     var videoView = new OSH.UI.View.MjpegView("", [
         {
@@ -465,8 +471,8 @@ function init() {
 }
 
 function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
-    var ptzDialog = new OSH.UI.Panel.MultiDialogPanel(containerDivId, {
-        draggable: false,
+    var ptzDialog = new OSH.UI.Panel.MultiDialogPanel("", {
+        draggable: true,
         css: "dialog-view",
         title: title,
         show:false,
@@ -480,17 +486,17 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
     var ptzView = new OSH.UI.View.PtzTaskingView();
 
     // by default the view is hidden because no div id has been defined
-   // ptzDialog.appendView(ptzView.divId);
+    ptzDialog.appendView(ptzView.divId);
 
     return ptzDialog;
 
 }
 
 function createDialog(containerDivId,dataSources,title,defaultShow,keepRatio) {
-    return new OSH.UI.Panel.DialogPanel(containerDivId, {
-        draggable: false,
+    return new OSH.UI.Panel.DialogPanel("", {
+        draggable: true,
         css: "dialog-view",
-        name: title,
+        title: title,
         show:false,
         pinContainerId: containerDivId,
         closeable: true,
