@@ -49,14 +49,13 @@ p {
 
 .dialog-discovery {
     width:430px;
-    height:545px;
+    height:525px;
     margin-bottom:10px;
 }
 
 .dialog-edit-view {
     width:430px;
     height:500px;
-    margin-bottom:10px;
 }
 
 .osh.dialog .app-dialog {
@@ -70,13 +69,27 @@ p {
 #dialog-container {
     position: absolute;
     width: 100%;
-    padding-left: 50px;
+    height:100%;
 }
 
+#pin-container {
+    position: absolute;
+    width: 100%;
+    height:100%;
+    padding-left: 50px;
+}
 
 #map-container {
     height:calc(100% - 19px);
     margin-top: 38px;
+}
+
+.osh .entity-editor {
+    height:calc(100% - 32px);
+}
+
+.osh.dialog .dialog-entity .dialog-content > div.osh.panel {
+    height:inherit;
 }
 
 /** Circle menu **/
@@ -98,10 +111,8 @@ p {
 }
 
 .osh.dialog .dialog-edit-view .tab-panel .show-tab {
-    max-height: 315px;
     overflow: auto;
 }
-
 
 /** leaflet **/
 .leaflet-top {
@@ -128,3 +139,4 @@ p {
     padding-right: 15px;
     height: 100%;
 }
+
