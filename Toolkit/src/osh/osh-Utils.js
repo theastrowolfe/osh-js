@@ -597,3 +597,11 @@ OSH.Utils.getSomeParentTheClass = function(element, classname) {
     if (element.className.split(' ').indexOf(classname)>=0) return element;
     return element.parentNode && OSH.Utils.getSomeParentTheClass(element.parentNode, classname);
 };
+
+OSH.Utils.getObjectById = function(objectId, callbackFn) {
+    OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId, function (event) {
+        OSH.EventManager.remove(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId);
+        callbackFn(event);
+    });
+    OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT + "-" + objectId);
+};
