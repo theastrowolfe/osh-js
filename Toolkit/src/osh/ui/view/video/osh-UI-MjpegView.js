@@ -73,6 +73,9 @@ OSH.UI.View.MjpegView = OSH.UI.View.VideoView.extend({
         var oldBlobURL = this.imgTag.src;
         this.imgTag.src = styler.frame;
         window.URL.revokeObjectURL(oldBlobURL);
+
+        this.updateStatistics();
+        this.onAfterDecoded();
     },
 
     /**
