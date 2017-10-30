@@ -1,0 +1,56 @@
+.osh.dialog  .dialog-extra{
+    margin-top: 15px;
+    margin-left: 5px;
+    z-index: 15;
+}
+
+.osh.dialog  .dialog-extra-content {
+    padding: 0 0 0 15px;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox] {
+    display:none;
+}
+
+.osh.dialog  .dialog-extra  > input[type=checkbox] +  label {
+    margin-bottom: 0px;
+}
+
+.osh.dialog  .dialog-extra  > input[type=checkbox] +  label:hover {
+    color: #057fa9;
+    cursor:pointer;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox] +  label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f196";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox]:checked + label > i:before {
+    display:inline-block;
+    font-family: FontAwesome;
+    content:"\f147";
+    height: 16px;
+    width: 16px;
+    padding: 0 0 0 0px;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox] + label + .dialog-extra-content {
+    display:none;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox]:checked + label + .dialog-extra-content {
+    display:block;
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox]:checked + label + .dialog-extra-content {
+
+}
+
+.osh.dialog  .dialog-extra > input[type=checkbox]:checked + label + .dialog-extra-content > li:first-child {
+    border-bottom: 1px solid #eee;
+}

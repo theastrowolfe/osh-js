@@ -17,14 +17,16 @@
             background:radial-gradient(rgba(161, 222, 240, 0.75), rgba(64, 129, 147, 0.75)), url(http://i.imgur.com/3JZchqt.png), url(http://i.imgur.com/9kxBTzr.jpg);
         }
 
-        #multiDialogId .dialog {
+        #multiDialogId .multi-dialog {
             width: 330px;
+            height:220px;
         }
 
-        #multiDialogId  .osh.dialog .pop-extra {
-            margin-top: 0;
+        /** Because it is too small, we need to overflow extra content **/
+        #multiDialogId .multi-dialog .dialog-extra-content {
+            height: 85px;
+            overflow: auto;
         }
-
     </style>
     <script>
         var replayFactor = 2;
@@ -68,8 +70,8 @@
 
         var videoDialog    =  new OSH.UI.Panel.MultiDialogPanel("multiDialogContainer", {
             draggable: true,
-            css: "dialog",
-            name: "Multi dialog",
+            css: "multi-dialog",
+            title: "Multi dialog",
             show:true,
             closeable: true,
             connectionIds : [androidPhoneVideoDataSource.id],
@@ -77,11 +79,12 @@
         });
 
         // attach the leaflet view to the dialog
-        videoView.attachTo(videoDialog.popContentDiv.id);
+        videoView.attachToElement(videoDialog.contentElt);
 
         var ptzView = new OSH.UI.View.PtzTaskingView("",{});
 
         videoDialog.appendView(ptzView.divId);
+        ptzView.setVisible(true);
 
         //---------------------------------------------------------------//
         //--------------------- Creates DataProvider --------------------//

@@ -29,10 +29,58 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
 
     initPanel: function () {
         this._super();
+
+        // creates extra
+        this.extraElt = this.createExtra();
+
+        this.innerElementDiv.insertChildAtIndex(this.extraElt,2);
+
     },
 
-    appendView:function(parentElement,properties) {
+    createExtra:function() {
+        var extraElt = document.createElement("div");
+        extraElt.setAttribute("class", "dialog-extra");
 
+        var inputExtraElt = document.createElement("input");
+        inputExtraElt.setAttribute("type","checkbox");
+        inputExtraElt.setAttribute("name","dialog-extra-input");
+        inputExtraElt.setAttribute("id","dialog-extra-input");
+
+        var labelExtraElt = document.createElement("label");
+        labelExtraElt.setAttribute("for","dialog-extra-input");
+        var iExtraElt = document.createElement("i");
+        iExtraElt.setAttribute("class","fa fa-fw icon-extra");
+
+        labelExtraElt.appendChild(iExtraElt);
+
+        var extraContentElt = document.createElement("div");
+        extraContentElt.setAttribute("class","dialog-extra-content");
+
+        extraElt.appendChild(inputExtraElt);
+        extraElt.appendChild(labelExtraElt);
+        extraElt.appendChild(extraContentElt);
+
+        return extraElt;
+    },
+
+    minimize:function() {
+        this._super();
+        OSH.Utils.addCss(this.extraElt,"hide");
+    },
+
+    restore:function() {
+        this._super();
+        OSH.Utils.removeCss(this.extraElt,"hide");
+    },
+
+    appendView:function(elementId,properties) {
+        var extraEltContent = this.extraElt.querySelector(".dialog-extra-content");
+        var element = document.getElementById(elementId);
+
+        OSH.Asserts.checkIsDefineOrNotNull(extraEltContent);
+        OSH.Asserts.checkIsDefineOrNotNull(elementId);
+
+        extraEltContent.appendChild(element);
     }
     /*initialize:function(parentElementDivId, options) {
         this._super(parentElementDivId,options);
