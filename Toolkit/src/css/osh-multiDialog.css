@@ -2,6 +2,7 @@
     margin-top: 15px;
     margin-left: 5px;
     z-index: 15;
+    overflow: auto;
 }
 
 .osh.dialog  .dialog-extra-content {
