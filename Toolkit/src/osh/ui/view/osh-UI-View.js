@@ -394,13 +394,6 @@ OSH.UI.View = OSH.UI.Panel.extend({
        /* OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
             this.updateViewItem(event.viewItem);
         }.bind(this));*/
-
-        var self = this;
-        OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT+"-"+this.divId,function(event){
-            OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,{
-                object: self
-            });
-        }.bind(this));
     },
 
     selectDataView:function() {},

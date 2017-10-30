@@ -106,7 +106,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         for(var key in viewList) {
             var currentViewDiv = viewList[key];
-            OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+            OSH.Utils.getObjectById(currentViewDiv.id,function(event){
                 var option = document.createElement("option");
                 option.text = event.object.name;
                 option.value = event.object.name;
@@ -131,11 +131,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                 if(addView) {
                     self.addView(option.properties);
                 }
-
-                OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
             });
-
-            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
         }
     },
 
@@ -323,22 +319,9 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                         //TODO: dupplicated values, should only handle 1 property
                         this.views[i].name = viewProperties.name;
                         this.views[i].options.name = viewProperties.name;
-                        // updates dialog name
+                        // updates dialog properties
                         if (this.views[i].hash !== 0x0000 && !isUndefinedOrNull(this.views[i].dialog)) { // this is not an existing view
-                            var parentDialogElt = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv, "dialog");
-                            var spanElt = parentDialogElt.querySelector(".header").querySelector("span");
-                            if (!isUndefinedOrNull(spanElt)) {
-                                spanElt.innerHTML = viewProperties.name;
-                            }
-                            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
-                                var popOverElt = parentDialogElt.querySelector(".pop-over");
-                                var containsKeepRatio = OSH.Utils.containsCss(popOverElt,"keep-ratio-w");
-                                if(containsKeepRatio && !viewProperties.keepRatio) {
-                                    OSH.Utils.removeCss(popOverElt,"keep-ratio-w");
-                                } else if(!containsKeepRatio && viewProperties.keepRatio) {
-                                    OSH.Utils.addCss(popOverElt,"keep-ratio-w");
-                                }
-                            }
+                            this.updateDialog(this.views[i],viewProperties);
                         }
                     }
 
@@ -355,6 +338,25 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         }.bind(this);
 
+    },
+
+    updateDialog:function(view, viewProperties) {
+        var parentDialog = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv,"dialog");
+        OSH.Asserts.checkIsDefineOrNotNull(parentDialog);
+
+        OSH.Utils.getObjectById(parentDialog.id,function(event){
+            OSH.Asserts.checkTrue(event.object instanceof OSH.UI.Panel.DialogPanel,"The class should be a dialog panel and is "+event.object);
+
+            var properties = {
+                title: viewProperties.name
+            };
+
+            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
+                properties.keepRatio = viewProperties.keepRatio;
+            }
+
+            event.object.updateProperties(properties);
+        });
     },
 
     deleteHandler:function(lineElt,viewInstance) {

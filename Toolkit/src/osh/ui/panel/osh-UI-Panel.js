@@ -235,6 +235,12 @@ OSH.UI.Panel = BaseClass.extend({
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
             self.onResize();
         });
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,function(event){
+            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT+"-"+self.divId,{
+                object: self
+            });
+        });
     },
 
     setVisible:function(isVisible) {
