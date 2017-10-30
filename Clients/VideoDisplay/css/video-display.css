@@ -48,7 +48,6 @@ p {
 .main-view {
     height: calc(100% - 123px);
     overflow:auto;
-    text-align:center;
     background-color:#000000;
     margin-top: 38px;
 }

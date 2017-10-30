@@ -486,7 +486,7 @@ function createPtzDialog(containerDivId,dataSources,title,defaultShow) {
     var ptzView = new OSH.UI.View.PtzTaskingView();
 
     // by default the view is hidden because no div id has been defined
-    ptzDialog.appendView(ptzView.divId);
+    ptzDialog.appendView(ptzView);
 
     return ptzDialog;
 
