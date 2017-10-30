@@ -1,4 +1,4 @@
-.ptz {
+.osh .ptz {
     height: 164px;
     width: 164px;
     overflow: hidden;
@@ -6,7 +6,7 @@
     position: relative;
 }
 
-.ptz .moveUp {
+.osh .ptz .moveUp {
     width: 22px;
     height: 12px;
     position: absolute;
@@ -16,7 +16,7 @@
     background: url(../images/tasking/fxp_r2_c5a.gif) 0px no-repeat;
 }
 
-.ptz .moveTopLeft {
+.osh .ptz .moveTopLeft {
     width: 13px;
     height: 12px;
     position: absolute;
@@ -26,7 +26,7 @@
     background: url(../images/tasking/fxp_r3_c3.gif) 0px no-repeat;
 }
 
-.ptz .moveTopRight {
+.osh .ptz .moveTopRight {
     background: url(../images/tasking/fxp_r3_c7.gif) no-repeat;
     width: 13px;
     height: 12px;
@@ -35,7 +35,7 @@
     top: 42px;
 }
 
-.ptz .moveLeft {
+.osh .ptz .moveLeft {
     background: url(../images/tasking/fxp_r5_c2.gif) no-repeat;
     width: 12px;
     height: 22px;
@@ -44,7 +44,7 @@
     top: 70px;
 }
 
-.ptz .reset {
+.osh .ptz .reset {
     width: 55px;
     height: 55px;
     position: absolute;
@@ -54,7 +54,7 @@
     background: url(../images/tasking/fxp_r5_c5.png) 0px no-repeat;
 }
 
-.ptz .moveRight {
+.osh .ptz .moveRight {
     width: 12px;
     height: 22px;
     position: absolute;
@@ -64,7 +64,7 @@
     background: url(../images/tasking/fxp_r5_c8.gif) 0px no-repeat;
 }
 
-.ptz .moveBottomLeft {
+.osh .ptz .moveBottomLeft {
     width: 12px;
     height: 13px;
     position: absolute;
@@ -74,7 +74,7 @@
     background: url(../images/tasking/fxp_r7_c3.gif) 0px no-repeat;
 }
 
-.ptz .moveBottomRight {
+.osh .ptz .moveBottomRight {
     background: url(../images/tasking/fxp_r7_c7.gif) -24px no-repeat;
     width: 13px;
     height: 12px;
@@ -83,7 +83,7 @@
     top: 110px;
 }
 
-.ptz .moveDown {
+.osh .ptz .moveDown {
     background: url(../images/tasking/fxp_r8_c5.gif) no-repeat;
     width: 22px;
     height: 12px;
@@ -93,91 +93,91 @@
 }
 
 /** HOVER  + active PART **/
-.ptz .moveUp:hover {
+.osh .ptz .moveUp:hover {
     background: url(../images/tasking/fxp_r2_c5a.gif) -22px no-repeat;
 }
-.ptz .moveUp:active {
+.osh .ptz .moveUp:active {
     background: url(../images/tasking/fxp_r2_c5a.gif) -44px no-repeat;
 }
 
-.ptz .moveDown:hover {
+.osh .ptz .moveDown:hover {
     background: url(../images/tasking/fxp_r8_c5.gif) -22px no-repeat;
 }
 
-.ptz .moveDown:active {
+.osh .ptz .moveDown:active {
     background: url(../images/tasking/fxp_r8_c5.gif) -44px no-repeat;
 }
 
-.ptz .moveRight:hover {
+.osh .ptz .moveRight:hover {
     background: url(../images/tasking/fxp_r5_c8.gif) -11px no-repeat;
 }
 
-.ptz .moveRight:active {
+.osh .ptz .moveRight:active {
     background: url(../images/tasking/fxp_r5_c8.gif) -23px no-repeat;
 }
 
-.ptz .moveLeft:hover {
+.osh .ptz .moveLeft:hover {
     background: url(../images/tasking/fxp_r5_c2.gif) -12px no-repeat;
 }
 
-.ptz .moveLeft:active {
+.osh .ptz .moveLeft:active {
     background: url(../images/tasking/fxp_r5_c2.gif) -24px no-repeat;
 }
 
-.ptz .moveTopLeft:hover {
+.osh .ptz .moveTopLeft:hover {
     background: url(../images/tasking/fxp_r3_c3.gif) -13px no-repeat;
 }
 
-.ptz .moveTopLeft:active {
+.osh .ptz .moveTopLeft:active {
     background: url(../images/tasking/fxp_r3_c3.gif) -26px no-repeat;
 }
 
-.ptz .moveTopRight:hover {
+.osh .ptz .moveTopRight:hover {
     background: url(../images/tasking/fxp_r3_c7.gif) -13px no-repeat;
 }
 
-.ptz .moveTopRight:active {
+.osh .ptz .moveTopRight:active {
     background: url(../images/tasking/fxp_r3_c7.gif) -26px no-repeat;
 }
 
-.ptz .moveBottomLeft:hover {
+.osh .ptz .moveBottomLeft:hover {
     background: url(../images/tasking/fxp_r7_c3.gif) -11px no-repeat;
 }
 
-.ptz .moveBottomLeft:active {
+.osh .ptz .moveBottomLeft:active {
     background: url(../images/tasking/fxp_r7_c3.gif) -24px no-repeat;
 }
 
-.ptz .moveBottomRight:hover {
+.osh .ptz .moveBottomRight:hover {
     background: url(../images/tasking/fxp_r7_c7.gif) -12px no-repeat;
 }
 
-.ptz .moveBottomRight:active {
+.osh .ptz .moveBottomRight:active {
     background: url(../images/tasking/fxp_r7_c7.gif) -0px no-repeat;
 }
 
-.ptz .reset:hover {
+.osh .ptz .reset:hover {
     background: url(../images/tasking/fxp_r5_c5.png) -54px no-repeat;
 }
-.ptz .reset:active {
+.osh .ptz .reset:active {
     background: url(../images/tasking/fxp_r5_c5.png) -109px no-repeat;
 }
 
-.ptz{
+.osh .ptz{
     width:165px;
     height:165px;
     float:left;
     margin-bottom: 20px;
 }
 
-.ptz-right {
+.osh .ptz-right {
     height:165px;
     width:200px;
     margin-left: 25px;
     float:left;
 }
 
-.ptz-right .ptz-select-style {
+.osh .ptz-right .ptz-select-style {
     padding: 0;
     margin: 0;
     border: 1px solid #ccc;
@@ -187,7 +187,7 @@
     position: relative;
 }
 
-.ptz-right .ptz-select-style:before {
+.osh .ptz-right .ptz-select-style:before {
     font-family: FontAwesome;
     content: "\f0d7";
     font-size: 25px;
@@ -199,7 +199,7 @@
     top:0px;
 }
 
-.ptz-right .ptz-select-style select {
+.osh .ptz-right .ptz-select-style select {
     padding: 4px 8px;
     width: 100%;
     background-color: transparent;
@@ -212,100 +212,93 @@
     border-radius: 2px;
 }
 
-.ptz-right .ptz-select-style select:focus {
+.osh .ptz-right .ptz-select-style select:focus {
     outline: none;
 }
 
 /** Form **/
-.ptz-right:-moz-placeholder {
+.osh .ptz-right:-moz-placeholder {
     color: #777;
 }
 
-.ptz-right::-webkit-input-placeholder {
+.osh .ptz-right::-webkit-input-placeholder {
     color: #777;
 }
 
-.ptz-right*:focus {outline: none;}
+.osh .ptz-right*:focus {outline: none;}
 
-.ptz-right ul {
+.osh .ptz-right ul {
     list-style-type:none;
     list-style-position:outside;
     margin:0px;
     padding:0px;
 }
-.ptz-right li{
+.osh .ptz-right li{
     padding:0px 0px 8px 0px;
     border-bottom:1px solid #eee;
     position:relative;
 }
 
-.ptz-right li:first-child, .ptz-right li:last-child {
+.osh .ptz-right li:first-child, .ptz-right li:last-child {
     border-bottom:1px solid #777;
 }
 
-.ptz-right label {
-    width: 60px;
+.osh .ptz-right > ul > li > label {
+    width : 65px;
     margin-top: 3px;
     display: inline-block;
     float: left;
     padding: 3px;
 }
 
-.ptz-right .input-text, .ptz-right select {
+.osh .ptz-right .input-text, .ptz-right select {
     border:1px solid #aaa;
     box-shadow: 0px 0px 3px #ccc, 0 10px 15px #eee inset;
     border-radius:2px;
 }
-.ptz-right .input-text:focus, .ptz-right select:focus {
+.osh .ptz-right .input-text:focus, .ptz-right select:focus {
     background: #fff;
     border:1px solid #555;
     box-shadow: 0 0 3px #aaa;
 }
 
-.discovery-form .input-text, .discovery-form select { /* add this to the already existing style */
-    -moz-transition: padding .25s;
-    -webkit-transition: padding .25s;
-    -o-transition: padding .25s;
-    transition: padding .25s;
-}
-
-.ptz-right select {
+.osh .ptz-right select {
     padding-right: 21px;
 }
 
-.ptz-right select:focus  {
+.osh .ptz-right select:focus  {
     padding-right: 21px;
 }
 
 /** ZOOM Button **/
-.ptz-zoom {
+.osh .ptz-zoom {
     float:left;
     margin-top: 15px;
     margin-right: 15px;
 }
 
-.ptz-zoom .ptz-zoom-in{
+.osh .ptz-zoom .ptz-zoom-in{
     font-size: 2.2em;
     color: #7c7c7c;
     text-shadow: 1px 1px 1px #333333;
 }
 
-.ptz-zoom .fa:hover{
+.osh .ptz-zoom .fa:hover{
     color: #626262;
     text-shadow: 1px 1px 1px #6a6a6a;
 }
 
-.ptz-zoom .fa:active{
+.osh .ptz-zoom .fa:active{
     color: #464646;
 }
 
-.ptz-zoom .ptz-zoom-out{
+.osh .ptz-zoom .ptz-zoom-out{
     font-size: 2.2em;
     color: #7c7c7c;
     text-shadow: 1px 1px 1px #333333;
 }
 
-.ptz-zoom-bar {
+.osh .ptz-zoom-bar {
     background-color: #7c7c7c;
     height: 60px;
     width: 4px;
