@@ -73,13 +73,14 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
         OSH.Utils.removeCss(this.extraElt,"hide");
     },
 
-    appendView:function(elementId,properties) {
+    appendView:function(view,properties) {
         var extraEltContent = this.extraElt.querySelector(".dialog-extra-content");
-        var element = document.getElementById(elementId);
 
         OSH.Asserts.checkIsDefineOrNotNull(extraEltContent);
-        OSH.Asserts.checkIsDefineOrNotNull(elementId);
+        OSH.Asserts.checkIsDefineOrNotNull(view);
 
-        extraEltContent.appendChild(element);
+        extraEltContent.appendChild(view.elementDiv);
+
+        view.setVisible(true);
     }
 });

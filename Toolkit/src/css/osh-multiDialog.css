@@ -22,8 +22,6 @@
 }
 
 .osh.dialog  .dialog-extra > input[type=checkbox] +  label > i:before {
-    display:inline-block;
-    font-family: FontAwesome;
     content:"\f196";
     height: 16px;
     width: 16px;
@@ -31,8 +29,6 @@
 }
 
 .osh.dialog  .dialog-extra > input[type=checkbox]:checked + label > i:before {
-    display:inline-block;
-    font-family: FontAwesome;
     content:"\f147";
     height: 16px;
     width: 16px;
