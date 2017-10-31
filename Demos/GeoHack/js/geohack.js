@@ -1,4 +1,4 @@
-window.OSH.BASE_WORKER_URL = "js/sub/workers";
+window.OSH.BASE_WORKER_URL = "js/workers";
 window.CESIUM_BASE_URL = 'vendor/';
 
 OSH.Helper.HtmlHelper.onDomReady (function(){

@@ -1082,6 +1082,14 @@ OSH.Utils.getSomeParentTheClass = function(element, classname) {
     if (element.className.split(' ').indexOf(classname)>=0) return element;
     return element.parentNode && OSH.Utils.getSomeParentTheClass(element.parentNode, classname);
 };
+
+OSH.Utils.getObjectById = function(objectId, callbackFn) {
+    OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId, function (event) {
+        OSH.EventManager.remove(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId);
+        callbackFn(event);
+    });
+    OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT + "-" + objectId);
+};
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -5253,6 +5261,12 @@ OSH.UI.Panel = BaseClass.extend({
         OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
             self.onResize();
         });
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,function(event){
+            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT+"-"+self.divId,{
+                object: self
+            });
+        });
     },
 
     setVisible:function(isVisible) {
@@ -6064,75 +6078,60 @@ OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
 
     initPanel: function () {
         this._super();
-    },
 
-    appendView:function(parentElement,properties) {
+        // creates extra
+        this.extraElt = this.createExtra();
 
-    }
-    /*initialize:function(parentElementDivId, options) {
-        this._super(parentElementDivId,options);
-        // add extra part
-        this.popExtraDiv = document.createElement("div");
-        this.popExtraDiv.setAttribute("class","pop-extra");
-        this.popExtraDiv.setAttribute("id","pop-extra-id-"+OSH.Utils.randomUUID());
-
-        this.flexDiv.appendChild(this.popExtraDiv);
-    },*/
-
-    /**
-     * Appends a new view to the existing dialog.
-     * @param parentElement
-     * @instance
-     * @memberof OSH.UI.MultiDialogPanel
-     */
-    /*appendView:function(parentElement,properties) {
-        //console.log(this.popContentDiv);
-        //remove from parent
-        var divToAdd = document.getElementById(parentElement);
-
-        // check the visibility of the div
-        if(divToAdd.style.display === "none") {
-            divToAdd.style.display = "block";
-        }
-
-
-        var extraDiv = document.createElement("div");
-        extraDiv.setAttribute("class","pop-extra-el");
-
-        var i = document.createElement("i");
-        i.setAttribute("class","fa fa-caret-right pop-extra-collapse fa-2x");
-
-        i.onclick = function() {
-            if(i.className.indexOf("fa-caret-down") == -1){
-                i.className = "fa fa-caret-down pop-extra-show fa-2x";
-            } else {
-                i.className = "fa fa-caret-right pop-extra-collapse fa-2x";
-            }
-        };
-        extraDiv.appendChild(i);
-        extraDiv.appendChild(divToAdd);
-        this.popExtraDiv.appendChild(extraDiv);
+        this.innerElementDiv.insertChildAtIndex(this.extraElt,2);
 
     },
 
-    swap:function() {
-        var currentSwapValue = this.swapped;
+    createExtra:function() {
+        var extraElt = document.createElement("div");
+        extraElt.setAttribute("class", "dialog-extra");
+
+        var inputExtraElt = document.createElement("input");
+        inputExtraElt.setAttribute("type","checkbox");
+        inputExtraElt.setAttribute("name","dialog-extra-input");
+        inputExtraElt.setAttribute("id","dialog-extra-input");
+
+        var labelExtraElt = document.createElement("label");
+        labelExtraElt.setAttribute("for","dialog-extra-input");
+        var iExtraElt = document.createElement("i");
+        iExtraElt.setAttribute("class","fa fa-fw icon-extra");
+
+        labelExtraElt.appendChild(iExtraElt);
+
+        var extraContentElt = document.createElement("div");
+        extraContentElt.setAttribute("class","dialog-extra-content");
+
+        extraElt.appendChild(inputExtraElt);
+        extraElt.appendChild(labelExtraElt);
+        extraElt.appendChild(extraContentElt);
+
+        return extraElt;
+    },
+
+    minimize:function() {
         this._super();
-
-        // hide extra stuff
-        if(!currentSwapValue) {
-            this.popExtraDiv.style.display = "none";
-        } else {
-            this.popExtraDiv.style.display = "block";
-        }
+        OSH.Utils.addCss(this.extraElt,"hide");
     },
 
-    show: function(properties) {
-        this._super(properties);
-        //if(!isUndefinedOrNull(this.divToAdd) && this.divToAdd.style.display === "none") {
-        //   this.divToAdd.style.display = "block";
-        //  }
-    }*/
+    restore:function() {
+        this._super();
+        OSH.Utils.removeCss(this.extraElt,"hide");
+    },
+
+    appendView:function(view,properties) {
+        var extraEltContent = this.extraElt.querySelector(".dialog-extra-content");
+
+        OSH.Asserts.checkIsDefineOrNotNull(extraEltContent);
+        OSH.Asserts.checkIsDefineOrNotNull(view);
+
+        extraEltContent.appendChild(view.elementDiv);
+
+        view.setVisible(true);
+    }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
 
@@ -6334,7 +6333,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         for(var key in viewList) {
             var currentViewDiv = viewList[key];
-            OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+            OSH.Utils.getObjectById(currentViewDiv.id,function(event){
                 var option = document.createElement("option");
                 option.text = event.object.name;
                 option.value = event.object.name;
@@ -6359,11 +6358,7 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                 if(addView) {
                     self.addView(option.properties);
                 }
-
-                OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
             });
-
-            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
         }
     },
 
@@ -6551,22 +6546,9 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
                         //TODO: dupplicated values, should only handle 1 property
                         this.views[i].name = viewProperties.name;
                         this.views[i].options.name = viewProperties.name;
-                        // updates dialog name
+                        // updates dialog properties
                         if (this.views[i].hash !== 0x0000 && !isUndefinedOrNull(this.views[i].dialog)) { // this is not an existing view
-                            var parentDialogElt = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv, "dialog");
-                            var spanElt = parentDialogElt.querySelector(".header").querySelector("span");
-                            if (!isUndefinedOrNull(spanElt)) {
-                                spanElt.innerHTML = viewProperties.name;
-                            }
-                            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
-                                var popOverElt = parentDialogElt.querySelector(".pop-over");
-                                var containsKeepRatio = OSH.Utils.containsCss(popOverElt,"keep-ratio-w");
-                                if(containsKeepRatio && !viewProperties.keepRatio) {
-                                    OSH.Utils.removeCss(popOverElt,"keep-ratio-w");
-                                } else if(!containsKeepRatio && viewProperties.keepRatio) {
-                                    OSH.Utils.addCss(popOverElt,"keep-ratio-w");
-                                }
-                            }
+                            this.updateDialog(this.views[i],viewProperties);
                         }
                     }
 
@@ -6583,6 +6565,25 @@ OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
 
         }.bind(this);
 
+    },
+
+    updateDialog:function(view, viewProperties) {
+        var parentDialog = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv,"dialog");
+        OSH.Asserts.checkIsDefineOrNotNull(parentDialog);
+
+        OSH.Utils.getObjectById(parentDialog.id,function(event){
+            OSH.Asserts.checkTrue(event.object instanceof OSH.UI.Panel.DialogPanel,"The class should be a dialog panel and is "+event.object);
+
+            var properties = {
+                title: viewProperties.name
+            };
+
+            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
+                properties.keepRatio = viewProperties.keepRatio;
+            }
+
+            event.object.updateProperties(properties);
+        });
     },
 
     deleteHandler:function(lineElt,viewInstance) {
@@ -7799,7 +7800,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
         var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
-            name: "Edit Styler",
+            title: "Edit Styler",
             show:true,
             dockable: false,
             closeable: true,
@@ -9433,10 +9434,10 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
             this.properties.frame.datasourceIdx = 0;
         }
 
-        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
+        this.dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
         this.observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Observable", []);
 
-        if(!this.loadObservable(dsListBoxId,this.observableListBoxId)) {
+        if(!this.loadObservable(this.dsListBoxId,this.observableListBoxId)) {
             this.properties.frame.observableIdx = 0;
         }
 
@@ -9444,7 +9445,7 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
         var self = this;
         if(!isUndefinedOrNull(properties)) {
             OSH.Helper.HtmlHelper.onDomReady(function () {
-                var dsTag = document.getElementById(dsListBoxId);
+                var dsTag = document.getElementById(self.dsListBoxId);
 
                 var idx = -1;
                 for(var i=0; i < dsTag.options.length;i++) {
@@ -9482,7 +9483,9 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.observableIdx);
         OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.datasourceIdx);
 
-        var currentDatasource = this.options.datasources[this.properties.frame.datasourceIdx];
+        var dsSelectedIdx = document.getElementById(this.dsListBoxId).options.selectedIndex;
+
+        var currentDatasource = this.options.datasources[dsSelectedIdx];
 
 
         var observableIdx = document.getElementById(this.observableListBoxId).options.selectedIndex;
@@ -10171,13 +10174,6 @@ OSH.UI.View = OSH.UI.Panel.extend({
        /* OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
             this.updateViewItem(event.viewItem);
         }.bind(this));*/
-
-        var self = this;
-        OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT+"-"+this.divId,function(event){
-            OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,{
-                object: self
-            });
-        }.bind(this));
     },
 
     selectDataView:function() {},
@@ -15780,6 +15776,9 @@ OSH.UI.View.MjpegView = OSH.UI.View.VideoView.extend({
         var oldBlobURL = this.imgTag.src;
         this.imgTag.src = styler.frame;
         window.URL.revokeObjectURL(oldBlobURL);
+
+        this.updateStatistics();
+        this.onAfterDecoded();
     },
 
     /**

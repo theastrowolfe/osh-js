@@ -106,6 +106,12 @@ var OSH = {
 window.OSH = OSH;
 
 /**
+ * @namespace {object} OSH.Exception
+ * @memberof OSH
+ */
+window.OSH.Exception = {};
+
+/**
  * @namespace {object} OSH.Video
  * @memberof OSH
  */
@@ -154,6 +160,12 @@ window.OSH.DataConnector = {};
 window.OSH.Utils = {};
 
 /**
+ * @namespace {object} OSH.Utils
+ * @memberof OSH
+ */
+window.OSH.Helper = {};
+
+/**
  * @namespace {object} OSH.DataSender
  * @memberof OSH
  */
@@ -163,12 +175,46 @@ window.OSH.BASE_WORKER_URL = "js/workers";
 
 // HELPER FUNCTION
 function isUndefined(object) {
-	return typeof(object) == "undefined";
+	return typeof(object) === "undefined";
 }
 
 function isUndefinedOrNull(object) {
-	return typeof(object) === "undefined" || object === null;
+	return typeof(object) === "undefined" || object === null ;
 }
+
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message; // Fallback
+    }
+}
+
+/**
+ * This method replaces each substring of this string that matches the given regular expression with the given replacement.
+ * @param search the pattern to search
+ * @param replacement the string which would replace found expression
+ * @return {string} This method returns the resulting String.
+ */
+String.prototype.replaceAll = function(search, replacement) {
+    return this.replace(new RegExp(search, 'g'), replacement);
+};
+
+Function.prototype.toSource = function() {
+    return this.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'').trim();
+};
+
+Element.prototype.insertChildAtIndex = function(child, index) {
+    if (!index) index = 0;
+    if (index >= this.children.length) {
+        this.appendChild(child);
+    } else {
+        this.insertBefore(child, this.children[index]);
+    }
+};
+
 /***************************** BEGIN LICENSE BLOCK ***************************
 
 The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -333,6 +379,110 @@ Author: Richard Becker <beckerr@prominentedge.com>
 	};
 
 }());
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.Exception.Exception = function(msg,errorObj) {
+    var error = Error.apply(this, arguments);
+    error.name = this.name = 'OSH Exception';
+
+    this.message = error.message;
+    this.originalErrorObject = errorObj;
+    this.stack = error.stack;
+
+    return this;
+};
+
+OSH.Exception.Exception.prototype = Object.create(Error.prototype, {
+    constructor: { value: OSH.Exception.Exception }
+});
+
+
+OSH.Exception.Exception.prototype.printStackTrace = function() {
+    console.error(this.stack);
+};
+
+OSH.Exception.Exception.prototype.getMessage = function() {
+    return this.message;
+};
+
+OSH.Exception.Exception.prototype.getOriginalError = function() {
+    return this.originalErrorObject;
+};
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+
+/**
+ *
+ * @constructor
+ */
+OSH.Asserts = function() {};
+
+OSH.Asserts.checkIsDefineOrNotNull = function(object) {
+
+    if(isUndefinedOrNull(object)) {
+        throw new OSH.Exception.Exception("the object is undefined or null");
+    }
+    return object;
+};
+
+OSH.Asserts.checkObjectPropertyPath = function(object,path,errorMessage) {
+
+    if(!OSH.Utils.hasOwnNestedProperty(object,path)){
+        var message = "The path "+path+" for the object does not exists";
+        if(!isUndefinedOrNull(errorMessage)) {
+            message = errorMessage;
+        }
+
+        throw new OSH.Exception.Exception(message);
+    }
+    return object;
+};
+
+OSH.Asserts.checkArrayIndex = function(array, index) {
+    if(array.length === 0) {
+        throw new OSH.Exception.Exception("The array length is 0");
+    } else if(index > array.length -1 ) {
+        throw new OSH.Exception.Exception("The given index of the array is out of range:"+index+" > "+(array.length -1));
+    }
+};
+
+OSH.Asserts.checkTrue = function(cond,errorMessage) {
+  if(!cond) {
+      if(!isUndefinedOrNull(errorMessage)) {
+          throw new OSH.Exception.Exception(errorMessage);
+      } else {
+          throw new OSH.Exception.Exception("Assert failed, cond ["+cond+"] is not met");
+      }
+  }
+};
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -678,6 +828,27 @@ OSH.Utils.removeCss = function(div,css) {
   div.className = css;
 };
 
+/**
+ * Check if a div element contains some css class
+ * @param div the div element
+ * @param className the className to search
+ * @return {boolean}
+ */
+OSH.Utils.containsCss = function(div, className) {
+    return div.className.indexOf(className) > -1;
+};
+
+/**
+ * Replace a css class from a the div given as argument.
+ * @param div the div to replace the class from
+ * @param css the css class to replace
+ * @instance
+ * @memberof OSH.Utils
+ */
+OSH.Utils.replaceCss = function(div,oldCss,newCss) {
+    css = div.className.replace(oldCss,newCss);
+    div.className = css;
+};
 
 /**
  * Add a css class to a the div given as argument.
@@ -687,7 +858,16 @@ OSH.Utils.removeCss = function(div,css) {
  * @memberof OSH.Utils
  */
 OSH.Utils.addCss = function(div,css) {
-  div.setAttribute("class",div.className+" "+css);
+  OSH.Asserts.checkIsDefineOrNotNull(div);
+  OSH.Asserts.checkIsDefineOrNotNull(css);
+
+  OSH.Asserts.checkIsDefineOrNotNull(div.className);
+
+  var split = div.className.split(" ");
+  if(isUndefinedOrNull(split) ||
+      (!isUndefinedOrNull(split) && split.length > 0 && split.indexOf(css)  === -1)) {
+      div.setAttribute("class", div.className + " " + css);
+  }
 };
 
 OSH.Utils.removeLastCharIfExist = function(value,char) {
@@ -698,7 +878,917 @@ OSH.Utils.removeLastCharIfExist = function(value,char) {
   return value.substring(0,value.length-1);
 };
 
+/**
+ * Merge properties from an object to another one.
+ * If the property already exists, the function will try to copy children ones.
+ *
+ * @param from the origin object
+ * @param to the object to copy properties into
+ * @return {*} the final merged object
+ */
+OSH.Utils.copyProperties = function(from,to,forceMerge) {
+    for (var property in from) {
+        if(isUndefinedOrNull(to[property])  || forceMerge || OSH.Utils.isFunction(from[property]) || Array.isArray(from[property])) {
+            to[property] = from[property];
+        } else {
+            // copy children
+            if(OSH.Utils.isObject(from[property])) { // test is object
+                OSH.Utils.copyProperties(from[property], to[property]);
+            }
+        }
+    }
+    return to;
+};
 
+OSH.Utils.isFunction = function(object) {
+    return object === 'function' || object instanceof Function;
+};
+
+OSH.Utils.isObject = function(object) {
+    return object === 'object' || object instanceof Object;
+};
+
+OSH.Utils.traverse = function(o,func,params) {
+    for (var i in o) {
+        func.apply(this,[i,o[i],params]);
+        if (o[i] !== null && typeof(o[i])==="object") {
+            //going one step down in the object tree!!
+            params.level = params.level + 1;
+            OSH.Utils.traverse(o[i],func,params);
+            params.level = params.level - 1;
+        }
+    }
+};
+
+OSH.Utils.clone = function(o) {
+    // From clone lib: https://github.com/pvorb/clone
+    return clone(o);
+};
+
+OSH.Utils.getUOM = function(uomObject) {
+    var result;
+
+    var codeMap = {
+        "Cel": "&#x2103;",
+        "deg": "&#176;"
+    };
+
+    if(!isUndefinedOrNull(uomObject) && !isUndefinedOrNull(uomObject.code)) {
+        var code =  uomObject.code;
+
+        // check code list
+        // https://www.w3schools.com/charsets/ref_utf_letterlike.asp => symbol list
+        if(!isUndefinedOrNull(codeMap[uomObject.code])) {
+            code = codeMap[uomObject.code];
+        }
+        result = code;
+    }
+    return result;
+};
+
+OSH.Utils.arrayBufferToImageDataURL = function(arraybuffer) {
+    var blob = new Blob([new Uint8Array(arraybuffer)]);
+    return URL.createObjectURL(blob);
+};
+
+OSH.Utils.getArrayBufferFromHttpImage = function(url,type,callback) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open( "GET", url, true );
+
+    // Ask for the result as an ArrayBuffer.
+    xhr.responseType = "arraybuffer";
+
+    xhr.onload = function( e ) {
+        callback(new Uint8Array( this.response ));
+    };
+
+    xhr.send();
+};
+
+OSH.Utils.createJSEditor = function(parentElt,content) {
+    return OSH.Helper.HtmlHelper.addHTMLTextArea(parentElt, js_beautify(content));
+};
+
+OSH.Utils.hasOwnNestedProperty = function(obj,propertyPath){
+    if(!propertyPath)
+        return false;
+
+    var properties = propertyPath.split('.');
+
+    for (var i = 0; i < properties.length; i++) {
+        var prop = properties[i];
+
+        if(!obj || !obj.hasOwnProperty(prop)){
+            return false;
+        } else {
+            obj = obj[prop];
+        }
+    }
+
+    return true;
+};
+
+
+OSH.Utils.createXDomainRequest = function() {
+    var xdr = null;
+
+    if (window.XDomainRequest) {
+        xdr = new XDomainRequest();
+    } else if (window.XMLHttpRequest) {
+        xdr = new XMLHttpRequest();
+    } else {
+        throw new OSH.Exception.Exception("The browser does not handle cross-domain");
+    }
+
+    return xdr;
+};
+
+OSH.Utils.checkUrlImage = function(url,callback) {
+    /*var xdr = OSH.Utils.createXDomainRequest();
+    xdr.onload = function() {
+        var contentType = xdr.getResponseHeader('Content-Type');
+        if (contentType.slice(0,6) === 'image/') {// URL is valid image
+            callback(true,{type: contentType});
+        } else {
+            callback(false);
+        }
+    }
+
+    xdr.open("GET", url);
+    xdr.send();*/
+    callback(url.match(/\.(jpeg|jpg|gif|png)$/i) != null, {
+        remote:(url.startsWith("http") || url.startsWith("https"))
+    });
+};
+
+
+OSH.Utils.circularJSONStringify = function(object) {
+    // From https://github.com/WebReflection/circular-json (credits)
+    var CircularJSON=function(e,t){function l(e,t,o){var u=[],f=[e],l=[e],c=[o?n:"[Circular]"],h=e,p=1,d;return function(e,v){return t&&(v=t.call(this,e,v)),e!==""&&(h!==this&&(d=p-a.call(f,this)-1,p-=d,f.splice(p,f.length),u.splice(p-1,u.length),h=this),typeof v=="object"&&v?(a.call(f,v)<0&&f.push(h=v),p=f.length,d=a.call(l,v),d<0?(d=l.push(v)-1,o?(u.push((""+e).replace(s,r)),c[d]=n+u.join(n)):c[d]=c[0]):v=c[d]):typeof v=="string"&&o&&(v=v.replace(r,i).replace(n,r))),v}}function c(e,t){for(var r=0,i=t.length;r<i;e=e[t[r++].replace(o,n)]);return e}function h(e){return function(t,s){var o=typeof s=="string";return o&&s.charAt(0)===n?new f(s.slice(1)):(t===""&&(s=v(s,s,{})),o&&(s=s.replace(u,"$1"+n).replace(i,r)),e?e.call(this,t,s):s)}}function p(e,t,n){for(var r=0,i=t.length;r<i;r++)t[r]=v(e,t[r],n);return t}function d(e,t,n){for(var r in t)t.hasOwnProperty(r)&&(t[r]=v(e,t[r],n));return t}function v(e,t,r){return t instanceof Array?p(e,t,r):t instanceof f?t.length?r.hasOwnProperty(t)?r[t]:r[t]=c(e,t.split(n)):e:t instanceof Object?d(e,t,r):t}function m(t,n,r,i){return e.stringify(t,l(t,n,!i),r)}function g(t,n){return e.parse(t,h(n))}var n="~",r="\\x"+("0"+n.charCodeAt(0).toString(16)).slice(-2),i="\\"+r,s=new t(r,"g"),o=new t(i,"g"),u=new t("(?:^|([^\\\\]))"+i),a=[].indexOf||function(e){for(var t=this.length;t--&&this[t]!==e;);return t},f=String;return{stringify:m,parse:g}}(JSON,RegExp);
+    return CircularJSON.stringify(object);
+};
+
+OSH.Utils.destroyElement = function(element) {
+    OSH.Asserts.checkIsDefineOrNotNull(element);
+    OSH.Asserts.checkIsDefineOrNotNull(element.parentNode);
+
+    element.parentNode.removeChild(element);
+};
+
+OSH.Utils.getChildNumber = function(node) {
+    return Array.prototype.indexOf.call(node.parentNode.children, node);
+};
+
+OSH.Utils.searchPropertyByValue = function(object, propertyValue, resultArray) {
+    var idx;
+
+    for(var property in object) {
+        if(!isUndefinedOrNull(object[property])) {
+            if(OSH.Utils.isObject(object[property])) {
+                OSH.Utils.searchPropertyByValue(object[property],propertyValue,resultArray);
+            } else if(Array.isArray(object[property]) && (idx=object[property].indexOf(propertyValue)) > -1) {
+                resultArray.push(object);
+            } else if(OSH.Utils.isFunction(object[property])) {
+                continue; // skip
+            } else if(object[property] === propertyValue) {
+                resultArray.push(object);
+            }
+        }
+    }
+};
+
+OSH.Utils.binaryStringToBlob = function(binaryString) {
+    var array = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++){
+        array[i] = binaryString.charCodeAt(i);
+    }
+    var blob = new Blob([array], {type: 'application/octet-stream'});
+    return URL.createObjectURL(blob);
+};
+
+OSH.Utils.fixSelectable = function(oElement, bGotFocus) {
+    var oParent = oElement.parentNode;
+    while(oParent !== null && !/\bdraggable\b/.test(oParent.className)) {
+        oParent = oParent.parentNode;
+    }
+    if(oParent !== null) {
+        oParent.draggable = !bGotFocus;
+    }
+};
+
+// returns true if the element or one of its parents has the class classname
+OSH.Utils.getSomeParentTheClass = function(element, classname) {
+    if (element.className.split(' ').indexOf(classname)>=0) return element;
+    return element.parentNode && OSH.Utils.getSomeParentTheClass(element.parentNode, classname);
+};
+
+OSH.Utils.getObjectById = function(objectId, callbackFn) {
+    OSH.EventManager.observe(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId, function (event) {
+        OSH.EventManager.remove(OSH.EventManager.EVENT.GET_OBJECT + "-" + objectId);
+        callbackFn(event);
+    });
+    OSH.EventManager.fire(OSH.EventManager.EVENT.SEND_OBJECT + "-" + objectId);
+};
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ *
+ * @constructor
+ */
+OSH.Helper.HtmlHelper = function() {};
+
+OSH.Helper.HtmlHelper.createHTMLTitledLine = function(title) {
+    var div = document.createElement("div");
+    div.setAttribute("class","horizontal-titled-line");
+    div.innerHTML = title;
+
+    return div;
+};
+
+OSH.Helper.HtmlHelper.createHTMLLine = function(title) {
+    var div = document.createElement("div");
+    div.setAttribute("class","horizontal-line");
+    return div;
+};
+
+OSH.Helper.HtmlHelper.addHTMLLine = function(parentElt) {
+    parentElt.appendChild(OSH.Helper.HtmlHelper.createHTMLLine());
+};
+
+OSH.Helper.HtmlHelper.addHTMLTitledLine = function(parentElt,title) {
+    parentElt.appendChild(OSH.Helper.HtmlHelper.createHTMLTitledLine(title));
+};
+
+
+OSH.Helper.HtmlHelper.HTMLListBoxSetSelected = function(listboxElt, defaultValue) {
+
+    if(isUndefinedOrNull(defaultValue) || defaultValue === "") {
+        return;
+    }
+
+    for(var i=0; i < listboxElt.options.length;i++) {
+        var currentOption = listboxElt.options[i].value;
+
+        if(currentOption === defaultValue) {
+            listboxElt.options[i].setAttribute("selected","");
+            break;
+        }
+    }
+};
+
+OSH.Helper.HtmlHelper.addHTMLTextArea = function(parentElt,content) {
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var textareaId = OSH.Utils.randomUUID();
+    var textAreaElt = document.createElement("textarea");
+    textAreaElt.setAttribute("class","text-area");
+    textAreaElt.setAttribute("id",textareaId);
+
+    textAreaElt.value = content;
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    textAreaElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    textAreaElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    // appends textarea
+    liElt.appendChild(textAreaElt);
+
+    // appends li to ul
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return textareaId;
+};
+
+OSH.Helper.HtmlHelper.onDomReady = function(callback) {
+    /*!
+     * domready (c) Dustin Diaz 2014 - License MIT
+     * https://github.com/ded/domready
+     */
+    !function (name, definition) {
+
+        if (typeof module != 'undefined') module.exports = definition();
+        else if (typeof define == 'function' && typeof define.amd == 'object') define(definition);
+        else this[name] = definition();
+
+    }('domready', function () {
+
+        var fns = [], listener
+            , doc = typeof document === 'object' && document
+            , hack = doc && doc.documentElement.doScroll
+            , domContentLoaded = 'DOMContentLoaded'
+            , loaded = doc && (hack ? /^loaded|^c/ : /^loaded|^i|^c/).test(doc.readyState);
+
+
+        if (!loaded && doc)
+            doc.addEventListener(domContentLoaded, listener = function () {
+                doc.removeEventListener(domContentLoaded, listener);
+                loaded = 1;
+                while (listener = fns.shift()) listener();
+            });
+
+        return function (fn) {
+            loaded ? setTimeout(fn, 0) : fns.push(fn);
+        }
+    });
+
+    // End domready(c)
+
+    domready(callback);
+};
+
+OSH.Helper.HtmlHelper.addFileChooser = function(div, createPreview, defaultInputDivId) {
+    return OSH.Helper.HtmlHelper.addTitledFileChooser(div,null, createPreview,defaultInputDivId);
+};
+
+OSH.Helper.HtmlHelper.addTitledFileChooser = function(div,label, createPreview, defaultInputDivId) {
+    var id = OSH.Utils.randomUUID();
+
+    if(!isUndefined(defaultInputDivId)) {
+        id = defaultInputDivId;
+    }
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.innerHTML = label;
+    }
+
+    var labelForElt = document.createElement("label");
+    labelForElt.setAttribute("class","input-file-label-for");
+    labelForElt.setAttribute("for",id);
+
+    var iElt = document.createElement("i");
+    iElt.setAttribute("class","fa input-file-i");
+    iElt.setAttribute("aria-hidden","true");
+
+    labelForElt.appendChild(iElt);
+
+    var inputTextElt = document.createElement("input");
+    inputTextElt.setAttribute("class","input-file-text");
+    inputTextElt.setAttribute("id","text-"+id);
+    inputTextElt.setAttribute("type","text");
+    inputTextElt.setAttribute("name","file-text-"+id);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputTextElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputTextElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    var inputFileElt = document.createElement("input");
+    inputFileElt.setAttribute("class","input-file");
+    inputFileElt.setAttribute("id",id);
+    inputFileElt.setAttribute("type","file");
+    inputFileElt.setAttribute("name","file-"+id);
+
+    if(!isUndefinedOrNull(label)) {
+        // appends label
+        liElt.appendChild(labelElt);
+    }
+
+    // appends label for
+    liElt.appendChild(labelForElt);
+
+    // appends input file
+    liElt.appendChild(inputFileElt);
+
+    // appends input text
+    liElt.appendChild(inputTextElt);
+
+    // appends li to ul
+    ulElt.appendChild(liElt);
+
+    // appends preview if any
+    if(!isUndefinedOrNull(createPreview) && createPreview) {
+        var prevId = OSH.Utils.randomUUID();
+
+        var divPrevElt =  document.createElement("div");
+        divPrevElt.setAttribute("class","preview");
+        divPrevElt.setAttribute("id",prevId);
+
+        OSH.Utils.addCss(inputFileElt,"preview");
+        OSH.Utils.addCss(inputTextElt,"preview");
+
+        liElt.appendChild(divPrevElt);
+
+        (function(inputElt) {
+            OSH.Helper.HtmlHelper.onDomReady(function(){
+                inputElt.addEventListener('change', function(evt) {
+                    var file = evt.target.files[0];
+                    var reader = new FileReader();
+
+                    // Closure to capture the file information.
+                    var inputElt = this;
+
+                    reader.onload = (function(theFile) {
+                        inputElt.nextSibling.text = theFile.name;
+                        inputElt.nextSibling.value = theFile.name;
+                        return function(e) {
+                            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+                            sel.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', escape(e.target.result), '"/>'].join('');
+                        };
+                    })(file);
+
+                    // Read in the image file as a data URL.
+                    reader.readAsDataURL(file);
+                }, false);
+
+                inputElt.nextElementSibling.addEventListener("paste",function(evt){
+                    OSH.Asserts.checkIsDefineOrNotNull(evt);
+
+                    var clipboardData = evt.clipboardData || window.clipboardData;
+                    var pastedData = clipboardData.getData('Text');
+
+                    var sel = this.parentNode.querySelectorAll("div.preview")[0];
+                    sel.innerHTML = ['<img class="thumb" src="', pastedData,
+                        '" title="', escape(pastedData), '"/>'].join('');
+                });
+            });
+        })(inputFileElt); //passing the variable to freeze, creating a new closure
+        div.appendChild(ulElt);
+    } else {
+        (function(inputElt) {
+            OSH.Helper.HtmlHelper.onDomReady(function(){
+                inputElt.addEventListener('change', function(evt) {
+                    var file = evt.target.files[0];
+                    var reader = new FileReader();
+
+                    // Closure to capture the file information.
+                    var inputElt = this;
+
+                    reader.onload = (function(theFile) {
+                        inputElt.nextSibling.text = theFile.name;
+                        inputElt.nextSibling.value = theFile.name;
+                    })(file);
+
+                    // Read in the image file as a data URL.
+                    reader.readAsDataURL(file);
+                }, false);
+            });
+        })(inputFileElt); //passing the variable to freeze, creating a new closure
+        div.appendChild(ulElt);
+    }
+    return id;
+};
+
+
+OSH.Helper.HtmlHelper.addColorPicker = function(parentElt, label,defaultValue,placeholder) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var inputElt = document.createElement("input");
+    inputElt.setAttribute("id",id+"");
+    inputElt.setAttribute("class","input-text");
+    inputElt.setAttribute("type","input-text");
+    inputElt.setAttribute("name",""+id);
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue !== "") {
+        inputElt.setAttribute("value",defaultValue);
+    }
+
+    if(!isUndefinedOrNull(placeholder)) {
+        inputElt.setAttribute("placeholder",placeholder);
+    }
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    var inputColorElt = document.createElement("input");
+    inputColorElt.setAttribute("id","color-"+id);
+    inputColorElt.setAttribute("class","input-color");
+    inputColorElt.setAttribute("type","color");
+    inputColorElt.setAttribute("name","color-"+id);
+
+    OSH.Helper.HtmlHelper.onDomReady(function() {
+        if(!isUndefinedOrNull(defaultValue)) {
+            inputColorElt.value = defaultValue;
+            inputColorElt.select();
+        }
+    });
+
+    var regex = /^#(?:[0-9a-f]{6})$/i;
+
+    inputElt.addEventListener("keyup", function(event){
+        // if matches hexa color
+        if(regex.test(this.value)) {
+            inputColorElt.value = this.value;
+            inputColorElt.select();
+        }
+    },false);
+
+    inputColorElt.addEventListener("input", function(event){
+        inputElt.value = event.target.value;
+        inputElt.innerHTML = event.target.value;
+    }, false);
+    inputColorElt.addEventListener("change", function(event){
+        inputElt.value = event.target.value;
+        inputElt.innerHTML = event.target.value;
+    }, false);
+
+    liElt.appendChild(inputElt);
+    liElt.appendChild(inputColorElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    return id;
+};
+
+OSH.Helper.HtmlHelper.addInputTextValueWithUOM = function(parentElt, label,placeholder,uom) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var inputElt = document.createElement("input");
+    inputElt.setAttribute("id",id+"");
+    inputElt.setAttribute("class","input-text input-uom");
+    inputElt.setAttribute("type","input-text");
+    inputElt.setAttribute("name",""+id);
+
+
+    if(!isUndefinedOrNull(placeholder)) {
+        inputElt.setAttribute("placeholder",placeholder);
+    }
+
+    var uomElt = document.createElement("div");
+    uomElt.setAttribute("class","uom");
+    uomElt.innerHTML = ""+uom;
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    liElt.appendChild(inputElt);
+    liElt.appendChild(uomElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    return id;
+};
+
+OSH.Helper.HtmlHelper.addInputText = function(parentElt, label,defaultValue,placeholder) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var inputElt = document.createElement("input");
+    inputElt.setAttribute("id",id+"");
+    inputElt.setAttribute("class","input-text");
+    inputElt.setAttribute("type","input-text");
+    inputElt.setAttribute("name",""+id);
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue !== "") {
+        inputElt.setAttribute("value",defaultValue);
+    }
+
+    if(!isUndefinedOrNull(placeholder)) {
+        inputElt.setAttribute("placeholder",placeholder);
+    }
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    liElt.appendChild(inputElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    // FIX select input-text instead of dragging the element(when the parent is draggable)
+    inputElt.onfocus = function (e) {
+        OSH.Utils.fixSelectable(this, true);
+    };
+
+    inputElt.onblur = function (e) {
+        OSH.Utils.fixSelectable(this, false);
+    };
+
+    return id;
+};
+
+
+OSH.Helper.HtmlHelper.removeAllNodes = function(div) {
+    if(!isUndefinedOrNull(div)) {
+        while (div.firstChild) {
+            div.removeChild(div.firstChild);
+        }
+    }
+};
+
+OSH.Helper.HtmlHelper.removeAllFromSelect = function(tagId) {
+    var i;
+    var selectTag = document.getElementById(tagId);
+    for (i = selectTag.options.length - 1; i >= 0; i--) {
+        selectTag.remove(i);
+    }
+};
+
+OSH.Helper.HtmlHelper.addHTMLListBox = function(parentElt,label,values,defaultTitleOption,defaultSelectTagId) {
+    var id = OSH.Utils.randomUUID();
+    var selectTagId = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    if(!isUndefinedOrNull(defaultSelectTagId)) {
+        selectTagId = defaultSelectTagId;
+    }
+
+
+    if(!isUndefinedOrNull(label) && label !== "") {
+        var labelElt = document.createElement("label");
+        labelElt.innerHTML = label;
+
+        liElt.appendChild(labelElt);
+    }
+
+    var divElt = document.createElement("div");
+    divElt.setAttribute("id",""+id);
+    divElt.setAttribute("class","select-style");
+
+    var selectElt = document.createElement("select");
+    selectElt.setAttribute("id",""+selectTagId);
+
+    if(!isUndefinedOrNull(defaultTitleOption)) {
+        var optionElt = document.createElement("option");
+        optionElt.setAttribute("value","");
+        optionElt.setAttribute("disabled","");
+        optionElt.setAttribute("selected","");
+        optionElt.innerHTML = defaultTitleOption;
+
+        selectElt.appendChild(optionElt);
+    }
+
+    if(!isUndefinedOrNull(values)) {
+        var first = true;
+        var optionElt;
+
+        for(var key in values) {
+            optionElt = document.createElement("option");
+            optionElt.setAttribute("value",values[key]);
+            optionElt.innerHTML = values[key]+"";
+
+            if(first) {
+                optionElt.setAttribute("selected","");
+                first = false;
+            }
+
+            selectElt.appendChild(optionElt);
+        }
+    }
+
+    divElt.appendChild(selectElt);
+
+    liElt.appendChild(divElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return selectTagId;
+};
+
+OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox = function(parentElt,label,values,defaultTitleOption,defaultSelectTagId) {
+    var id = OSH.Utils.randomUUID();
+    var selectTagId = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    if(!isUndefinedOrNull(defaultSelectTagId)) {
+        selectTagId = defaultSelectTagId;
+    }
+
+
+    if(!isUndefinedOrNull(label) && label !== "") {
+        var labelElt = document.createElement("label");
+        labelElt.innerHTML = label;
+
+        liElt.appendChild(labelElt);
+    }
+
+    var divElt = document.createElement("div");
+    divElt.setAttribute("id",""+id);
+    divElt.setAttribute("class","select-style");
+
+    var selectElt = document.createElement("select");
+    selectElt.setAttribute("id",""+selectTagId);
+
+    if(!isUndefinedOrNull(defaultTitleOption)) {
+        var optionElt = document.createElement("option");
+        optionElt.setAttribute("value","");
+        optionElt.setAttribute("disabled","");
+        optionElt.setAttribute("selected","");
+        optionElt.innerHTML = defaultTitleOption;
+
+        selectElt.appendChild(optionElt);
+    }
+
+    if(!isUndefinedOrNull(values)) {
+        var first = true;
+        var optionElt;
+
+        for(var key in values) {
+            optionElt = document.createElement("option");
+            optionElt.setAttribute("value",values[key].name);
+            optionElt.innerHTML = values[key].name+"";
+            optionElt.object = values[key];
+
+            if(first) {
+                optionElt.setAttribute("selected","");
+                first = false;
+            }
+
+            selectElt.appendChild(optionElt);
+        }
+    }
+
+    divElt.appendChild(selectElt);
+
+    liElt.appendChild(divElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return selectTagId;
+};
+
+/**
+ * Fire an event handler to the specified node. Event handlers can detect that the event was fired programatically
+ * by testing for a 'synthetic=true' property on the event object
+ * @param {HTMLNode} node The node to fire the event handler on.
+ * @param {String} eventName The name of the event without the "on" (e.g., "focus")
+ */
+OSH.Helper.HtmlHelper.fireEvent = function(node, eventName) {
+    // Make sure we use the ownerDocument from the provided node to avoid cross-window problems
+    var doc;
+    if (node.ownerDocument) {
+        doc = node.ownerDocument;
+    } else if (node.nodeType == 9){
+        // the node may be the document itself, nodeType 9 = DOCUMENT_NODE
+        doc = node;
+    } else {
+        throw new Error("Invalid node passed to fireEvent: " + node.id);
+    }
+
+    if (node.dispatchEvent) {
+        // Gecko-style approach (now the standard) takes more work
+        var eventClass = "";
+
+        // Different events have different event classes.
+        // If this switch statement can't map an eventName to an eventClass,
+        // the event firing is going to fail.
+        switch (eventName) {
+            case "click": // Dispatching of 'click' appears to not work correctly in Safari. Use 'mousedown' or 'mouseup' instead.
+            case "mousedown":
+            case "mouseup":
+                eventClass = "MouseEvents";
+                break;
+
+            case "focus":
+            case "change":
+            case "blur":
+            case "select":
+                eventClass = "HTMLEvents";
+                break;
+
+            default:
+                throw "fireEvent: Couldn't find an event class for event '" + eventName + "'.";
+                break;
+        }
+        var event = doc.createEvent(eventClass);
+        event.initEvent(eventName, true, true); // All events created as bubbling and cancelable.
+
+        event.synthetic = true; // allow detection of synthetic events
+        // The second parameter says go ahead with the default action
+        node.dispatchEvent(event, true);
+    } else  if (node.fireEvent) {
+        // IE-old school style, you can drop this if you don't need to support IE8 and lower
+        var event = doc.createEventObject();
+        event.synthetic = true; // allow detection of synthetic events
+        node.fireEvent("on" + eventName, event);
+    }
+};
+
+OSH.Helper.HtmlHelper.addCheckbox = function(parentElt, label,defaultValue) {
+    var id = OSH.Utils.randomUUID();
+
+    var ulElt = document.createElement("ul");
+    ulElt.setAttribute("class","osh-ul");
+
+    var liElt =  document.createElement("li");
+    liElt.setAttribute("class","osh-li");
+
+    var checkboxElt = document.createElement("input");
+    checkboxElt.setAttribute("id",id+"");
+    checkboxElt.setAttribute("class","input-checkbox");
+    checkboxElt.setAttribute("type","checkbox");
+    checkboxElt.setAttribute("name",""+id);
+
+    if(!isUndefinedOrNull(defaultValue) && defaultValue) {
+        checkboxElt.setAttribute("checked","");
+    }
+
+    if(!isUndefinedOrNull(label)) {
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",""+id);
+        labelElt.innerHTML = label+":";
+
+        liElt.appendChild(labelElt);
+    }
+
+    liElt.appendChild(checkboxElt);
+    ulElt.appendChild(liElt);
+
+    parentElt.appendChild(ulElt);
+
+    return id;
+};
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -722,7 +1812,7 @@ OSH.EventMap = BaseClass.extend({
     },
 
     observe:function(eventName, fnCallback) {
-        if(typeof(eventName) == "undefined" || typeof(fnCallback) == "undefined") {
+        if(isUndefinedOrNull(eventName) || isUndefinedOrNull(fnCallback)) {
             return;
         }
         if(!(eventName in this.eventMap)) {
@@ -732,7 +1822,7 @@ OSH.EventMap = BaseClass.extend({
     },
 
     fire: function(eventName, properties) {
-        if(typeof(eventName) == "undefined") {
+        if(isUndefinedOrNull(eventName)) {
             return;
         }
         if(eventName in this.eventMap) {
@@ -742,6 +1832,14 @@ OSH.EventMap = BaseClass.extend({
                 fnCallbackArr[i](properties);
             }
         }
+    },
+
+    remove: function(eventName) {
+        if(isUndefinedOrNull(eventName)) {
+            return;
+        }
+
+        delete this.eventMap[eventName];
     }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -775,8 +1873,12 @@ var eventMap = new OSH.EventMap();
  * @memberof OSH.EventManager
  */
 OSH.EventManager.fire = function(eventName, properties) {
-    properties.name = eventName;
-    eventMap.fire('osh:'+eventName,properties);
+    if(!isUndefinedOrNull(properties)) {
+        properties.name = eventName;
+        eventMap.fire('osh:'+eventName,properties);
+    } else {
+        eventMap.fire('osh:'+eventName,{name:eventName});
+    }
 };
 
 /**
@@ -791,6 +1893,9 @@ OSH.EventManager.observe = function(eventName, fnCallback) {
     eventMap.observe('osh:'+eventName,fnCallback);
 };
 
+OSH.EventManager.remove = function(eventName) {
+    eventMap.remove('osh:'+eventName);
+};
 /**
  *
  * @param divId
@@ -800,10 +1905,30 @@ OSH.EventManager.observe = function(eventName, fnCallback) {
  * @memberof OSH.EventManager
  */
 OSH.EventManager.observeDiv = function(divId, eventName, fnCallback) {
-    elem = document.getElementById(divId);
-    // use native dom event listener
-    elem.addEventListener(eventName,fnCallback);
+   OSH.Asserts.checkIsDefineOrNotNull(divId);
+
+   OSH.Helper.HtmlHelper.onDomReady(function() {
+        elem = document.getElementById(divId);
+        // use native dom event listener
+        elem.addEventListener(eventName, fnCallback);
+    });
 };
+
+/**
+ *
+ * @param element
+ * @param eventName
+ * @param fnCallback
+ * @instance
+ * @memberof OSH.EventManager
+ */
+OSH.EventManager.observeElement = function(element, eventName, fnCallback) {
+    OSH.Helper.HtmlHelper.onDomReady(function() {
+        // use native dom event listener
+        element.addEventListener(eventName, fnCallback);
+    });
+};
+
 
 /**
  * This part defines the events used INTO the API
@@ -816,6 +1941,8 @@ OSH.EventManager.EVENT = {
     SELECT_VIEW : "selectView",
     CONTEXT_MENU : "contextMenu",
     SHOW_VIEW : "showView",
+    GET_OBJECT: "getObject",
+    SEND_OBJECT: "sendObject",
     CONNECT_DATASOURCE : "connectDataSource",
     DISCONNECT_DATASOURCE : "disconnectDataSource",
     DATASOURCE_UPDATE_TIME: "updateDataSourceTime",
@@ -828,8 +1955,12 @@ OSH.EventManager.EVENT = {
     LOADING_START: "loading:start",
     LOADING_STOP: "loading:stop",
     ADD_VIEW_ITEM: "addViewItem",
+    REMOVE_VIEW_ITEM: "addViewItem",
     RESIZE:"resize",
-    PTZ_SEND_REQUEST:"ptzSendRequest"
+    PTZ_SEND_REQUEST:"ptzSendRequest",
+    EXCEPTION_MESSAGE:"exception_message",
+    LOG:"log",
+    SHOW:"show"
 };
 
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -895,6 +2026,7 @@ OSH.Buffer = BaseClass.extend({
     // defines a status to stop the buffer after stop() calling.
     // If start() method is called, this variable should be set to TRUE
     this.stop = false;
+    this.isStarted = false;
     this.bufferingState = false;
   },
 
@@ -927,10 +2059,13 @@ OSH.Buffer = BaseClass.extend({
    * @instance
    */
   start: function() {
-    this.stop = false;
-    this.startObservers();
-    this.startRealTime = new Date().getTime();
-    this.processSyncData();
+    if(!this.isStarted) {
+        this.stop = false;
+        this.isStarted = true;
+        this.startObservers();
+        this.startRealTime = new Date().getTime();
+        this.processSyncData();
+    }
   },
 
   /**
@@ -941,6 +2076,7 @@ OSH.Buffer = BaseClass.extend({
   stop: function() {
     this.stopObservers();
     this.stop = true;
+    this.isStarted = false;
   },
 
   /**
@@ -973,6 +2109,7 @@ OSH.Buffer = BaseClass.extend({
    * @instance
    */
   startDataSource: function(dataSourceId) {
+    this.start();
     this.buffers[dataSourceId].status = BUFFER_STATUS.NOT_START_YET;
     this.buffers[dataSourceId].lastRecordTime = Date.now();
   },
@@ -1023,6 +2160,12 @@ OSH.Buffer = BaseClass.extend({
       if(typeof  options.name != "undefined") {
         this.buffers[dataSourceId].name = options.name;
       }
+    }
+  },
+
+  removeDataSource:function(dataSourceId) {
+    if(dataSourceId in this.buffers) {
+      delete this.buffers[dataSourceId];
     }
   },
 
@@ -1259,6 +2402,10 @@ OSH.DataConnector.DataConnector = BaseClass.extend({
    */
   getUrl: function() {
     return this.url;
+  },
+
+  onClose:function() {
+
   }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -1433,16 +2580,19 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     connect: function () {
+        this.ENABLED = false; // disable webworker
+
         if (!this.init) {
             //creates Web Socket
-            if (OSH.Utils.isWebWorker()){
+            if (OSH.Utils.isWebWorker() && this.ENABLED) {
                 var url = this.getUrl();
                 var blobURL = URL.createObjectURL(new Blob(['(',
 
                         function () {
                             var ws = null;
+
                             self.onmessage = function (e) {
-                                if(e.data == "close") {
+                                if (e.data === "close") {
                                     close();
                                 } else {
                                     // is URL
@@ -1456,12 +2606,13 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                                 ws.onmessage = function (event) {
                                     //callback data on message received
                                     if (event.data.byteLength > 0) {
-                                       self.postMessage(event.data,[event.data]);
+                                        self.postMessage(event.data, [event.data]);
                                     }
                                 }
 
-                                ws.onerror = function(event) {
+                                ws.onerror = function (event) {
                                     ws.close();
+                                    self.onerror(event);
                                 };
                             }
 
@@ -1478,6 +2629,9 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                     this.onMessage(e.data);
                 }.bind(this);
 
+                this.worker.onerror = function(error) {
+                    this.onError(error);
+                }.bind(this);
                 // Won't be needing this anymore
                 URL.revokeObjectURL(blobURL);
             } else {
@@ -1491,8 +2645,68 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
                 }.bind(this);
 
                 // closes socket if any errors occur
-                this.ws.onerror = function(event) {
-                    this.ws.close();
+                this.ws.onerror = function (event) {
+                    this.close();
+                };
+
+                this.ws.onclose = function(e) {
+                    var reason = 'Unknown error';
+                    switch(e.code) {
+                        case 1000:
+                            reason = 'Normal closure';
+                            break;
+                        case 1001:
+                            reason = 'An endpoint is going away';
+                            break;
+                        case 1002:
+                            reason = 'An endpoint is terminating the connection due to a protocol error.';
+                            break;
+                        case 1003:
+                            reason = 'An endpoint is terminating the connection because it has received a type of data it cannot accept';
+                            break;
+                        case 1004:
+                            reason = 'Reserved. The specific meaning might be defined in the future.';
+                            break;
+                        case 1005:
+                            reason = 'No status code was actually present';
+                            break;
+                        case 1006:
+                            reason = 'The connection was closed abnormally';
+                            break;
+                        case 1007:
+                            reason = 'The endpoint is terminating the connection because a message was received that contained inconsistent data';
+                            break;
+                        case 1008:
+                            reason = 'The endpoint is terminating the connection because it received a message that violates its policy';
+                            break;
+                        case 1009:
+                            reason = 'The endpoint is terminating the connection because a data frame was received that is too large';
+                            break;
+                        case 1010:
+                            reason = 'The client is terminating the connection because it expected the server to negotiate one or more extension, but the server didn\'t.';
+                            break;
+                        case 1011:
+                            reason = 'The server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.';
+                            break;
+                        case 1012:
+                            reason = 'The server is terminating the connection because it is restarting';
+                            break;
+                        case 1013:
+                            reason = 'The server is terminating the connection due to a temporary condition';
+                            break;
+                        case 1015:
+                            reason = 'The connection was closed due to a failure to perform a TLS handshake';
+                            break;
+                    }
+                    if(e.code !== 1000 && e.code !== 1005) {
+                        throw new OSH.Exception.Exception("Datasource is now closed[" + reason + "]: " + this.getUrl(), event);
+                    } else {
+                        //TODO:send log
+                        console.log("Datasource has been closed normally");
+                    }
+                    this.init = false;
+                    this.onClose();
+
                 }.bind(this);
             }
             this.init = true;
@@ -1505,12 +2719,14 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     disconnect: function() {
-        if (OSH.Utils.isWebWorker() && this.worker != null) {
+        if (OSH.Utils.isWebWorker() && !isUndefinedOrNull(this.ws) && this.ENABLED) {
             this.worker.postMessage("close");
             this.worker.terminate();
             this.init = false;
-        } else if (this.ws != null) {
-            this.ws.close();
+        } else if (!isUndefinedOrNull(this.ws)) {
+            if(this.ws.readyState === WebSocket.OPEN) {
+                this.ws.close();
+            }
             this.init = false;
         }
     },
@@ -1522,6 +2738,10 @@ OSH.DataConnector.WebSocketDataConnector = OSH.DataConnector.DataConnector.exten
      * @memberof OSH.DataConnector.WebSocketDataConnector
      */
     onMessage: function (data) {
+    },
+
+    onError:function(error) {
+        throw new OSH.Exception.Exception("Cannot connect to the datasource "+this.getUrl(), error);
     },
 
     /**
@@ -1568,8 +2788,6 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
     this.id = "DataSource-"+OSH.Utils.randomUUID();
     this.name = name;
     this.properties = properties;
-    this.timeShift = 0;
-    this.connected = false;
 
     this.initDataSource(properties);
   },
@@ -1581,28 +2799,37 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
    * @memberof OSH.DataReceiver.DataSource
    */
   initDataSource: function(properties) {
-    
-    if(typeof(properties.timeShift) != "undefined") {
+    this.timeShift = 0;
+    this.connected = false;
+
+    if(!isUndefinedOrNull(properties.timeShift)) {
         this.timeShift = properties.timeShift;
     }
 
-    if(typeof properties.syncMasterTime != "undefined") {
+    if(!isUndefinedOrNull(properties.syncMasterTime)) {
       this.syncMasterTime = properties.syncMasterTime;
     } else {
       this.syncMasterTime = false;
     }
 
-    if(typeof properties.bufferingTime != "undefined") {
+    if(!isUndefinedOrNull(properties.bufferingTime)) {
       this.bufferingTime = properties.bufferingTime;
     }
 
-    if(typeof properties.timeOut != "undefined") {
+    if(!isUndefinedOrNull(properties.timeOut)) {
       this.timeOut = properties.timeOut;
     }
-    
+
+    if(!isUndefinedOrNull(properties.replaySpeed)) {
+        this.replaySpeed = properties.replaySpeed;
+    }
+
     // checks if type is WebSocket
     if(properties.protocol == "ws") {
       this.connector = new OSH.DataConnector.WebSocketDataConnector(this.buildUrl(properties));
+      this.connector.onClose = function() {
+        this.connected = false;
+      }.bind(this);
       // connects the callback
       this.connector.onMessage = this.onMessage.bind(this);
     } else if(properties.protocol == "http") {
@@ -1634,8 +2861,10 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
    * @memberof OSH.DataReceiver.DataSource
    */
   connect: function() {
-    this.connector.connect();
-    this.connected = true;
+    if(!this.connected) {
+        this.connector.connect();
+        this.connected = true;
+    }
   },
 
   /**
@@ -1752,18 +2981,24 @@ OSH.DataReceiver.DataSource = BaseClass.extend({
 	  var endTime = properties.endTime;
 	  url += "temporalFilter=phenomenonTime,"+startTime+"/"+endTime+"&";
 	  
-	  if(properties.replaySpeed) {
+	  if(properties.replaySpeed && typeof(properties.replaySpeed) !== "undefined") {
 		  // adds replaySpeed
 		  url += "replaySpeed="+properties.replaySpeed;
 	  }
 	  
 	  // adds responseFormat (optional)
-	  if(properties.responseFormat) {
+	  if(properties.responseFormat && typeof(properties.responseFormat) !== "undefined" && properties.responseFormat !== "") {
 		  url += "&responseFormat="+properties.responseFormat;
 	  }
 
 	  return url;
-  }
+  },
+
+  reset:function() {
+    this.initDataSource(this.properties);
+  },
+
+  clone:function() {}
 });
 
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -1831,7 +3066,7 @@ OSH.DataReceiver.EulerOrientation = OSH.DataReceiver.DataSource.extend({
       roll : roll,
       heading: yaw
     };
-  } 
+  }
 });
 
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -2238,6 +3473,12 @@ OSH.DataReceiver.VideoH264 = OSH.DataReceiver.DataSource.extend({
      */
     parseData: function (data) {
         return new Uint8Array(data, 12, data.byteLength - 12); // H264 NAL unit starts at offset 12 after 8-bytes time stamp and 4-bytes frame length
+    },
+
+    clone:function() {
+        var cloneProperties = {};
+        OSH.Utils.copyProperties(this.properties,cloneProperties);
+        return new OSH.DataReceiver.VideoH264(this.name, cloneProperties);
     }
 });
 
@@ -2662,6 +3903,215 @@ OSH.DataReceiver.Chart = OSH.DataReceiver.DataSource.extend({
  ******************************* END LICENSE BLOCK ***************************/
 
 /**
+ *
+ * @constructor
+ */
+OSH.DataReceiver.DataSourceFactory = function() {};
+
+OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE = {
+    JSON:"json",
+    VIDEO:"video"
+};
+
+OSH.DataReceiver.DataSourceFactory.definitionMap = {
+    "http://sensorml.com/ont/swe/property/VideoFrame": OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO, //video
+    "http://sensorml.com/ont/swe/property/Image" : OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO //video
+};
+
+OSH.DataReceiver.DataSourceFactory.createDatasourceFromType = function(properties,callback) {
+    OSH.Asserts.checkIsDefineOrNotNull(properties);
+    OSH.Asserts.checkIsDefineOrNotNull(properties.definition);
+
+    var type = "";
+
+    if(properties.definition in OSH.DataReceiver.DataSourceFactory.definitionMap) {
+        type = OSH.DataReceiver.DataSourceFactory.definitionMap[properties.definition];
+    }
+
+    if(type === OSH.DataReceiver.DataSourceFactory.DEFINITION_TYPE.VIDEO) {
+        OSH.DataReceiver.DataSourceFactory.createVideoDatasource(properties,callback);
+    } else {
+        OSH.DataReceiver.DataSourceFactory.createJsonDatasource(properties,callback);
+    }
+};
+
+/**
+ *
+ * @param properties the datasource properties
+ * @param callback callback function called when the datasource is created. The callback will returns undefined if no datasource matches.
+ * @memberof OSH.DataReceiver.DataSourceFactory
+ * @instance
+ */
+OSH.DataReceiver.DataSourceFactory.createVideoDatasource = function(properties,callback) {
+    OSH.Asserts.checkIsDefineOrNotNull(properties);
+    OSH.Asserts.checkIsDefineOrNotNull(callback);
+
+    var oshServer = new OSH.Server({
+        url: "http://"+properties.endpointUrl
+    });
+
+    var self = this;
+
+    oshServer.getResultTemplate(properties.offeringID,properties.observedProperty, function(jsonResp){
+        var resultEncodingArr = jsonResp.GetResultTemplateResponse.resultEncoding.member;
+        var compression = null;
+
+        for(var i=0;i < resultEncodingArr.length;i++) {
+            var elt = resultEncodingArr[i];
+            if('compression' in elt) {
+                compression = elt.compression;
+                break;
+            }
+        }
+
+        // store compression info
+        properties.compression = compression;
+
+        var datasource;
+
+        if(compression === "JPEG") {
+            datasource = new OSH.DataReceiver.VideoMjpeg(properties.name, properties);
+        } else if(compression === "H264") {
+            datasource = new OSH.DataReceiver.VideoH264(properties.name, properties);
+        }
+
+        datasource.resultTemplate = self.buildDSStructure(datasource,jsonResp);
+        callback(datasource);
+
+    },function(error) {
+        throw new OSH.Exception.Exception("Cannot Get result template for "+properties.endpointUrl,error);
+    });
+};
+
+/**
+ *
+ * @param properties the datasource properties
+ * @param callback callback function called when the datasource is created. The callback will returns undefined if no datasource matches.
+ * @memberof OSH.DataReceiver.DataSourceFactory
+ * @instance
+ */
+OSH.DataReceiver.DataSourceFactory.createJsonDatasource = function(properties,callback) {
+    OSH.Asserts.checkIsDefineOrNotNull(properties);
+    OSH.Asserts.checkIsDefineOrNotNull(callback);
+
+    var datasource = new OSH.DataReceiver.JSON(properties.name, properties);
+
+    this.buildDSResultTemplate(datasource,function (dsResult) {
+        callback(dsResult);
+    });
+};
+
+OSH.DataReceiver.DataSourceFactory.buildDSResultTemplate = function(dataSource,callback) {
+    // get result template from datasource
+    var server = new OSH.Server({
+        url: "http://" + dataSource.properties.endpointUrl
+    });
+
+    var self = this;
+    // offering, observedProperty
+    server.getResultTemplate(dataSource.properties.offeringID,dataSource.properties.observedProperty, function(jsonResp){
+        dataSource.resultTemplate = self.buildDSStructure(dataSource,jsonResp);
+        callback(dataSource);
+    },function(error) {
+        // do something
+    });
+};
+
+OSH.DataReceiver.DataSourceFactory.buildDSStructure = function (datasource, resultTemplate) {
+    var result = [];
+    var currentObj = null;
+    var group = null;
+
+    OSH.Utils.traverse(resultTemplate.GetResultTemplateResponse.resultStructure.field, function (key, value, params) {
+        if (params.defLevel !== null && params.level < params.defLevel) {
+            result.push(currentObj);
+            currentObj = null;
+            params.defLevel = null;
+        }
+
+        if (group !== null && params.level < group.level) {
+            group = null;
+        }
+
+        //TODO: define stop rules
+        if (!isUndefinedOrNull(value.definition) || !isUndefinedOrNull(value.axisID)) {
+
+            var saveGroup = false;
+            if (currentObj !== null) {
+                saveGroup = true;
+                group = {
+                    path: currentObj.path,
+                    level: params.level,
+                    object: currentObj.object
+                };
+            }
+
+            if (!isUndefinedOrNull(value.definition)) {
+                currentObj = {
+                    definition: value.definition,
+                    path: null,
+                    object: value
+                };
+            } else {
+                currentObj = {
+                    path: null,
+                    object: value
+                };
+            }
+
+            params.defLevel = params.level + 1;
+        }
+
+        if (params.defLevel !== null && params.level >= params.defLevel) {
+            if (key === "name") {
+                if (currentObj.path === null) {
+                    if (group !== null) {
+                        currentObj.path = group.path + "." + value;
+                        currentObj.parentObject = group.object;
+                    } else {
+                        currentObj.path = value;
+                    }
+                } else {
+                    currentObj.path = currentObj.path + "." + value;
+                }
+            }
+        }
+    }, {level: 0, defLevel: null});
+
+    if (currentObj !== null) {
+        result.push(currentObj);
+    }
+
+    for (var key in result) {
+        var uiLabel = "no label/axisID/name defined";
+        if (!isUndefinedOrNull(result[key].object.label)) {
+            uiLabel = result[key].object.label;
+        } else if (!isUndefinedOrNull(result[key].object.axisID)) {
+            uiLabel = result[key].object.axisID;
+        } else if (!isUndefinedOrNull(result[key].object.name)) {
+            uiLabel = result[key].object.name;
+        }
+        result[key].uiLabel = uiLabel;
+    }
+    return result;
+};
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
  * @classdesc This class is responsible of handling datasources. It observes necessary events to manage datasources.
  * @class OSH.DataReceiver.DataReceiverController
  * @listens {@link OSH.EventManager.EVENT.CONNECT_DATASOURCE}
@@ -2833,19 +4283,22 @@ OSH.DataReceiver.DataReceiverController = BaseClass.extend({
      * @memberof OSH.DataReceiver.DataReceiverController
      */
     addDataSource: function (dataSource, options) {
-        this.dataSourcesIdToDataSources[dataSource.id] = dataSource;
-        this.buffer.addDataSource(dataSource.id, {
-            name: dataSource.name,
-            syncMasterTime: dataSource.syncMasterTime,
-            bufferingTime: dataSource.bufferingTime,
-            timeOut: dataSource.timeOut
-        });
+        // if DS does not exist yet
+        if(!(dataSource.id in this.dataSourcesIdToDataSources)) {
+            this.dataSourcesIdToDataSources[dataSource.id] = dataSource;
+            this.buffer.addDataSource(dataSource.id, {
+                name: dataSource.name,
+                syncMasterTime: dataSource.syncMasterTime,
+                bufferingTime: dataSource.bufferingTime,
+                timeOut: dataSource.timeOut
+            });
 
-        //TODO: make frozen variables?
-        dataSource.onData = function (data) {
-            this.buffer.push({dataSourceId: dataSource.getId(), data: data});
+            //TODO: make frozen variables?
+            dataSource.onData = function (data) {
+                this.buffer.push({dataSourceId: dataSource.getId(), data: data});
 
-        }.bind(this);
+            }.bind(this);
+        }
     },
 
     /**
@@ -2858,6 +4311,26 @@ OSH.DataReceiver.DataReceiverController = BaseClass.extend({
         for (var id in this.dataSourcesIdToDataSources) {
             this.dataSourcesIdToDataSources[id].connect();
         }
+    },
+
+    getDataSource:function(id) {
+        return this.dataSourcesIdToDataSources[id];
+    },
+
+    removeDataSource:function(datasource) {
+        this.buffer.removeDataSource(datasource.id);
+        if(datasource.id in this.dataSourcesIdToDataSources) {
+            delete this.dataSourcesIdToDataSources[datasource.id];
+        }
+    },
+
+    updateDataSource: function(datasource) {
+        // disconnects datasource before updating
+        OSH.EventManager.fire(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE,{dataSourcesId:[datasource.id]});
+        // removes from buffer and internal map
+        this.removeDataSource(datasource);
+        // adds as a new one (because of handler to regenerate
+        this.addDataSource(datasource);
     }
 });
 
@@ -3404,6 +4877,4866 @@ OSH.DataSender.DataSenderController = BaseClass.extend({
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  for the specific language governing rights and limitations under the License.
 
+ Copyright (C) 2015-2017 Richard Becker. All Rights Reserved.
+
+ Author: Richard Becker <beckerr@prominentedge.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ * @class
+ * @classdesc
+ * @example
+ *
+ * var oshServer = new OSH.Server({
+ *    url : <someUrl>,
+ *    sosService: 'sos',
+ *    spsService: 'sps',
+ *    baseUrl: 'sensorhub'
+ * });
+ */
+OSH.Server = BaseClass.extend({
+    initialize: function (properties) {
+        this.url = properties.url;
+        this.id = "Server-" + OSH.Utils.randomUUID();
+    },
+
+    /**
+     *
+     * @param successCallback
+     * @param errorCallback
+     * @instance
+     * @memberof OSH.Server
+     */
+    getCapabilities: function (successCallback, errorCallback) {
+        var request = this.url + '?service=SOS&version=2.0&request=GetCapabilities';
+        this.executeGetRequest(request, successCallback, errorCallback);
+    },
+
+    /**
+     *
+     * @param successCallback callback the corresponding JSON object
+     * @param errorCallback callback the corresponding error
+     * @instance
+     * @memberof OSH.Server
+     */
+    getFeatureOfInterest: function (successCallback, errorCallback) {
+        var request = this.url + '?service=SOS&version=2.0&request=GetFeatureOfInterest';
+        this.executeGetRequest(request, successCallback, errorCallback);
+    },
+
+    /**
+     *
+     * @param successCallback callback the corresponding JSON object
+     * @param errorCallback callback the corresponding error
+     * @param offering the corresponding offering
+     * @instance
+     * @memberof OSH.Server
+     */
+    getResultTemplate: function (offering, observedProperty,successCallback, errorCallback) {
+        var request = this.url + '?service=SOS&version=2.0&request=GetResultTemplate&offering=' + offering + "&observedProperty=" + observedProperty;
+        this.executeGetRequest(request, successCallback, errorCallback);
+    },
+
+    getDescribeSensor:function(procedure, successCallback, errorCallback) {
+        var request = this.url + '?service=SOS&version=2.0&request=DescribeSensor&procedure=' + procedure;
+        this.executeGetRequest(request, successCallback, errorCallback);
+    },
+    /**
+     *
+     * @param request
+     * @param successCallback
+     * @param errorCallback
+     */
+    executeGetRequest: function (request, successCallback, errorCallback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                var s = successCallback.bind(this);
+                var sweXmlParser = new OSH.SWEXmlParser(xhr.responseText);
+                s(sweXmlParser.toJson());
+            } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200){
+                errorCallback(xhr.responseText);
+            }
+        }.bind(this);
+        xhr.open('GET', request, true);
+        xhr.send();
+    }
+});
+
+/**
+ * Created by mdhsl on 5/4/17.
+ */
+
+/**
+ * @class Javascript binding for SWE requests
+ * @classdesc
+ *
+ */
+OSH.SWEXmlParser = BaseClass.extend({
+
+    initialize:function(xml) {
+        this.originalXml = xml;
+
+        var x2jsOptions = {
+            xmlns: false, // does not keep xmlns
+            attributePrefix:"",
+            prefix: false,
+            removeAttrPrefix:true,
+            arrayAccessFormPaths : [
+                /.*.coordinate$/,
+                /.*.field$/,
+                /.*.item$/,
+                /.*.quality$/,
+                /.*.member$/,
+                /.*.constraint\.value$/,
+                /.*.constraint\.interval$/,
+                /.*.offering$/,
+                /.*.observableProperty/
+            ],
+            numericalAccessFormPaths: [
+                "value",
+                "nilValue",
+                "paddingBytes-after",
+                "paddingBytes-before",
+                "byteLength",
+                "significantBits",
+                "bitLength",
+                /.*.Time\.value/,
+                /.*.Quantity\.value/,
+                /.*.Count\.value/
+            ],
+            skip: [
+                "type"
+            ]
+
+        };
+
+        this.x2jsParser = new X2JS(x2jsOptions);
+    },
+
+    toXml:function() {
+        return this.originalXml;
+    },
+
+    toJson:function() {
+        return this.x2jsParser.xml_str2json(this.originalXml);
+
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+
+OSH.UI.Panel = BaseClass.extend({
+    initialize: function (parentElementDivId,options) {
+        this.divId = "panel-"+OSH.Utils.randomUUID();
+        this.id = this.divId;
+        this.options = options;
+        this.elementDiv = document.createElement("div");
+        this.elementDiv.setAttribute("class", "osh panel");
+        this.elementDiv.setAttribute("id", this.divId);
+
+        if(!isUndefinedOrNull(parentElementDivId) && parentElementDivId !== "") {
+            document.getElementById(parentElementDivId).appendChild(this.elementDiv);
+        } else {
+            document.body.appendChild(this.elementDiv);
+        }
+
+        this.componentListeners = [];
+
+        if(!isUndefinedOrNull(options)) {
+            if(!isUndefinedOrNull(options.css)) {
+                OSH.Utils.addCss(this.elementDiv,options.css);
+            }
+        }
+        this.initPanel();
+        this.handleEvents();
+    },
+
+    initPanel:function() {},
+
+    addListener: function(div,listenerName, func) {
+        OSH.Asserts.checkIsDefineOrNotNull(div);
+        OSH.Asserts.checkIsDefineOrNotNull(func);
+
+        OSH.Helper.HtmlHelper.onDomReady(function() {
+            div.addEventListener(listenerName, func, false);
+            this.componentListeners.push({
+                div: div,
+                name: listenerName,
+                func: func
+            });
+        }.bind(this));
+    },
+
+    removeAllListerners:function() {
+        for(var key in this.componentListeners) {
+            var elt = this.componentListeners[key];
+            elt.div.removeEventListener(elt.name,elt.func);
+        }
+    },
+
+    getAsHTML:function() {
+        return this.elementDiv.outerHTML;
+    },
+
+    /**
+     *
+     * @param divId
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    attachTo : function(divId) {
+       this.attachToElement(document.getElementById(divId));
+    },
+
+    /**
+     *
+     * @param divId
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    attachToElement : function(element) {
+        if(typeof this.elementDiv.parentNode !== "undefined") {
+            // detach from its parent
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
+        }
+        element.appendChild(this.elementDiv);
+        if(this.elementDiv.style.display === "none") {
+            this.elementDiv.style.display = "block";
+        }
+        this.onResize();
+    },
+
+    /**
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    onResize:function() {
+    },
+
+    inputFileHandlerAsBinaryString:function(callbackFn,evt) {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        var inputElt = this;
+        reader.onload = (function(theFile) {
+            inputElt.nextSibling.text = theFile.name;
+            inputElt.nextSibling.value = theFile.name;
+
+            return function(e) {
+                var l, d, array;
+                d = e.target.result;
+                l = d.length;
+                array = new Uint8Array(l);
+                for (var i = 0; i < l; i++){
+                    array[i] = d.charCodeAt(i);
+                }
+                var blob = new Blob([array], {type: 'application/octet-stream'});
+                callbackFn({
+                    url:URL.createObjectURL(blob),
+                    binaryString:d,
+                    name:theFile.name,
+                    length:l
+                });
+            };
+        })(file);
+
+        // Read in the image file as a binary string.
+        reader.readAsBinaryString(file);
+    },
+
+    inputFileHandlerAsText:function(callbackFn,evt) {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        var inputElt = this;
+        reader.onload = (function(theFile) {
+            inputElt.nextSibling.text = theFile.name;
+            inputElt.nextSibling.value = theFile.name;
+
+            return function(e) {
+                callbackFn({
+                    data:e.target.result,
+                    file: theFile
+                });
+            };
+        })(file);
+
+        // Read in the image file as a binary string.
+        reader.readAsText(file);
+    },
+
+    inputFilePasteHandler : function(callbackFn,evt) {
+        OSH.Asserts.checkIsDefineOrNotNull(evt);
+
+        var clipboardData = evt.clipboardData || window.clipboardData;
+        var pastedData = clipboardData.getData('Text');
+
+        var name = "";
+        var split = pastedData.split("/");
+        if(split.length > 0) {
+            name = split[split.length-1];
+        }
+
+        callbackFn({
+            url:pastedData,
+            name:name
+        });
+    },
+
+    setInputFileValue:function(inputElt,props /** name,arraybuffer,type **/) {
+        if(!isUndefinedOrNull(props)) {
+            var url = props.url;
+
+            var sel = inputElt.parentNode.querySelectorAll("div.preview")[0];
+            sel.innerHTML = ['<img class="thumb" src="', url,
+                '" title="', escape(props.name), '"/>'].join('');
+
+            inputElt.nextSibling.text = props.name;
+            inputElt.nextSibling.value = props.name;
+        }
+    },
+
+    //TODO: to move into HELPER
+    removeAllFromSelect:function(tagId) {
+        var i;
+        var selectTag = document.getElementById(tagId);
+        for (i = selectTag.options.length - 1; i > 0; i--) {
+            selectTag.remove(i);
+        }
+    },
+
+    //TODO: to move into HELPER
+    removeAllFromSelectElement:function(element) {
+        var i;
+        for (i = element.options.length - 1; i > 0; i--) {
+            element.remove(i);
+        }
+    },
+
+    /**
+     * Show the view by removing display:none style if any.
+     * @param properties
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    show: function(properties) {
+        this.setVisible(properties.show);
+    },
+
+    /**
+     *
+     * @param properties
+     * @instance
+     * @memberof OSH.UI.Panel
+     */
+    shows: function(properties) {
+    },
+
+    handleEvents:function() {
+        var self = this;
+
+        // observes the SHOW event
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW+"-"+this.divId,function(event){
+            self.setVisible(true);
+        });
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
+            self.onResize();
+        });
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT+"-"+this.divId,function(event){
+            OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT+"-"+self.divId,{
+                object: self
+            });
+        });
+    },
+
+    setVisible:function(isVisible) {
+        if(!isVisible) {
+            this.elementDiv.style.displayOld = window.getComputedStyle(this.elementDiv).getPropertyValue('display');
+            this.elementDiv.style.display = "none";
+        } else if(!isUndefinedOrNull(this.elementDiv.style.displayOld)) {
+            this.elementDiv.style.display = this.elementDiv.style.displayOld;
+        } else {
+            this.elementDiv.style.display = "block";
+        }
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.TabPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        this.mainElt = document.createElement("main");
+        this.mainElt.setAttribute("class","tab-panel");
+
+        this.elementDiv.appendChild(this.mainElt);
+
+        this.sectionNb = 0;
+
+        this.sectionElts = [];
+        this.labelElt = [];
+    },
+
+    addTab: function(label, div) {
+        var id = OSH.Utils.randomUUID();
+
+        var inputElt = document.createElement("input");
+        inputElt.setAttribute("id","tab"+this.sectionNb);
+        inputElt.setAttribute("type","radio");
+        inputElt.setAttribute("name","tabs");
+
+        var labelElt = document.createElement("label");
+        labelElt.setAttribute("for",id);
+        labelElt.setAttribute("id","label-"+id);
+        labelElt.innerHTML = label;
+
+        var sectionElt = document.createElement("section");
+        sectionElt.setAttribute("id","content"+(this.sectionNb));
+        sectionElt.setAttribute("class","hide-tab");
+
+        sectionElt.appendChild(div);
+        this.sectionElts.push(sectionElt);
+
+        this.labelElt.push({
+            label : labelElt,
+            input: inputElt
+        });
+
+        OSH.Helper.HtmlHelper.removeAllNodes(this.mainElt);
+
+        for(var key in this.labelElt) {
+            this.mainElt.appendChild(this.labelElt[key].input);
+            this.mainElt.appendChild(this.labelElt[key].label);
+        }
+
+        for(var key in this.sectionElts)  {
+            this.mainElt.appendChild(this.sectionElts[key]);
+        }
+
+        // listeners
+        OSH.EventManager.observeDiv(labelElt.id,"click",this.setChecked.bind(this,inputElt,sectionElt));
+
+        var self = this;
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            OSH.Helper.HtmlHelper.fireEvent(self.labelElt[0].label, "click");
+        });
+    },
+
+    setChecked:function(inputElt,sectionElt,evt) {
+        if(!isUndefinedOrNull(this.currentSelectedInput)) {
+            this.currentSelectedInput.removeAttribute("checked");
+        }
+
+        if(!isUndefinedOrNull(this.currentSelectedSection)) {
+            OSH.Utils.replaceCss(this.currentSelectedSection,"show-tab","hide-tab");
+        }
+
+
+        inputElt.setAttribute("checked","");
+        OSH.Utils.replaceCss(sectionElt,"hide-tab","show-tab");
+
+        this.currentSelectedInput = inputElt;
+        this.currentSelectedSection = sectionElt;
+    },
+
+    disableTab:function(index) {},
+
+    addToTab:function(index,div) {
+        this.sectionElts[index].appendChild(div);
+    }
+});
+/**
+ * @classdesc
+ * @class
+ * @type {OSH.UI.Panel}
+ * @augments OSH.UI.Panel
+ * @example
+ var dialogPanel =  new OSH.UI.Panel.DialogPanel(containerDivId, {
+        pinContainerId: "pin-container",
+        swapContainerId: "main-container",
+        title: title,
+        show:false,
+        css: "dialog",
+        draggable: false,
+        resizable: true,
+
+        closeable: true,
+        connectionIds : dataSources ,
+        destroyOnClose: true,
+        modal: false
+    });
+ */
+OSH.UI.Panel.DialogPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel: function () {
+        OSH.Utils.addCss(this.elementDiv, "dialog");
+        // creates header
+        this.headerElt = this.createHeader();
+
+        // creates content
+        this.contentElt = this.createContent();
+
+        // creates footer
+        this.footerElt = this.createFooter();
+
+        this.parentElementDiv = this.elementDiv.parentNode;
+
+        // creates inner
+        this.innerElementDiv = document.createElement("div");
+        this.innerElementDiv.setAttribute("class","dialog-inner "+this.options.css);
+
+        this.elementDiv.appendChild(this.innerElementDiv);
+
+        this.innerElementDiv.appendChild(this.headerElt);
+        this.innerElementDiv.appendChild(this.contentElt);
+        this.innerElementDiv.appendChild(this.footerElt);
+
+        this.initDragAndDrop(this.innerElementDiv,this.parentElementDiv);
+
+        this.updateProperties(this.options);
+    },
+
+    /**
+     * Check properties
+     * @param properties the new properties
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    checkOptions:function(properties) {
+        if(!isUndefinedOrNull(properties)) {
+            // checks title
+            if (!isUndefined(properties.title)) {
+                this.title = properties.title;
+            } else if(isUndefinedOrNull(this.title)) {
+                this.title = "Untitled"; // default value
+            }
+
+            // checks show
+            if (!isUndefined(properties.show)) {
+                this.show = properties.show;
+            } else if(isUndefinedOrNull(this.show)) {
+                this.show = true; // default value
+            }
+
+            // checks draggable
+            if (!isUndefined(properties.draggable)) {
+                this.draggable = properties.draggable;
+            } else if(isUndefinedOrNull(this.draggable)) {
+                this.draggable = true; // default value
+            }
+
+            // checks resizable
+            if (!isUndefined(properties.resizable)) {
+                this.resizable = properties.resizable;
+            } else if(isUndefinedOrNull(this.resizable)) {
+                this.resizable = true; // default value
+            }
+
+            // checks closeable
+            if (!isUndefined(properties.closeable)) {
+                this.closeable = properties.closeable;
+            } else if(isUndefinedOrNull(this.closeable)) {
+                this.closeable = true; // default value
+            }
+
+            // checks connected & connectionIds
+            if (!isUndefined(properties.connectionIds)) {
+                this.connectionIds = properties.connectionIds;
+                this.connected = true;
+            } else if(isUndefinedOrNull(this.connectionIds)) {
+                this.connected = false;  // default value
+                this.connectionIds = []; // default value
+            }
+
+            // checks pin
+            if (!isUndefined(properties.pinContainerId)) {
+                this.pin = {
+                    containerId: this.options.pinContainerId,
+                    originalContainerId: this.parentElementDiv.id,
+                    lastPosition: {
+                        x: 0,
+                        y: 0
+                    }
+                }
+            } else if(isUndefinedOrNull(this.pin)) {
+                this.pin = null; // default value
+            }
+
+            // checks swap
+            if (!isUndefined(properties.swapContainerId)) {
+                var dstElt = document.getElementById(properties.swapContainerId);
+                if (!isUndefinedOrNull(dstElt)) {
+                    var parentDstElt = dstElt.parentNode;
+                    if (!isUndefinedOrNull(parentDstElt)) {
+                        this.swap = {
+                            swapContainerId: properties.swapContainerId,
+                            position: window.getComputedStyle(dstElt).getPropertyValue('position')
+                        }
+                    }
+                }
+            } else if(isUndefinedOrNull(this.swap)) {
+                this.swap = null; // default value
+            }
+
+            // checks destroy on close
+            if (!isUndefined(properties.destroyOnClose)) {
+                this.destroyOnClose = properties.destroyOnClose;
+            } else if(isUndefinedOrNull(this.destroyOnClose)) {
+                this.destroyOnClose = false; // default value
+            }
+
+            // checks modal
+            if (!isUndefined(properties.modal)) {
+                this.modal = properties.modal;
+            } else if(isUndefinedOrNull(this.modal)) {
+                this.modal = false; // default value
+            }
+
+            // checks ratio
+            if (!isUndefined(properties.keepRatio)) {
+                this.keepRatio = properties.keepRatio;
+            } else {
+                this.keepRatio = false;
+            }
+        }
+
+        this.minimized = false;
+    },
+
+    //------- HEADER ---------------//
+    /**
+     * Init handler
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    createHeader: function () {
+        var dialogHeaderElt = document.createElement("div");
+        dialogHeaderElt.setAttribute("class", "dialog-header");
+
+        // creates line
+        // // Left element
+        this.headerSpanLeftElt = document.createElement("span");
+        this.headerSpanLeftElt.setAttribute("class","line-left");
+
+        // // Right element
+        var tableRightElt = document.createElement("table");
+        tableRightElt.setAttribute("class","line-right");
+        var tbodyElt = document.createElement("tbody");
+        this.headerTrElt = document.createElement("tr");
+
+        this.headerTdElts = {};
+
+        tbodyElt.appendChild(this.headerTrElt);
+        tableRightElt.appendChild(tbodyElt);
+
+        dialogHeaderElt.appendChild(this.headerSpanLeftElt);
+        dialogHeaderElt.appendChild(tableRightElt);
+
+        return dialogHeaderElt;
+    },
+
+    /**
+     * Update the dialog properties using new properties
+     * @param properties the new properties
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    updateProperties:function(properties) {
+        this.checkOptions(properties);
+
+        this.headerSpanLeftElt.innerHTML = this.title;
+
+        if(!isUndefinedOrNull(this.swap) && isUndefinedOrNull(this.headerTrElt.swap)) {
+            this.headerTrElt.swap = this.addSwapIcon(this.headerTrElt);
+        }
+
+        if(!this.modal && !isUndefinedOrNull(this.pin) && isUndefinedOrNull(this.headerTrElt.pin)) {
+            this.headerTrElt.pin = this.addPinIcon(this.headerTrElt);
+            this.pin.position = window.getComputedStyle(this.interact.target).getPropertyValue('position');
+        }
+
+        if(isUndefinedOrNull(this.headerTrElt.minimize)) {
+            this.headerTrElt.minimize = this.addMinimizeIcon(this.headerTrElt);
+        }
+
+        if((!isUndefinedOrNull(this.closeable) && this.closeable) && isUndefinedOrNull(this.headerTrElt.closeable)) {
+            this.headerTrElt.closeable = this.addCloseIcon(this.headerTrElt);
+        }
+
+        if(this.keepRatio) {
+            this.contentElt.style.overflow = "hidden";
+
+            var style = window.getComputedStyle(this.innerElementDiv);
+            var height = style.getPropertyValue("height");
+
+            if(!isUndefinedOrNull(height)) {
+                this.innerElementDiv.style.height = "initial";
+                this.innerElementDiv.style.minHeight = height;
+            }
+        }
+
+        this.setModal(this.modal);
+        this.setVisible(this.show);
+        this.interact.draggable(this.draggable);
+        this.interact.resizable(this.resizable);
+    },
+
+    /**
+     * Add swap icon to the parent element
+     * @param parentElt the parent element to add the icon
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    addSwapIcon:function(parentElt) {
+        // adds swap icon
+        var tdElt = document.createElement("td");
+
+        var swapIconElt = document.createElement("i");
+        swapIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-swap");
+
+        tdElt.appendChild(swapIconElt);
+        parentElt.appendChild(tdElt);
+
+        // adds listener
+        this.addListener(swapIconElt,"click",this.swapHandler.bind(this));
+
+        return swapIconElt;
+    },
+
+    /**
+     * Add pin icon to the parent element
+     * @param parentElt the parent element to add the icon
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    addPinIcon:function(parentElt) {
+        // adds pin icon
+        var tdElt = document.createElement("td");
+
+        var pinIconElt = document.createElement("i");
+        pinIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-pin");
+
+        tdElt.appendChild(pinIconElt);
+        parentElt.appendChild(tdElt);
+
+
+        // adds listener
+        this.addListener(pinIconElt,"click",this.pinHandler.bind(this));
+
+        return pinIconElt;
+    },
+
+    /**
+     * Add minimize icon to the parent element
+     * @param parentElt the parent element to add the icon
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    addMinimizeIcon:function(parentElt) {
+        // adds minimize icon
+        var tdElt = document.createElement("td");
+
+        var minimizeIconElt = document.createElement("i");
+        minimizeIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-minimize");
+
+        tdElt.appendChild(minimizeIconElt);
+        parentElt.appendChild(tdElt);
+
+        // adds listener
+        this.addListener(minimizeIconElt,"click",this.minimizeHandler.bind(this));
+
+        return minimizeIconElt;
+    },
+
+    /**
+     * Add close icon to the parent element
+     * @param parentElt the parent element to add the icon
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    addCloseIcon:function(parentElt) {
+        // adds minimize icon
+        var tdElt = document.createElement("td");
+
+        var closeIconElt = document.createElement("i");
+        closeIconElt.setAttribute("class","fa fa-fw dialog-header-icon icon-close");
+
+        tdElt.appendChild(closeIconElt);
+        parentElt.appendChild(tdElt);
+
+        // adds listener
+        this.addListener(closeIconElt,"click",this.closeHandler.bind(this));
+
+        return closeIconElt;
+    },
+
+    setModal:function(isModal) {
+        if(isModal) {
+            OSH.Utils.addCss(this.elementDiv,"modal-block");
+        } else {
+            // current dialog is modal, make it non-modal
+            OSH.Utils.removeCss(this.elementDiv,"modal-block");
+        }
+    },
+
+    //------- END HEADER ---------------//
+
+    /**
+     * Create the content
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    createContent: function () {
+        var dialogContentElt = document.createElement("div");
+        dialogContentElt.setAttribute("class", "dialog-content ");
+        dialogContentElt.setAttribute("id", "dialog-content-id-"+OSH.Utils.randomUUID());
+
+        return dialogContentElt;
+    },
+
+    /**
+     * Create the footer
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    createFooter: function () {
+        var dialogFooterElt = document.createElement("div");
+        dialogFooterElt.setAttribute("class", "dialog-footer");
+
+        return dialogFooterElt;
+    },
+
+    /**
+     * Init drag and drop
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    initDragAndDrop: function (element,parentElement) {
+        this.interact = interact(element)
+            .draggable({
+                // enable inertial throwing
+                inertia: true,
+                // keep the element within the area of it's parent
+                restrict: {
+                    restriction: parentElement,
+                    endOnly: false,
+                    elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+                },
+                // enable autoScroll
+                autoScroll: true,
+
+                // call this function on every dragmove event
+                onmove: dragMoveListener,
+                // call this function on every dragend event
+                onend: function (event) {
+                }
+            })
+            .resizable({
+                preserveAspectRatio: true,
+                edges: {left: true, right: true, bottom: true, top: true},
+                margin: 10
+            })
+            .on('resizemove', function (event) {
+                var target = event.target,
+                    x = (parseFloat(target.getAttribute('data-x')) || 0),
+                    y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                // update the element's style
+                target.style.width = event.rect.width + 'px';
+                target.style.height = event.rect.height + 'px';
+
+                // translate when resizing from top or left edges
+                x += event.deltaRect.left;
+                y += event.deltaRect.top;
+
+                target.style.webkitTransform = target.style.transform =
+                    'translate(' + x + 'px,' + y + 'px)';
+
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            });
+
+        var self = this;
+
+        function dragMoveListener(event) {
+            var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+            target.style.webkitTransform =
+                target.style.transform =
+                    'translate(' + x + 'px, ' + y + 'px)';
+
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }
+
+        // this is used later in the resizing and gesture demos
+        window.dragMoveListener = dragMoveListener;
+    },
+
+    //------------ HANDLERS -----------------//
+    /**
+     * Handler for the swap event
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    swapHandler:function() {
+        // swap only content
+        if(!isUndefinedOrNull(this.swap)) {
+            this.swapWith(this.swap.swapContainerId)
+        }
+    },
+
+    /**
+     * Handler for the pin event
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    pinHandler:function() {
+        if(this.pinned) {
+            // unpin: dialog -> original container
+            this.unpin();
+        } else {
+            // pin: dialog -> dest container
+            this.pinTo(this.pin.containerId);
+        }
+    },
+
+    /**
+     * Handler for the minimize event
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    minimizeHandler:function() {
+        if(!this.minimized) {
+            this.minimize();
+        } else {
+            this.restore();
+        }
+    },
+
+    /**
+     * Handler for the close event
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    closeHandler:function() {
+        this.close();
+    },
+
+    connectDataSourceHandler:function() {
+        if (this.connected) {
+            OSH.EventManager.fire(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE, {dataSourcesId: this.connectionIds});
+        } else {
+            OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE, {dataSourcesId: this.connectionIds});
+        }
+
+        this.connected = !this.connected;
+    },
+
+    //---------- FUNCTIONS ----------------//
+    /**
+     * Swap the dialog with another div
+     * @param dstContainerId the div to swap with
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    swapWith:function(dstContainerId) {
+        // removes content from dst
+        var dstContainerElt = document.getElementById(dstContainerId);
+        OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
+
+        // removes content from dst container
+        var childrenDst = [];
+        var i;
+        for(i=0;i < dstContainerElt.children.length;i++) {
+            childrenDst.push(dstContainerElt.removeChild(dstContainerElt.children[i]));
+        }
+
+        // removes content from dialog
+        var childrenDialog = [];
+        for(i=0;i < this.contentElt.children.length;i++) {
+            childrenDialog.push(this.contentElt.removeChild(this.contentElt.children[i]));
+        }
+
+        // swap
+        for(i=0;i < childrenDialog.length;i++) {
+            dstContainerElt.appendChild(childrenDialog[i]);
+        }
+
+        for(i=0;i < childrenDst.length;i++) {
+            this.contentElt.appendChild(childrenDst[i]);
+        }
+
+        /*  // overrides any position because it has to be relative
+         firstRemovedElt.style.position = "relative";
+
+         // applies saved position
+         secondRemovedElt.style.position = this.swap.position;*/
+    },
+
+    pinAuto:function() {
+        this.pinHandler();
+    },
+
+    /**
+     * Pin the dialog.
+     * @param containerId the parent element container id to pin the dialog into
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    pinTo:function(containerId) {
+        if(!this.modal) {
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
+
+            this.parentElementDiv.removeChild(this.elementDiv);
+
+            var dstContainerElt = document.getElementById(containerId);
+            OSH.Asserts.checkIsDefineOrNotNull(dstContainerElt);
+
+            dstContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
+
+            this.interact.draggable(false);
+
+            // store last position
+            this.pin.lastPosition.x = (parseFloat(this.interact.target.getAttribute('data-x')) || 0);
+            this.pin.lastPosition.y = (parseFloat(this.interact.target.getAttribute('data-y')) || 0);
+
+            // set dst position
+            this.setPosition(0, 0);
+            this.interact.target.style.position = "relative";
+
+            OSH.Utils.addCss(this.headerTrElt.pin, "icon-selected");
+            this.pinned = true;
+        }
+    },
+
+    /**
+     * Unpin the dialog
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    unpin:function() {
+        if(!this.modal) {
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact);
+            OSH.Asserts.checkIsDefineOrNotNull(this.interact.target);
+
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
+
+            var originalContainerElt = document.getElementById(this.pin.originalContainerId);
+            OSH.Asserts.checkIsDefineOrNotNull(originalContainerElt);
+
+            originalContainerElt.appendChild(this.elementDiv); //TODO: needs to store index?
+            this.interact.draggable(this.draggable);
+
+            // restore position before pinning
+            this.setPosition(this.pin.lastPosition.x, this.pin.lastPosition.y);
+
+            // restore style before pinning
+            OSH.Asserts.checkIsDefineOrNotNull(this.pin.position);
+            this.interact.target.style.position = this.pin.position;
+
+            OSH.Utils.removeCss(this.headerTrElt.pin, "icon-selected");
+            this.pinned = false;
+        }
+    },
+
+    /**
+     * Minimize the dialog
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    minimize:function() {
+        OSH.Utils.addCss(this.innerElementDiv,"minimized");
+        OSH.Utils.addCss(this.contentElt,"hide");
+        OSH.Utils.addCss(this.footerElt,"hide");
+
+        OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-minimize","icon-restore");
+        this.minimized = true;
+        this.interact.resizable(false);
+    },
+
+    /**
+     * Restore the dialog after minimizing
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    restore:function() {
+        OSH.Utils.removeCss(this.innerElementDiv,"minimized");
+        OSH.Utils.removeCss(this.contentElt,"hide");
+        OSH.Utils.removeCss(this.footerElt,"hide");
+
+        OSH.Utils.replaceCss(this.headerTrElt.minimize,"icon-restore","icon-minimize");
+        this.minimized = false;
+        this.interact.resizable(this.draggable);
+    },
+
+    /**
+     *
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    onClose: function () {},
+
+    /**
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    close: function () {
+        if(this.destroyOnClose) {
+            this.elementDiv.parentNode.removeChild(this.elementDiv);
+        } else {
+            this.setVisible(false);
+        }
+        this.onClose();
+    },
+
+    /**
+     * Set the dialog position to x,y pixel coordinates
+     * @instance
+     * @memberof OSH.UI.Panel.DialogPanel
+     */
+    setPosition:function(x,y) {
+        this.interact.target.style.webkitTransform =
+            this.interact.target.style.transform =
+                'translate(' + x + 'px, ' + y + 'px)';
+
+        this.interact.target.setAttribute('data-x', x);
+        this.interact.target.setAttribute('data-y', y);
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ * @classdesc Display a dialog with multiple view attach to it.
+ * @class
+ * @type {OSH.UI.DialogPanel}
+ * @augments OSH.UI.DialogPanel
+ */
+OSH.UI.Panel.MultiDialogPanel = OSH.UI.Panel.DialogPanel.extend({
+
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+        this.properties = properties;
+    },
+
+    initPanel: function () {
+        this._super();
+
+        // creates extra
+        this.extraElt = this.createExtra();
+
+        this.innerElementDiv.insertChildAtIndex(this.extraElt,2);
+
+    },
+
+    createExtra:function() {
+        var extraElt = document.createElement("div");
+        extraElt.setAttribute("class", "dialog-extra");
+
+        var inputExtraElt = document.createElement("input");
+        inputExtraElt.setAttribute("type","checkbox");
+        inputExtraElt.setAttribute("name","dialog-extra-input");
+        inputExtraElt.setAttribute("id","dialog-extra-input");
+
+        var labelExtraElt = document.createElement("label");
+        labelExtraElt.setAttribute("for","dialog-extra-input");
+        var iExtraElt = document.createElement("i");
+        iExtraElt.setAttribute("class","fa fa-fw icon-extra");
+
+        labelExtraElt.appendChild(iExtraElt);
+
+        var extraContentElt = document.createElement("div");
+        extraContentElt.setAttribute("class","dialog-extra-content");
+
+        extraElt.appendChild(inputExtraElt);
+        extraElt.appendChild(labelExtraElt);
+        extraElt.appendChild(extraContentElt);
+
+        return extraElt;
+    },
+
+    minimize:function() {
+        this._super();
+        OSH.Utils.addCss(this.extraElt,"hide");
+    },
+
+    restore:function() {
+        this._super();
+        OSH.Utils.removeCss(this.extraElt,"hide");
+    },
+
+    appendView:function(view,properties) {
+        var extraEltContent = this.extraElt.querySelector(".dialog-extra-content");
+
+        OSH.Asserts.checkIsDefineOrNotNull(extraEltContent);
+        OSH.Asserts.checkIsDefineOrNotNull(view);
+
+        extraEltContent.appendChild(view.elementDiv);
+
+        view.setVisible(true);
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.SaveDialogPanel = OSH.UI.Panel.DialogPanel.extend({
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+
+        this.properties = properties;
+    },
+
+    initPanel: function () {
+        this._super();
+        var saveButtonId = "dialog-save-button-"+OSH.Utils.randomUUID();
+
+        var divButton = document.createElement("div");
+        divButton.setAttribute("class","button-edit");
+
+        var button = document.createElement("button");
+        button.setAttribute("id",saveButtonId);
+        button.setAttribute("class","submit save");
+        button.innerHTML = "Save";
+
+        divButton.appendChild(button);
+
+        this.footerElt .appendChild(divButton);
+
+        OSH.EventManager.observeDiv(saveButtonId,"click",this.onSaveClickButtonHandler.bind(this));
+
+        OSH.Utils.addCss(this.elementDiv,"save-dialog");
+
+    },
+
+    onSaveClickButtonHandler:function(event) {
+        this.onSave();
+    },
+
+    onSave:function() {}
+
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityInfoPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+    },
+
+    initPanel:function() {
+        this.nameTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Name","My entity","entity name");
+        this.iconTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Icon","images/cameralook.png","icon path");
+        this.descriptionTagId = OSH.Helper.HtmlHelper.addInputText(this.elementDiv,"Description url","","description here");
+
+        OSH.Utils.addCss(this.elementDiv,"info");
+    },
+
+    loadInfos:function(infos){
+        OSH.Asserts.checkIsDefineOrNotNull(infos);
+        OSH.Asserts.checkObjectPropertyPath(infos,"name", "infos.name does not exist");
+        OSH.Asserts.checkObjectPropertyPath(infos,"icon", "infos.icon does not exist");
+        OSH.Asserts.checkObjectPropertyPath(infos,"description", "infos.description does not exist");
+
+        document.getElementById(this.nameTagId).value = infos.name;
+        document.getElementById(this.iconTagId).value = infos.icon;
+        document.getElementById(this.descriptionTagId).value = infos.description;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityViewPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+    },
+
+    initPanel:function() {
+        this.views = [];
+
+        var selectViewId = OSH.Utils.randomUUID();
+        var addViewButtonId = OSH.Utils.randomUUID();
+        var viewContainer = OSH.Utils.randomUUID();
+        var createButtonId = OSH.Utils.randomUUID();
+
+       var selectEltId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"",[],"Select a view");
+       this.selectElt = document.getElementById(selectEltId);
+
+       var buttonElt = document.createElement("button");
+       buttonElt.setAttribute("class","submit add-view-button");
+       buttonElt.innerHTML = "Add";
+
+       this.containerElt = document.createElement("div");
+       this.containerElt.setAttribute("class","view-container");
+
+       this.elementDiv.appendChild(buttonElt);
+       this.elementDiv.appendChild(this.containerElt);
+
+       OSH.Utils.addCss(this.elementDiv,"views");
+
+       // listeners
+       OSH.EventManager.observeElement(buttonElt,"click",this.onAddViewClickHandler.bind(this));
+
+       // inits
+       this.initViews();
+    },
+
+    initViews: function() {
+        // defines available views that user can create
+        // views are associated with an instance type (to create final instance) and global type (abstract one)
+        // the name is the one displayed
+        var views = [{
+            name: "Map 2D (New)",
+            viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.LEAFLET,
+            type: OSH.UI.View.ViewType.MAP,
+            hash: 0x0001
+        },{
+            name: "Globe 3D (New)",
+            viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.CESIUM,
+            type: OSH.UI.View.ViewType.MAP,
+            hash: 0x0002
+        },{
+            name: "Chart (New)",
+            viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART,
+            type: OSH.UI.View.ViewType.CHART,
+            hash: 0x0003
+        },{
+            name: "Video - H264 (New)",
+            viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.FFMPEG,
+            type: OSH.UI.View.ViewType.VIDEO,
+            hash: 0x0004
+        },{
+            name: "Video - MJPEG (New)",
+            viewInstanceType:OSH.UI.ViewFactory.ViewInstanceType.MJPEG,
+            type: OSH.UI.View.ViewType.VIDEO,
+            hash: 0x0005
+        }];
+
+        this.removeAllFromSelectElement(this.selectElt);
+
+        for(var key in views) {
+
+            var option = document.createElement("option");
+            option.text = views[key].name;
+            option.value = views[key].name;
+            option.properties = views[key];
+
+            this.selectElt.add(option);
+        }
+
+        var self = this;
+
+        // checks for existing views
+        // checking for existing views once the DOM has been loaded
+        OSH.Helper.HtmlHelper.onDomReady(this.initExistingViews.bind(this));
+    },
+
+    initExistingViews:function() {
+        var self = this;
+
+        var viewList = this.getViewList();
+
+        for(var key in viewList) {
+            var currentViewDiv = viewList[key];
+            OSH.Utils.getObjectById(currentViewDiv.id,function(event){
+                var option = document.createElement("option");
+                option.text = event.object.name;
+                option.value = event.object.name;
+                option.properties = {
+                    name: event.object.name,
+                    type: event.object.type,
+                    instance: event.object
+                };
+
+                self.selectElt.add(option);
+
+                //if(self.entity.entityId === option.properties.instance.entityId
+                var addView = false;
+
+                for (var keyView in event.object.viewItems) {
+                    if (event.object.viewItems[keyView].entityId === self.options.entityId) {
+                        addView = true;
+                        break;
+                    }
+                }
+
+                if(addView) {
+                    self.addView(option.properties);
+                }
+            });
+        }
+    },
+
+    onAddViewClickHandler:function(event) {
+        var dsTabElt = document.getElementById(this.viewContainer);
+        var viewProperties = this.selectElt .options[this.selectElt .selectedIndex].properties;
+
+        if(isUndefinedOrNull(viewProperties) || viewProperties.value === "") {
+            return;
+        }
+
+        this.addView(viewProperties);
+    },
+
+    addView:function(viewProperties) {
+        // two cases: this is an existing view or this is a view we want to create
+        var viewInstance;
+
+        if(isUndefinedOrNull(viewProperties.instance)) {
+            // creates the instance
+            viewInstance = this.getNewViewInstance(viewProperties);
+        } else { // the view already exists
+            viewInstance = viewProperties.instance;
+            viewInstance.hash = 0x0000;
+        }
+
+        this.views.push(viewInstance);
+
+        // adds line to tab
+        var lineElt = this.getNewLine(viewInstance.name);
+
+        // appends line to container
+        this.containerElt.appendChild(lineElt);
+
+        var editElt = lineElt.querySelectorAll(".control td.edit");
+        var deleteElt = lineElt.querySelectorAll(".control td.delete");
+
+        editElt = editElt[editElt.length-1];
+        deleteElt = deleteElt[deleteElt.length-1];
+
+        // handlers
+        OSH.EventManager.observeElement(editElt,"click",this.editHandler.bind(this,lineElt,viewInstance));
+        OSH.EventManager.observeElement(deleteElt, "click", this.deleteHandler.bind(this, lineElt, viewInstance));
+
+        return viewInstance;
+    },
+
+    getViewList:function() {
+        return document.querySelectorAll(".osh.view");
+    },
+
+    getNewViewInstance:function(properties) {
+
+        // gets view type
+        var viewInstanceType = properties.viewInstanceType;
+
+        // gets default view properties
+        // gets default view property
+        var defaultViewProperties;
+
+        if(isUndefinedOrNull(properties.options)) {
+            defaultViewProperties = OSH.UI.ViewFactory.getDefaultViewProperties(viewInstanceType);
+            defaultViewProperties.name = properties.name;
+        } else {
+            defaultViewProperties = properties.options;
+        }
+
+        // creates the panel corresponding to the view type
+        var viewInstance = OSH.UI.ViewFactory.getDefaultViewInstance(viewInstanceType, defaultViewProperties);
+        viewInstance.hash = properties.hash;
+
+        return viewInstance;
+    },
+
+    getNewLine:function(viewName) {
+        // creates the line
+        var lineElt = document.createElement('div');
+        lineElt.setAttribute("id","LineView"+OSH.Utils.randomUUID());
+        lineElt.setAttribute("class","ds-line");
+
+        var spanElt = document.createElement("span");
+        spanElt.setAttribute("class","line-left");
+        spanElt.innerHTML = ""+viewName;
+
+        var tableElt = document.createElement("table");
+        tableElt.setAttribute("class","control line-right");
+
+        var trElt = document.createElement("tr");
+
+        var editTdElt = document.createElement("td");
+        editTdElt.setAttribute("class","fa fa-2x fa-pencil-square-o edit");
+        editTdElt.setAttribute("aria-hidden","true");
+
+        var deleteTdElt = document.createElement("td");
+        deleteTdElt.setAttribute("class","fa fa-2x fa-trash-o delete");
+        deleteTdElt.setAttribute("aria-hidden","true");
+
+        var divElt = document.createElement("div");
+        divElt.setAttribute("style","clear: both;");
+
+        // builds table
+        trElt.appendChild(editTdElt);
+        trElt.appendChild(deleteTdElt);
+        tableElt.appendChild(trElt);
+
+        // builds line
+        lineElt.appendChild(spanElt);
+        lineElt.appendChild(tableElt);
+        lineElt.appendChild(divElt);
+
+        return lineElt;
+    },
+
+    editHandler:function(lineElt,viewInstance) {
+        var viewInstance = this.getViewById(viewInstance.id);
+        // get current viewInstance
+
+        OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
+
+        // gathers Data Sources
+        var dsArray = [];
+
+        for(var key in this.options.datasources) {
+            var dsClone = this.options.datasources[key];
+            dsArray.push(dsClone);
+        }
+
+        var cloneViewInstance = {};
+        OSH.Utils.copyProperties(viewInstance,cloneViewInstance);
+
+        var options = {
+            view:cloneViewInstance,
+            datasources : dsArray,
+            entityId:this.options.entityId
+        };
+
+        // creates the panel corresponding to the view type
+        var editView;
+        switch(viewInstance.type) {
+            case OSH.UI.View.ViewType.MAP:  editView = new OSH.UI.Panel.EntityMapEditPanel("",options);break;
+            case OSH.UI.View.ViewType.CHART:  editView = new OSH.UI.Panel.EntityChartEditPanel("",options);break;
+            case OSH.UI.View.ViewType.VIDEO:  {
+                if(viewInstance instanceof OSH.UI.View.MjpegView) {
+                    editView = new OSH.UI.Panel.EntityMJPEGVideoEditPanel("", options);
+                } else {
+                    editView = new OSH.UI.Panel.EntityVideoEditPanel("", options);
+                }
+                break;
+            }
+            default:break;
+        }
+
+        OSH.Asserts.checkIsDefineOrNotNull(editView);
+
+        var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
+            draggable: true,
+            css: "dialog-edit-view", //TODO: create unique class for all the views
+            name: "Edit "+cloneViewInstance.name+" View",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true
+        });
+
+        editView.attachToElement(editViewDialog.contentElt);
+
+        editViewDialog.onSave = function() {
+            var clonedView = editView.getView();
+
+            lineElt.querySelector("span.line-left").innerHTML = clonedView.name;
+
+            // finds the view instance and updates i
+            var i;
+
+            for(i=0;i < this.views.length;i++) {
+                if (this.views[i].id === clonedView.id) {
+                    var viewProperties =  editView.getProperties();
+
+                    this.views[i].viewItemsToAdd = clonedView.viewItemsToAdd;
+                    this.views[i].viewItemsToRemove = clonedView.viewItemsToRemove;
+                    this.views[i].updateProperties(viewProperties);
+                    if(OSH.Utils.hasOwnNestedProperty(viewProperties,"name")) {
+                        //TODO: dupplicated values, should only handle 1 property
+                        this.views[i].name = viewProperties.name;
+                        this.views[i].options.name = viewProperties.name;
+                        // updates dialog properties
+                        if (this.views[i].hash !== 0x0000 && !isUndefinedOrNull(this.views[i].dialog)) { // this is not an existing view
+                            this.updateDialog(this.views[i],viewProperties);
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            editViewDialog.close();
+            editView = null;
+
+            //TODO: switch container or create a new one(dialog) if needed
+
+            this.checkViewItems(this.views[i]);
+
+        }.bind(this);
+
+    },
+
+    updateDialog:function(view, viewProperties) {
+        var parentDialog = OSH.Utils.getSomeParentTheClass(this.views[i].elementDiv,"dialog");
+        OSH.Asserts.checkIsDefineOrNotNull(parentDialog);
+
+        OSH.Utils.getObjectById(parentDialog.id,function(event){
+            OSH.Asserts.checkTrue(event.object instanceof OSH.UI.Panel.DialogPanel,"The class should be a dialog panel and is "+event.object);
+
+            var properties = {
+                title: viewProperties.name
+            };
+
+            if(!isUndefinedOrNull(viewProperties.keepRatio)) {
+                properties.keepRatio = viewProperties.keepRatio;
+            }
+
+            event.object.updateProperties(properties);
+        });
+    },
+
+    deleteHandler:function(lineElt,viewInstance) {
+        // get current viewInstance
+        var viewInstance = this.getViewById(viewInstance.id);
+
+        OSH.Asserts.checkIsDefineOrNotNull(viewInstance);
+
+        this.containerElt.removeChild(lineElt);
+        var newArr = [];
+
+        for(var i=0;i < this.views.length;i++) {
+            if(this.views[i].id !== viewInstance.id) {
+                newArr.push(this.views[i]);
+            }
+        }
+        this.views = newArr;
+
+        // delete corresponding viewItem
+        var currentViewItem;
+        for(var i = 0;i < viewInstance.viewItems.length;i++) {
+            currentViewItem = viewInstance.viewItems[i];
+            if(currentViewItem.entityId === this.options.entityId) {
+                viewInstance.removeViewItem(currentViewItem);
+            }
+        }
+        // destroy element
+        if(viewInstance.hash !== 0x0000) {
+            OSH.Utils.destroyElement(viewInstance.elementDiv);
+        }
+    },
+
+    checkViewItems:function(view) {
+        // updates/add view item
+        if(!isUndefinedOrNull(view.viewItemsToAdd)) {
+            for (var j = 0; j < view.viewItemsToAdd.length; j++) {
+                var viewItemToAdd = view.viewItemsToAdd[j];
+
+                view.addViewItem(viewItemToAdd);
+            }
+            view.viewItemsToAdd = [];
+        }
+
+        // DELETE
+        if(!isUndefinedOrNull(view.viewItemsToRemove)) {
+            for (var j = 0; j < view.viewItemsToRemove.length; j++) {
+               var viewItemToRemove = view.viewItemsToRemove[j];
+                view.removeViewItem(viewItemToRemove);
+            }
+            view.viewItemsToRemove = [];
+        }
+
+        // update all viewItems
+        for (var j = 0; j < view.viewItems.length; j++) {
+            var viewItemToUpdate = view.viewItems[j];
+            view.updateViewItem(viewItemToUpdate);
+        }
+    },
+
+    reset:function() {
+        OSH.Helper.HtmlHelper.removeAllNodes(this.containerElt);
+        this.views = [];
+    },
+
+    getViewById:function(id) {
+        var view;
+
+        for(i=0;i < this.views.length;i++) {
+            if (this.views[i].id === id) {
+                view = this.views[i];
+                break;
+            }
+        }
+
+        return view;
+    },
+
+    //**************************************************************//
+    //*************Restoring view **********************************//
+    //**************************************************************//
+
+    /**
+     * load views from saved data
+     * @param viewPropertiesArray
+     */
+    loadViews:function(viewPropertiesArray) {
+        this.reset();
+        var currentProperty;
+
+        var existingViewList = this.getViewList();
+        for(var key in viewPropertiesArray) {
+            currentProperty = viewPropertiesArray[key];
+            if(currentProperty.hash === 0x000) {
+                // existing view
+                for(var i=0;i < existingViewList.length;i++) {
+                    this.restoringExistingView(existingViewList[i],currentProperty);
+                }
+            } else {
+                //TODO: case where the view is a new view
+                this.restoringDialogView(existingViewList[i],currentProperty);
+            }
+        }
+    },
+
+    restoringDialogView:function(currentViewDiv,properties) {
+        var viewInstance = this.addView({
+            name: properties.name,
+            type: properties.type,
+            hash: properties.hash,
+            viewInstanceType:properties.viewInstanceType,
+            options:properties.options
+        });
+
+        this.restoringView(viewInstance,currentViewDiv,properties);
+    },
+
+    restoringExistingView:function(currentViewDiv,properties) {
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id, function (event) {
+            var viewInstance = event.object;
+            var nodeIndex = OSH.Utils.getChildNumber(viewInstance.elementDiv);
+            if(viewInstance.type === properties.type &&
+                nodeIndex === properties.nodeIdx &&
+                viewInstance.elementDiv.parentNode.id === properties.container) {
+                this.restoringView(viewInstance, currentViewDiv, properties);
+
+                this.addView({
+                    name: properties.name,
+                    type: properties.type,
+                    instance: viewInstance,
+                    hash: properties.hash
+                });
+            }
+            OSH.EventManager.remove(OSH.EventManager.EVENT.SEND_OBJECT + "-" + currentViewDiv.id);
+        }.bind(this));
+
+        OSH.EventManager.fire(OSH.EventManager.EVENT.GET_OBJECT + "-" + currentViewDiv.id);
+    },
+
+    restoringView:function(viewInstance,currentViewDiv,properties) {
+        //--- Stylers
+        for(var key in properties.viewItems) {
+            var props = this.restoringStyler(properties.viewItems[key]);
+            viewInstance.addViewItem(props);
+        }
+    },
+
+    restoringStyler:function(currentViewItemProps) {
+        var currentViewStylerProps = currentViewItemProps.styler;
+        var stylerInstance = OSH.UI.Styler.Factory.getNewInstanceFromType(currentViewStylerProps.type);
+
+        OSH.Utils.copyProperties(currentViewStylerProps,stylerInstance,false);
+
+        // re-create styler function from UI selection
+        if(OSH.Utils.hasOwnNestedProperty(stylerInstance,"properties.ui")) {
+            for (var property in stylerInstance.properties) {
+                if(property.endsWith("Func")) {
+                    var fnProperty = this.restoringStylerFunction(property,stylerInstance.properties[property], stylerInstance.properties.ui);
+                    stylerInstance.updateProperties(fnProperty);
+                }
+            }
+        }
+
+        return {
+            name: currentViewItemProps.name,
+            entityId: currentViewItemProps.entityId,
+            styler:stylerInstance
+        };
+    },
+
+    restoringStylerFunction:function(fnName,fnProperty,uiProperty) {
+        var regex = /(blob:[^']*)'/g;
+        var matches;
+        var funcStr = fnProperty.handlerStr;
+
+        while ((matches = regex.exec(fnProperty.handlerStr)) !== null) {
+            var result = [];
+            OSH.Utils.searchPropertyByValue(
+                uiProperty,
+                matches[1],
+                result);
+            if(!isUndefinedOrNull(result) && result.length > 0) {
+                // regenerate a blob from binary string and replace corresponding function
+                var blobUrl = OSH.Utils.binaryStringToBlob(result[0].binaryString);
+                funcStr = funcStr.replace(matches[1],blobUrl);
+                result[0].url = blobUrl; // TODO: should find a best way to change dynamically the blob url
+            }
+        }
+
+        var func = OSH.UI.Styler.Factory.buildFunctionFromSource(
+            fnProperty.dataSourceIds,
+            fnName,
+            funcStr);
+
+        return func;
+    }
+    /** End restoring view **/
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityFilePanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId, properties);
+    },
+
+    initPanel:function() {
+        // LOAD part
+        var loadDivElt = document.createElement("div");
+
+        // adds button
+        var loadButtonElt = document.createElement("button");
+        loadButtonElt.setAttribute("id",OSH.Utils.randomUUID());
+        loadButtonElt.setAttribute("class","submit load-button");
+        loadButtonElt.setAttribute("disabled",""); // disabled by default
+
+        loadButtonElt.innerHTML = "Load";
+
+        loadDivElt.appendChild(loadButtonElt);
+
+        // adds input field
+        var inputFileEltId = OSH.Helper.HtmlHelper.addFileChooser(loadDivElt);
+
+        var self = this;
+
+        this.loadedFiles = [];
+
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            var nextElt = document.getElementById("text-"+inputFileEltId);
+            nextElt.className += " load-settings ";
+
+            // listeners
+            var inputFileElt = document.getElementById(inputFileEltId);
+
+            var lastDataLoaded;
+
+            self.addListener(inputFileElt, "change", self.inputFileHandlerAsText.bind(inputFileElt,function(result) {
+                self.enableElt(loadButtonElt.id);
+
+                lastDataLoaded = result;
+            }));
+
+            self.addListener(loadButtonElt,"click",function(evt) {
+                if(!isUndefinedOrNull(lastDataLoaded)) {
+                    try{
+                        self.loadProperties(lastDataLoaded.data,lastDataLoaded.file.name);
+                    } catch(exception) {
+                        throw new OSH.Exception.Exception("Cannot convert '"+lastDataLoaded.file.name+"' into JSON: ",exception);
+                    }
+                }
+            });
+        });
+
+        // SAVE part
+        var divSaveElt = document.createElement("div");
+        divSaveElt.setAttribute("class","save");
+
+        // adds button
+        var saveButtonElt = document.createElement("button");
+        saveButtonElt.setAttribute("id",OSH.Utils.randomUUID());
+        saveButtonElt.setAttribute("class","submit load-button");
+
+        saveButtonElt.innerHTML = "Save";
+
+        divSaveElt.appendChild(saveButtonElt);
+
+        // adds input field
+        var defaultName = "entity-properties.json";
+        var inputTextSaveEltId = OSH.Helper.HtmlHelper.addInputText(divSaveElt,null,defaultName,"filename.json");
+
+
+        OSH.Helper.HtmlHelper.onDomReady(function() {
+            var inputTextElt = document.getElementById(inputTextSaveEltId);
+            self.addListener(saveButtonElt, "click", function (evt) {
+                var inputTextValue = inputTextElt.value;
+                var fileName = defaultName;
+
+                if(!isUndefinedOrNull(inputTextValue) && inputTextValue !== "") {
+                    fileName = inputTextValue;
+                }
+
+                self.savePropertiesHandler(fileName);
+            });
+        });
+
+        this.elementDiv.appendChild(loadDivElt);
+        this.elementDiv.appendChild(divSaveElt);
+    },
+
+    saveProperties: function(properties,fileName) {
+        try {
+            var blob = new Blob([JSON.stringify(properties)], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, fileName);
+        } catch(exception) {
+            throw new OSH.Exception.Exception("Cannot save the data as file: "+fileName,exception);
+        }
+
+    },
+
+    loadProperties : function(textData,fileName) {
+        try{
+            if( this.loadedFiles.indexOf(fileName)  === -1) {
+                this.loadPropertiesHandler(JSON.parse(textData));
+                this.loadedFiles.push(fileName);
+            }
+        } catch(exception) {
+            throw new OSH.Exception.Exception("Cannot convert '"+fileName+"' into JSON: ",exception);
+        }
+    },
+
+    loadPropertiesHandler:function(jsonProperties) {},
+
+    savePropertiesHandler:function(filename) {
+        var props = this.beforeOnSaveProperties();
+        this.saveProperties(props,filename);
+    },
+
+    beforeOnSaveProperties:function() {
+        return [];
+    },
+
+    enableElt:function(id) {
+        document.getElementById(id).removeAttribute("disabled","");
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityDatasourcePanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        this.addDsButtonId = OSH.Utils.randomUUID();
+        this.entity = this.options.entity;
+
+        var buttonElt = document.createElement("button");
+        buttonElt.setAttribute("id",this.addDsButtonId);
+        buttonElt.setAttribute("class","submit datasource");
+
+        buttonElt.innerHTML = "Add";
+
+        var divContainer = document.createElement("div");
+        this.divDSContainerId = OSH.Utils.randomUUID();
+        divContainer.setAttribute("id",this.divDSContainerId);
+        divContainer.setAttribute("class","datasource-container");
+
+        // listeners
+        OSH.EventManager.observeDiv(this.addDsButtonId,"click",this.onAddDataSourceButtonClickHandler.bind(this));
+
+        this.elementDiv.appendChild(buttonElt);
+        this.elementDiv.appendChild(divContainer);
+
+        this.datasources = {};
+        this.nbDatasources = 0;
+    },
+
+    onAddDataSourceButtonClickHandler: function(event) {
+        // init discovery view
+        var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
+            services: this.options.services
+        });
+
+        discoveryView.onAddHandler = this.addDataSource.bind(this);
+
+        var discoveryDialog = new OSH.UI.Panel.DialogPanel("", {
+            draggable: true,
+            css: "dialog-discovery",
+            title: "Discovery",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true,
+            keepRatio:false
+
+        });
+
+        discoveryView.attachToElement(discoveryDialog.contentElt);
+    },
+
+    addDataSource:function(dataSource) {
+
+        this.nbDatasources++;
+        this.datasources[dataSource.id] = dataSource;
+
+        var div = document.createElement('div');
+        div.setAttribute("id",dataSource.id);
+        div.setAttribute("class","ds-line");
+
+        var deleteId = OSH.Utils.randomUUID();
+        var editId = OSH.Utils.randomUUID();
+
+        var strVar = "<span class=\" line-left\" id=\"ds-name-"+dataSource.id+"\">"+dataSource.name+"<\/span>";
+        strVar += "   <table class=\"control line-right\">";
+        strVar += "      <tr>";
+        strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\""+editId+"\"><\/i><\/td>";
+        strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\""+deleteId+"\"><\/i><\/td>";
+        strVar += "      <\/tr>";
+        strVar += "   <\/table>";
+        strVar += "<\/div>";
+        strVar += "<div style=\"clear: both;\"><\/div>";
+
+        div.innerHTML = strVar;
+
+        document.getElementById(this.divDSContainerId).appendChild(div);
+
+        // add listeners
+        var self = this;
+
+        this.entity.dataSources.push(dataSource);
+
+        OSH.EventManager.observeDiv(deleteId,"click",function(event) {
+            div.parentNode.removeChild(div);
+            dataSource.disconnect();
+
+            delete self.datasources[dataSource.id];
+            self.nbDatasources--;
+
+            self.entity.dataSources = self.entity.dataSources.filter(function(ds){
+                return ds.id !== dataSource.id;
+            });
+        });
+
+        OSH.EventManager.observeDiv(editId,"click",function(event) {
+            // init discovery view
+            var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
+                services: self.options.services
+            });
+
+            discoveryView.onEditHandler = self.editDataSource.bind(self);
+
+            var discoveryDialog = new OSH.UI.Panel.DialogPanel("", {
+                draggable: true,
+                css: "dialog-discovery",
+                title: "Discovery",
+                show:true,
+                dockable: false,
+                closeable: true,
+                connectionIds : [],
+                destroyOnClose:true,
+                modal:true,
+                keepRatio:false
+            });
+
+            discoveryView.attachToElement(discoveryDialog.contentElt);
+
+            // setup existing info
+            discoveryView.initDataSource(self.datasources[dataSource.id]);
+
+            discoveryView.getButtonElement().value = "Edit";
+            discoveryView.getButtonElement().text = "Edit";
+            discoveryView.getButtonElement().innerHTML = "Edit";
+
+        });
+    },
+
+    editDataSource:function(dataSource) {
+        this.datasources[dataSource.id] = dataSource;
+        document.getElementById("ds-name-"+dataSource.id).innerHTML = dataSource.name;
+
+        // datasource has been changed, disconnect it
+        dataSource.disconnect();
+
+        this.onDatasourceChanged(dataSource);
+    },
+
+    onDatasourceChanged : function(dataSource) {},
+
+    loadDataSourcesProperty:function(dsPropertyArray,callback) {
+        this.reset();
+        var self = this;
+
+        if(isUndefinedOrNull(dsPropertyArray) || dsPropertyArray.length === 0) {
+            callback([]);
+        }
+        var nbElements = dsPropertyArray.length;
+
+        for(var key in dsPropertyArray) {
+            (function(id) {
+                // gets new instance
+                var datasource = OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(dsPropertyArray[key], function (result) {
+                    result.id = id;
+                    self.addDataSource(result);
+                    if (--nbElements === 0) {
+                        callback(Object.values(self.datasources));
+                    }
+                });
+            })(dsPropertyArray[key].id);  //passing the variable to freeze, creating a new closure
+        }
+    },
+
+    reset:function() {
+        OSH.Helper.HtmlHelper.removeAllNodes(document.getElementById(this.divDSContainerId));
+        this.datasources = {};
+        this.nbDatasources = 0;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityEditorPanel = OSH.UI.Panel.extend({
+
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId,properties);
+
+        // read properties
+        this.viewContainer = document.body.id;
+        this.services = [];
+
+        if(!isUndefinedOrNull(properties)){
+            if(!isUndefinedOrNull(properties.viewContainer)){
+                this.viewContainer = properties.viewContainer;
+            }
+
+            if(!isUndefinedOrNull(properties.services)) {
+                this.services = properties.services;
+            }
+
+            if(!isUndefinedOrNull(properties.entity)) {
+                this.entity = properties.entity;
+            }
+        }
+
+        if(isUndefinedOrNull(this.entity)) {
+            // creates new entity
+            this.createEntity();
+        }
+
+        // add template
+        var entityEditor = document.createElement("div");
+        entityEditor.setAttribute("id","Entity-editor-"+OSH.Utils.randomUUID());
+        entityEditor.setAttribute("class",'entity-editor');
+
+        document.getElementById(this.divId).appendChild(entityEditor);
+
+        this.tabPanel = new OSH.UI.Panel.TabPanel();
+
+        this.tabPanel.addTab("File",this.createFilePanel());
+        this.tabPanel.addTab("Info",this.createInfoPanel());
+        this.tabPanel.addTab("Data Sources",this.createDSPanel());
+        this.tabPanel.addTab("Views",this.createViewPanel());
+
+        entityEditor.appendChild(this.tabPanel.elementDiv);
+        OSH.Helper.HtmlHelper.addHTMLLine(entityEditor);
+
+        var createButtonElt = document.createElement("button");
+        createButtonElt.setAttribute("class","submit save-entity-button");
+
+        createButtonElt.innerHTML = "Save";
+
+        entityEditor.appendChild(createButtonElt);
+
+
+        // inits properties
+        this.properties = {
+            datasources : {},
+            views : []
+        };
+
+        this.addListener(createButtonElt, "click", this.saveEntity.bind(this));
+    },
+
+    createEntity:function() {
+        this.entity = {
+            id: "entity-" + OSH.Utils.randomUUID(),
+            dataSources: [],
+            dataProviderController: new OSH.DataReceiver.DataReceiverController({
+                replayFactor: 1 //TODO:which datasource??!
+            })
+        };
+    },
+
+    createFilePanel:function() {
+        var filePanel = new OSH.UI.Panel.EntityFilePanel();
+        filePanel.beforeOnSaveProperties = function() {
+            return this.createSaveProperty();
+        }.bind(this);
+
+        filePanel.loadPropertiesHandler = function(properties) {
+            this.restoreSavedProperties(properties);
+         }.bind(this);
+        return filePanel.elementDiv;
+    },
+
+    createInfoPanel:function() {
+        this.infoPanel = new OSH.UI.Panel.EntityInfoPanel();
+        return this.infoPanel.elementDiv;
+    },
+
+    createDSPanel:function() {
+       this.datasourcePanel = new OSH.UI.Panel.EntityDatasourcePanel("",{services:this.services, entity:this.entity});
+
+       this.datasourcePanel.onDatasourceChanged = function(datasource) {
+           this.entity.dataProviderController.updateDataSource(datasource);
+       }.bind(this);
+
+       return this.datasourcePanel.elementDiv;
+    },
+
+    createViewPanel: function() {
+        this.viewPanel = new OSH.UI.Panel.EntityViewPanel("",{
+            datasources:this.datasourcePanel.datasources,
+            entityId:this.entity.id
+        });
+
+        return this.viewPanel.elementDiv;
+    },
+
+    initDatasources: function() {
+        if(!isUndefinedOrNull(this.entity.datacontroller)) {
+            for (var key in this.entity.dataSources){
+                var ds = this.entity.datacontroller.getDataSource(this.entity.dataSources[key]);
+                this.datasourcePanel.addDataSource(ds);
+            }
+        }
+    },
+
+    enableElt:function(id) {
+        document.getElementById(id).removeAttribute("disabled","");
+    },
+
+    disableElt:function(id) {
+        document.getElementById(id).setAttribute("disabled","");
+    },
+
+    saveEntity:function() {
+        // create corresponding views
+        var views = this.viewPanel.views;
+
+        var menuItems = [];
+
+        for(var key in views) {
+            var currentView = views[key];
+
+            var viewId = currentView.id;
+
+            if(currentView.hash !== 0x0000) {
+                this.saveDialog(currentView);
+            }
+
+            menuItems.push({
+                name: currentView.name,
+                viewId: viewId,
+                css: "fa fa-video-camera"
+            });
+        }
+
+        if(menuItems.length > 0) {
+            var menuId = "menu-"+OSH.Utils.randomUUID();
+            var menu = new OSH.UI.ContextMenu.StackMenu({id: menuId ,groupId: "menu-"+OSH.Utils.randomUUID(),items : menuItems});
+
+            for(var i = 0;i < views.length;i++) {
+                for(var j=0;j < views[i].viewItems.length;j++) {
+                    views[i].viewItems[j].contextMenuId = menuId;
+                }
+            }
+        }
+
+        // update datasources
+        this.entity.dataSources = Object.values(this.datasourcePanel.datasources);
+
+        // We can add a group of dataSources and set the options
+        this.entity.dataProviderController.addEntity(this.entity);
+
+        // starts streaming
+        this.entity.dataProviderController.connectAll();
+    },
+
+    saveDialog:function(view){
+        if (isUndefinedOrNull(view.dialog) || !view.dialog.in) {
+            var viewDialog = new OSH.UI.Panel.DialogPanel("", {
+                draggable: true,
+                css: "app-dialog", //TBD into edit view
+                title: view.name,
+                show: true,
+                dockable: false,
+                closeable: true,
+                connectionIds: [],//TODO
+                destroyOnClose: false,
+                modal: false,
+                keepRatio: (!isUndefinedOrNull(view.options.keepRatio)) ? view.options.keepRatio : false
+            });
+
+            view.attachToElement(viewDialog.contentElt);
+            view.dialog = {
+                in : true,
+                closed:false
+            };
+
+            viewDialog.onClose = function() {
+                view.dialog.closed = true;
+            };
+
+            viewId=viewDialog.id;
+        } else if(view.dialog.closed){
+            // show dialog
+            var parentDialog = OSH.Utils.getSomeParentTheClass(view.elementDiv,"dialog");
+            if(!isUndefinedOrNull(parentDialog)) {
+                viewId = parentDialog.id;
+                OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW, {
+                    viewId: viewId
+                });
+            }
+        }
+    },
+
+    //**************************************************************//
+    //*************Saving property**********************************//
+    //**************************************************************//
+
+    createSaveProperty: function () {
+        var result = {};
+
+        // Entity information
+        this.saveInfo(result);
+
+        // Datasource information
+        this.saveDatasources(result);
+
+        // view information
+        // new or existing ?
+        // store name, type & hash
+
+        this.saveViews(result);
+
+        return result;
+    },
+
+    saveInfo:function(result) {
+        // Entity information
+        result.infos = {
+            id: this.entity.id,
+            name : document.getElementById(this.infoPanel.nameTagId).value,
+            icon : document.getElementById(this.infoPanel.iconTagId).value,
+            description: document.getElementById(this.infoPanel.descriptionTagId).value
+        };
+    },
+
+    saveDatasources:function(result) {
+        var datasourcesProperty = [];
+        for(var key in this.datasourcePanel.datasources) {
+            var dsProps = {};
+            OSH.Utils.copyProperties(this.datasourcePanel.datasources[key].properties,dsProps);
+            dsProps.id = this.datasourcePanel.datasources[key].id;
+
+            datasourcesProperty.push(dsProps);
+        }
+        result.datasources = datasourcesProperty;
+    },
+
+    saveViews:function(result) {
+        result.views  = [];
+        var currentView;
+
+        // iterates over views
+        for(var key in this.viewPanel.views) {
+            currentView = this.viewPanel.views[key];
+            result.views.push(this.saveView(currentView));
+        }
+    },
+
+    saveView:function(view) {
+        // compute view Items infos
+        if(!isUndefinedOrNull(view.viewItems)) {
+            var currentViewItem;
+            var viewItems = [];
+
+            for(var key in view.viewItems) {
+                currentViewItem = view.viewItems[key];
+
+                // save only viewItem created using UI
+                if(currentViewItem.entityId === this.entity.id) {
+                    viewItems.push(this.saveViewItem(currentViewItem));
+                }
+            }
+        }
+
+        return {
+            type: view.type,
+            hash: view.hash,
+            name: view.name,
+            container: view.elementDiv.parentNode.id,
+            nodeIdx: OSH.Utils.getChildNumber(view.elementDiv),
+            display: view.elementDiv.style.display, // for new created views, should be equal to NONE,
+            viewItems:viewItems,
+            options:view.options,
+            viewInstanceType:view.viewInstanceType
+        };
+    },
+
+    saveViewItem:function(viewItem) {
+        var viewItemToSave = {
+            name: viewItem.name,
+            entityId: viewItem.entityId,
+            styler: null
+        };
+
+        if (!isUndefinedOrNull(viewItem.styler)) {
+            viewItemToSave.styler = this.saveStyler(viewItem.styler);
+        }
+
+        return viewItemToSave;
+    },
+
+    saveStyler:function(styler) {
+        var stylerToSave = {
+            properties:{},
+            type: OSH.UI.Styler.Factory.getTypeFromInstance(styler)
+        };
+
+        for(var property in styler.properties) {
+            stylerToSave.properties[property] = {};
+            if(property.endsWith("Func")) {
+                OSH.Utils.copyProperties(styler.properties[property],stylerToSave.properties[property]);
+                stylerToSave.properties[property].handlerStr = styler.properties[property].handler.toSource();
+            } else {
+                stylerToSave.properties[property] = styler.properties[property];
+            }
+        }
+
+        return stylerToSave;
+
+    },
+
+    restoreSavedProperties:function(properties){
+        this.infoPanel.loadInfos(properties.infos);
+        this.datasourcePanel.loadDataSourcesProperty(properties.datasources,function(datasourceArray) {
+
+            this.createEntity();
+
+            // asigns saved values
+            this.entity.id = properties.infos.id;
+            this.entity.name = properties.infos.name;
+            this.entity.icon = properties.infos.icon;
+            this.entity.description = properties.infos.description;
+            this.entity.dataSources = datasourceArray;
+
+            // View panel
+            // re-init entity-id
+            this.viewPanel.options.entityId = this.entity.id;
+            this.viewPanel.options.datasources = this.datasourcePanel.datasources;
+
+            this.viewPanel.loadViews(properties.views);
+
+            // adds and connects datasources
+            this.saveEntity();
+        }.bind(this));
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityEditViewPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        //this.view = OSH.ViewMap.getView(this.options.view.id);
+        this.view = this.options.view;
+
+        if(!isUndefinedOrNull(this.options.entityId)) {
+            this.entityId = this.options.entityId;
+        }
+
+        OSH.Utils.addCss(this.elementDiv,"edit-view");
+
+
+        // creates view properties div
+        this.viewPropertiesElt = document.createElement("div");
+        this.viewPropertiesElt.setAttribute("class","view-properties");
+        this.elementDiv.appendChild(this.viewPropertiesElt);
+
+        // creates content div
+        this.contentElt = document.createElement("div");
+        this.contentElt.setAttribute("class","content-properties");
+        this.elementDiv.appendChild(this.contentElt);
+
+        this.buildViewProperties();
+
+        var containerArr = this.getContainers();
+        if(this.view.container !== "") {
+            if(!isUndefinedOrNull(this.view.container.id)) {
+                containerArr.push(this.view.container.id);
+            } else {
+                containerArr = this.getContainers().concat(this.view.container).filter(function(value, index, self) {
+                    return self.indexOf(value) === index;
+                });
+            }
+        }
+        //TODO:this.buildContainer(containerArr);
+
+
+        this.buildContent();
+    },
+
+    buildViewProperties: function() {
+
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.viewPropertiesElt,"View properties");
+
+        var inputViewNameId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Name",this.view.name);
+
+        var self = this;
+        OSH.EventManager.observeDiv(inputViewNameId,"change",function(event){
+
+            // updates view name
+            self.view.name = this.value;
+        });
+    },
+
+    buildContainer: function(containerArr) {
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.elementDiv,"Container");
+        this.containerDivId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"",containerArr);
+
+        OSH.Helper.HtmlHelper.HTMLListBoxSetSelected(document.getElementById(this.containerDivId),this.view.container);
+
+        var containerElt = document.getElementById(this.containerDivId);
+
+        if(!isUndefinedOrNull(this.view.container)) {
+            var idx = -1;
+            if(!isUndefinedOrNull(this.view.container.id)) {
+                idx = containerArr.indexOf(this.view.container.id);
+            } else {
+                idx = containerArr.indexOf(this.view.container);
+            }
+            containerElt.options[idx].setAttribute("selected","");
+        }
+        // add default containers
+        // listener
+        var self = this;
+
+        OSH.EventManager.observeDiv(this.containerDivId,"change",function(event){
+            // updates view container
+            self.view.container = this.options[this.selectedIndex].value;
+        });
+    },
+
+    /**
+     * Abstract
+     */
+    buildContent:function() {},
+
+    getView:function() {
+        return this.view;
+    },
+
+    getProperties:function() {
+        return {
+            name:this.view.name
+        };
+    },
+
+    getContainers:function() {
+        return [" ","Dialog"];
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend({
+    initialize: function (parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    buildContent:function() {
+        var viewItems = [];
+        if(!isUndefinedOrNull(this.view.viewItems) && this.view.viewItems.length > 0) {
+            viewItems = this.view.viewItems;
+        }
+
+        if(!isUndefinedOrNull(this.view.viewItemsToAdd) && this.view.viewItemsToAdd.length > 0) {
+            viewItems = viewItems.concat(this.view.viewItemsToAdd);
+        }
+
+        this.buildViewItems(viewItems);
+    },
+
+    buildViewItems:function(defaultViewItemArr) {
+        if(isUndefinedOrNull(this.view.viewItemsToAdd)) {
+            this.view.viewItemsToAdd = [];
+        }
+        if(isUndefinedOrNull(this.view.viewItemsToRemove)) {
+            this.view.viewItemsToRemove = [];
+        }
+
+        // styler part
+        this.viewItemsContainerDivId = OSH.Utils.randomUUID();
+        var addViewItemId = OSH.Utils.randomUUID();
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"View items");
+
+        var viewItemsDivElt = document.createElement("div");
+        viewItemsDivElt.setAttribute("class","viewItem-section");
+
+        var addViewItemButtonElt = document.createElement("button");
+        addViewItemButtonElt.setAttribute("id",addViewItemId );
+        addViewItemButtonElt.setAttribute("class","submit");
+        addViewItemButtonElt.innerHTML = "Add";
+
+        var viewItemsContainerElt = document.createElement("div");
+        viewItemsContainerElt.setAttribute("id",this.viewItemsContainerDivId);
+        viewItemsContainerElt.setAttribute("class","viewItem-container");
+
+        viewItemsDivElt.appendChild(addViewItemButtonElt);
+        viewItemsDivElt.appendChild(viewItemsContainerElt);
+
+        this.contentElt.appendChild(viewItemsDivElt);
+
+        // inits from properties
+        // check if the current view items are part of the current entity
+        for(var i =0;i < defaultViewItemArr.length;i++) {
+            if(!isUndefinedOrNull(defaultViewItemArr[i].entityId) &&
+                defaultViewItemArr[i].entityId === this.entityId) {
+                this.addViewItem({viewItem: defaultViewItemArr[i]});
+            }
+        }
+
+        // listeners
+        var self = this;
+
+        OSH.EventManager.observeDiv(addViewItemId,"click",function (event) {
+            var newStyler = self.addViewItem(event);
+        });
+    },
+
+    // ACTION FUNCTIONS
+    addViewItem:function(event) {
+        var viewItemsContainerElt = document.getElementById(this.viewItemsContainerDivId);
+
+        var id = OSH.Utils.randomUUID();
+        var stylerSelectDivId = "styler-"+id;
+
+        var div = document.createElement('div');
+        div.setAttribute("id","viewItem-"+id);
+        div.setAttribute("class","ds-line");
+
+        var deleteId = "delete-"+id;
+        var editId = "edit-"+id;
+
+        var viewItem = null;
+        var styler = null;
+
+        // gets styler list from current instance
+        var stylerList = this.getStylerList();
+
+        var selectedStylerName = stylerList[0];
+
+        if(!isUndefined(event.viewItem)) {
+            //TODO: check if that is still necessary with the new architecture
+            viewItem = event.viewItem;
+            styler = viewItem.styler;
+            selectedStylerName = OSH.UI.Styler.Factory.getTypeFromInstance(styler);
+        } else {
+            if(isUndefinedOrNull(this.nbViewItems)) {
+                this.nbViewItems = 0;
+            }
+
+            var stylerUI = null;
+
+            if(!isUndefinedOrNull(stylerList)){
+                stylerUI = OSH.UI.Styler.Factory.getNewInstanceFromType(stylerList[0]);
+            }
+
+            viewItem = {
+                id: "view-item-"+OSH.Utils.randomUUID(),
+                name:"View item #"+this.nbViewItems++,
+                styler: stylerUI
+            };
+
+            if(!isUndefinedOrNull(this.entityId)) {
+                viewItem.entityId = this.entityId;
+            }
+
+            this.view.viewItemsToAdd.push(viewItem);
+        }
+
+        var inputEltId = OSH.Utils.randomUUID();
+
+        var strVar = "<div class=\"line-left view-item-line\">";
+        strVar += "     <input id=\""+inputEltId+"\" name=\""+viewItem.name+"\" value=\""+viewItem.name+"\" type=\"input-text\" class=\"input-text\">";
+        strVar += "     <div class=\"select-style\">";
+        strVar += "         <select id=\"" + stylerSelectDivId + "\">";
+
+        for(var i=0;i < stylerList.length;i++) {
+            if(stylerList[i] === selectedStylerName) {
+                strVar += "             <option  selected value=\""+stylerList[i]+"\">"+stylerList[i]+"<\/option>";
+            } else {
+                strVar += "             <option  value=\""+stylerList[i]+"\">"+stylerList[i]+"<\/option>";
+            }
+        }
+
+        strVar += "         <\/select>";
+        strVar += "     <\/div>";
+        strVar += "  <\/div>";
+
+        strVar += "   <table class=\"control line-right\">";
+        strVar += "      <tr>";
+        strVar += "         <td><i class=\"fa fa-2x fa-pencil-square-o edit\" aria-hidden=\"true\" id=\"" + editId + "\"><\/i><\/td>";
+        strVar += "         <td><i class=\"fa fa-2x fa-trash-o delete\" aria-hidden=\"true\" id=\"" + deleteId + "\"><\/i><\/td>";
+        strVar += "      <\/tr>";
+        strVar += "   <\/table>";
+        strVar += "<\/div>";
+        strVar += "<div style=\"clear: both;\"><\/div>";
+
+        div.innerHTML = strVar;
+
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            var inputElt = document.getElementById(inputEltId);
+            // FIX select input-text instead of dragging the element(when the parent is draggable)
+            inputElt.onfocus = function (e) {
+                OSH.Utils.fixSelectable(this, true);
+            };
+
+            inputElt.onblur = function (e) {
+                OSH.Utils.fixSelectable(this, false);
+            };
+        });
+
+        viewItemsContainerElt.appendChild(div);
+
+        var self = this;
+
+        OSH.EventManager.observeDiv(inputEltId, "change", function (event) {
+            viewItem.name = document.getElementById(inputEltId).value;
+        });
+
+        OSH.EventManager.observeDiv(deleteId, "click", function (event) {
+            viewItemsContainerElt.removeChild(div);
+            self.view.viewItemsToRemove.push(viewItem);
+        });
+
+        OSH.EventManager.observeDiv(editId, "click", this.editStyler.bind(this, viewItem));
+
+        OSH.EventManager.observeDiv(stylerSelectDivId, "change", function (event) {
+            var vItem = self.getViewItemById(viewItem.id);
+            vItem.styler = self.getNewStylerInstance(this.options[this.selectedIndex].value);
+        });
+    },
+
+    editStyler:function(viewItem,event) {
+        var editStylerView = this.getStylerPanelInstance({
+            datasources:this.options.datasources,
+            styler: viewItem.styler
+        });
+
+        var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
+            draggable: true,
+            css: "dialog-edit-view", //TODO: create unique class for all the views
+            title: "Edit Styler",
+            show:true,
+            dockable: false,
+            closeable: true,
+            connectionIds : [],
+            destroyOnClose:true,
+            modal:true
+        });
+
+        editStylerView.attachToElement(editViewDialog.contentElt);
+
+        var self = this;
+
+        (function(viewItemId) {
+            editViewDialog.onSave = function() {
+                var styler = editStylerView.getStyler();
+
+                // updates the styler of this viewItem
+                var viewItem = self.getViewItemById(viewItemId);
+                viewItem.styler = styler;
+
+                editViewDialog.close();
+            };
+        })(viewItem.id); //passing the variable to freeze, creating a new closure
+    },
+
+    /**
+     * This builds a new instance of the selected styler corresponding to the viewItem.
+     * Each subclass has to return its own instance
+     */
+    getNewStylerInstance:function(name) {},
+
+    getTypeFromStylerInstance:function(stylerInstance) {},
+
+    /**
+     * This gets the available styler list compatible with the view.
+     * Each subclass has to return its own list
+     */
+    getStylerList:function() { return [];},
+
+    getStylerPanelInstance:function(properties) {},
+
+    getViewItemById:function(id) {
+        var result=null;
+
+        for(var key in this.view.viewItems) {
+            if(this.view.viewItems[key].id === id) {
+                result = this.view.viewItems[key];
+                break;
+            }
+        }
+        if(result === null) {
+            for(var key in this.view.viewItemsToAdd) {
+                if(this.view.viewItemsToAdd[key].id === id) {
+                    result = this.view.viewItemsToAdd[key];
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityMapEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
+
+    getStylerList:function() {
+        return [OSH.UI.Styler.Factory.TYPE.MARKER, OSH.UI.Styler.Factory.TYPE.POLYLINE];
+    },
+
+    getStylerPanelInstance:function(properties) {
+        return new OSH.UI.Panel.StylerMarkerPanel("",properties);
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityVideoEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
+
+    buildViewProperties: function() {
+        this._super();
+
+        this.keepRatioCheckboxId = OSH.Helper.HtmlHelper.addCheckbox(this.viewPropertiesElt,"Keep ratio",this.view.options.keepRatio);
+        this.showFpsCheckboxId = OSH.Helper.HtmlHelper.addCheckbox(this.viewPropertiesElt,"Show fps",this.view.options.showFps);
+    },
+
+    getStylerList:function() {
+        return [OSH.UI.Styler.Factory.TYPE.VIDEO];
+    },
+
+    getStylerPanelInstance:function(properties) {
+        return new OSH.UI.Panel.StylerVideoPanel("",properties);
+    },
+
+    getProperties:function() {
+        var superProperties = this._super();
+
+        OSH.Utils.copyProperties({
+            showFps:  document.getElementById(this.showFpsCheckboxId).checked,
+            keepRatio: document.getElementById(this.keepRatioCheckboxId).checked
+        },superProperties,true);
+
+        return superProperties;
+    },
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityChartEditPanel = OSH.UI.Panel.EntityViewItemsEditPanel.extend({
+
+    buildViewProperties: function() {
+        this._super();
+
+        this.inputXLabelId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"X label",null,"x label");
+        this.inputYLabelId = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Y label",null,"y label");
+        this.inputMaxPoint = OSH.Helper.HtmlHelper.addInputText(this.viewPropertiesElt,"Max points",null,"maximum points displayed at the same time");
+
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            document.getElementById(this.inputXLabelId).value = this.options.view.xLabel;
+            document.getElementById(this.inputYLabelId).value = this.options.view.yLabel;
+            document.getElementById(this.inputMaxPoint).value = this.options.view.maxPoints;
+        }.bind(this));
+    },
+
+    getStylerList:function() {
+        return [OSH.UI.Styler.Factory.TYPE.LINE_PLOT];
+    },
+
+    getStylerPanelInstance:function(properties) {
+        return new OSH.UI.Panel.StylerLinePlotPanel("",properties);
+    },
+
+    getProperties:function() {
+        var superProperties = this._super();
+
+        OSH.Utils.copyProperties({
+            xLabel:  document.getElementById(this.inputXLabelId).value,
+            yLabel: document.getElementById(this.inputYLabelId).value,
+            maxPoints:Number(document.getElementById(this.inputMaxPoint).value)
+        },superProperties,true);
+
+        return superProperties;
+    },
+
+    getView:function() {
+        return this.view;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.EntityMJPEGVideoEditPanel = OSH.UI.Panel.EntityVideoEditPanel.extend({
+
+
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.StylerPanel = OSH.UI.Panel.extend({
+    initialize: function (parentElementDivId, options) {
+        this.styler = options.styler;
+        this._super(parentElementDivId, options);
+    },
+
+    getObservable:function(datasourceSelectId) {
+        var datasourceSelectTag = document.getElementById(datasourceSelectId);
+
+        // fills corresponding observable
+        var currentDS = this.options.datasources[datasourceSelectTag.selectedIndex];
+
+        var result = [];
+
+        if(!isUndefinedOrNull(currentDS)) {
+            for (var key in currentDS.resultTemplate) {
+
+                result.push({
+                    uiLabel: currentDS.resultTemplate[key].uiLabel
+                });
+            }
+        }
+
+        return result;
+    },
+
+    loadObservable:function(datasourceSelectId,observableSelectId) {
+        var isNotEmpty = true;
+
+        OSH.Helper.HtmlHelper.removeAllFromSelect(observableSelectId);
+        var datasourceSelectTag = document.getElementById(datasourceSelectId);
+        var observableSelectTag = document.getElementById(observableSelectId);
+
+        // fills corresponding observable
+        var currentDS = this.options.datasources[datasourceSelectTag.selectedIndex];
+
+        if(!isUndefinedOrNull(currentDS)) {
+            for (var key in currentDS.resultTemplate) {
+
+                var option = document.createElement("option");
+                option.text = currentDS.resultTemplate[key].uiLabel;
+                option.value = currentDS.resultTemplate[key].uiLabel;
+                option.object = currentDS.resultTemplate[key].object;
+
+                observableSelectTag.add(option);
+                isNotEmpty = false;
+            }
+        }
+
+        return isNotEmpty;
+    },
+
+    loadUom:function(observableSelectId,thresholdInputId) {
+        // gets selected observable
+        var observableSelectTag = document.getElementById(observableSelectId);
+        var observableOptionSelectedTag = observableSelectTag.options[observableSelectTag.selectedIndex];
+
+        if(!isUndefined(observableOptionSelectedTag) && !isUndefined(observableOptionSelectedTag.object.uom)) {
+            var uom = OSH.Utils.getUOM(observableOptionSelectedTag.object.uom);
+            if(!isUndefinedOrNull(uom)) {
+                document.getElementById(thresholdInputId).nextElementSibling.innerHTML = uom;
+            } else {
+                document.getElementById(thresholdInputId).nextElementSibling.innerHTML = "";
+            }
+        } else {
+            document.getElementById(thresholdInputId).nextElementSibling.innerHTML = "";
+        }
+    },
+
+    /**
+     * To be overridden
+     */
+    getProperties:function(){},
+
+    loadData:function(data){},
+
+    loadStyler:function(styler){}
+
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.StylerVideoPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // tab panel
+        var tabPanel = new OSH.UI.Panel.TabPanel();
+
+        // tab elements
+        this.videoPanel = new OSH.UI.Panel.VideoPanel("",this.options);
+
+        tabPanel.addTab("Video",this.videoPanel.elementDiv);
+
+        this.elementDiv.appendChild(tabPanel.elementDiv);
+    },
+
+    getStyler:function() {
+        // gets properties from panels
+        var videoPanelProperties = this.videoPanel.getProperties();
+
+        OSH.Asserts.checkObjectPropertyPath(videoPanelProperties,"properties","missing property 'properties");
+
+        this.options.styler.updateProperties(videoPanelProperties.properties);
+
+        return this.options.styler;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.StylerPolylinePanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // tab panel
+        var tabPanel = new OSH.UI.Panel.TabPanel();
+
+        // tab elements
+        this.locationPanel = new OSH.UI.Panel.LocationPanel("",this.options);
+
+        tabPanel.addTab("Location",this.locationPanel.elementDiv);
+
+        this.elementDiv.appendChild(tabPanel.elementDiv);
+    },
+
+    getStyler:function() {
+        var uiProperties = {};
+
+        // gets properties from panels
+        var locationPanelProperties = this.locationPanel.getProperties();
+
+        // copies properties
+        OSH.Utils.copyProperties(locationPanelProperties.ui,uiProperties);
+
+        // updates styler with properties
+        this.options.styler.updateProperties(locationPanelProperties);
+
+        // saves UI properties into styler object to be reloaded
+        OSH.Utils.copyProperties(uiProperties,this.options.styler.ui);
+
+        return this.options.styler;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.StylerMarkerPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // tab panel
+        var tabPanel = new OSH.UI.Panel.TabPanel();
+
+        // tab elements
+        this.locationPanel = new OSH.UI.Panel.LocationPanel("",this.options);
+        this.iconPanel = new OSH.UI.Panel.IconPanel("",this.options);
+
+        tabPanel.addTab("Location",this.locationPanel.elementDiv);
+        tabPanel.addTab("Icon",this.iconPanel.elementDiv);
+
+        this.elementDiv.appendChild(tabPanel.elementDiv);
+    },
+
+    getStyler:function() {
+        // gets properties from panels
+        var locationPanelProperties = this.locationPanel.getProperties();
+        var iconPanelProperties = this.iconPanel.getProperties();
+
+        OSH.Asserts.checkObjectPropertyPath(locationPanelProperties,"properties","missing property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(iconPanelProperties,"properties","missing property 'properties");
+
+        // updates styler with properties
+       // this.options.styler.updateProperties(locationPanelProperties.properties);
+       // this.options.styler.updateProperties(iconPanelProperties.properties);
+        // updates styler with properties
+        var mergedProperties = {};
+
+        OSH.Utils.copyProperties(locationPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(iconPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(iconPanelProperties.properties.ui,mergedProperties.properties.ui,true);
+
+        this.options.styler.updateProperties(mergedProperties.properties);
+
+        return this.options.styler;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.StylerLinePlotPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // tab panel
+        var tabPanel = new OSH.UI.Panel.TabPanel();
+
+        // tab elements
+        this.valesPanel = new OSH.UI.Panel.XYPanel("",this.options);
+        this.colorPanel = new OSH.UI.Panel.ColorPanel("",this.options);
+
+        tabPanel.addTab("Values",this.valesPanel.elementDiv);
+        tabPanel.addTab("Color",this.colorPanel.elementDiv);
+
+        this.elementDiv.appendChild(tabPanel.elementDiv);
+    },
+
+    getStyler:function() {
+        // gets properties from panels
+        var valuesPanelProperties = this.valesPanel.getProperties();
+        var colorPanelProperties = this.colorPanel.getProperties();
+
+        OSH.Asserts.checkObjectPropertyPath(valuesPanelProperties,"properties","missing property 'properties");
+        OSH.Asserts.checkObjectPropertyPath(colorPanelProperties,"properties","missing property 'properties");
+
+        // updates styler with properties
+        var mergedProperties = {};
+
+        OSH.Utils.copyProperties(valuesPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(colorPanelProperties,mergedProperties);
+        OSH.Utils.copyProperties(colorPanelProperties.properties.ui,mergedProperties.properties.ui,true);
+
+        this.options.styler.updateProperties(mergedProperties.properties);
+
+        return this.options.styler;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.ColorPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // type
+        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"Color type", [
+            "None",
+            "Fixed",
+            "Threshold"
+        ]);
+
+        this.content = document.createElement("div");
+        this.elementDiv.appendChild(this.content);
+
+        this.properties = {};
+
+        // adds listeners
+        var self = this;
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        typeInputElt.addEventListener("change", function () {
+            var currentValue = (this.options[this.selectedIndex].value);
+            // clear current content
+            OSH.Helper.HtmlHelper.removeAllNodes(self.content);
+            self.removeAllListerners();
+            self.removeProps();
+
+            switch (currentValue) {
+                case "Threshold":
+                    self.addThreshold();
+                    break;
+                case "Fixed" :
+                    self.addFixed();
+                    break;
+                case "None" :
+                    self.addNone();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        this.initDefaultValues();
+    },
+
+
+    initDefaultValues:function(){
+        // load existing values if any
+        // load UI settings
+
+        //-- sets color type
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.color")) {
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.color.fixed")) {
+                // loads fixed
+                typeInputElt.options.selectedIndex = 1;
+                this.addFixed(this.styler.properties.ui.color.fixed);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.color.threshold")) {
+                // loads threshold
+                typeInputElt.options.selectedIndex = 2;
+                this.addThreshold(this.styler.properties.ui.color.threshold);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.color.map")) {
+                // loads map
+                typeInputElt.options.selectedIndex = 3;
+                this.addMap(this.styler.properties.ui.color.map);
+            } else if (OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.color.custom")) {
+                // loads custom
+                typeInputElt.options.selectedIndex = 4;
+                this.addCustom(this.styler.properties.ui.color.custom);
+            }
+        } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.colorFunc")) {
+            typeInputElt.options.selectedIndex = 4;
+            this.addCustom(this.styler.properties.colorFunc.handler.toSource());
+        }
+    },
+
+    removeProps:function() {
+        delete this.properties.fixed;
+        delete this.properties.threshold;
+    },
+
+    addNone:function() {
+        this.properties = {};
+    },
+
+    addFixed : function(defaultProperties) {
+
+        this.properties = {
+            fixed: {
+                default: null,
+                selected: null
+            }
+        };
+
+        this.defaultColorInputId = OSH.Helper.HtmlHelper.addColorPicker(this.content,"Default color","#1f77b5","color");
+
+        this.selectedColorInputId = OSH.Helper.HtmlHelper.addColorPicker(this.content,"Selected color","#1f77b5","color");
+
+        // edit values
+        OSH.Helper.HtmlHelper.onDomReady(function(){
+            if(!isUndefinedOrNull(defaultProperties)){
+                if(!isUndefinedOrNull(defaultProperties.default)) {
+                    var defaultColorInputElt = document.getElementById(this.defaultColorInputId);
+                    var defaultColorPickerElt = defaultColorInputElt.nextElementSibling;
+
+                    defaultColorPickerElt.value = defaultProperties.default;
+                    defaultColorPickerElt.select();
+
+                    defaultColorInputElt.value = defaultProperties.default;
+                    defaultColorInputElt.innerHTML = defaultProperties.default;
+
+                    this.properties.fixed.default = defaultProperties.default;
+                }
+                if(!isUndefinedOrNull(defaultProperties.selected)) {
+                    var selectedColorInputElt = document.getElementById(this.selectedColorInputId);
+                    var selectedColorPickerElt = document.getElementById(this.selectedColorInputId).nextElementSibling;
+
+                    selectedColorPickerElt.value = defaultProperties.selected;
+                    selectedColorPickerElt.select();
+
+                    selectedColorInputElt.value = defaultProperties.selected;
+                    selectedColorInputElt.innerHTML = defaultProperties.selected;
+
+                    this.properties.fixed.selected = defaultProperties.selected;
+                }
+            }
+        }.bind(this));
+    },
+
+    addThreshold:function(defaultProperties) {
+
+        this.properties = {
+            threshold : {
+                low: null,
+                high: null,
+                default: null,
+                datasourceId: null,
+                observableIdx: null
+            }
+        };
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Data source");
+
+
+        if(this.options.datasources.length > 0) {
+            this.properties.threshold.datasourceIdx = 0;
+        }
+
+        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.content, "Data Source", this.options.datasources);
+        var observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.content, "Observable", []);
+
+        // default
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Default");
+        var defaultColorInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "Default color",true);
+
+        // threshold
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Threshold");
+
+        // low color
+        var lowColorInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "Low color",true);
+
+        // high color
+        var highColorInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "High color",true);
+
+        // threshold
+        var thresholdInputId = OSH.Helper.HtmlHelper.addInputTextValueWithUOM(this.content, "Threshold value", "12.0","");
+
+        if(!this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId)) {
+            this.properties.threshold.observableIdx = 0;
+        }
+
+        this.loadUom(observableListBoxId,thresholdInputId);
+
+        var self = this;
+
+        // adds listeners
+
+        self.addListener(document.getElementById(dsListBoxId), "change", function () {
+            self.properties.threshold.datasourceIdx = this.selectedIndex;
+
+            // updates observable listbox
+            self.loadObservable(dsListBoxId,observableListBoxId);
+        });
+
+        self.addListener(document.getElementById(observableListBoxId), "change", function () {
+            self.properties.threshold.observableIdx = this.selectedIndex;
+
+            // updates uom
+            self.loadUom(observableListBoxId,thresholdInputId);
+        });
+
+        var defaultColorInputElt = document.getElementById(defaultColorInputId);
+        this.addListener(defaultColorInputElt, "change", this.inputFileHandlerAsBinaryString.bind(defaultColorInputElt,function(result) {
+            self.properties.threshold.default = result;
+        }));
+
+        this.addListener(defaultColorInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(defaultColorInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.default = result;
+        }));
+
+        var lowColorInputElt = document.getElementById(lowColorInputId);
+        this.addListener(lowColorInputElt, "change", this.inputFileHandlerAsBinaryString.bind(lowColorInputElt,function(result) {
+            self.properties.threshold.low = result;
+        }));
+
+        this.addListener(lowColorInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(lowColorInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.low = result;
+        }));
+
+        var highColorInputElt = document.getElementById(highColorInputId);
+        this.addListener(highColorInputElt, "change", this.inputFileHandlerAsBinaryString.bind(highColorInputElt,function(result) {
+            self.properties.threshold.high = result;
+        }));
+
+        this.addListener(highColorInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(highColorInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.high = result;
+        }));
+
+        this.addListener(document.getElementById(thresholdInputId), "change", function () {
+            self.properties.threshold.value = this.value;
+        });
+
+        // edit values
+        if(!isUndefinedOrNull(defaultProperties)) {
+            this.setInputFileValue(defaultColorInputElt,defaultProperties.default);
+            this.setInputFileValue(lowColorInputElt,defaultProperties.low);
+            this.setInputFileValue(highColorInputElt,defaultProperties.high);
+            document.getElementById(thresholdInputId).value = defaultProperties.value;
+
+            this.properties.threshold.default = defaultProperties.default;
+            this.properties.threshold.low = defaultProperties.low;
+            this.properties.threshold.high = defaultProperties.high;
+            this.properties.threshold.value = defaultProperties.value;
+
+            var dsSelectTag = document.getElementById(dsListBoxId);
+
+            for(var i=0; i < dsSelectTag.options.length;i++) {
+                var currentOption = dsSelectTag.options[i];
+
+                if(currentOption.object.id === defaultProperties.datasourceId) {
+                    currentOption.setAttribute("selected","");
+                    this.properties.threshold.datasourceIdx = i;
+                    break;
+                }
+            }
+
+            this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId);
+
+            var obsSelectTag = document.getElementById(observableListBoxId);
+            obsSelectTag.options[defaultProperties.observableIdx].setAttribute("selected","");
+
+            this.properties.threshold.observableIdx = defaultProperties.observableIdx;
+        }
+    },
+
+    addCustom:function(textContent) {
+        this.properties = {
+            custom: {}
+        };
+
+        var defaultValue = "";
+
+        if(!isUndefinedOrNull(textContent)) {
+            defaultValue = textContent;
+        }
+
+        this.textareaId = OSH.Utils.createJSEditor(this.content,defaultValue);
+    },
+
+    addMap : function(defaultProperties) {
+
+    },
+
+    getProperties:function() {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    color: {}
+                }
+            }
+        };
+
+        var dsIdsArray = [];
+
+        for (var key in this.options.datasources) {
+            dsIdsArray.push(this.options.datasources[key].id);
+        }
+
+        if (!isUndefinedOrNull(this.properties.fixed)) {
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed");
+
+            // DEFAULT color
+            stylerProperties.properties.ui.color.fixed = {};
+
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed.default");
+
+            var defaultColor = document.getElementById(this.defaultColorInputId).value;
+
+            var defaultColorProps = OSH.UI.Styler.Factory.getFixedColor(dsIdsArray,defaultColor);
+
+            OSH.Utils.copyProperties(defaultColorProps,stylerProperties.properties);
+
+            stylerProperties.properties.color = defaultColorProps.color;
+
+            // UI
+            stylerProperties.properties.ui.color.fixed.default = defaultColor;
+
+            // SELECTED Color
+            //TODO: replace selected way
+            if(OSH.Utils.hasOwnNestedProperty(this.properties,"fixed.selected")) {
+
+                OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed.selected");
+
+                var selectedColor = document.getElementById(this.selectedColorInputId).value;
+
+                if(!isUndefinedOrNull(selectedColor)) {
+
+                    var selectedColorProps = OSH.UI.Styler.Factory.getSelectedColorFunc(
+                        dsIdsArray,
+                        defaultColor,
+                        selectedColor
+                    );
+
+                    OSH.Utils.copyProperties(selectedColorProps, stylerProperties.properties);
+
+                    stylerProperties.properties.color = selectedColorProps.color;
+
+                    // UI
+                    stylerProperties.properties.ui.color.fixed.selected = selectedColor;
+                }
+            }
+        } else if (!isUndefinedOrNull(this.properties.custom)) {
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"custom");
+
+            stylerProperties.properties.ui.color.custom = {};
+            var textContent = document.getElementById(this.textareaId).value;
+
+            var colorFuncProps = OSH.UI.Styler.Factory.getCustomColorFunc(
+                dsIdsArray, // ds array ids
+                textContent //colorFnStr
+            );
+
+            OSH.Utils.copyProperties(colorFuncProps,stylerProperties.properties);
+
+            // UI
+            stylerProperties.properties.ui.color.custom = textContent;
+
+        } else if (!isUndefinedOrNull(this.properties.threshold)) {
+            stylerProperties.properties.ui.color.threshold = {};
+
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"threshold");
+
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.observableIdx);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.datasourceIdx);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.default);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.low);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.high);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.value);
+
+            //dataSourceIdsArray,datasource, observableIdx,
+            //defaultColorArrayBuffer, lowColorArrayBuffer, highColorArrayBuffer, thresholdValue
+            var currentDatasource = this.options.datasources[this.properties.threshold.datasourceIdx];
+
+            var colorFuncProps = OSH.UI.Styler.Factory.getThresholdColor(
+                currentDatasource,
+                this.properties.threshold.observableIdx,
+                this.properties.threshold.default,
+                this.properties.threshold.low,
+                this.properties.threshold.high,
+                this.properties.threshold.value
+            );
+
+            OSH.Utils.copyProperties(colorFuncProps,stylerProperties.properties);
+
+            stylerProperties.properties.color = colorFuncProps.color;
+
+            // UI
+            stylerProperties.properties.ui.color.threshold.default = this.properties.threshold.default;
+            stylerProperties.properties.ui.color.threshold.low = this.properties.threshold.low;
+            stylerProperties.properties.ui.color.threshold.high = this.properties.threshold.high;
+            stylerProperties.properties.ui.color.threshold.value = this.properties.threshold.value;
+            stylerProperties.properties.ui.color.threshold.observableIdx = this.properties.threshold.observableIdx;
+            stylerProperties.properties.ui.color.threshold.datasourceId = currentDatasource.id;
+        } else {
+            delete stylerProperties.properties.color; // remove color properties from result
+        }
+        return stylerProperties;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.IconPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        // type
+        this.typeInputId = OSH.Helper.HtmlHelper.addHTMLListBox(this.elementDiv,"Icon type", [
+            "None",
+            "Fixed",
+            "Threshold",
+            "Map",
+            "Custom"
+        ]);
+
+        this.content = document.createElement("div");
+        this.elementDiv.appendChild(this.content);
+
+        this.properties = {};
+
+        // adds listeners
+        var self = this;
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        typeInputElt.addEventListener("change", function () {
+            var currentValue = (this.options[this.selectedIndex].value);
+            // clear current content
+            OSH.Helper.HtmlHelper.removeAllNodes(self.content);
+            self.removeAllListerners();
+            self.removeProps();
+
+            switch (currentValue) {
+                case "Threshold":
+                    self.addThreshold();
+                    break;
+                case "Fixed" :
+                    self.addFixed();
+                    break;
+                case "Custom" :
+                    self.addCustom();
+                    break;
+                case "None" :
+                    self.addNone();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        this.initDefaultValues();
+    },
+
+
+    initDefaultValues:function(){
+        // load existing values if any
+        // load UI settings
+
+        //-- sets icon type
+        var typeInputElt = document.getElementById(this.typeInputId);
+
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon")) {
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.fixed")) {
+                // loads fixed
+                typeInputElt.options.selectedIndex = 1;
+                this.addFixed(this.styler.properties.ui.icon.fixed);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.threshold")) {
+                // loads threshold
+                typeInputElt.options.selectedIndex = 2;
+                this.addThreshold(this.styler.properties.ui.icon.threshold);
+            } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.map")) {
+                // loads map
+                typeInputElt.options.selectedIndex = 3;
+                this.addMap(this.styler.properties.ui.icon.map);
+            } else if (OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.icon.custom")) {
+                // loads custom
+                typeInputElt.options.selectedIndex = 4;
+                this.addCustom(this.styler.properties.ui.icon.custom);
+            }
+        } else if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.iconFunc")) {
+            typeInputElt.options.selectedIndex = 4;
+            this.addCustom(this.styler.properties.iconFunc.handler.toSource());
+        }
+    },
+
+    removeProps:function() {
+        delete this.properties.fixed;
+        delete this.properties.threshold;
+    },
+
+    addNone:function() {
+        this.properties = {};
+    },
+
+    addFixed : function(defaultProperties) {
+
+        this.properties = {
+            fixed: {
+                default: null,
+                selected: null
+            }
+        };
+
+        // low icon
+        this.defaultIconInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content,"Default icon",true);
+
+        // default icon
+        var defaultIconInputElt = document.getElementById(this.defaultIconInputId);
+
+        // selected icon
+        var selectedIconInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "Selected icon",true);
+
+        var selectedIconInputElt = document.getElementById(selectedIconInputId);
+
+        var self = this;
+
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(defaultIconInputElt,function(result) {
+            self.properties.fixed.default = result;
+        }));
+
+        this.addListener(defaultIconInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(defaultIconInputElt.nextElementSibling,function(result) {
+            self.properties.fixed.default = result;
+        }));
+
+        this.addListener(selectedIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(selectedIconInputElt,function(result) {
+            self.properties.fixed.selected = result;
+        }));
+
+        this.addListener(selectedIconInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(selectedIconInputElt.nextElementSibling,function(result) {
+            self.properties.fixed.selected = result;
+        }));
+
+        // edit values
+        if(!isUndefinedOrNull(defaultProperties)){
+            this.setInputFileValue(defaultIconInputElt,defaultProperties.default);
+            this.setInputFileValue(selectedIconInputElt,defaultProperties.selected);
+
+            this.properties.fixed.default = defaultProperties.default;
+            this.properties.fixed.selected = defaultProperties.selected;
+        }
+    },
+
+    addThreshold:function(defaultProperties) {
+
+        this.properties = {
+            threshold : {
+                low: null,
+                high: null,
+                default: null,
+                datasourceIdx: null,
+                observableIdx: null
+            }
+        };
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Data source");
+
+
+        if(this.options.datasources.length > 0) {
+            this.properties.threshold.datasourceIdx = 0;
+        }
+
+        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.content, "Data Source", this.options.datasources);
+        var observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.content, "Observable", []);
+
+        // default
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Default");
+        var defaultIconInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "Default icon",true);
+
+        // threshold
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.content,"Threshold");
+
+        // low icon
+        var lowIconInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "Low icon",true);
+
+        // high icon
+        var highIconInputId = OSH.Helper.HtmlHelper.addTitledFileChooser(this.content, "High icon",true);
+
+        // threshold
+        var thresholdInputId = OSH.Helper.HtmlHelper.addInputTextValueWithUOM(this.content, "Threshold value", "12.0","");
+
+        if(!this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId)) {
+            this.properties.threshold.observableIdx = 0;
+        }
+
+        this.loadUom(observableListBoxId,thresholdInputId);
+
+        var self = this;
+
+        // adds listeners
+
+        self.addListener(document.getElementById(dsListBoxId), "change", function () {
+            self.properties.threshold.datasourceIdx = this.selectedIndex;
+
+            // updates observable listbox
+            self.loadObservable(dsListBoxId,observableListBoxId);
+        });
+
+        self.addListener(document.getElementById(observableListBoxId), "change", function () {
+            self.properties.threshold.observableIdx = this.selectedIndex;
+
+            // updates uom
+            self.loadUom(observableListBoxId,thresholdInputId);
+        });
+
+        var defaultIconInputElt = document.getElementById(defaultIconInputId);
+        this.addListener(defaultIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(defaultIconInputElt,function(result) {
+            self.properties.threshold.default = result;
+        }));
+
+        this.addListener(defaultIconInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(defaultIconInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.default = result;
+        }));
+
+        var lowIconInputElt = document.getElementById(lowIconInputId);
+        this.addListener(lowIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(lowIconInputElt,function(result) {
+            self.properties.threshold.low = result;
+        }));
+
+        this.addListener(lowIconInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(lowIconInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.low = result;
+        }));
+
+        var highIconInputElt = document.getElementById(highIconInputId);
+        this.addListener(highIconInputElt, "change", this.inputFileHandlerAsBinaryString.bind(highIconInputElt,function(result) {
+            self.properties.threshold.high = result;
+        }));
+
+        this.addListener(highIconInputElt.nextElementSibling, "paste", this.inputFilePasteHandler.bind(highIconInputElt.nextElementSibling,function(result) {
+            self.properties.threshold.high = result;
+        }));
+
+        this.addListener(document.getElementById(thresholdInputId), "change", function () {
+            self.properties.threshold.value = this.value;
+        });
+
+        // edit values
+        if(!isUndefinedOrNull(defaultProperties)) {
+            this.setInputFileValue(defaultIconInputElt,defaultProperties.default);
+            this.setInputFileValue(lowIconInputElt,defaultProperties.low);
+            this.setInputFileValue(highIconInputElt,defaultProperties.high);
+            document.getElementById(thresholdInputId).value = defaultProperties.value;
+
+            this.properties.threshold.default = defaultProperties.default;
+            this.properties.threshold.low = defaultProperties.low;
+            this.properties.threshold.high = defaultProperties.high;
+            this.properties.threshold.value = defaultProperties.value;
+
+            var dsSelectTag = document.getElementById(dsListBoxId);
+
+            for(var i=0; i < dsSelectTag.options.length;i++) {
+                var currentOption = dsSelectTag.options[i];
+
+                if(currentOption.object.id === defaultProperties.datasourceId) {
+                    currentOption.setAttribute("selected","");
+                    this.properties.threshold.datasourceIdx = i;
+                    break;
+                }
+            }
+
+            this.loadObservable(dsListBoxId,observableListBoxId,thresholdInputId);
+
+            var obsSelectTag = document.getElementById(observableListBoxId);
+            obsSelectTag.options[defaultProperties.observableIdx].setAttribute("selected","");
+
+            this.properties.threshold.observableIdx = defaultProperties.observableIdx;
+        }
+    },
+
+    addCustom:function(textContent) {
+        this.properties = {
+            custom: {}
+        };
+
+        var defaultValue = "";
+
+        if(!isUndefinedOrNull(textContent)) {
+            defaultValue = textContent;
+        }
+
+        this.textareaId = OSH.Utils.createJSEditor(this.content,defaultValue);
+    },
+
+    addMap : function(defaultProperties) {
+
+    },
+
+    getProperties:function() {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    icon: {}
+                }
+            }
+        };
+
+        var dsIdsArray = [];
+
+        for (var key in this.options.datasources) {
+            dsIdsArray.push(this.options.datasources[key].id);
+        }
+
+        if (!isUndefinedOrNull(this.properties.fixed)) {
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed");
+
+            // DEFAULT ICON
+            stylerProperties.properties.ui.icon.fixed = {};
+
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed.default.url");
+
+            var defaultIconProps = OSH.UI.Styler.Factory.getFixedIcon(dsIdsArray,this.properties.fixed.default.url);
+
+            OSH.Utils.copyProperties(defaultIconProps,stylerProperties.properties);
+
+            stylerProperties.properties.icon = defaultIconProps.icon;
+
+            // UI
+            stylerProperties.properties.ui.icon.fixed.default = this.properties.fixed.default;
+
+            // SELECTED ICON
+            //TODO: replace selected way
+            if(OSH.Utils.hasOwnNestedProperty(this.properties,"fixed.selected")) {
+
+                OSH.Asserts.checkObjectPropertyPath(this.properties,"fixed.selected");
+
+                if(!isUndefinedOrNull(this.properties.fixed.selected)) {
+
+                    var selectedIconProps = OSH.UI.Styler.Factory.getSelectedIconFunc(
+                        dsIdsArray,
+                        this.properties.fixed.default.url,
+                        this.properties.fixed.selected.url
+                    );
+
+                    OSH.Utils.copyProperties(selectedIconProps, stylerProperties.properties);
+
+                    stylerProperties.properties.icon = selectedIconProps.icon;
+
+                    // UI
+                    stylerProperties.properties.ui.icon.fixed.selected = this.properties.fixed.selected;
+                }
+            }
+        } else if (!isUndefinedOrNull(this.properties.custom)) {
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"custom");
+
+            stylerProperties.properties.ui.icon.custom = {};
+            var textContent = document.getElementById(this.textareaId).value;
+
+            var iconFuncProps = OSH.UI.Styler.Factory.getCustomIconFunc(
+                dsIdsArray, // ds array ids
+                textContent //iconFnStr
+            );
+
+            OSH.Utils.copyProperties(iconFuncProps,stylerProperties.properties);
+
+            // UI
+            stylerProperties.properties.ui.icon.custom = textContent;
+
+        } else if (!isUndefinedOrNull(this.properties.threshold)) {
+            stylerProperties.properties.ui.icon.threshold = {};
+
+            OSH.Asserts.checkObjectPropertyPath(this.properties,"threshold");
+
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.observableIdx);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.datasourceIdx);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.default);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.low);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.high);
+            OSH.Asserts.checkIsDefineOrNotNull(this.properties.threshold.value);
+
+            //dataSourceIdsArray,datasource, observableIdx,
+            //defaultIconArrayBuffer, lowIconArrayBuffer, highIconArrayBuffer, thresholdValue
+            var currentDatasource = this.options.datasources[this.properties.threshold.datasourceIdx];
+
+            var iconFuncProps = OSH.UI.Styler.Factory.getThresholdIcon(
+                currentDatasource,
+                this.properties.threshold.observableIdx,
+                this.properties.threshold.default.url,
+                this.properties.threshold.low.url,
+                this.properties.threshold.high.url,
+                this.properties.threshold.value
+            );
+
+            OSH.Utils.copyProperties(iconFuncProps,stylerProperties.properties);
+
+            stylerProperties.properties.icon = iconFuncProps.icon;
+
+            // UI
+            stylerProperties.properties.ui.icon.threshold.default = this.properties.threshold.default;
+            stylerProperties.properties.ui.icon.threshold.low = this.properties.threshold.low;
+            stylerProperties.properties.ui.icon.threshold.high = this.properties.threshold.high;
+            stylerProperties.properties.ui.icon.threshold.value = this.properties.threshold.value;
+            stylerProperties.properties.ui.icon.threshold.observableIdx = this.properties.threshold.observableIdx;
+            stylerProperties.properties.ui.icon.threshold.datasourceId = currentDatasource.id;
+        } else {
+            delete stylerProperties.properties.icon; // remove icon properties from result
+        }
+        return stylerProperties;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.LocationPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        var self = this;
+
+        this.contentElt = document.createElement("div");
+        this.elementDiv.appendChild(this.contentElt);
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Default location");
+
+
+        var xDefaultValue = "";
+        var yDefaultValue = "";
+        var zDefaultValue = "";
+
+        // inits default values
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "location")) {
+            // default location
+            xDefaultValue = this.styler.location.x;
+            yDefaultValue = this.styler.location.y;
+            zDefaultValue = this.styler.location.z;
+        }
+
+        this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
+        this.yDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Y", yDefaultValue,"0.0");
+        this.zDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Z", zDefaultValue,"0.0");
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Mapping");
+
+        // load existing values if any
+        // load UI settings
+
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.locationFuncMapping") ||
+            !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.locationFunc")) {
+            this.initMappingFunctionUI();
+        } else {
+            this.initCustomFunctionUI();
+        }
+    },
+
+    initMappingFunctionUI:function() {
+        // data source
+        var dsName = [];
+
+        if (!isUndefinedOrNull(this.options.datasources)) {
+            for (var i = 0; i < this.options.datasources.length; i++) {
+                dsName.push(this.options.datasources[i].name);
+            }
+        }
+
+        // add UIs
+        this.dsListBoxId     = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Data Source", dsName);
+        this.xInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "X", []);
+        this.yInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Y", []);
+        this.zInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Z", []);
+
+        var self = this;
+
+        // adds default values
+        if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
+
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.location.locationFuncMapping")) {
+                var datasourceIdx = -1;
+                for (var i = 0; i < this.options.datasources.length; i++) {
+                    if(this.options.datasources[i].id === this.styler.properties.ui.location.locationFuncMapping.datasourceId) {
+                        datasourceIdx = i;
+                        break;
+                    }
+                }
+                if(datasourceIdx > -1) {
+                    document.getElementById(this.dsListBoxId).options.selectedIndex = datasourceIdx;
+
+                    this.loadDatasources();
+
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.xIdx;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.yIdx;
+                    document.getElementById(this.zInputMappingId).options.selectedIndex = this.styler.properties.ui.location.locationFuncMapping.zIdx;
+                }
+            } else {
+               this.loadDatasources();
+            }
+        }
+
+        this.addListener(document.getElementById(this.dsListBoxId), "change", function () {
+            // updates observables { x,y,z} listbox
+            var observables = self.getObservable(self.dsListBoxId);
+            self.loadMapLocation(observables,self.xInputMappingId,self.yInputMappingId,self.zInputMappingId);
+        });
+    },
+
+    loadDatasources:function() {
+        // updates observables { x,y,z} listbox
+        var observables = this.getObservable(this.dsListBoxId);
+        this.loadMapLocation(observables,this.xInputMappingId,this.yInputMappingId,this.zInputMappingId);
+    },
+
+    loadMapLocation:function(observableArr,xInputMappingId,yInputMappingId,zInputMappingId) {
+        var xInputTag = document.getElementById(xInputMappingId);
+        var yInputTag = document.getElementById(yInputMappingId);
+        var zInputTag = document.getElementById(zInputMappingId);
+
+        OSH.Helper.HtmlHelper.removeAllFromSelect(xInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(yInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(zInputMappingId);
+
+        if(!isUndefinedOrNull(observableArr)) {
+            for (var i=0;i < observableArr.length;i++) {
+
+                // x
+                var option = document.createElement("option");
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+
+                xInputTag.add(option);
+
+                // y
+                option = document.createElement("option");
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+
+                yInputTag.add(option);
+
+                // z
+                option = document.createElement("option");
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+
+                zInputTag.add(option);
+            }
+        }
+    },
+
+    initCustomFunctionUI:function() {
+        this.textareaId = OSH.Utils.createJSEditor(this.contentElt,this.styler.properties.locationFunc.handler.toSource());
+    },
+
+    /**
+     * Returns the properties as JSON object.
+     *
+     * @example {
+     *  ui : {
+     *      location : {
+     *      }
+     *  },
+     *
+     *  location : {...}, // if any
+     *
+     *  locationFunc: {...} // if any
+     * }
+     */
+    getProperties:function() {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    location: {}
+                }
+            }
+        };
+
+        var locationFuncProps,  defaultLocationProps;
+
+
+        // default location x,y,z
+        defaultLocationProps = OSH.UI.Styler.Factory.getLocation(
+            Number(document.getElementById(this.xDefaultInputId).value),
+            Number(document.getElementById(this.yDefaultInputId).value),
+            Number(document.getElementById(this.zDefaultInputId).value)
+        );
+
+        // mapping function with data
+        if(isUndefinedOrNull(this.textareaId)) {
+            var xIdx=0,yIdx=0,zIdx=0;
+
+            if (!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
+                xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
+                yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
+                zIdx = document.getElementById(this.zInputMappingId).selectedIndex;
+
+                locationFuncProps = OSH.UI.Styler.Factory.getLocationFunc(
+                    this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
+                    xIdx, yIdx, zIdx); // obs indexes
+
+                stylerProperties.properties.ui.location.locationFuncMapping = {
+                    datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
+                    xIdx: xIdx,
+                    yIdx: yIdx,
+                    zIdx: zIdx
+                };
+            }
+
+        } else {
+            // custom textual function
+            var textContent = document.getElementById(this.textareaId).value;
+
+            locationFuncProps = OSH.UI.Styler.Factory.getCustomLocationFunc(
+                this.styler, //datasource array
+                document.getElementById(this.textareaId).value //locationFnStr
+            );
+
+            stylerProperties.properties.ui.location.custom = textContent;
+        }
+
+
+        // copy default location properties
+        OSH.Utils.copyProperties(defaultLocationProps, stylerProperties.properties);
+
+        // copy location function properties if any
+        if (!isUndefinedOrNull(locationFuncProps)) {
+            OSH.Utils.copyProperties(locationFuncProps, stylerProperties.properties);
+        }
+
+        return stylerProperties;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+
+    initPanel:function() {
+        var self = this;
+
+        this.contentElt = document.createElement("div");
+        this.elementDiv.appendChild(this.contentElt);
+
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Mapping");
+
+        // load existing values if any
+        // load UI settings
+
+        var hasUIProps = OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.video");
+        if(hasUIProps ||
+            !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.frameFunc")) { //TODO: the view should not know about function name "frameFunc"
+            if(hasUIProps){
+                this.initMappingFunctionUI(this.styler.properties.ui.video);
+            } else {
+                this.initMappingFunctionUI();
+            }
+
+        } else {
+            //this.initCustomFunctionUI();
+        }
+    },
+
+    initMappingFunctionUI:function(properties) {
+        this.properties = {
+            frame : {
+                datasourceIdx: null,
+                observableIdx: null
+            }
+        };
+
+        // data source
+        var dsName = [];
+
+        if (!isUndefinedOrNull(this.options.datasources)) {
+            for (var i = 0; i < this.options.datasources.length; i++) {
+                dsName.push(this.options.datasources[i].name);
+            }
+        }
+
+        if(this.options.datasources.length > 0) {
+            this.properties.frame.datasourceIdx = 0;
+        }
+
+        this.dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
+        this.observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Observable", []);
+
+        if(!this.loadObservable(this.dsListBoxId,this.observableListBoxId)) {
+            this.properties.frame.observableIdx = 0;
+        }
+
+        // edit values
+        var self = this;
+        if(!isUndefinedOrNull(properties)) {
+            OSH.Helper.HtmlHelper.onDomReady(function () {
+                var dsTag = document.getElementById(self.dsListBoxId);
+
+                var idx = -1;
+                for(var i=0; i < dsTag.options.length;i++) {
+                    if(dsTag.options[i].object.id === properties.datasourceId) {
+                        idx = i;
+                        break;
+                    }
+                }
+                if(idx > -1) {
+                    dsTag.options.selectedIndex = idx;
+                    document.getElementById(self.observableListBoxId).options.selectedIndex = properties.observableIdx;
+                }
+            });
+        }
+    },
+
+    getProperties:function() {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    video: {}
+                }
+            }
+        };
+
+        var dsIdsArray = [];
+
+        for (var key in this.options.datasources) {
+            dsIdsArray.push(this.options.datasources[key].id);
+        }
+
+        stylerProperties.properties.ui.video = {};
+
+        OSH.Asserts.checkObjectPropertyPath(this.properties,"frame");
+        OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.observableIdx);
+        OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.datasourceIdx);
+
+        var dsSelectedIdx = document.getElementById(this.dsListBoxId).options.selectedIndex;
+
+        var currentDatasource = this.options.datasources[dsSelectedIdx];
+
+
+        var observableIdx = document.getElementById(this.observableListBoxId).options.selectedIndex;
+
+        var videoFuncProps = OSH.UI.Styler.Factory.getVideoFunc(
+            currentDatasource,
+            observableIdx
+        );
+
+        // copy function into properties
+        OSH.Utils.copyProperties(videoFuncProps,stylerProperties.properties);
+
+        // UI
+        stylerProperties.properties.ui.video.observableIdx = observableIdx;
+        stylerProperties.properties.ui.video.datasourceId = currentDatasource.id;
+
+        return stylerProperties;
+    }
+
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.Panel.XYPanel = OSH.UI.Panel.StylerPanel.extend({
+    initialize:function(parentElementDivId, options) {
+        this._super(parentElementDivId, options);
+    },
+    initPanel:function() {
+        var self = this;
+
+        this.contentElt = document.createElement("div");
+        this.elementDiv.appendChild(this.contentElt);
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Default values");
+
+
+        var xDefaultValue = "";
+        var yDefaultValue = "";
+        var zDefaultValue = "";
+
+        // inits default values
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.default")) {
+            // default values
+            xDefaultValue = this.styler.properties.ui.values.default.x;
+            yDefaultValue = this.styler.properties.ui.values.default.y;
+        }
+
+        this.xDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "X", xDefaultValue,"0.0");
+        this.yDefaultInputId = OSH.Helper.HtmlHelper.addInputText(this.contentElt, "Y", yDefaultValue,"0.0");
+
+        OSH.Helper.HtmlHelper.addHTMLTitledLine(this.contentElt,"Mapping");
+
+        // load existing values if any
+        // load UI settings
+
+        if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.valuesFuncMapping") ||
+            !OSH.Utils.hasOwnNestedProperty(this.styler, "properties.valuesFunc")) {
+            this.initMappingFunctionUI();
+        } else {
+            this.initCustomFunctionUI();
+        }
+    },
+
+    initMappingFunctionUI:function() {
+        // data source
+        var dsName = [];
+
+        if (!isUndefinedOrNull(this.options.datasources)) {
+            for (var i = 0; i < this.options.datasources.length; i++) {
+                dsName.push(this.options.datasources[i].name);
+            }
+        }
+
+        // add UIs
+        this.dsListBoxId     = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Data Source", dsName);
+        this.xInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "X", []);
+        this.yInputMappingId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Y", []);
+
+        var self = this;
+
+        // adds default values
+        if(!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
+
+            if(OSH.Utils.hasOwnNestedProperty(this.styler, "properties.ui.values.valuesFuncMapping")) {
+                var datasourceIdx = -1;
+                for (var i = 0; i < this.options.datasources.length; i++) {
+                    if(this.options.datasources[i].id === this.styler.properties.ui.values.valuesFuncMapping.datasourceId) {
+                        datasourceIdx = i;
+                        break;
+                    }
+                }
+                if(datasourceIdx > -1) {
+                    document.getElementById(this.dsListBoxId).options.selectedIndex = datasourceIdx;
+
+                    this.loadDatasources();
+
+                    document.getElementById(this.xInputMappingId).options.selectedIndex = this.styler.properties.ui.values.valuesFuncMapping.xIdx;
+                    document.getElementById(this.yInputMappingId).options.selectedIndex = this.styler.properties.ui.values.valuesFuncMapping.yIdx;
+                }
+            } else {
+                this.loadDatasources();
+            }
+        }
+
+        this.addListener(document.getElementById(this.dsListBoxId), "change", function () {
+            // updates observables { x,y,z} listbox
+            var observables = self.getObservable(self.dsListBoxId);
+            self.loadMapValues(observables,self.xInputMappingId,self.yInputMappingId);
+        });
+    },
+
+    loadDatasources:function() {
+        // updates observables { x,y,z} listbox
+        var observables = this.getObservable(this.dsListBoxId);
+        this.loadMapValues(observables,this.xInputMappingId,this.yInputMappingId);
+    },
+
+    loadMapValues:function(observableArr,xInputMappingId,yInputMappingId) {
+        var xInputTag = document.getElementById(xInputMappingId);
+        var yInputTag = document.getElementById(yInputMappingId);
+
+        OSH.Helper.HtmlHelper.removeAllFromSelect(xInputMappingId);
+        OSH.Helper.HtmlHelper.removeAllFromSelect(yInputMappingId);
+
+        if(!isUndefinedOrNull(observableArr)) {
+            for (var i=0;i < observableArr.length;i++) {
+
+                // x
+                var option = document.createElement("option");
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+
+                xInputTag.add(option);
+
+                // y
+                option = document.createElement("option");
+                option.text = observableArr[i].uiLabel;
+                option.value = observableArr[i].uiLabel;
+
+                yInputTag.add(option);
+            }
+        }
+    },
+
+    initCustomFunctionUI:function() {
+        this.textareaId = OSH.Utils.createJSEditor(this.contentElt,this.styler.properties.valuesFunc.handler.toSource());
+    },
+
+    /**
+     * Returns the properties as JSON object.
+     *
+     * @example {
+     *  ui : {
+     *      values : {
+     *      }
+     *  },
+     *
+     *  values : {...}, // if any
+     *
+     *  valuesFunc: {...} // if any
+     * }
+     */
+    getProperties:function() {
+        var stylerProperties = {
+            properties: {
+                ui: {
+                    values: {}
+                }
+            },
+            values: {}
+        };
+
+        var valuesFuncProps,fixedValuesProps;
+
+        // default values x,y
+        fixedValuesProps = OSH.UI.Styler.Factory.getValues(
+            Number(document.getElementById(this.xDefaultInputId).value),
+            Number(document.getElementById(this.yDefaultInputId).value)
+        );
+
+        // update ui property
+        stylerProperties.properties.ui.values.default = {
+            x: Number(document.getElementById(this.xDefaultInputId).value),
+            y: Number(document.getElementById(this.yDefaultInputId).value)
+        };
+
+        // mapping function with data
+        if(isUndefinedOrNull(this.textareaId)) {
+            var xIdx=0,yIdx=0;
+
+            if (!isUndefinedOrNull(this.options.datasources) && this.options.datasources.length > 0) {
+                xIdx = document.getElementById(this.xInputMappingId).selectedIndex;
+                yIdx = document.getElementById(this.yInputMappingId).selectedIndex;
+
+                valuesFuncProps = OSH.UI.Styler.Factory.getValuesFunc(
+                    this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex], //datasource
+                    xIdx, yIdx); // obs indexes
+
+                stylerProperties.properties.ui.values.valuesFuncMapping = {
+                    datasourceId: this.options.datasources[document.getElementById(this.dsListBoxId).selectedIndex].id,
+                    xIdx: xIdx,
+                    yIdx: yIdx
+                };
+            }
+        } else {
+            // custom textual function
+            var textContent = document.getElementById(this.textareaId).value;
+
+            valuesFuncProps = OSH.UI.Styler.Factory.getCustomValuesFunc(
+                this.styler, //datasource array
+                document.getElementById(this.textareaId).value //valuesFnStr
+            );
+
+            stylerProperties.properties.ui.values.custom = textContent;
+        }
+
+
+        // copy default values properties
+        OSH.Utils.copyProperties(fixedValuesProps, stylerProperties);
+
+        // copy values function properties if any
+        if (!isUndefinedOrNull(valuesFuncProps)) {
+            OSH.Utils.copyProperties(valuesFuncProps, stylerProperties.properties);
+        }
+
+        return stylerProperties;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
  Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
 
  Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
@@ -3424,7 +9757,7 @@ OSH.Log = BaseClass.extend({
         this.first = true;
         // appends <div> tag to <body>
         document.observe("dom:loaded", function() {
-            var dialog = new OSH.UI.DialogView({
+            var dialog = new OSH.UI.DialogPanel({
                 title: "Logging console"
             });
             /*dialog.appendContent(this.logDiv);
@@ -3461,6 +9794,7 @@ OSH.Log = BaseClass.extend({
 
  ******************************* END LICENSE BLOCK ***************************/
 
+
 /**
  * @classdesc The abstract object to represent a view.
  * @class
@@ -3469,8 +9803,9 @@ OSH.Log = BaseClass.extend({
  * @param {string} options - The options
  * @abstract
  */
-OSH.UI.View = BaseClass.extend({
+OSH.UI.View = OSH.UI.Panel.extend({
     initialize: function (parentElementDivId, viewItems,options) {
+        this._super(parentElementDivId, options);
         // list of stylers
         this.stylers = [];
         this.contextMenus = [];
@@ -3479,28 +9814,12 @@ OSH.UI.View = BaseClass.extend({
         this.stylerToObj = {};
         this.stylerIdToStyler = {};
         this.lastRec = {};
-        this.selectedDataSources = [];
-        this.dataSources = [];
+        this.stylerIdToDatasources = {};
 
         //this.divId = divId;
         this.id = "view-" + OSH.Utils.randomUUID();
-
-        this.dataSourceId = -1;
-        // sets dataSourceId
-        if(typeof(options) !== "undefined" && typeof(options.dataSourceId) !== "undefined") {
-            this.dataSourceId = options.dataSourceId;
-        }
-
-        if(typeof(options) !== "undefined" && typeof(options.entityId) !== "undefined") {
-            this.entityId = options.entityId;
-        }
-        this.css = "";
-
-        this.cssSelected = "";
-
-        if(typeof(options) !== "undefined" && typeof(options.css) !== "undefined") {
-            this.css = options.css;
-        }
+        this.name = this.id;
+        this.type = this.getType();
 
         if(typeof(options) !== "undefined" && typeof(options.cssSelected) !== "undefined") {
             this.cssSelected = options.cssSelected;
@@ -3510,6 +9829,7 @@ OSH.UI.View = BaseClass.extend({
         this.init(parentElementDivId,viewItems,options);
     },
 
+
     /**
      * Inits the view component.
      * @param parentElementDivId The parent html element object to attach/create the view
@@ -3518,10 +9838,34 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     init:function(parentElementDivId,viewItems,options) {
-        this.elementDiv = document.createElement("div");
-        this.elementDiv.setAttribute("id", this.id);
-        this.elementDiv.setAttribute("class", this.css);
-        this.divId = this.id;
+        if(!isUndefinedOrNull(options)) {
+            this.options = options;
+
+            if(!isUndefinedOrNull(options.entityId)) {
+                this.entityId = options.entityId;
+            }
+
+            if(!isUndefinedOrNull(options.name)) {
+                this.name = options.name;
+            }
+        } else {
+            this.options = {};
+        }
+        this.css = "view";
+
+        this.cssSelected = "";
+
+        if(!isUndefinedOrNull(options)) {
+            if(!isUndefinedOrNull(options.css)) {
+                this.css += " "+options.css;
+            }
+
+            if(!isUndefinedOrNull(options.cssSelected)) {
+                this.cssSelected = options.cssSelected;
+            }
+        }
+
+        OSH.Utils.addCss(this.elementDiv,this.css);
 
         var div = document.getElementById(parentElementDivId);
 
@@ -3549,29 +9893,30 @@ OSH.UI.View = BaseClass.extend({
         }
         this.handleEvents();
 
-        // observes the event associated to the dataSourceId
-        if(typeof(options) !== "undefined" && typeof(options.dataSourceId) !== "undefined") {
-            OSH.EventManager.observe(OSH.EventManager.EVENT.DATA+"-"+options.dataSourceId, function (event) {
-                if (event.reset)
-                    this.reset(); // on data stream reset
-                else
-                    this.setData(options.dataSourceId, event.data);
-            }.bind(this));
-        }
-
         var self = this;
         var observer = new MutationObserver( function( mutations ){
             mutations.forEach( function( mutation ){
                 // Was it the style attribute that changed? (Maybe a classname or other attribute change could do this too? You might want to remove the attribute condition) Is display set to 'none'?
                 if( mutation.attributeName === 'style') {
                     self.onResize();
-
                 }
             });
         } );
 
         // Attach the mutation observer to blocker, and only when attribute values change
         observer.observe( this.elementDiv, { attributes: true } );
+
+        this.updateKeepRatio();
+    },
+
+    updateKeepRatio:function() {
+        var contains = OSH.Utils.containsCss(this.elementDiv,"keep-ratio-w");
+
+        if(this.options.keepRatio && !contains) {
+            OSH.Utils.addCss(this.elementDiv,"keep-ratio-w");
+        } else if(!this.options.keepRatio &&  contains) {
+            OSH.Utils.removeCss(this.elementDiv,"keep-ratio-w");
+        }
     },
 
     /**
@@ -3580,32 +9925,6 @@ OSH.UI.View = BaseClass.extend({
      */
     hide: function() {
         this.elementDiv.style.display = "none";
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    onResize:function() {
-    },
-
-    /**
-     *
-     * @param divId
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    attachTo : function(divId) {
-        if(typeof this.elementDiv.parentNode !== "undefined") {
-            // detach from its parent
-            this.elementDiv.parentNode.removeChild(this.elementDiv);
-        }
-        document.getElementById(divId).appendChild(this.elementDiv);
-        if(this.elementDiv.style.display === "none") {
-            this.elementDiv.style.display = "block";
-        }
-
-        this.onResize();
     },
 
     /**
@@ -3648,30 +9967,14 @@ OSH.UI.View = BaseClass.extend({
     setData: function(dataSourceId,data) {},
 
     /**
-     * Show the view by removing display:none style if any.
-     * @param properties
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    show: function(properties) {
-    },
-
-    /**
-     *
-     * @param properties
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    shows: function(properties) {
-    },
-
-    /**
      * Add viewItem to the view
      * @param viewItem
      * @instance
      * @memberof OSH.UI.View
      */
     addViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+
         this.viewItems.push(viewItem);
         if (viewItem.hasOwnProperty("styler")) {
             var styler = viewItem.styler;
@@ -3682,58 +9985,160 @@ OSH.UI.View = BaseClass.extend({
             styler.init(this);
             styler.viewItem = viewItem;
             this.stylerIdToStyler[styler.id] = styler;
+
+            this.observeDatasourceStyler(viewItem,styler);
         }
         if (viewItem.hasOwnProperty("contextmenu")) {
             this.contextMenus.push(viewItem.contextmenu);
         }
-        //for(var dataSourceId in styler.dataSourceToStylerMap) {
+    },
+
+    observeDatasourceStyler:function(viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
+
+        var styler = viewItem.styler;
+
         var ds = styler.getDataSourcesIds();
+
+        if(!( styler.id in this.stylerIdToDatasources)) {
+            this.stylerIdToDatasources[styler.id] = [];
+        }
         for(var i =0; i < ds.length;i++) {
             var dataSourceId = ds[i];
-            // observes the data come in
-            var self = this;
-            (function(frozenDataSourceId) { // use a close here to no share the dataSourceId variable
 
-                OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + frozenDataSourceId, function (event) {
-                    
-                    // skip data reset events for now
-                    if (event.reset)
-                        return;
-                    
-                    // we check selected dataSource only when the selected entity is not set
-                    var selected = false;
-                    if (typeof self.selectedEntity !== "undefined") {
-                        selected = (viewItem.entityId === self.selectedEntity);
-                    }
-                    else {
-                        selected = (self.selectedDataSources.indexOf(frozenDataSourceId) > -1);
-                    }
+            var idx = this.stylerIdToDatasources[styler.id].indexOf(dataSourceId);
 
-                    //TODO: maybe done into the styler?
-                    styler.setData(frozenDataSourceId, event.data, self, {
-                        selected: selected
-                    });
-                    self.lastRec[frozenDataSourceId] = event.data;
+            if(idx === -1) {
+                this.stylerIdToDatasources[styler.id].push(dataSourceId);
+                // observes the data come in
+                this.observeViewItemData(dataSourceId,viewItem);
+                this.observeViewItemSelectedData(dataSourceId,viewItem);
+            }
+        }
+    },
+
+    observeViewItemData:function(dataSourceId,viewItem){
+        var view = this;
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.DATA + "-" + dataSourceId,function(event){
+            // skip data reset events for now
+                if (event.reset)
+                    return;
+
+            viewItem.styler.setData(dataSourceId, event.data, view, {
+                selected: viewItem.styler.selected
+            });
+
+            view.lastRec[dataSourceId] = event.data;
+        });
+    },
+
+    observeViewItemSelectedData:function(datasourceBindId,viewItem,event) {
+        var view = this;
+
+        OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,function(event){
+            var selected = false;
+            if(!isUndefinedOrNull(event.entityId)) {
+                selected = (viewItem.entityId === event.entityId);
+            } else {
+                //TODO:intersection algo
+                //TODO/BUG: from styler.getDataSourceIds()
+                // it seems the viewItem.styler instance does not have this function while using the entityEditor
+                var stylerDsIds = [];
+                for ( var i in viewItem.styler.dataSourceToStylerMap) {
+                    stylerDsIds.push(i);
+                }
+
+                //var stylerDsIds = viewItem.styler.getDataSourcesId();
+                for(var i =0; i < stylerDsIds.length;i++) {
+                    if(event.dataSourcesIds.indexOf(stylerDsIds[i]) > -1) {
+                        selected = true;
+                        break;
+                    }
+                }
+            }
+
+            viewItem.styler.selected = selected;
+
+            if (datasourceBindId in view.lastRec) {
+                viewItem.styler.setData(datasourceBindId, view.lastRec[datasourceBindId], view, {
+                    selected: selected
                 });
+            }
+        });
+    },
 
-                OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW, function(event) {
-                    // we check selected dataSource only when the selected entity is not set
-                    var selected = false;
-                    if (typeof event.entityId !== "undefined") {
-                        selected = (viewItem.entityId === event.entityId);
-                    }
-                    else {
-                        selected = (event.dataSourcesIds.indexOf(frozenDataSourceId) > -1);
-                    }
+    /**
+     * Remove viewItem to the view
+     * @param viewItem
+     * @instance
+     * @memberof OSH.UI.View
+     */
+    removeViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
 
-                    if(frozenDataSourceId in self.lastRec) {
-                        styler.setData(frozenDataSourceId, self.lastRec[frozenDataSourceId], self, {
-                            selected: selected
-                        });
-                    }
-                });
+        var idx = -1;
+        for(var i=0;i < this.viewItems.length;i++) {
+            if(this.viewItems[i].id === viewItem.id) {
+                idx = i;
+                break;
+            }
+        }
 
-            })(dataSourceId); //passing the variable to freeze, creating a new closure
+        if (idx > -1) {
+            if(!isUndefinedOrNull(viewItem.styler)) {
+                var viewItemToRemove = this.viewItems[idx];
+                var idxStyler = -1;
+                for (var i = 0; i < this.stylers.length; i++) {
+                    if (this.stylers[i].id === viewItemToRemove.styler.id) {
+                        idxStyler = i;
+                        break;
+                    }
+                }
+
+                if (idxStyler > -1) {
+                    viewItem.styler.remove(this);
+
+                    this.stylers.splice(idxStyler, 1);
+                    delete this.stylerIdToStyler[viewItemToRemove.styler.id];
+                }
+            }
+            this.viewItems.splice(idx, 1);
+        }
+    },
+
+    updateViewItem: function (viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+
+        for(var i=0;i < this.viewItems.length;i++) {
+            if(this.viewItems[i].id === viewItem.id) {
+                // update styler
+                if(!isUndefinedOrNull(this.viewItems[i].styler)) {
+                    this.viewItems[i].styler.update(this);
+                    this.removeOldViewItemsDatasource(this.viewItems[i]);
+                    // observe datasource
+                    this.observeDatasourceStyler(this.viewItems[i]);
+                }
+                break;
+            }
+        }
+    },
+
+    removeOldViewItemsDatasource:function(viewItem) {
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem);
+        OSH.Asserts.checkIsDefineOrNotNull(viewItem.styler);
+
+        var currentDsIds = this.stylerIdToDatasources[viewItem.styler.id];
+        var newDs = viewItem.styler.getDataSourcesIds();
+
+        for(var key in currentDsIds) {
+            var currentDsId = currentDsIds[key];
+
+            if (newDs.indexOf(currentDsId) === -1) {
+                // remove observe event
+                OSH.EventManager.remove(OSH.EventManager.EVENT.DATA + "-" + currentDsId);
+            }
         }
     },
 
@@ -3742,46 +10147,36 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     handleEvents: function() {
+        this._super();
         // observes the selected event
         OSH.EventManager.observe(OSH.EventManager.EVENT.SELECT_VIEW,function(event){
             this.selectDataView(event.dataSourcesIds,event.entityId);
         }.bind(this));
 
-        // observes the SHOW event
-        OSH.EventManager.observe(OSH.EventManager.EVENT.SHOW_VIEW,function(event){
-            this.show(event);
-        }.bind(this));
-
+        // deprecated
         OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM,function(event){
             if(typeof event.viewId !== "undefined" && event.viewId === this.id) {
                 this.addViewItem(event.viewItem);
             }
         }.bind(this));
 
-        OSH.EventManager.observe(OSH.EventManager.EVENT.RESIZE+"-"+this.divId,function(event){
-            this.onResize();
+        // new version including the id inside the event id
+        OSH.EventManager.observe(OSH.EventManager.EVENT.ADD_VIEW_ITEM+"-"+this.id,function(event){
+            this.addViewItem(event.viewItem);
         }.bind(this));
+
+        // new version including the id inside the event id
+        OSH.EventManager.observe(OSH.EventManager.EVENT.REMOVE_VIEW_ITEM+"-"+this.id,function(event){
+            this.removeViewItem(event.viewItem);
+        }.bind(this));
+
+        // new version including the id inside the event id
+       /* OSH.EventManager.observe(OSH.EventManager.EVENT.UPDATE_VIEW_ITEM+"-"+this.id,function(event){
+            this.updateViewItem(event.viewItem);
+        }.bind(this));*/
     },
 
-    /**
-     * Should be called after receiving osh:SELECT_VIEW event
-     * @param $super
-     * @param dataSourcesIds
-     * @param entitiesIds
-     * @instance
-     * @memberof OSH.UI.View
-     */
-    selectDataView: function (dataSourcesIds,entityId) {
-        if(typeof this.dataSources !== "undefined") {
-            this.selectedDataSources = dataSourcesIds;
-            // set the selected entity even if it is undefined
-            // this is handled by the setData function
-            this.selectedEntity = entityId;
-            for (var j = 0; j < this.dataSources.length; j++) {
-                this.setData(this.dataSources[j], this.lastRec[this.dataSources[j]]);
-            }
-        }
-    },
+    selectDataView:function() {},
 
     /**
      *
@@ -3791,9 +10186,6 @@ OSH.UI.View = BaseClass.extend({
      */
     getDataSourcesId: function() {
         var res = [];
-        if(this.dataSourceId !== -1) {
-            res.push(this.dataSourceId);
-        }
 
         // check for stylers
         for(var i = 0; i < this.viewItems.length;i++) {
@@ -3812,6 +10204,454 @@ OSH.UI.View = BaseClass.extend({
      * @memberof OSH.UI.View
      */
     reset: function() {
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.UNDEFINED;
+    },
+
+    updateProperties:function(properties) {
+        if (!isUndefinedOrNull(properties)) {
+            if(!isUndefinedOrNull(properties.keepRatio)) {
+                this.options.keepRatio = properties.keepRatio;
+                this.updateKeepRatio();
+            }
+        }
+    }
+});
+
+OSH.UI.View.ViewType = {
+    MAP: "map",
+    VIDEO: "video",
+    CHART: "chart",
+    ENTITY_TREE:"entity_tree",
+    DISCOVERY : "discovery",
+    TASKING: "tasking",
+    RANGE_SLIDER:"rangeSlider",
+    UNDEFINED: "undefined"
+};
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ *
+ * @constructor
+ */
+OSH.UI.ViewFactory = function() {};
+
+/**
+ * This method provides a simple way to get default view properties
+ * @instance
+ * @memberof OSH.UI.ViewFactory
+ * @param OSH.UI.ViewFactory.ViewInstanceType viewInstanceType the instance type of the view
+ * @return the default properties to setup the view
+ *
+ */
+OSH.UI.ViewFactory.getDefaultViewProperties = function(viewInstanceType){
+    var props = {};
+
+    switch (viewInstanceType) {
+        case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : break;
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
+            props = {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "Video",
+                useWorker: true,
+                useWebWorkerTransferableData: false,
+                keepRatio:true
+            };
+            break;
+        }
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
+            props = {
+                css: "video",
+                cssSelected: "video-selected",
+                name: "Video",
+                keepRatio:true
+            };
+            break;
+        }
+        case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
+            props = {
+                name: "Line chart",
+                css: "chart-view",
+                cssSelected: "",
+                maxPoints: 30,
+                initData:true
+            };
+            break;
+        }
+        default:break;
+    }
+
+    return props;
+};
+
+/**
+ * Gets an instance of a view given its property and which does not contain any stylers
+ * @param viewInstanceType
+ * @param viewProperties
+ * @param datasource
+ * @param entity
+ * @return {*}
+ */
+OSH.UI.ViewFactory.getDefaultSimpleViewInstance = function(viewInstanceType,viewProperties) {
+    var cloneProperties = {};
+    cloneProperties = OSH.Utils.clone(viewProperties);
+
+    var viewInstance = null;
+
+    switch (viewInstanceType) {
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
+            viewInstance = new OSH.UI.View.FFMPEGView("",cloneProperties);
+        }
+        break;
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
+            viewInstance = new OSH.UI.View.MjpegView("",cloneProperties);
+        }
+            break;
+        default:break;
+    }
+
+    viewInstance.id = viewProperties.id;
+    viewInstance.viewInstanceType = viewInstanceType;
+
+    return viewInstance;
+};
+
+OSH.UI.ViewFactory.getDefaultViewInstance = function(viewInstanceType, defaultProperties) {
+    var viewInstance = null;
+
+    switch (viewInstanceType) {
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
+            viewInstance = new OSH.UI.View.FFMPEGView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.LEAFLET : {
+            viewInstance = new OSH.UI.View.LeafletView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.CESIUM : {
+            viewInstance = new OSH.UI.View.CesiumView ("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.NVD3_LINE_CHART : {
+            viewInstance = new OSH.UI.View.Nvd3LineChartView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.FFMPEG : {
+            viewInstance = new OSH.UI.View.FFMPEGView("",[],defaultProperties);
+        }
+            break;
+        case OSH.UI.ViewFactory.ViewInstanceType.MJPEG : {
+            viewInstance = new OSH.UI.View.MjpegView("",[],defaultProperties);
+        }
+            break;
+        default:
+            break;
+    }
+    viewInstance.viewInstanceType = viewInstanceType;
+    return viewInstance;
+};
+
+OSH.UI.ViewFactory.ViewInstanceType = {
+    LEAFLET: "leaflet",
+    FFMPEG:"video_h264",
+    CESIUM: "cesium",
+    MJPEG: "video_mjpeg",
+    NVD3_LINE_CHART: "line_chart"
+};
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Sensia Software LLC. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+ Author: Alex Robin <alex.robin@sensiasoft.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.View.ChartView = OSH.UI.View.extend({
+
+    initialize : function(parentElementDivId,viewItems, properties) {
+        this._super(parentElementDivId, viewItems, properties);
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.CHART;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Sensia Software LLC. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+ Author: Alex Robin <alex.robin@sensiasoft.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.View.MapView = OSH.UI.View.extend({
+
+    initialize : function(parentElementDivId,viewItems, properties) {
+        this._super(parentElementDivId, viewItems, properties);
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.MAP;
+    },
+
+    addMarker: function (properties) {},
+
+    removeMarker:function() {},
+
+    updateMarker: function (styler) {},
+
+    addPolyline: function (properties) {},
+
+    updatePolyline: function (styler) {},
+
+    removePolyline:function() {}
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Sensia Software LLC. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+ Author: Alex Robin <alex.robin@sensiasoft.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.View.TaskingView = OSH.UI.View.extend({
+
+    initialize : function(parentElementDivId, properties) {
+        this._super(parentElementDivId, [], properties);
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.TASKING;
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Sensia Software LLC. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+ Author: Alex Robin <alex.robin@sensiasoft.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+OSH.UI.View.VideoView = OSH.UI.View.extend({
+
+    initialize : function(parentElementDivId, viewItems,properties) {
+        this._super(parentElementDivId, viewItems, properties);
+
+        this.fps = 0;
+        this.nbFrames = 0;
+        /*
+         for 1920 x 1080 @ 25 fps = 7 MB/s
+         1 frame = 0.28MB
+         178 frames = 50MB
+         */
+        this.FLUSH_LIMIT  = 200;
+
+        this.statistics = {
+            videoStartTime: 0,
+            videoPictureCounter: 0,
+            windowStartTime: 0,
+            windowPictureCounter: 0,
+            fps: 0,
+            fpsMin: 1000,
+            fpsMax: -1000,
+            fpsSinceStart: 0
+        };
+
+        this.firstFrame = true;
+    },
+
+    init:function(parentElementDivId,viewItems,options) {
+        this._super(parentElementDivId,viewItems,options);
+
+        OSH.Utils.addCss(this.elementDiv,"video");
+
+        this.css += " video ";
+
+        this.options.showFps = false;
+        this.options.keepRatio = false;
+
+        if(!isUndefinedOrNull(options)) {
+            // defines default options if not defined
+            if (!isUndefinedOrNull(options.showFps)) {
+                this.options.showFps = options.showFps;
+            }
+            if (!isUndefinedOrNull(options.keepRatio)) {
+                this.options.keepRatio = options.keepRatio;
+            }
+        }
+
+        this.updateShowFps();
+    },
+
+    updateShowFps:function() {
+        var showFps = (!isUndefinedOrNull(this.options) && !isUndefinedOrNull(this.options.showFps) && this.options.showFps);
+
+        if(showFps && isUndefinedOrNull(this.statsElt)) {
+
+            // create stats block
+            // <div id="stats-h264" class="stats"></div>
+            this.statsElt = document.createElement("div");
+            this.statsElt.setAttribute("class", "stats");
+
+            // appends to root
+            this.elementDiv.appendChild(this.statsElt);
+
+            this.statsElt.innerHTML = "Fps: 0";
+
+            var self = this;
+
+            this.onAfterDecoded = function () {
+                this.statsElt.innerHTML = "Fps: " + this.statistics.fps.toFixed(1) + "";
+            };
+        } else if(!showFps && !isUndefinedOrNull(this.statsElt)) {
+            this.elementDiv.removeChild(this.statsElt);
+            this.statsElt = null;
+            this.onAfterDecoded = function () {};
+        }
+    },
+
+    /**
+     * @instance
+     * @memberof OSH.UI.View.VideoView
+     */
+    updateStatistics: function () {
+        this.nbFrames++;
+
+        var s = this.statistics;
+        s.videoPictureCounter += 1;
+        s.windowPictureCounter += 1;
+        var now = Date.now();
+        if (!s.videoStartTime) {
+            s.videoStartTime = now;
+        }
+        var videoElapsedTime = now - s.videoStartTime;
+        s.elapsed = videoElapsedTime / 1000;
+        if (videoElapsedTime < 1000) {
+            return;
+        }
+
+        if (!s.windowStartTime) {
+            s.windowStartTime = now;
+            return;
+        } else if ((now - s.windowStartTime) > 1000) {
+            var windowElapsedTime = now - s.windowStartTime;
+            var fps = (s.windowPictureCounter / windowElapsedTime) * 1000;
+            s.windowStartTime = now;
+            s.windowPictureCounter = 0;
+
+            if (fps < s.fpsMin) s.fpsMin = fps;
+            if (fps > s.fpsMax) s.fpsMax = fps;
+            s.fps = fps;
+        }
+
+        fps = (s.videoPictureCounter / videoElapsedTime) * 1000;
+        s.fpsSinceStart = fps;
+    },
+
+    /**
+     * @instance
+     * @memberof OSH.UI.View.VideoView
+     */
+    onAfterDecoded: function () {
+    },
+
+    updateFrame:function(styler) {
+        if(this.firstFrame) {
+            OSH.EventManager.observeDiv(this.divId,"click",function(event) {
+                OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
+                    dataSourcesIds: styler.getDataSourcesIds(),
+                    entityId: styler.viewItem.entityId
+                });
+            });
+            this.firstFrame = false;
+        }
+    },
+
+    /**
+     *
+     * @param dataSourceIds
+     * @param entityId
+     * @instance
+     * @memberof OSH.UI.View.H264View
+     */
+    selectDataView: function(dataSourceIds,entityId) {
+        var currentDataSources= this.getDataSourcesId();
+        if(OSH.Utils.isArrayIntersect(dataSourceIds,currentDataSources)) {
+            OSH.Utils.addCss(this.elementDiv,this.cssSelected);
+        } else {
+            OSH.Utils.removeCss(this.elementDiv,this.cssSelected);
+        }
+    },
+
+    stopVideo:function() {
+
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.VIDEO;
+    },
+
+    updateProperties: function (properties) {
+        this._super(properties);
+        if (!isUndefinedOrNull(properties)) {
+            if(!isUndefinedOrNull(properties.showFps)) {
+                this.options.showFps = properties.showFps;
+                this.updateShowFps();
+            }
+        }
     }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -4004,11 +10844,8 @@ OSH.UI.ContextMenu.CssMenu = OSH.UI.ContextMenu.extend({
 
         document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
 
-        if(typeof properties.x != "undefined") {
-            this.rootTag.style.left = properties.x + offsetX;
-        }
-        if(typeof properties.y != "undefined") {
-            this.rootTag.style.top = properties.y + offsetY;
+        if(!isUndefinedOrNull(properties.x) && !isUndefinedOrNull(properties.y)) {
+            this.rootTag.style.transform = "translate("+(properties.x + offsetX)+"px, "+(properties.y + offsetY)+"px)";
         }
 
         // binds actions based on items
@@ -4036,9 +10873,12 @@ OSH.UI.ContextMenu.CssMenu = OSH.UI.ContextMenu.extend({
      * @instance
      * @memberof OSH.UI.ContextMenu.CssMenu
      */
-    hide:function($super){
-        document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
-        this.removeElement();
+    hide:function(){
+        var selectDiv = document.querySelector('.'+this.type+'-menu-circle');
+        if(!isUndefinedOrNull(selectDiv)) {
+            selectDiv.classList.toggle('open');
+            this.removeElement();
+        }
     },
 
     /**
@@ -4183,11 +11023,8 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             offsetY = properties.offsetY;
         }
 
-        if(typeof properties.x != "undefined") {
-            this.rootTag.style.left = properties.x + offsetX;
-        }
-        if(typeof properties.y != "undefined") {
-            this.rootTag.style.top = properties.y + offsetY;
+        if(!isUndefinedOrNull(properties.x) && !isUndefinedOrNull(properties.y)) {
+            this.rootTag.style.transform = "translate("+(properties.x + offsetX)+"px, "+(properties.y + offsetY)+"px)";
         }
 
         document.querySelector('.'+this.type+'-menu-circle').classList.toggle('open');
@@ -4198,7 +11035,13 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             var item =  this.items[i];
             this.bindEvents[item.id] = item.viewId;
             document.getElementById(item.id).onclick = function(event){
+                //TODO:deprecated
                 OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW, {
+                    viewId: this.bindEvents[event.target.id]
+                });
+
+
+                OSH.EventManager.fire(OSH.EventManager.EVENT.SHOW_VIEW+"-"+this.bindEvents[event.target.id], {
                     viewId: this.bindEvents[event.target.id]
                 });
             }.bind(this);
@@ -4209,6 +11052,19 @@ OSH.UI.ContextMenu.StackMenu = OSH.UI.ContextMenu.CssMenu.extend({
             event.preventDefault();
             event.stopPropagation();
         }
+    },
+
+    handleEvents:function() {
+        this._super();
+
+        var self = this;
+        window.onmousedown = function() {
+            self.hide();
+        };
+
+        window.onclick = function() {
+            self.hide();
+        };
     }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -4287,13 +11143,41 @@ OSH.UI.Styler = BaseClass.extend({
 	 * @instance
 	 */
 	addFn : function(dataSourceIds, fn) {
-		for (var i = 0; i < dataSourceIds.length; i++) {
-			var dataSourceId = dataSourceIds[i];
-			if (typeof (this.dataSourceToStylerMap[dataSourceId]) === "undefined") {
-				this.dataSourceToStylerMap[dataSourceId] = [];
-			}
-			this.dataSourceToStylerMap[dataSourceId].push(fn);
-		}
+		this.removeFn(fn.fnName);
+        for (var i = 0; i < dataSourceIds.length; i++) {
+            var dataSourceId = dataSourceIds[i];
+
+            if (isUndefinedOrNull (this.dataSourceToStylerMap[dataSourceId])) {
+                this.dataSourceToStylerMap[dataSourceId] = [];
+            }
+            this.dataSourceToStylerMap[dataSourceId].push(fn);
+        }
+	},
+
+	removeFn:function(fnName) {
+        for (var dsKey in this.dataSourceToStylerMap) {
+        	var currentDsArray = this.dataSourceToStylerMap[dsKey];
+
+            var idx = -1;
+            for (var j=0;j< currentDsArray.length;j++) {
+                var currentDsElt = currentDsArray[j];
+                if(!isUndefinedOrNull(currentDsElt.fnName) && fnName  === currentDsElt.fnName) {
+                    // remove old function having the same name
+                    idx = j;
+                    break;
+                }
+            }
+
+            // if a function has to be removed
+            if(idx > -1) {
+            	// removed from the array
+                this.dataSourceToStylerMap[dsKey].splice(idx, 1);
+                if(this.dataSourceToStylerMap[dsKey].length === 0) {
+                    // remove this datasource because it is not longer used
+                	delete this.dataSourceToStylerMap[dsKey];
+                }
+            }
+        }
 	},
 
 	/**
@@ -4336,8 +11220,24 @@ OSH.UI.Styler = BaseClass.extend({
 	 * @memberof OSH.UI.Styler
 	 * @instance
 	 */
-	init: function() {}
+	init: function() {},
+
+    /**
+	 *  Remove a styler from its view
+     * @memberof OSH.UI.Styler
+     * @instance
+     */
+	remove:function(view) {},
+
+    /**
+     *  Update a styler from its view
+     * @memberof OSH.UI.Styler
+     * @instance
+     */
+    update:function(view) {}
+
 });
+
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -4373,55 +11273,60 @@ OSH.UI.Styler.ImageDraping = OSH.UI.Styler.extend({
 		
 		this.options = {};
 		
-		if (typeof(properties.platformLocation) != "undefined"){
+		if (!isUndefinedOrNull(properties.platformLocation)){
 			this.platformLocation = properties.platformLocation;
 		} 
 		
-		if (typeof(properties.platformOrientation) != "undefined"){
+		if (!isUndefinedOrNull(properties.platformOrientation)){
 			this.platformOrientation = properties.platformOrientation;
 		} 
 		
-		if (typeof(properties.gimbalOrientation) != "undefined"){
+		if (!isUndefinedOrNull(properties.gimbalOrientation)){
 			this.gimbalOrientation = properties.gimbalOrientation;
 		} 
 		
-		if (typeof(properties.cameraModel) != "undefined"){
+		if (!isUndefinedOrNull(properties.cameraModel)){
 			this.cameraModel = properties.cameraModel;
 		}
 		
-		if (typeof(properties.imageSrc) != "undefined"){
+		if (!isUndefinedOrNull(properties.imageSrc)){
 			this.imageSrc = properties.imageSrc;
 		} 
 		
-		if (typeof(properties.platformLocationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.platformLocationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.platformLocation = properties.platformLocationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "platformLocation";
 			this.addFn(properties.platformLocationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.platformOrientationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.platformOrientationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.platformOrientation = properties.platformOrientationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "platformOrientation";
 			this.addFn(properties.platformOrientationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.gimbalOrientationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.gimbalOrientationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.gimbalOrientation = properties.gimbalOrientationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "gimbalOrientation";
 			this.addFn(properties.gimbalOrientationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.cameraModelFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.cameraModelFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.cameraModel = properties.cameraModelFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "cameraModel";
 			this.addFn(properties.cameraModelFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.snapshotFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.snapshotFunc)) {
+            fn.fnName = "snapshot";
 			this.snapshotFunc = properties.snapshotFunc;
 		}
 	},
@@ -4485,59 +11390,68 @@ OSH.UI.Styler.ImageDraping = OSH.UI.Styler.extend({
 
 /**
  * @classdesc
- * @class OSH.UI.Styler.Curve
+ * @class OSH.UI.Styler.LinePlot
  * @type {OSH.UI.Style}
  * @augments OSH.UI.Styler
  */
-OSH.UI.Styler.Curve = OSH.UI.Styler.extend({
+OSH.UI.Styler.LinePlot = OSH.UI.Styler.extend({
 	initialize : function(properties) {
 		this._super(properties);
 		this.xLabel = "";
 		this.yLabel = "";
-		this.color = "#000000";
+		this.color = "#1f77b5";
 		this.stroke = 1;
 		this.x = 0;
 		this.y = [];
-		
-		if(typeof(properties.stroke) != "undefined"){
-			this.stroke = properties.stroke;
-		} 
-		
-		if(typeof(properties.color) != "undefined"){
-			this.color = properties.color;
-		} 
-		
-		if(typeof(properties.x) != "undefined"){
-			this.x = properties.x;
-		} 
-		
-		if(typeof(properties.y) != "undefined"){
-			this.y = properties.y;
-		} 
-		
-		if(typeof(properties.strokeFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.stroke = properties.strokeFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.strokeFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.colorFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.color = properties.colorFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.colorFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.valuesFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				var values = properties.valuesFunc.handler(rec,timeStamp,options);
-				this.x = values.x;
-				this.y = values.y;
-			}.bind(this);
-			this.addFn(properties.valuesFunc.dataSourceIds,fn);
-		}
+
+        this.updateProperties(properties);
 	},
+
+    updateProperties:function(properties) {
+        OSH.Utils.copyProperties(properties,this.properties,true);
+
+        if(!isUndefinedOrNull(properties.stroke)){
+            this.stroke = properties.stroke;
+        }
+
+        if(!isUndefinedOrNull(properties.color)){
+            this.color = properties.color;
+        }
+
+        if(!isUndefinedOrNull(properties.x)){
+            this.x = properties.x;
+        }
+
+        if(!isUndefinedOrNull(properties.y)){
+            this.y = properties.y;
+        }
+
+        if(!isUndefinedOrNull(properties.strokeFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.stroke = properties.strokeFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "stroke";
+            this.addFn(properties.strokeFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.colorFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.color = properties.colorFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "color";
+            this.addFn(properties.colorFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.valuesFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                var values = properties.valuesFunc.handler(rec,timeStamp,options);
+                this.x = values.x;
+                this.y = values.y;
+            }.bind(this);
+            fn.fnName = "values";
+            this.addFn(properties.valuesFunc.dataSourceIds,fn);
+        }
+    },
 
 	/**
 	 * @param $super
@@ -4552,11 +11466,1091 @@ OSH.UI.Styler.Curve = OSH.UI.Styler.extend({
 		if(this._super(dataSourceId,rec,view,options)) {
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined") {
-				view.updateCurve(this,rec.timeStamp,options);
+                this.lastData = {
+                    lastTimeStamp : rec.timeStamp,
+                    lastOptions : options,
+                    x: this.x,
+					y: this.y
+                };
+				view.updateLinePlot(this,rec.timeStamp,options);
 			}
 		}
-	}
+	},
+
+    /**
+     *
+     * @memberof OSH.UI.Styler.StylerLinePlot
+     * @instance
+     */
+    clear:function(){
+    },
+
+    remove:function(view) {
+        if(!isUndefinedOrNull(view)) {
+            view.removeLinePlot(this);
+        }
+    },
+
+    update:function(view) {
+        if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
+            this.x = this.lastData.x;
+            this.y = this.lastData.y;
+            view.updateLinePlot(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
+        }
+    }
 });
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ * @classdesc
+ * @class OSH.UI.Styler.Video
+ * @type {OSH.UI.Styler}
+ * @augments OSH.UI.Styler
+ * @example
+ * var videoStyler = new OSH.UI.Styler.Video();
+ */
+OSH.UI.Styler.Video = OSH.UI.Styler.extend({
+	initialize : function(properties) {
+		this._super(properties);
+		this.initProperties(properties);
+	},
+
+	initProperties:function(properties) {
+        this.frame = null;
+        this.options = {};
+
+        this.updateProperties(properties);
+	},
+
+	updateProperties:function(properties) {
+	    OSH.Utils.copyProperties(properties,this.properties,true);
+
+        if(!isUndefinedOrNull(properties.frameFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.frame = properties.frameFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "frame";
+            this.addFn(properties.frameFunc.dataSourceIds,fn);
+        }
+    },
+
+	/**
+	 *
+	 * @param view
+	 * @memberof OSH.UI.Styler.PointMarker
+	 * @instance
+	 */
+	init: function(view) {
+		this._super(view);
+	},
+
+	/**
+	 *
+	 * @param dataSourceId
+	 * @param rec
+	 * @param view
+	 * @param options
+	 * @memberof OSH.UI.Styler.PointMarker
+	 * @instance
+	 */
+	setData: function(dataSourceId,rec,view,options) {
+		if(this._super(dataSourceId,rec,view,options)) {
+			if (!isUndefinedOrNull(view) && !isUndefinedOrNull(this.frame)) {
+			    this.lastData = {
+                    lastTimeStamp : rec.timeStamp,
+                    lastOptions : options,
+                    frame: this.frame
+                };
+				view.updateFrame(this, rec.timeStamp, options);
+			}
+		}
+	},
+
+	/**
+	 *
+	 * @memberof OSH.UI.Styler.PointMarker
+	 * @instance
+	 */
+	clear:function(){
+	},
+
+	remove:function(view) {
+        if(!isUndefinedOrNull(view)) {
+            view.stopVideo(this);
+        }
+    },
+
+    update:function(view) {
+        if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
+            this.frame = this.lastData.frame;
+            view.updateFrame(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
+        }
+    }
+});
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ *
+ * @constructor
+ */
+OSH.UI.Styler.Factory = function() {};
+
+OSH.UI.Styler.Factory.LOCATION_DEFINITIONS = ["http://www.opengis.net/def/property/OGC/0/SensorLocation","http://sensorml.com/ont/swe/property/Location"];
+OSH.UI.Styler.Factory.ORIENTATION_DEFINITIONS = ["http://sensorml.com/ont/swe/property/OrientationQuaternion"];
+OSH.UI.Styler.Factory.CURVE_DEFINITIONS = ["http://sensorml.com/ont/swe/property/Weather"];
+
+OSH.UI.Styler.Factory.TYPE = {
+    MARKER:"Marker",
+    POLYLINE:"Polyline",
+    LINE_PLOT: "LinePlot",
+    VIDEO: "Video"
+};
+
+
+OSH.UI.Styler.Factory.getLocation = function(x,y,z) {
+  return {
+      location: {
+          x: x,
+          y: y,
+          z: z
+      }
+  };
+};
+
+
+//---- LOCATION ----//
+OSH.UI.Styler.Factory.getLocationFunc = function(datasource,xIdx,yIdx,zIdx) {
+
+    var x = "timeStamp",y = "timeStamp",z="timeStamp";
+
+    if(xIdx > 0 ) {
+        x = "rec." + datasource.resultTemplate[xIdx].path;
+    }
+
+    if(yIdx > 0 ) {
+        y = "rec." + datasource.resultTemplate[yIdx].path;
+    }
+
+    if(zIdx > 0 ) {
+        z = "rec." + datasource.resultTemplate[zIdx].path;
+    }
+
+    var locationFnStr = "return {" +
+        "x: "+ x + "," +
+        "y: "+ y + "," +
+        "z: "+ z +
+        "}";
+
+    var argsLocationTemplateHandlerFn = ['rec','timeStamp','options', locationFnStr];
+    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+
+    return {
+        locationFunc : {
+            dataSourceIds: [datasource.id],
+            handler: locationTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getCustomLocationFunc = function(styler,locationFnStr) {
+    OSH.Asserts.checkObjectPropertyPath(styler,
+        "properties.locationFunc.dataSourceIds","The styler must have datasourceId to be used with locationFunc");
+
+    var argsLocationTemplateHandlerFn = ['rec', locationFnStr];
+    var locationTemplateHandlerFn = Function.apply(null, argsLocationTemplateHandlerFn);
+
+    return {
+        locationFunc : {
+            dataSourceIds: styler.properties.locationFunc.dataSourceIds,
+            handler: locationTemplateHandlerFn
+        }
+    };
+};
+
+//----- ICON ----//
+OSH.UI.Styler.Factory.getFixedIcon = function(dataSourceIdsArray,url) {
+
+    var iconTemplate =  "return '"+url+ "';";
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    // generates iconFunc in case of iconFunc was already set. This is to override existing function if no selected
+    // icon has been set
+    return  {
+        icon: url,
+        iconFunc : {
+        dataSourceIds: dataSourceIdsArray, // TODO: find a way to use something else because it is not depending on datasources but user interaction in that case
+            handler: iconTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getThresholdIcon = function(datasource, observableIdx,
+                                      defaultIconUrl, lowIconUrl, highIconUrl, thresholdValue) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultIconUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(lowIconUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(highIconUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(thresholdValue);
+
+    var path = "timeStamp";
+
+    if(observableIdx > 0) {
+        path = "rec."+datasource.resultTemplate[observableIdx].path;
+    }
+
+    var iconTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowIconUrl + "'; }" + // <
+                       "else if (" + path + " > " + thresholdValue + " ) { return '" + highIconUrl + "'; }" + // >
+                       "else { return '"+defaultIconUrl+ "'; }"; // ==
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    return {
+        icon: defaultIconUrl,
+        iconFunc : {
+            dataSourceIds: [datasource.id],
+            handler: iconTemplateHandlerFn
+        }
+    };
+
+};
+
+OSH.UI.Styler.Factory.getCustomIconFunc = function(dataSourceIdsArray,iconFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        iconFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getSelectedIconFunc = function(dataSourceIdsArray,defaultUrl,selectedUrl) {
+
+    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultUrl);
+    OSH.Asserts.checkIsDefineOrNotNull(selectedUrl);
+
+    var iconTemplate = "";
+    var blobURL = "";
+
+    iconTemplate = "if (options.selected) {";
+    iconTemplate += "  return '" +  selectedUrl + "'";
+    iconTemplate += "} else {";
+    iconTemplate += "  return '" + defaultUrl + "'";
+    iconTemplate += "}";
+
+    var argsIconTemplateHandlerFn = ['rec', 'timeStamp', 'options', iconTemplate];
+    var iconTemplateHandlerFn = Function.apply(null, argsIconTemplateHandlerFn);
+
+    return {
+        icon:defaultUrl,
+        iconFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: iconTemplateHandlerFn
+        }
+    };
+};
+
+//---- VALUES ----//
+OSH.UI.Styler.Factory.getValues = function(x,y) {
+    return {
+        values: {
+            x: x,
+            y: y
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getValuesFunc = function(datasource,xIdx,yIdx) {
+
+    var x = "timeStamp",y = "timeStamp";
+
+    if(xIdx > 0 ) {
+        x = "rec." + datasource.resultTemplate[xIdx].path;
+    }
+
+    if(yIdx > 0 ) {
+        y = "rec." + datasource.resultTemplate[yIdx].path;
+    }
+
+    var valuesFnStr = "return {" +
+        "x: "+ x + "," +
+        "y: "+ y +
+        "}";
+
+    var argsValuesTemplateHandlerFn = ['rec', 'timeStamp', 'options', valuesFnStr];
+    var valuesTemplateHandlerFn = Function.apply(null, argsValuesTemplateHandlerFn);
+
+    return {
+        valuesFunc : {
+            dataSourceIds: [datasource.id],
+            handler: valuesTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getCustomValuesFunc = function(dataSourceIdsArray,valuesFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', valuesFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        valuesFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
+        }
+    };
+};
+
+// COLOR
+OSH.UI.Styler.Factory.getFixedColor = function(dataSourceIdsArray,url) {
+
+    var colorTemplate =  "return '"+url+ "';";
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    // generates iconFunc in case of iconFunc was already set. This is to override existing function if no selected
+    // icon has been set
+    return  {
+        color: url,
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray, // TODO: find a way to use something else because it is not depending on datasources but user interaction in that case
+            handler: colorTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getThresholdColor = function(datasource, observableIdx,
+                                                  defaultColor, lowColor, highColor, thresholdValue) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultColor);
+    OSH.Asserts.checkIsDefineOrNotNull(lowColor);
+    OSH.Asserts.checkIsDefineOrNotNull(highColor);
+    OSH.Asserts.checkIsDefineOrNotNull(thresholdValue);
+
+    var path = "timeStamp";
+
+    if(observableIdx > 0) {
+        path = "rec."+datasource.resultTemplate[observableIdx].path;
+    }
+
+    var colorTemplate = "if (" + path + " < " + thresholdValue + " ) { return '" + lowColor + "'; }" + // <
+        "else if (" + path + " > " + thresholdValue + " ) { return '" + highColor + "'; }" + // >
+        "else { return '"+defaultColor+ "'; }"; // ==
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    return {
+        color: defaultColor,
+        colorFunc : {
+            dataSourceIds: [datasource.id],
+            handler: colorTemplateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getCustomColorFunc = function(dataSourceIdsArray,colorFnStr) {
+    var argsTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorFnStr];
+    var templateHandlerFn = Function.apply(null, argsTemplateHandlerFn);
+
+    return {
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: templateHandlerFn
+        }
+    };
+};
+
+OSH.UI.Styler.Factory.getSelectedColorFunc = function(dataSourceIdsArray,defaultColor,selectedColor) {
+
+    OSH.Asserts.checkIsDefineOrNotNull(dataSourceIdsArray);
+    OSH.Asserts.checkIsDefineOrNotNull(defaultColor);
+    OSH.Asserts.checkIsDefineOrNotNull(selectedColor);
+
+    var colorTemplate = "";
+    var blobURL = "";
+
+    colorTemplate = "if (options.selected) {";
+    colorTemplate += "  return '" +  selectedColor + "'";
+    colorTemplate += "} else {";
+    colorTemplate += "  return '" + defaultColor + "'";
+    colorTemplate += "}";
+
+    var argsColorTemplateHandlerFn = ['rec', 'timeStamp', 'options', colorTemplate];
+    var colorTemplateHandlerFn = Function.apply(null, argsColorTemplateHandlerFn);
+
+    return {
+        color:defaultColor,
+        colorFunc : {
+            dataSourceIds: dataSourceIdsArray,
+            handler: colorTemplateHandlerFn
+        }
+    };
+};
+
+// VIDEO
+OSH.UI.Styler.Factory.getVideoFunc = function(datasource, observableIdx) {
+
+    OSH.Asserts.checkObjectPropertyPath(datasource,"resultTemplate", "The data source must contain the resultTemplate property");
+    OSH.Asserts.checkArrayIndex(datasource.resultTemplate, observableIdx);
+    OSH.Asserts.checkIsDefineOrNotNull(datasource);
+
+    var videoTemplate = "return rec"; // ==
+
+    var argsVideoTemplateHandlerFn = ['rec', 'timeStamp', 'options', videoTemplate];
+    var videoTemplateHandlerFn = Function.apply(null, argsVideoTemplateHandlerFn);
+
+    return {
+        frameFunc : {
+            dataSourceIds: [datasource.id],
+            handler: videoTemplateHandlerFn
+        }
+    };
+
+};
+
+
+OSH.UI.Styler.Factory.getTypeFromInstance = function(stylerInstance) {
+    if(stylerInstance instanceof OSH.UI.Styler.PointMarker){
+        return OSH.UI.Styler.Factory.TYPE.MARKER;
+    } else if(stylerInstance instanceof OSH.UI.Styler.Polyline){
+        return OSH.UI.Styler.Factory.TYPE.POLYLINE;
+    } else if(stylerInstance instanceof OSH.UI.Styler.LinePlot){
+        return OSH.UI.Styler.Factory.TYPE.LINE_PLOT;
+    } else if(stylerInstance instanceof OSH.UI.Styler.Video){
+        return OSH.UI.Styler.Factory.TYPE.VIDEO;
+    } else {
+        throw new OSH.Exception.Exception("No type available for the instance "+stylerInstance);
+    }
+};
+
+OSH.UI.Styler.Factory.getNewInstanceFromType = function(type) {
+    if(type === OSH.UI.Styler.Factory.TYPE.LINE_PLOT) {
+        return new OSH.UI.Styler.LinePlot({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.MARKER) {
+        return new OSH.UI.Styler.PointMarker({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.POLYLINE) {
+        return new OSH.UI.Styler.Polyline({});
+    } else if(type === OSH.UI.Styler.Factory.TYPE.VIDEO) {
+        return new OSH.UI.Styler.Video({});
+    } else {
+        throw new OSH.Exception.Exception("No styler instance available for the type "+type);
+    }
+};
+
+
+OSH.UI.Styler.Factory.buildFunctionFromSource = function(dataSourceIds,propertyName,strSource) {
+    var stylerFunc = {};
+
+    var argsFuncTemplateHandlerFn = ['rec', 'timeStamp', 'options', strSource];
+    var funcTemplateHandlerFn = Function.apply(null, argsFuncTemplateHandlerFn);
+
+    stylerFunc[propertyName] = {
+        dataSourceIds: dataSourceIds,
+        handler: funcTemplateHandlerFn
+    };
+
+    return stylerFunc;
+};
+
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License, v. 2.0.
+ If a copy of the MPL was not distributed with this file, You can obtain one
+ at http://mozilla.org/MPL/2.0/.
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+
+ Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
+
+ Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
+
+ ******************************* END LICENSE BLOCK ***************************/
+
+/**
+ * @classdesc
+ * @class OSH.UI.Panel.DiscoveryPanel
+ * @type {OSH.UI.View}
+ * @augments OSH.UI.View
+ * @example
+var discoveryView = new OSH.UI.Panel.DiscoveryPanel("discovery-container",{
+    services: ["http://sensiasoft.net:8181/"]
+});
+
+//------ More complex example
+ var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
+        services: ["http://sensiasoft.net:8181/"] // server list
+    });
+ */
+OSH.UI.Panel.DiscoveryPanel = OSH.UI.Panel.extend({
+
+    initialize: function (parentElementDivId, properties) {
+        this._super(parentElementDivId,[],properties);
+
+        this.dialogContainer = document.body.id;
+
+        this.formTagId = "form-"+OSH.Utils.randomUUID();
+        this.serviceSelectTagId = "service-"+OSH.Utils.randomUUID();
+        this.offeringSelectTagId = "offering-"+OSH.Utils.randomUUID();
+        this.observablePropertyTagId = "obsProperty-"+OSH.Utils.randomUUID();
+        this.nameTagId = "name-"+OSH.Utils.randomUUID();
+        this.startTimeTagId = "startTime-"+OSH.Utils.randomUUID();
+        this.endTimeTagId = "endTime-"+OSH.Utils.randomUUID();
+        this.typeSelectTagId = "type-"+OSH.Utils.randomUUID();
+        this.formButtonId = "submit-"+OSH.Utils.randomUUID();
+        this.syncMasterTimeId = "syncMasterTime-"+OSH.Utils.randomUUID();
+        this.replaySpeedId = "resplaySpeed-"+OSH.Utils.randomUUID();
+        this.responseFormatId = "responseFormat-"+OSH.Utils.randomUUID();
+        this.bufferingId = "buffering-"+OSH.Utils.randomUUID();
+        this.timeShiftId = "timeShift-"+OSH.Utils.randomUUID();
+        this.timeoutId = "timeout-"+OSH.Utils.randomUUID();
+
+        // add template
+        var discoveryForm = document.createElement("form");
+        discoveryForm.setAttribute("action","#");
+        discoveryForm.setAttribute("id",this.formTagId);
+        discoveryForm.setAttribute("class",'discovery-form');
+
+        OSH.Utils.addCss(document.getElementById(this.divId),"discovery-view");
+
+        document.getElementById(this.divId).appendChild(discoveryForm);
+
+        var strVar="";
+        strVar += "<ul class=\"osh-ul\">";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <h2>Discovery<\/h2>";
+        strVar += "                <span class=\"required_notification\">* Denotes Required Field<\/span>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <label>Service:<\/label>";
+        strVar += "                <div class=\"select-style\">";
+        strVar += "                     <select id=\""+this.serviceSelectTagId+"\" required pattern=\"^(?!Select a service$).*\">";
+        strVar += "                         <option value=\"\" disabled selected>Select a service<\/option>";
+        strVar += "                     <\/select>";
+        strVar += "                <\/div>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <label>Offering:<\/label>";
+        strVar += "                <div class=\"select-style\">";
+        strVar += "                    <select id=\""+this.offeringSelectTagId+"\" required>";
+        strVar += "                        <option value=\"\" disabled selected>Select an offering<\/option>";
+        strVar += "                    <\/select>";
+        strVar += "                <\/div>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <label>Observable Property:<\/label>";
+        strVar += "                <div class=\"select-style\">";
+        strVar += "                     <select id=\""+this.observablePropertyTagId+"\" required>";
+        strVar += "                         <option value=\"\" disabled selected>Select a property<\/option>";
+        strVar += "                     <\/select>";
+        strVar += "                <\/div>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                 <label for=\"name\">Name:<\/label>";
+        strVar += "                 <input id=\""+this.nameTagId+"\"  class=\"input-text\" type=\"input-text\" name=\"name\"/>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <label for=\"startTime\">Start time:<\/label>";
+        //strVar += "                <input type=\"text\" name=\"startTime\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\" required pattern=\"\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)\" />";
+        strVar += "                <input id=\""+this.startTimeTagId+"\" type=\"text\" name=\"startTime\" class=\"input-text\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\" required/>";
+        strVar += "                <span class=\"form_hint\">YYYY-MM-DDTHH:mm:ssZ<\/span>";
+        strVar += "            <\/li>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <label for=\"endTime\">End time:<\/label>";
+        //strVar += "                <input type=\"text\" name=\"endTime\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\"  required pattern=\"\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)\" />";
+        strVar += "                <input id=\""+this.endTimeTagId+"\" type=\"text\" name=\"endTime\" class=\"input-text\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\"  required/>";
+        strVar += "                <span class=\"form_hint\">YYYY-MM-DDTHH:mm:ssZ<\/span>";
+        strVar += "            <\/li>";
+        strVar += "            <div class=\"advanced\">";
+        strVar += "                 <!--input type=\"checkbox\" class=\"advanced\"><i class=\"fa fa-plus-square-o details-button\" aria-hidden=\"true\"><\/i>&nbsp; Advanced <\/input-->";
+        strVar += "                 <input type=\"checkbox\" name=\"advanced\" id=\"advanced\"/><label for=\"advanced\"><i class=\"fa\"></i>Advanced</label>";
+        strVar += "                 <div class=\"details\">";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"syncMasterTime\">Sync master time:<\/label>";
+        strVar += "                         <input id=\""+this.syncMasterTimeId+"\"  class=\"input-checkbox\" type=\"checkbox\" name=\"syncMasterTime\" />";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"replaySpeed\">Replay factor:<\/label>";
+        strVar += "                         <input id=\""+this.replaySpeedId+"\"  class=\"input-text\" type=\"input-text\" name=\"replaySpeed\" value=\'1\' />";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"responseFormat\">Response format<\/label>";
+        strVar += "                         <input id=\""+this.responseFormatId+"\"  class=\"input-text\" type=\"input-text\" name=\"responseFormat\" placeholder='\e.g: mp4\'/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"buffering\">Buffering time (ms)<\/label>";
+        strVar += "                         <input id=\""+this.bufferingId+"\"  class=\"input-text\" type=\"input-text\" name=\"buffering\" value=\'1000\'/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"timeShift\">TimeShift (ms)<\/label>";
+        strVar += "                         <input id=\""+this.timeShiftId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeShift\" value=\"0\"/>";
+        strVar += "                     <\/li>";
+        strVar += "                     <li class=\"osh-li\">";
+        strVar += "                         <label for=\"timeout\">Timeout (ms)<\/label>";
+        strVar += "                         <input id=\""+this.timeoutId+"\"  class=\"input-text\" type=\"input-text\" name=\"timeout\" value=\"1000\"/>";
+        strVar += "                     <\/li>";
+        strVar += "                 <\/div>";
+        strVar += "             <\/div>";
+        strVar += "            <li class=\"osh-li\">";
+        strVar += "                <button id=\""+this.formButtonId+"\" class=\"submit\" type=\"submit\">Add<\/button>";
+        strVar += "            <\/li>";
+        strVar += "        <\/ul>";
+
+        discoveryForm.innerHTML = strVar;
+
+        // FIX select input-text instead of dragging the element(when the parent is draggable)
+        var inputs = discoveryForm.querySelectorAll("input.input-text");
+        for(var i = 0;i < inputs.length;i++) {
+            inputs[i].onfocus = function(e){
+              OSH.Utils.fixSelectable(this, true);
+            };
+
+            inputs[i].onblur = function(e){
+                OSH.Utils.fixSelectable(this, false);
+            };
+        }
+        // fill service from urls
+        if(typeof properties !== "undefined") {
+            // add services
+            if(typeof properties.services !== "undefined"){
+                this.addValuesToSelect(this.serviceSelectTagId,properties.services);
+            }
+        }
+
+        // add listeners
+        OSH.EventManager.observeDiv(this.serviceSelectTagId,"change",this.onSelectedService.bind(this));
+        OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
+        OSH.EventManager.observeDiv(this.observablePropertyTagId,"change",this.onSelectedObsProperty.bind(this));
+        OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
+    },
+
+    getButtonElement:function() {
+        return document.getElementById(this.formButtonId);
+    },
+
+    initDataSource:function(dataSource) {
+        var serverTag = document.getElementById(this.serviceSelectTagId);
+
+        serverTag.dataSourceId = dataSource.id;
+
+        this.removeAllFromSelect(this.offeringSelectTagId);
+        this.removeAllFromSelect(this.observablePropertyTagId);
+
+        var dataSourceEndPoint = dataSource.properties.endpointUrl;
+        if(!dataSourceEndPoint.startsWith("http")) {
+            dataSourceEndPoint = "http://"+dataSourceEndPoint;
+        }
+        for(var i=0; i < serverTag.options.length;i++) {
+            var currentOption = serverTag.options[i].value;
+            if(!currentOption.startsWith("http")) {
+                currentOption = "http://"+currentOption;
+            }
+            if(currentOption === dataSourceEndPoint) {
+                serverTag.options[i].setAttribute("selected","");
+                this.onSelectedService({dataSource:dataSource});
+                break;
+            }
+        }
+
+        // edit advanced values
+        // sync master time
+        var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
+        syncMasterTimeTag.checked = dataSource.syncMasterTime;
+
+        // replaySpeed
+        var replaySpeedTag = document.getElementById(this.replaySpeedId);
+        replaySpeedTag.value = dataSource.properties.replaySpeed;
+
+        // buffering
+        var bufferingTag = document.getElementById(this.bufferingId);
+        bufferingTag.value = dataSource.bufferingTime;
+
+        // response format
+        var responseFormatTag = document.getElementById(this.responseFormatId);
+        responseFormatTag.value = (!isUndefined(dataSource.properties.responseFormat)) ? dataSource.properties.responseFormat : "";
+
+        // time shift
+        var timeShiftTag = document.getElementById(this.timeShiftId);
+        timeShiftTag.value = dataSource.timeShift;
+
+    },
+
+    setButton:function(name) {
+        var button = document.getElementById(this.formButtonId);
+        button.innerHTML = name;
+    },
+
+    /**
+     *
+     * @param event
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    onSelectedService : function(event) {
+        var serverTag = document.getElementById(this.serviceSelectTagId);
+        var option = serverTag.options[serverTag.selectedIndex];
+
+        this.removeAllFromSelect(this.offeringSelectTagId);
+
+        this.oshServer = new OSH.Server({
+            url: option.value
+        });
+
+        var onSuccessGetCapabilities = function(jsonObj) {
+            var startTimeInputTag = document.getElementById(this.startTimeTagId);
+            var endTimeInputTag = document.getElementById(this.endTimeTagId);
+
+            var offering=null;
+
+            var offeringMap = {};
+
+            // load content
+            for(var i=0;i < jsonObj.Capabilities.contents.offering.length;i++) {
+                offering = jsonObj.Capabilities.contents.offering[i];
+                this.addValueToSelect(this.offeringSelectTagId,offering.name,offering);
+
+                offeringMap[offering.name] = offering;
+            }
+
+            // edit selected filter
+            if(!isUndefined(event.dataSource)) {
+                var offeringTag = document.getElementById(this.offeringSelectTagId);
+                var offeringId = event.dataSource.properties.offeringID;
+
+                for(var i=0; i < offeringTag.options.length;i++) {
+                    var currentOption = offeringTag.options[i].value;
+                    var currentOffering = offeringMap[offeringTag.options[i].value];
+
+                    if(!isUndefined(currentOffering) && currentOffering.identifier === offeringId) {
+                        offeringTag.options[i].setAttribute("selected","");
+                        this.onSelectedOffering({dataSource:event.dataSource});
+                        break;
+                    }
+                }
+
+            }
+        }.bind(this);
+
+        var onErrorGetCapabilities = function(event) {
+        };
+
+        this.oshServer.getCapabilities(onSuccessGetCapabilities,onErrorGetCapabilities);
+    },
+
+    /**
+     *
+     * @param event
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    onSelectedOffering : function(event) {
+        var e = document.getElementById(this.offeringSelectTagId);
+        var option = e.options[e.selectedIndex];
+        var offering = option.parent;
+
+        this.removeAllFromSelect(this.observablePropertyTagId);
+
+        var startTimeInputTag = document.getElementById(this.startTimeTagId);
+        var endTimeInputTag = document.getElementById(this.endTimeTagId);
+
+        // feed observable properties
+        for(var i = 0; i  < offering.observableProperty.length;i++) {
+            // check if obs if supported
+            var disable = false;
+            //disable = !(offering.observableProperty[i] in OSH.DataReceiver.DataSourceFactory.definitionMap);
+            disable = false;
+            this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering,null,disable);
+        }
+
+        // edit selected filter
+        if(!isUndefined(event.dataSource)) {
+            var obsPropertyTag = document.getElementById(this.observablePropertyTagId);
+
+            for(var i=0; i < obsPropertyTag.options.length;i++) {
+                var currentOption = obsPropertyTag.options[i].value;
+
+                if(currentOption === event.dataSource.properties.observedProperty) {
+                    obsPropertyTag.options[i].setAttribute("selected","");
+                    this.onSelectedObsProperty({dataSource:event.dataSource});
+                    break;
+                }
+            }
+
+            // setup start/end time
+            startTimeInputTag.value = event.dataSource.properties.startTime;
+            endTimeInputTag.value = event.dataSource.properties.endTime;
+        } else {
+            // set times
+            startTimeInputTag.value = offering.phenomenonTime.beginPosition;
+
+            if(typeof offering.phenomenonTime.endPosition.indeterminatePosition !== "undefined") {
+                var d = new Date();
+                d.setUTCFullYear(2055);
+                endTimeInputTag.value = d.toISOString();
+
+                startTimeInputTag.value = "now";
+            } else {
+                endTimeInputTag.value = offering.phenomenonTime.endPosition;
+            }
+        }
+    },
+
+    /**
+     *
+     * @param event
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    onSelectedObsProperty: function(event) {
+        // edit filter
+        if(!isUndefined(event.dataSource)) {
+            // setup name
+            document.getElementById(this.nameTagId).value = event.dataSource.name;
+
+        } else {
+            var e = document.getElementById(this.observablePropertyTagId);
+            var option = e.options[e.selectedIndex];
+            var obsProp = option.value;
+
+            var split = obsProp.split("/");
+
+            var newNameValue = "";
+
+            if(typeof  split !== "undefined" && split !== null && split.length > 0) {
+                newNameValue = split[split.length-1];
+            }
+
+            document.getElementById(this.nameTagId).value = newNameValue;
+        }
+    },
+
+    /**
+     *
+     * @param event
+     * @returns {boolean}
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    onFormSubmit : function(event) {
+        event.preventDefault();
+        // service
+        var serviceTag = document.getElementById(this.serviceSelectTagId);
+        var serviceTagSelectedOption = serviceTag.options[serviceTag.selectedIndex];
+
+        // offering
+        var offeringTag = document.getElementById(this.offeringSelectTagId);
+        var offeringTagSelectedOption = offeringTag.options[offeringTag.selectedIndex];
+
+        // obs property
+        var observablePropertyTag = document.getElementById(this.observablePropertyTagId);
+        var observablePropertyTagSelectedOption = observablePropertyTag.options[observablePropertyTag.selectedIndex];
+
+        // name
+        var nameTag = document.getElementById(this.nameTagId);
+
+        // time
+        var startTimeInputTag = document.getElementById(this.startTimeTagId);
+        var endTimeInputTag = document.getElementById(this.endTimeTagId);
+
+        // sync master time
+        var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
+
+        // replaySpeed
+        var replaySpeedTag = document.getElementById(this.replaySpeedId);
+
+        // buffering
+        var bufferingTag = document.getElementById(this.bufferingId);
+
+        // response format
+        var responseFormatTag = document.getElementById(this.responseFormatId);
+
+        // time shift
+        var timeShiftTag = document.getElementById(this.timeShiftId);
+
+        // timeout
+        var timeoutTag = document.getElementById(this.timeoutId);
+
+        // get values
+        var name=offeringTagSelectedOption.parent.name;
+        var endPointUrl=serviceTagSelectedOption.value;
+        var offeringID=offeringTagSelectedOption.parent.identifier;
+        var obsProp=observablePropertyTagSelectedOption.value;
+        var startTime=startTimeInputTag.value;
+        var endTime=endTimeInputTag.value;
+
+        endPointUrl = endPointUrl.replace('http://', '');
+        var syncMasterTime = syncMasterTimeTag.checked;
+
+        var replaySpeed = replaySpeedTag.value;
+        var buffering = bufferingTag.value;
+        var responseFormat = responseFormatTag.value;
+        var timeShift = timeShiftTag.value;
+        var timeout = timeoutTag.value;
+
+        var properties = {
+            name:nameTag.value,
+            protocol: "ws",
+            service: "SOS",
+            endpointUrl: endPointUrl,
+            offeringID: offeringID,
+            observedProperty: obsProp,
+            startTime: startTime,
+            endTime: endTime,
+            replaySpeed: Number(replaySpeed),
+            syncMasterTime: syncMasterTime,
+            bufferingTime: Number(buffering),
+            timeShift: Number(timeShift),
+            timeout: Number(timeout),
+            responseFormat: (typeof responseFormat !== "undefined" && responseFormat !== null) ? responseFormat : undefined,
+            definition:obsProp
+        };
+
+        var existingDSId = serviceTag.dataSourceId;
+
+        OSH.DataReceiver.DataSourceFactory.createDatasourceFromType(properties,function(result){
+            if(!isUndefinedOrNull(existingDSId)) {
+                result.id = existingDSId;
+                this.onEditHandler(result);
+            } else {
+                this.onAddHandler(result);
+            }
+        }.bind(this));
+
+        return false;
+    },
+
+    onEditHandler:function(datasource) {},
+    onAddHandler:function(datasource) {},
+
+    /**
+     *
+     * @param tagId
+     * @param objectsArr
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    addObjectsToSelect:function(tagId,objectsArr) {
+        var selectTag = document.getElementById(tagId);
+        for(var i=0;i < objectsArr.length;i++) {
+            var object = objectsArr[i];
+            var option = document.createElement("option");
+            option.text = object.name;
+            option.value = object.name;
+            option.object = object;
+            selectTag.add(option);
+        }
+    },
+
+    /**
+     *
+     * @param tagId
+     * @param valuesArr
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    addValuesToSelect:function(tagId,valuesArr) {
+        var selectTag = document.getElementById(tagId);
+        for(var i=0;i < valuesArr.length;i++) {
+            var value = valuesArr[i];
+            var option = document.createElement("option");
+            option.text = value;
+            option.value = value;
+            selectTag.add(option);
+        }
+    },
+
+    /**
+     *
+     * @param tagId
+     * @param value
+     * @param parent
+     * @param object
+     * @param disable indicate if the the option will be disabled
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    addValueToSelect:function(tagId,value,parent,object,disable) {
+        var selectTag = document.getElementById(tagId);
+        var option = document.createElement("option");
+        option.text = value;
+        option.value = value;
+        option.parent = parent;
+
+        if(typeof object !== "undefined" && object !== null) {
+            option.object = object;
+        }
+
+        if(typeof parent !== "undefined") {
+            option.parent = parent;
+        }
+        if(typeof disable !== "undefined" && disable) {
+            option.setAttribute("disabled","");
+            option.text += " (not supported)";
+        }
+        selectTag.add(option);
+    },
+
+    /**
+     *
+     * @param tagId
+     * @memberof OSH.UI.Panel.DiscoveryPanel
+     * @instance
+     */
+    removeAllFromSelect:function(tagId) {
+        var i;
+        var selectTag = document.getElementById(tagId);
+        for (i = selectTag.options.length - 1; i > 0; i--) {
+            selectTag.remove(i);
+        }
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.DISCOVERY;
+    }
+});
+
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -4588,25 +12582,27 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 		
 		this.options = {};
 		
-		if (typeof(properties.location) != "undefined"){
+		if (!isUndefinedOrNull(properties.location)){
 			this.location = properties.location;
 		}  
 		
-		if (typeof(properties.radialData) != "undefined"){
+		if (!isUndefinedOrNull(properties.radialData)){
 			this.radialData = properties.radialData;
 		} 
 		
-		if (typeof(properties.locationFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.locationFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.location = properties.locationFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "location";
 			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
-		if (typeof(properties.radialDataFunc) != "undefined") {
+		if (!isUndefinedOrNull(properties.radialDataFunc)) {
 			var fn = function(rec,timeStamp,options) {
 				this.radialData = properties.radialDataFunc.handler(rec,timeStamp,options);
 			}.bind(this);
+            fn.fnName = "radialData";
 			this.addFn(properties.radialDataFunc.dataSourceIds,fn);
 		}
 		
@@ -4642,7 +12638,6 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @param view
 	 * @instance
 	 * @memberof OSH.UI.Styler.Nexrad
@@ -4653,7 +12648,6 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -4663,7 +12657,7 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if (this._super(dataSourceId,rec,view,options)) {
-			if (typeof(view) != "undefined") {
+			if (!isUndefinedOrNull(view)) {
 				
 				var DTR = Math.PI/180;
 				
@@ -4699,7 +12693,7 @@ OSH.UI.Styler.Nexrad = OSH.UI.Styler.extend({
 				}
 				
 				this.radialCount++;
-				if (this.radialCount == 100)
+				if (this.radialCount === 100)
 			    {
 					view.viewer.scene.primitives.add(this.pointCollection);
 					this.pointCollection = new Cesium.PointPrimitiveCollection();
@@ -4774,27 +12768,27 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 		this.smoothFactor = 1;
 		this.maxPoints = 10;
 		
-		if(typeof(properties.color) != "undefined"){
+		if(!isUndefinedOrNull(properties.color)){
 			this.color = properties.color;
 		} 
 		
-		if(typeof(properties.weight) != "undefined"){
+		if(!isUndefinedOrNull(properties.weight)){
 			this.weight = properties.weight;
 		} 
 		
-		if(typeof(properties.opacity) != "undefined"){
+		if(!isUndefinedOrNull(properties.opacity)){
 			this.opacity = properties.opacity;
 		} 
 		
-		if(typeof(properties.smoothFactor) != "undefined"){
+		if(!isUndefinedOrNull(properties.smoothFactor)){
 			this.smoothFactor = properties.smoothFactor;
 		} 
 		
-		if(typeof(properties.maxPoints) != "undefined"){
+		if(!isUndefinedOrNull(properties.maxPoints)){
 			this.maxPoints = properties.maxPoints;
 		} 
 		
-		if(typeof(properties.locationFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.locationFunc)) {
 			var fn = function(rec) {
 				var loc = properties.locationFunc.handler(rec);
 				this.locations.push(loc);
@@ -4802,41 +12796,45 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 					this.locations.shift();
 				}
 			}.bind(this);
+            fn.fnName = "location";
 			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.colorFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.colorFunc)) {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "color";
 			this.addFn(properties.colorFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.weightFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.weightFunc)) {
 			var fn = function(rec) {
 				this.weight = properties.weightFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "weight";
 			this.addFn(properties.weightFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.opacityFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.opacityFunc)) {
 			var fn = function(rec) {
 				this.opacity = properties.opacityFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "opacity";
 			this.addFn(properties.opacityFunc.dataSourceIds,fn);
 		}
 		
-		if(typeof(properties.smoothFactorFunc) != "undefined") {
+		if(!isUndefinedOrNull(properties.smoothFactorFunc)) {
 			var fn = function(rec) {
 				this.smoothFactor = properties.smoothFactorFunc.handler(rec);
 			}.bind(this);
+            fn.fnName = "smoothFactor";
 			this.addFn(properties.smoothFactorFunc.dataSourceIds,fn);
 		}
 	},
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -4846,7 +12844,7 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
-			if(typeof(view) != "undefined" && typeof view.updatePolyline === 'function'){
+			if(!isUndefinedOrNull(view) && typeof view.updatePolyline === 'function'){
 				view.updatePolyline(this);
 			}
 		}
@@ -4924,93 +12922,109 @@ OSH.UI.Styler.Polyline = OSH.UI.Styler.extend({
 OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	initialize : function(properties) {
 		this._super(properties);
-		this.properties = properties;
-		this.location = null;
-		this.orientation = {heading:0};
-		this.icon = null;
-		this.iconAnchor = [16,16];
-		this.label = null;
-		this.color = "#000000";
-		
-		this.options = {};
-		
-		if(typeof(properties.location) != "undefined"){
-			this.location = properties.location;
-		} 
-		
-		if(typeof(properties.orientation) != "undefined"){
-			this.orientation = properties.orientation;
-		} 
-		
-		if(typeof(properties.icon) != "undefined"){
-			this.icon = properties.icon;
-		}
-		
-		if(typeof(properties.iconAnchor) != "undefined"){
+		this.initProperties(properties);
+	},
+
+	initProperties:function(properties) {
+        this.location = {
+            x:0,
+            y:0,
+            z:0
+        };
+        this.orientation = {heading:0};
+        this.icon = null;
+        this.iconAnchor = [16,16];
+        this.label = null;
+        this.color = "#000000";
+
+        this.options = {};
+
+        this.updateProperties(properties);
+	},
+
+	updateProperties:function(properties) {
+	    OSH.Utils.copyProperties(properties,this.properties,true);
+
+        if(!isUndefinedOrNull(properties.location)){
+            this.location = properties.location;
+        }
+
+        if(!isUndefinedOrNull(properties.orientation)){
+            this.orientation = properties.orientation;
+        }
+
+        if(!isUndefinedOrNull(properties.icon)){
+            this.icon = properties.icon;
+        }
+
+        if(!isUndefinedOrNull(properties.iconAnchor)){
             this.iconAnchor = properties.iconAnchor;
         }
-		
-		if(typeof(properties.label) != "undefined"){
-			this.label = properties.label;
-		}
-		
-		if(typeof(properties.color) != "undefined"){
-			this.color = properties.color;
-		} 
-		
-		if(typeof(properties.locationFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.location = properties.locationFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.locationFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.orientationFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.orientation = properties.orientationFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.orientationFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.iconFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.icon = properties.iconFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.iconFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.labelFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.label = properties.labelFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.labelFunc.dataSourceIds,fn);
-		}
-		
-		if(typeof(properties.colorFunc) != "undefined") {
-			var fn = function(rec,timeStamp,options) {
-				this.color = properties.colorFunc.handler(rec,timeStamp,options);
-			}.bind(this);
-			this.addFn(properties.colorFunc.dataSourceIds,fn);
-		}
-	},
+
+        if(!isUndefinedOrNull(properties.label)){
+            this.label = properties.label;
+        }
+
+        if(!isUndefinedOrNull(properties.color)){
+            this.color = properties.color;
+        }
+
+        if(!isUndefinedOrNull(properties.locationFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.location = properties.locationFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "location";
+            this.addFn(properties.locationFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.orientationFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.orientation = properties.orientationFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "orientation";
+            this.addFn(properties.orientationFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.iconFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.icon = properties.iconFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "icon";
+            this.addFn(properties.iconFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.labelFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.label = properties.labelFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "label";
+            this.addFn(properties.labelFunc.dataSourceIds,fn);
+        }
+
+        if(!isUndefinedOrNull(properties.colorFunc)) {
+            var fn = function(rec,timeStamp,options) {
+                this.color = properties.colorFunc.handler(rec,timeStamp,options);
+            }.bind(this);
+            fn.fnName = "color";
+            this.addFn(properties.colorFunc.dataSourceIds,fn);
+        }
+    },
 
 	/**
 	 *
-	 * @param $super
 	 * @param view
 	 * @memberof OSH.UI.Styler.PointMarker
 	 * @instance
 	 */
 	init: function(view) {
 		this._super(view);
-		if(typeof(view) != "undefined" && this.location != null) {
+		if(!isUndefinedOrNull(view) && this.location !==null) {
 			view.updateMarker(this,0,{});
 		}
 	},
 
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceId
 	 * @param rec
 	 * @param view
@@ -5020,7 +13034,12 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 	 */
 	setData: function(dataSourceId,rec,view,options) {
 		if(this._super(dataSourceId,rec,view,options)) {
-			if (typeof(view) != "undefined" && this.location != null) {
+			if (!isUndefinedOrNull(view) && !isUndefinedOrNull(this.location)) {
+			    this.lastData = {
+                    lastTimeStamp : rec.timeStamp,
+                    lastOptions : options,
+                    location: this.location
+                };
 				view.updateMarker(this, rec.timeStamp, options);
 			}
 		}
@@ -5028,12 +13047,26 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
 
 	/**
 	 *
-	 * @param $super
 	 * @memberof OSH.UI.Styler.PointMarker
 	 * @instance
 	 */
-	clear:function($super){
-	}
+	clear:function(){
+	},
+
+	remove:function(view) {
+        if(!isUndefinedOrNull(view)) {
+            view.removeMarker(this);
+        }
+    },
+
+    update:function(view) {
+        if(!isUndefinedOrNull(view) && !isUndefinedOrNull(this.lastData)) {
+            this.location = this.lastData.location;
+            view.updateMarker(this,this.lastData.lastTimeStamp,this.lastData.lastOptions);
+        } else {
+            view.updateMarker(this,0,{});
+        }
+    }
 
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -5056,7 +13089,7 @@ OSH.UI.Styler.PointMarker = OSH.UI.Styler.extend({
  * @classdesc
  * @class OSH.UI.Nvd3CurveChartView
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.View.ChartView
  * @example
 // Chart View
 var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv.id, [{
@@ -5080,13 +13113,13 @@ var windSpeedChartView = new OSH.UI.Nvd3CurveChartView(chartDialog.popContentDiv
     maxPoints: 30
 });
  */
-OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
+OSH.UI.View.Nvd3LineChartView = OSH.UI.View.ChartView.extend({
 	initialize : function(parentElementDivId,viewItems, options) {
 		this._super(parentElementDivId,viewItems,options);
 
 		this.entityId = options.entityId;
-		var xLabel = 'Time';
-		var yLabel = 'yLabel';
+		this.xLabel = 'Time';
+        this.yLabel = 'yAxisLabel';
 		var xTickFormat = null;
 
 		var yTickFormat = d3.format('.02f');
@@ -5095,15 +13128,15 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 		var showYAxis = true;
 		var showXAxis = true;
 		var transitionDuration = 1;
-		var maxPoints = 999;
+        this.maxPoints = 999;
 
-		if (typeof (options) != "undefined") {
+		if (!isUndefinedOrNull(options)) {
 			if (options.xLabel) {
-				var xLabel = options.xLabel;
+                this.xLabel = options.xLabel;
 			}
 
 			if (options.yLabel) {
-				var yLabel = options.yLabel;
+                this.yLabel = options.yLabel;
 			}
 
 			if (options.xTickFormat) {
@@ -5155,17 +13188,17 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 		;
 
 		this.chart.xAxis //Chart x-axis settings
-		.axisLabel(xLabel).tickFormat(function(d) {
-			return d3.time.format.utc('%H:%M:%SZ')(new Date(d))
-		});
+		.axisLabel(this.xLabel).tickFormat(function(d) {
+			return d3.time.format.utc('%H:%M:%SZ')(new Date(d));
+		}).axisLabelDistance(5);
 
 		this.chart.yAxis //Chart y-axis settings
-		.axisLabel(yLabel).tickFormat(d3.format('.02f'))
-		.axisLabelDistance(15);
+		.axisLabel(this.yLabel).tickFormat(d3.format('.02f'))
+		.axisLabelDistance(5);
 
 		this.css = document.getElementById(this.divId).className;
 
-		if(typeof (options) != "undefined") {
+		if(!isUndefinedOrNull(options)) {
 			if (options.css) {
 				this.css += " " + options.css;
 			}
@@ -5187,13 +13220,22 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 		this.svgChart = d3.select('#' + this.divId + ' svg'); //Select the <svg> element you want to render the chart in.
 
 		var self =this;
-		OSH.EventManager.observeDiv(this.divId,"click",function(event){
-			OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-				dataSourcesIds: self.getDataSourcesId(),
-				entityId : self.entityId
-			});
-		});
 
+        /**
+		 * entityId : styler.viewItem.entityId
+         */
+
+        this.chart.legend.margin().bottom = 25;
+		if(!isUndefinedOrNull(options) && !isUndefinedOrNull(options.initData) && options.initData) {
+            this.svgChart
+                .datum([{
+                    values : [{y : 0,x : 0}],
+                    key : "",
+                    interpolate : "cardinal",
+                    area : true
+                }]) //Populate the <svg> element with chart data...
+                .call(this.chart);
+		}
 	},
 
 	/**
@@ -5204,7 +13246,7 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 	 * @instance
 	 * @memberof OSH.UI.Nvd3CurveChartView
 	 */
-	updateCurve : function(styler, timestamp, options) {
+	updateLinePlot : function(styler, timestamp, options) {
 		if (typeof (this.data) === "undefined") {
 			this.d3Data = [];	
 			var name = options.name;
@@ -5214,18 +13256,33 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 				key : this.names[styler.getId()],
 				interpolate : "cardinal",
 				area : true,
-			}
+				color:styler.color
+			};
 
 			this.data.values.push({
 				y : styler.y,
 				x : styler.x
 			});
-			
+
 			this.svgChart
 					.datum([this.data]) //Populate the <svg> element with chart data...
 					.call(this.chart);
 
+            OSH.EventManager.observeDiv(this.divId,"click",function(event){
+
+                var dataSourcesIds = [];
+                var entityId;
+				OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
+					dataSourcesIds: styler.getDataSourcesIds(),
+					entityId : styler.viewItem.entityId
+				});
+            });
+
 		} else {
+			this.data.color = styler.color;
+			if(!isUndefinedOrNull(styler.viewItem.name)) {
+				this.data.key  = styler.viewItem.name;
+			}
 			this.data.values.push({
 				y : styler.y,
 				x : styler.x
@@ -5238,9 +13295,26 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 		}
 	},
 
+	updateProperties:function(properties) {
+		if(!isUndefined(properties)) {
+			if(!isUndefinedOrNull(properties.xLabel)) {
+				this.xLabel = properties.xLabel;
+                this.chart.xAxis.axisLabel(this.xLabel);
+			}
+
+            if(!isUndefinedOrNull(properties.yLabel)) {
+                this.yLabel = properties.yLabel;
+                this.chart.yAxis.axisLabel(this.yLabel);
+            }
+
+            if(!isUndefinedOrNull(properties.maxPoints)) {
+				this.maxPoints = properties.maxPoints;
+            }
+		}
+	},
+
 	/**
 	 *
-	 * @param $super
 	 * @param dataSourceIds
 	 * @instance
 	 * @memberof OSH.UI.Nvd3CurveChartView
@@ -5253,7 +13327,11 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
 			this.div.setAttribute("class",this.css);
 		}
 	},
-	
+
+	removeLinePlot:function(styler) {
+		//TODO: remove current styler
+	},
+
 	/**
      * @instance
      * @memberof OSH.UI.Nvd3CurveChartView
@@ -5263,753 +13341,6 @@ OSH.UI.Nvd3CurveChartView = OSH.UI.View.extend({
         this.chart.update();
     }
 });
-/***************************** BEGIN LICENSE BLOCK ***************************
-
- The contents of this file are subject to the Mozilla Public License, v. 2.0.
- If a copy of the MPL was not distributed with this file, You can obtain one
- at http://mozilla.org/MPL/2.0/.
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- for the specific language governing rights and limitations under the License.
-
- Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
-
- Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
-
- ******************************* END LICENSE BLOCK ***************************/
-
-/**
- * @classdesc
- * @class OSH.UI.Panel.DiscoveryPanel
- * @type {OSH.UI.View}
- * @augments OSH.UI.View
- * @example
-var discoveryView = new OSH.UI.Panel.DiscoveryPanel("discovery-container",{
-    services: ["http://sensiasoft.net:8181/"],
-    views: [{
-        name: 'Video dialog(H264)',
-        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
-    },{
-        name: 'Video dialog(MJPEG)',
-        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
-    },{
-        name: 'Chart dialog',
-        type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
-    }
-    ]
-});
-
-//------ More complex example
- var discoveryView = new OSH.UI.Panel.DiscoveryPanel("",{
-        services: ["http://sensiasoft.net:8181/"], // server list
-        css: "discovery-view",
-        dataReceiverController:dataProviderController, // add custom dataProviderController
-        swapId: "main-container", // add a divId to swap data for inner dialog
-        entities: [androidEntity], // add entities
-        views: [{
-            name: 'Leaflet 2D Map',
-            viewId: leafletMainView.id,
-            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
-        }, {
-            name: 'Cesium 3D Globe',
-            viewId: cesiumMainMapView.id,
-            type : OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS
-        },{
-            name: 'Video dialog(H264)',
-            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264
-        },{
-            name: 'Video dialog(MJPEG)',
-            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG
-        },{
-            name: 'Chart dialog',
-            type : OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART
-        }
-        ]
-    });
- */
-OSH.UI.Panel.DiscoveryPanel = OSH.UI.View.extend({
-    initialize: function (parentElementDivId, properties) {
-        this._super(parentElementDivId,[],properties);
-
-        this.dialogContainer = document.body.id;
-        this.swapId = "";
-        if(typeof properties !== "undefined") {
-            if(typeof properties.dataReceiverController !== "undefined") {
-                this.dataReceiverController = properties.dataReceiverController;
-            } else {
-                this.dataReceiverController = new OSH.DataReceiver.DataReceiverController({
-                    replayFactor : 1
-                });
-                this.dataReceiverController.connectAll();
-            }
-
-            if(typeof properties.swapId !== "undefined") {
-                this.swapId = properties.swapId;
-            }
-
-            if(typeof properties.dialogContainer !== "undefined") {
-                this.dialogContainer = properties.dialogContainer;
-            }
-        }
-
-        this.formTagId = "form-"+OSH.Utils.randomUUID();
-        this.serviceSelectTagId = "service-"+OSH.Utils.randomUUID();
-        this.offeringSelectTagId = "offering-"+OSH.Utils.randomUUID();
-        this.observablePropertyTagId = "obsProperty-"+OSH.Utils.randomUUID();
-        this.startTimeTagId = "startTime-"+OSH.Utils.randomUUID();
-        this.endTimeTagId = "endTime-"+OSH.Utils.randomUUID();
-        this.typeSelectTagId = "type-"+OSH.Utils.randomUUID();
-        this.formButtonId = "submit-"+OSH.Utils.randomUUID();
-        this.syncMasterTimeId = "syncMasterTime-"+OSH.Utils.randomUUID();
-        this.entitiesSelectTagId = "entities-"+OSH.Utils.randomUUID();
-        this.viewSelectTagId = "dialogSelect-"+OSH.Utils.randomUUID();
-
-        // add template
-        var discoveryForm = document.createElement("form");
-        discoveryForm.setAttribute("action","#");
-        discoveryForm.setAttribute("id",this.formTagId);
-        discoveryForm.setAttribute("class",'discovery-form');
-
-        document.getElementById(this.divId).appendChild(discoveryForm);
-
-        var strVar="";
-        strVar += "<ul>";
-        strVar += "            <li>";
-        strVar += "                <h2>Discovery<\/h2>";
-        strVar += "                <span class=\"required_notification\">* Denotes Required Field<\/span>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Service:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                     <select id=\""+this.serviceSelectTagId+"\" required pattern=\"^(?!Select a service$).*\">";
-        strVar += "                         <option value=\"\" disabled selected>Select a service<\/option>";
-        strVar += "                     <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Offering:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.offeringSelectTagId+"\" required>";
-        strVar += "                        <option value=\"\" disabled selected>Select an offering<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Observable Property:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                     <select id=\""+this.observablePropertyTagId+"\" required>";
-        strVar += "                         <option value=\"\" disabled selected>Select a property<\/option>";
-        strVar += "                     <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label for=\"startTime\">Start time:<\/label>";
-        //strVar += "                <input type=\"text\" name=\"startTime\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\" required pattern=\"\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)\" />";
-        strVar += "                <input id=\""+this.startTimeTagId+"\" type=\"text\" name=\"startTime\" class=\"input-text\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\" required/>";
-        strVar += "                <span class=\"form_hint\">YYYY-MM-DDTHH:mm:ssZ<\/span>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label for=\"endTime\">End time:<\/label>";
-        //strVar += "                <input type=\"text\" name=\"endTime\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\"  required pattern=\"\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)\" />";
-        strVar += "                <input id=\""+this.endTimeTagId+"\" type=\"text\" name=\"endTime\" class=\"input-text\" placeholder=\"YYYY-MM-DDTHH:mm:ssZ\"  required/>";
-        strVar += "                <span class=\"form_hint\">YYYY-MM-DDTHH:mm:ssZ<\/span>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label for=\"syncMasterTime\">Sync master time:<\/label>";
-        strVar += "                <input id=\""+this.syncMasterTimeId+"\"  class=\"input-checkbox\" type=\"checkbox\" name=\syncMasterTime\" />";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Type:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.typeSelectTagId+"\" required>";
-        strVar += "                        <option value=\"\" disabled selected>Select a type<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>Entities:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.entitiesSelectTagId+"\">";
-        strVar += "                        <option value=\"\" selected>None<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <label>View:<\/label>";
-        strVar += "                <div class=\"select-style\">";
-        strVar += "                    <select id=\""+this.viewSelectTagId+"\" required>";
-        strVar += "                        <option value=\"\" disabled selected>Select a view<\/option>";
-        strVar += "                    <\/select>";
-        strVar += "                <\/div>";
-        strVar += "            <\/li>";
-        strVar += "            <li>";
-        strVar += "                <button id=\""+this.formButtonId+"\" class=\"submit\" type=\"submit\">Add<\/button>";
-        strVar += "            <\/li>";
-        strVar += "        <\/ul>";
-
-        discoveryForm.innerHTML = strVar;
-
-        // fill service from urls
-        if(typeof properties != "undefined") {
-            // add services
-            if(typeof properties.services != "undefined"){
-                this.addValuesToSelect(this.serviceSelectTagId,properties.services);
-            }
-
-            // add entities
-            if(typeof properties.entities != "undefined"){
-                this.addObjectsToSelect(this.entitiesSelectTagId,properties.entities);
-            }
-
-            // add views
-            if(typeof properties.views != "undefined"){
-                this.views = properties.views;
-            } else {
-                this.views = [];
-            }
-        }
-
-        // fill type
-        for(var type in  OSH.UI.Panel.DiscoveryPanel.Type) {
-            this.addValueToSelect(this.typeSelectTagId,OSH.UI.Panel.DiscoveryPanel.Type[type]);
-        }
-
-        // add listeners
-        OSH.EventManager.observeDiv(this.serviceSelectTagId,"change",this.onSelectedService.bind(this));
-        OSH.EventManager.observeDiv(this.offeringSelectTagId,"change",this.onSelectedOffering.bind(this));
-        OSH.EventManager.observeDiv(this.typeSelectTagId,"change",this.onSelectedType.bind(this));
-        OSH.EventManager.observeDiv(this.formTagId,"submit",this.onFormSubmit.bind(this));
-    },
-
-    /**
-     *
-     * @param event
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    onSelectedService : function(event) {
-        var serverTag = document.getElementById(this.serviceSelectTagId);
-        var option = serverTag.options[serverTag.selectedIndex];
-
-        // connect to server and get the list of offering
-        //var oshServer = new OSH.Server(option.value);
-
-        this.removeAllFromSelect(this.offeringSelectTagId);
-       /* var onSuccessGetCapabilities = function(event) {
-            this.sensors = oshServer.sensors;
-            // remove existing
-            var startTimeInputTag = document.getElementById(this.startTimeTagId);
-            var endTimeInputTag = document.getElementById(this.endTimeTagId);
-
-            // add the new ones
-            for(var i = 0;i < this.sensors.length;i++) {
-                this.addValueToSelect(this.offeringSelectTagId,this.sensors[i].name,this.sensors[i],this.sensors[i]);
-            }
-        }.bind(this);
-
-        var onErrorGetCapabilities = function(event) {
-        };
-
-        oshServer.getCapabilities(onSuccessGetCapabilities,onErrorGetCapabilities);*/
-
-       //option.value
-        this.oshServer = new OSH.Server({
-            sos:'sos', // TODO: allow to customize that value
-            sps:'sps', // TODO: allow to customize that value
-            url: OSH.Utils.removeLastCharIfExist(option.value,"/"),
-            baseUrl: 'sensorhub' // TODO: allow to customize that value
-        });
-
-        var onSuccessGetCapabilities = function(jsonObj) {
-            var startTimeInputTag = document.getElementById(this.startTimeTagId);
-            var endTimeInputTag = document.getElementById(this.endTimeTagId);
-
-            var offering=null;
-
-            for(var i=0;i < jsonObj.Capabilities.contents.offering.length;i++) {
-                offering = jsonObj.Capabilities.contents.offering[i];
-                this.addValueToSelect(this.offeringSelectTagId,offering.name,offering);
-            }
-        }.bind(this);
-
-        var onErrorGetCapabilities = function(event) {
-        };
-
-        this.oshServer.getCapabilities(onSuccessGetCapabilities,onErrorGetCapabilities);
-    },
-
-    /**
-     *
-     * @param event
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    onSelectedOffering : function(event) {
-        var e = document.getElementById(this.offeringSelectTagId);
-        var option = e.options[e.selectedIndex];
-        var offering = option.parent;
-        this.removeAllFromSelect(this.observablePropertyTagId);
-
-        var startTimeInputTag = document.getElementById(this.startTimeTagId);
-        var endTimeInputTag = document.getElementById(this.endTimeTagId);
-
-        // set times
-        startTimeInputTag.value = offering.phenomenonTime.beginPosition;
-
-        if(typeof offering.phenomenonTime.endPosition.indeterminatePosition !== "undefined") {
-            var d = new Date();
-            d.setUTCFullYear(2055);
-            endTimeInputTag.value = d.toISOString();
-        } else {
-            endTimeInputTag.value = offering.phenomenonTime.endPosition;
-        }
-
-        // feed observable properties
-        for(var i = 0; i  < offering.observableProperty.length;i++) {
-            this.addValueToSelect(this.observablePropertyTagId,offering.observableProperty[i],offering);
-        }
-    },
-
-    /**
-     *
-     * @param event
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    onSelectedType : function(event) {
-        var typeTag = document.getElementById(this.typeSelectTagId);
-        var tagValue = typeTag.value;
-        this.removeAllFromSelect(this.viewSelectTagId);
-        for(var i= 0;i  < this.views.length;i++) {
-            var currentView = this.views[i];
-            if(typeof currentView.type != "undefined" && currentView.type == tagValue){
-                this.addValueToSelect(this.viewSelectTagId,currentView.name,undefined,currentView);
-            }
-        }
-    },
-
-    /**
-     *
-     * @param event
-     * @returns {boolean}
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    onFormSubmit : function(event) {
-        event.preventDefault();
-        // service
-        var serviceTag = document.getElementById(this.serviceSelectTagId)
-        var serviceTagSelectedOption = serviceTag.options[serviceTag.selectedIndex];
-
-        // offering
-        var offeringTag = document.getElementById(this.offeringSelectTagId)
-        var offeringTagSelectedOption = offeringTag.options[offeringTag.selectedIndex];
-
-        // obs property
-        var observablePropertyTag = document.getElementById(this.observablePropertyTagId);
-        var observablePropertyTagSelectedOption = observablePropertyTag.options[observablePropertyTag.selectedIndex];
-
-        // time
-        var startTimeInputTag = document.getElementById(this.startTimeTagId);
-        var endTimeInputTag = document.getElementById(this.endTimeTagId);
-
-        // sync master time
-        var syncMasterTimeTag = document.getElementById(this.syncMasterTimeId);
-
-        // type & view
-        var typeTag = document.getElementById(this.typeSelectTagId);
-        var viewTag = document.getElementById(this.viewSelectTagId);
-        var viewTagOption = viewTag.options[viewTag.selectedIndex];
-
-        // entity
-        var entityTag = document.getElementById(this.entitiesSelectTagId);
-        var entityTagTagOption = entityTag.options[entityTag.selectedIndex];
-
-        // get values
-        var name=offeringTagSelectedOption.parent.name;
-        var endPointUrl=serviceTagSelectedOption.value+"sensorhub/sos";
-        var offeringID=offeringTagSelectedOption.parent.identifier;
-        var obsProp=observablePropertyTagSelectedOption.value;
-        var startTime=startTimeInputTag.value;
-        var endTime=endTimeInputTag.value;
-        var viewId = viewTagOption.object.viewId;
-        var entityId = undefined;
-        if(typeof entityTagTagOption.object != "undefined"){
-            entityId = entityTagTagOption.object.id;
-        }
-
-        endPointUrl = endPointUrl.replace('http://', '');
-        var syncMasterTime = syncMasterTimeTag.checked;
-
-
-        switch(viewTagOption.object.type) {
-            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_MJPEG:
-            {
-                this.createMJPEGVideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_VIDEO_H264:
-            {
-                this.createH264VideoDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            case OSH.UI.Panel.DiscoveryPanel.Type.MARKER_GPS:
-            {
-                this.createGPSMarker(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,viewTagOption.object.viewId,entityId);
-                break;
-            }
-            case OSH.UI.Panel.DiscoveryPanel.Type.DIALOG_CHART:
-            {
-                this.createChartDialog(name, endPointUrl, offeringID, obsProp, startTime, endTime,syncMasterTime,entityId);
-                break;
-            }
-            default : break;
-        }
-        return false;
-    },
-
-    /**
-     *
-     * @param tagId
-     * @param objectsArr
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    addObjectsToSelect:function(tagId,objectsArr) {
-        var selectTag = document.getElementById(tagId);
-        for(var i=0;i < objectsArr.length;i++) {
-            var object = objectsArr[i];
-            var option = document.createElement("option");
-            option.text = object.name;
-            option.value = object.name;
-            option.object = object;
-            selectTag.add(option);
-        }
-    },
-
-    /**
-     *
-     * @param tagId
-     * @param valuesArr
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    addValuesToSelect:function(tagId,valuesArr) {
-        var selectTag = document.getElementById(tagId);
-        for(var i=0;i < valuesArr.length;i++) {
-            var value = valuesArr[i];
-            var option = document.createElement("option");
-            option.text = value;
-            option.value = value;
-            selectTag.add(option);
-        }
-    },
-
-    /**
-     *
-     * @param tagId
-     * @param value
-     * @param parent
-     * @param object
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    addValueToSelect:function(tagId,value,parent,object) {
-        var selectTag = document.getElementById(tagId);
-        var option = document.createElement("option");
-        option.text = value;
-        option.value = value;
-        option.parent = parent;
-
-        if(typeof object != "undefined") {
-            option.object = object;
-        }
-
-        if(typeof parent != "undefined") {
-            option.parent = parent;
-        }
-        selectTag.add(option);
-    },
-
-    /**
-     *
-     * @param tagId
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    removeAllFromSelect:function(tagId) {
-        var i;
-        var selectTag = document.getElementById(tagId);
-        for (i = selectTag.options.length - 1; i > 0; i--) {
-            selectTag.remove(i);
-        }
-    },
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param viewId
-     * @param entityId
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    createGPSMarker: function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,viewId,entityId) {
-        var gpsDataSource = new OSH.DataReceiver.LatLonAlt(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000,
-            timeShift: -16000
-        });
-
-        // create viewItem
-        var pointMarker = new OSH.UI.Styler.PointMarker({
-            locationFunc : {
-                dataSourceIds : [gpsDataSource.id],
-                handler : function(rec) {
-                    return {
-                        x : rec.lon,
-                        y : rec.lat,
-                        z : rec.alt
-                    };
-                }
-            },
-            icon : 'images/cameralook.png',
-            iconFunc : {
-                dataSourceIds: [gpsDataSource.getId()],
-                handler : function(rec,timeStamp,options) {
-                    if(options.selected) {
-                        return 'images/cameralook-selected.png'
-                    } else {
-                        return 'images/cameralook.png';
-                    };
-                }
-            }
-        });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(gpsDataSource);
-
-        var viewItem = {
-            styler :  pointMarker,
-            name : name
-        };
-
-        if(typeof entityId !== "undefined") {
-            viewItem['entityId'] = entityId;
-        }
-
-        OSH.EventManager.fire(OSH.EventManager.EVENT.ADD_VIEW_ITEM,{viewItem:viewItem,viewId:viewId});
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[gpsDataSource.id]});
-    },
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param entityId
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    createMJPEGVideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var videoDataSource = new OSH.DataReceiver.VideoMjpeg(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
-        });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [videoDataSource.id],
-            swapId: this.swapId
-        });
-
-        var videoView = new OSH.UI.View.MjpegView(dialog.popContentDiv.id, {
-            dataSourceId: videoDataSource.id,
-            css: "video",
-            cssSelected: "video-selected",
-            name: "Android Video",
-            entityId : entityId,
-            keepRatio:true
-        });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(videoDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[videoDataSource.id]});
-    },
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param entityId
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    createH264VideoDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var videoDataSource = new OSH.DataReceiver.VideoH264(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
-        });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [videoDataSource.id],
-            swapId: this.swapId,
-            keepRatio:true
-        });
-
-        var videoView = new OSH.UI.View.FFMPEGView(dialog.popContentDiv.id, {
-            dataSourceId: videoDataSource.getId(),
-            css: "video",
-            cssSelected: "video-selected",
-            name: "Android Video",
-            entityId : entityId,
-            useWorker:true,
-            useWebWorkerTransferableData:true
-        });
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(videoDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[videoDataSource.id]});
-    },
-
-
-    /**
-     *
-     * @param name
-     * @param endPointUrl
-     * @param offeringID
-     * @param obsProp
-     * @param startTime
-     * @param endTime
-     * @param syncMasterTime
-     * @param entityId
-     * @memberof OSH.UI.Panel.DiscoveryPanel
-     * @instance
-     */
-    createChartDialog:function(name,endPointUrl,offeringID,obsProp,startTime,endTime,syncMasterTime,entityId) {
-        var chartDataSource = new OSH.DataReceiver.Chart(name, {
-            protocol: "ws",
-            service: "SOS",
-            endpointUrl: endPointUrl,
-            offeringID: offeringID,
-            observedProperty: obsProp,
-            startTime: startTime,
-            endTime: endTime,
-            replaySpeed: 1,
-            syncMasterTime: syncMasterTime,
-            bufferingTime: 1000
-        });
-
-        var dialog    =  new OSH.UI.DialogView(this.dialogContainer, {
-            draggable: true,
-            css: "dialog",
-            name: name,
-            show:true,
-            dockable: false,
-            closeable: true,
-            connectionIds : [chartDataSource.id],
-            swapId: this.swapId
-        });
-
-        // Chart View
-        var chartView = new OSH.UI.Nvd3CurveChartView(dialog.popContentDiv.id,
-            [{
-                styler: new OSH.UI.Styler.Curve({
-                    valuesFunc: {
-                        dataSourceIds: [chartDataSource.getId()],
-                        handler: function (rec, timeStamp) {
-                            return {
-                                x: timeStamp,
-                                y: parseFloat(rec[2])
-                            };
-                        }
-                    }
-                })
-            }],
-            {
-                name: name,
-                yLabel: '',
-                xLabel: '',
-                css:"chart-view",
-                cssSelected: "video-selected",
-                maxPoints:30
-            }
-        );
-
-        // We can add a group of dataSources and set the options
-        this.dataReceiverController.addDataSource(chartDataSource);
-
-        // starts streaming
-        OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE,{dataSourcesId:[chartDataSource.id]});
-    }
-});
-
-/**
- * The different type of discovery.
- * @type {{MARKER_GPS: string, DIALOG_VIDEO_H264: string, DIALOG_VIDEO_MJPEG: string, DIALOG_CHART: string}}
- * @memberof OSH.UI.Panel.DiscoveryPanel
- * @instance
- */
-OSH.UI.Panel.DiscoveryPanel.Type = {
-    MARKER_GPS : "Marker(GPS)",
-    DIALOG_VIDEO_H264 : "Video Dialog(H264)",
-    DIALOG_VIDEO_MJPEG: "Video Dialog(MJPEG)",
-    DIALOG_CHART : "Chart Dialog"
-};
 /***************************** BEGIN LICENSE BLOCK ***************************
 
  The contents of this file are subject to the Mozilla Public License, v. 2.0.
@@ -6146,6 +13477,10 @@ OSH.UI.EntityTreeView = OSH.UI.View.extend({
                     
             }
         }
+    },
+
+    getType: function()  {
+        return OSH.UI.View.ViewType.ENTITY_TREE;
     }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -6169,7 +13504,7 @@ OSH.UI.EntityTreeView = OSH.UI.View.extend({
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.View.MapView
  * @example
  var cesiumMapView = new OSH.UI.View.CesiumView ("",
  [{
@@ -6201,7 +13536,7 @@ OSH.UI.EntityTreeView = OSH.UI.View.extend({
  }]
  );
  */
-OSH.UI.View.CesiumView  = OSH.UI.View.extend({
+OSH.UI.View.CesiumView  = OSH.UI.View.MapView.extend({
 	
 	initialize : function(parentElementDivId,viewItems, properties) {
 		this._super(parentElementDivId,viewItems,properties);
@@ -6224,7 +13559,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param timeStamp
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 */
 	updateMarker : function(styler,timeStamp,options) {
 		var markerId = 0;
@@ -6265,7 +13600,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param timeStamp
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 *
 	 */
     updateDrapedImage: function(styler,timeStamp,options,snapshot) {
@@ -6411,7 +13746,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param $super
 	 * @param options
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 */
 	beforeAddingItems: function (options) {
 		this.markers = {};
@@ -6477,7 +13812,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param properties
 	 * @returns {string}
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 */
 	addMarker : function(properties) {
 		
@@ -6530,7 +13865,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param id
 	 * @param properties
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 */
 	updateMapMarker: function(id, properties) {
 		var lon = properties.lon;
@@ -6586,7 +13921,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
 	 * @param lon
 	 * @returns {Number|undefined}
 	 * @instance
-	 * @memberof OSH.UI.View.CesiumView
+	 * @memberof OSH.UI.View.CesiumView 
 	 */
 	getAltitude : function(lat, lon) {
 		var position = Cesium.Cartesian3.fromDegrees(lon, lat, 0, this.viewer.scene.globe.ellipsoid, new Cesium.Cartesian3());
@@ -6617,7 +13952,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.View.MapView
  * @example
  var leafletMapView = new OSH.UI.View.LeafletView("",
  [{
@@ -6649,7 +13984,7 @@ OSH.UI.View.CesiumView  = OSH.UI.View.extend({
  }]
  );
  */
-OSH.UI.View.LeafletView = OSH.UI.View.extend({
+OSH.UI.View.LeafletView = OSH.UI.View.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
 
@@ -6809,6 +14144,7 @@ OSH.UI.View.LeafletView = OSH.UI.View.extend({
     },
 
     //---------- FEATURES SETUP --------------//
+
     addMarker: function (properties) {
         //create marker
         var marker = null;
@@ -6871,15 +14207,18 @@ OSH.UI.View.LeafletView = OSH.UI.View.extend({
             // gets the corresponding styler
             for(var stylerId in self.stylerToObj) {
                 if(self.stylerToObj[stylerId] == id) {
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.CONTEXT_MENU+"-"+self.stylerIdToStyler[stylerId].viewItem.contextMenuId,{
-                        //TODO: values have to be provided by properties
-                        offsetX: -70,
-                        offsetY: -70,
-                        action : "show",
-                        x:OSH.Utils.getXCursorPosition(),
-                        y:OSH.Utils.getYCursorPosition(),
-                        drawLineTo:id
-                    });
+                    // does not send event if the viewItem does not handle conte
+                    if(OSH.Utils.hasOwnNestedProperty(self.stylerIdToStyler[stylerId],"viewItem.contextMenuId")) {
+                        OSH.EventManager.fire(OSH.EventManager.EVENT.CONTEXT_MENU + "-" + self.stylerIdToStyler[stylerId].viewItem.contextMenuId, {
+                            //TODO: values have to be provided by properties
+                            offsetX: -70,
+                            offsetY: -70,
+                            action: "show",
+                            x: OSH.Utils.getXCursorPosition(),
+                            y: OSH.Utils.getYCursorPosition(),
+                            drawLineTo: id
+                        });
+                    }
                     break;
                 }
             }
@@ -6919,6 +14258,20 @@ OSH.UI.View.LeafletView = OSH.UI.View.extend({
     },
 
     /**
+     * Remove marker from the map
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.View.LeafletView
+     */
+    removeMarker:function(styler) {
+        if(styler.id in this.stylerIdToStyler) {
+            var markerId = this.stylerToObj[styler.getId()];
+            var marker = this.markers[markerId];
+            this.map.removeLayer(marker);
+        }
+    },
+
+    /**
      *
      * @param styler
      * @instance
@@ -6943,6 +14296,11 @@ OSH.UI.View.LeafletView = OSH.UI.View.extend({
         }
 
         var marker = this.markers[markerId];
+
+        if(!isUndefinedOrNull(styler.viewItem)) {
+            marker.bindPopup(styler.viewItem.name);
+        }
+
         // updates position
         var lon = styler.location.x;
         var lat = styler.location.y;
@@ -6967,6 +14325,8 @@ OSH.UI.View.LeafletView = OSH.UI.View.extend({
             marker.setIcon(markerIcon);
         }
     },
+
+
 
     /**
      *
@@ -7127,9 +14487,9 @@ L.Map = L.Map.extend({
  * @classdesc
  * @class
  * @type {OSH.UI.View}
- * @augments OSH.UI.View
+ * @augments OSH.UI.View.MapView
  */
-OSH.UI.View.OpenLayerView = OSH.UI.View.extend({
+OSH.UI.View.OpenLayerView = OSH.UI.View.MapView.extend({
     initialize: function (parentElementDivId, viewItems, options) {
         this._super(parentElementDivId, viewItems, options);
         this.onResize();
@@ -7632,740 +14992,6 @@ OSH.UI.View.OpenLayerView = OSH.UI.View.extend({
  ******************************* END LICENSE BLOCK ***************************/
 
 /**
- * @classdesc
- * @class
- * @type {OSH.UI.View}
- * @augments OSH.UI.View
- * @example
- var dialogView new OSH.UI.DialogView(containerDivId, {
-        draggable: false,
-        css: "dialog",
-        name: title,
-        show:false,
-        dockable: true,
-        closeable: true,
-        connectionIds : dataSources ,
-        swapId: "main-container"
-    });
- */
-OSH.UI.DialogView = OSH.UI.View.extend({
-    initialize: function (parentElementDivId, options) {
-        this._super(parentElementDivId,[],options);
-        // creates HTML eflement
-        this.dialogId = "dialog-" + OSH.Utils.randomUUID();
-        this.pinDivId = "dialog-pin-" + OSH.Utils.randomUUID();
-        var closeDivId = "dialog-close-" + OSH.Utils.randomUUID();
-        this.connectDivId = "dialog-connect-" + OSH.Utils.randomUUID();
-        this.name = "Untitled";
-
-        var htmlVar = "";
-        htmlVar += "<div>";
-
-        this.dockable = false;
-        this.closeable = false;
-        this.connected = false;
-        this.swapped = false;
-        this.connectionIds = [];
-        this.draggable = false;
-
-        if(!isUndefined(options)){
-            if( typeof (options.swapId) != "undefined" && options.swapId != "") {
-                this.swapDivId = "dialog-exchange-" + OSH.Utils.randomUUID();
-                htmlVar += "<a id=\"" + this.swapDivId + "\"class=\"pop-exchange fa fa-exchange\" title=\"swap\"><\/a>";
-                this.divIdToSwap  = options.swapId;
-            }
-
-            if( typeof (options.connectionIds) != "undefined" && typeof options.connectionIds != "undefined" && options.connectionIds.length > 0) {
-                // add connected icon to disconnect/connect datasource
-                htmlVar += "<a id=\"" + this.connectDivId + "\"class=\"pop-connect\"><\/a>";
-                this.connected = true;
-                this.connectionIds = options.connectionIds;
-            }
-
-            if( typeof (options.dockable) != "undefined" && options.dockable) {
-                htmlVar +=  "<a id=\""+this.pinDivId+"\"class=\"pop-pin\"><\/a>";
-                this.dockable = options.dockable;
-            }
-
-            if(typeof (options.closeable) != "undefined" && options.closeable) {
-                htmlVar += "<a id=\""+closeDivId+"\"class=\"pop-close\" title=\"close\">x<\/a>";
-                this.closeable = options.closeable;
-            }
-
-            if(typeof (options.draggable) != "undefined" && options.draggable) {
-                this.draggable = options.draggable;
-            }
-
-            if(typeof (options.name) != "undefined") {
-                this.name = options.name;
-            }
-
-        }
-
-        this.titleId = "dialog-title-"+OSH.Utils.randomUUID();
-        htmlVar += "<h3 id=\""+this.titleId+"\">"+this.name+"<\/h3></div>";
-
-        this.rootTag = document.getElementById(this.divId);
-        this.rootTag.innerHTML = htmlVar;
-
-        this.rootTag.setAttribute("class", "pop-over resizable");
-        this.rootTag.setAttribute("draggable", this.draggable);
-
-        this.keepRatio = false;
-
-        if(!isUndefined(options)) {
-            var css = this.rootTag.className;
-            if (options.css) {
-                css += " " + options.css;
-            }
-            if(options.keepRatio){
-                css += " keep-ratio-w";
-                this.keepRatio = true;
-            }
-
-            this.rootTag.setAttribute("class", css);
-        }
-
-        this.flexDiv = document.createElement("div");
-        this.flexDiv.setAttribute("class","pop-inner");
-
-        this.popContentDiv = document.createElement("div");
-        this.popContentDiv.setAttribute("class","pop-content");
-        this.popContentDiv.setAttribute("id","pop-content-id-"+OSH.Utils.randomUUID());
-
-        if(!this.keepRatio) {
-            OSH.Utils.addCss(this.popContentDiv,"no-keep-ratio");
-        }
-
-        this.flexDiv.appendChild(this.popContentDiv);
-        // plugs it into the new draggable dialog
-        this.rootTag.appendChild(this.flexDiv);
-
-        if(typeof (options) != "undefined") {
-            if(typeof (options.show) != "undefined" && !options.show) {
-                this.rootTag.style.display = "none";
-            } else {
-                this.initialWidth = this.rootTag.offsetWidth;
-            }
-        }
-
-        // adds listener
-        this.rootTag.addEventListener('dragstart', this.drag_start.bind(this), false);
-        document.addEventListener('dragover', this.drag_over.bind(this), false);
-        document.addEventListener('drop', this.drop.bind(this), false);
-
-        if(this.closeable) {
-            document.getElementById(closeDivId).onclick = this.close.bind(this);
-        }
-
-        if(this.dockable) {
-            document.getElementById(this.pinDivId).onclick = this.unpin.bind(this);
-        }
-
-        if(this.connectionIds.length > 0) {
-            document.getElementById(this.connectDivId).onclick = this.connect.bind(this);
-        }
-
-        if(typeof  this.swapDivId != "undefined") {
-            document.getElementById(this.swapDivId).onclick = this.swapClick.bind(this);
-        }
-
-        // calls super handleEvents
-        this.handleEvents();
-
-        var self = this;
-
-        // observe events to update the dialog after disconnect/connect events handling
-        OSH.EventManager.observe(OSH.EventManager.EVENT.CONNECT_DATASOURCE,function(event) {
-            var dataSources = event.dataSourcesId;
-            if(dataSources.length == self.connectionIds.length) {
-                if(dataSources.filter(function(n) {
-                        return self.connectionIds.indexOf(n) != -1;
-                    }).length == self.connectionIds.length) {
-                    document.getElementById(self.connectDivId).setAttribute("class", "pop-connect");
-                    self.connected = true;
-                }
-            }
-        });
-
-        OSH.EventManager.observe(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE,function(event) {
-            var dataSources = event.dataSourcesId;
-            if(dataSources.length == self.connectionIds.length) {
-                if(dataSources.filter(function(n) {
-                        return self.connectionIds.indexOf(n) != -1;
-                    }).length == self.connectionIds.length) {
-                    document.getElementById(self.connectDivId).setAttribute("class", "pop-disconnect");
-                    self.connected = false;
-                }
-            }
-        });
-
-        OSH.EventManager.observe("swap-restore",function(event) {
-            if(self.swapped && event.exclude != self.id) {
-                self.swap();
-                self.swapped = false;
-            }
-        });
-
-        var p = this.rootTag.parentNode;
-
-        var testDiv = document.createElement("div");
-        testDiv.setAttribute("class","outer-dialog");
-        testDiv.appendChild(this.rootTag);
-
-        p.appendChild(testDiv);
-    },
-
-    /**
-     * Swap the current div with the div given as parameter
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    swapClick: function() {
-        OSH.EventManager.fire("swap-restore",{exclude: this.id});
-        this.swap();
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    swap:function() {
-        // swap the child of the popContentDiv with the child contained in the the containerDiv
-        var containerDivToSwap = document.getElementById(this.divIdToSwap);
-        if(containerDivToSwap != "undefined" && containerDivToSwap != null) {
-            if(!this.swapped) {
-                // get
-                var popContent = this.popContentDiv.firstChild;
-                this.contentViewId = popContent.id;
-                var swapContainerContent = containerDivToSwap.firstChild;
-
-                // remove
-                containerDivToSwap.removeChild(swapContainerContent);
-                this.popContentDiv.removeChild(popContent);
-
-                // append
-                containerDivToSwap.appendChild(popContent);
-                this.popContentDiv.appendChild(swapContainerContent);
-                this.swapped = true;
-
-                // update title
-                document.getElementById(this.titleId).innerText = "- Swapped -";
-
-                // if keep ratio
-                if(this.keepRatio) {
-                    // remove css class from dialog
-                    OSH.Utils.removeCss(this.rootTag,"keep-ratio-w");
-                    // does not keep ratio for the new content
-                    OSH.Utils.addCss(this.popContentDiv,"no-keep-ratio");
-                    OSH.Utils.addCss(containerDivToSwap,"keep-ratio-h");
-                }
-            } else {
-                // get
-                var popContent = this.popContentDiv.firstChild;
-                var swapContainerContent = document.getElementById(this.contentViewId);
-
-                // remove
-                containerDivToSwap.removeChild(swapContainerContent);
-                this.popContentDiv.removeChild(popContent);
-
-                // append
-                containerDivToSwap.appendChild(popContent);
-                this.popContentDiv.appendChild(swapContainerContent);
-
-                // update title
-                document.getElementById(this.titleId).innerText = this.name;
-                this.swapped = false;
-
-                // if keep ratio
-                if(this.keepRatio) {
-                    // remove css class from dialog
-                    OSH.Utils.addCss(this.rootTag,"keep-ratio-w");
-                    OSH.Utils.removeCss(this.popContentDiv,"no-keep-ratio");
-                    OSH.Utils.removeCss(containerDivToSwap,"keep-ratio-h");
-                }
-            }
-
-            // send resize event to the view
-            var everyChild = document.getElementById(this.divIdToSwap).querySelectorAll("div");
-            for (var i = 0; i<everyChild.length; i++) {
-                var id = everyChild[i].id;
-                if(id.startsWith("view-")) {
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.RESIZE+"-"+id);
-                }
-            }
-
-            var everyChild = this.popContentDiv.querySelectorAll("div");
-            for (var i = 0; i<everyChild.length; i++) {
-                var id = everyChild[i].id;
-                if(id.startsWith("view-")) {
-                    OSH.EventManager.fire(OSH.EventManager.EVENT.RESIZE+"-"+id);
-                }
-            }
-        }
-    },
-
-    /**
-     *
-     * @param $super
-     * @param properties
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    show: function(properties) {
-        if(properties.viewId.indexOf(this.getId()) > -1) {
-            this.rootTag.style.display = "block";
-            if(typeof(this.initialWidth) == "undefined" ) {
-                this.initialWidth = this.rootTag.offsetWidth;
-            }
-        }
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    connect: function() {
-        if(!this.swapped) {
-            if (!this.connected) {
-                OSH.EventManager.fire(OSH.EventManager.EVENT.CONNECT_DATASOURCE, {dataSourcesId: this.connectionIds});
-            } else {
-                OSH.EventManager.fire(OSH.EventManager.EVENT.DISCONNECT_DATASOURCE, {dataSourcesId: this.connectionIds});
-            }
-        }
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    unpin: function() {
-        if (!this.draggable) {
-            var bodyRect = document.body.getBoundingClientRect(),
-                elemRect = this.rootTag.getBoundingClientRect(),
-                offsetTop = elemRect.top - bodyRect.top,
-                offsetLeft = elemRect.left - bodyRect.left;
-
-            this.rootTag.setAttribute("draggable", true);
-            this.rootTag.parentNode.removeChild(this.rootTag);
-            document.body.appendChild(this.rootTag);
-            this.rootTag.style.top = offsetTop;
-            this.rootTag.style.left = offsetLeft;
-            this.rootTag.style.position = "absolute";
-            this.draggable = true;
-
-            document.getElementById(this.pinDivId).setAttribute("class", "pop-pin pop-pin-drag");
-        } else {
-            this.rootTag.style.top = 0;
-            this.rootTag.style.left = 0 - (this.rootTag.offsetWidth - this.initialWidth);
-            this.rootTag.style.position = "relative";
-            this.rootTag.setAttribute("draggable", false);
-            document.body.removeChild(this.rootTag);
-            this.container.appendChild(this.rootTag);
-            this.draggable = false;
-            document.getElementById(this.pinDivId).setAttribute("class", "pop-pin");
-        }
-    },
-
-
-    /**
-     *
-     * @param callback
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    onClose: function (callback) {
-        this.onClose = callback;
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    close: function () {
-       // this.rootTag.parentNode.removeChild(this.rootTag);
-        this.rootTag.style.display = "none";
-        if (this.onClose) {
-            this.onClose();
-        }
-    },
-
-    /**
-     *
-     * @param event
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    drag_start: function (event) {
-        event.stopPropagation();
-        // Grab all computed styles of the dragged object
-        var style = window.getComputedStyle(event.target, null);
-        // dataTransfer sets data that is being dragged. In this case, the current X and Y values (ex. "1257,104")
-        event.dataTransfer.effectAllowed = 'all';
-        event.dataTransfer.setData("text-" + this.rootTag.id,
-            (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
-
-    },
-
-    /**
-     *
-     * @param event
-     * @returns {boolean}
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    drag_over: function (event) {
-        event.stopPropagation();
-        event.preventDefault();
-        return false;
-    },
-
-    /**
-     *
-     * @param event
-     * @returns {boolean}
-     * @instance
-     * @memberof OSH.UI.DialogView
-     */
-    drop: function (event) {
-        event.stopPropagation();
-        // Set array of x and y values from the transfer data
-        var offset = event.dataTransfer.getData("text-" + this.rootTag.id).split(',');
-        this.rootTag.style.left = ((event.clientX + parseInt(offset[0], 10)) * 100) / window.innerWidth + "%";
-        this.rootTag.style.top = (event.clientY + parseInt(offset[1], 10)) + 'px';
-        event.preventDefault();
-        return false;
-    }
-});
-/***************************** BEGIN LICENSE BLOCK ***************************
-
- The contents of this file are subject to the Mozilla Public License, v. 2.0.
- If a copy of the MPL was not distributed with this file, You can obtain one
- at http://mozilla.org/MPL/2.0/.
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- for the specific language governing rights and limitations under the License.
-
- Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
-
- Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
-
- ******************************* END LICENSE BLOCK ***************************/
-
-/**
- * @classdesc Display a dialog with multiple view attach to it.
- * @class
- * @type {OSH.UI.Dialog}
- * @augments OSH.UI.Dialog
- */
-OSH.UI.MultiDialogView = OSH.UI.DialogView.extend({
-
-    initialize:function(parentElementDivId, options) {
-        this._super(parentElementDivId,options);
-        // add extra part
-        this.popExtraDiv = document.createElement("div");
-        this.popExtraDiv.setAttribute("class","pop-extra");
-        this.popExtraDiv.setAttribute("id","pop-extra-id-"+OSH.Utils.randomUUID());
-
-        this.flexDiv.appendChild(this.popExtraDiv);
-    },
-
-    /**
-     * Appends a new view to the existing dialog.
-     * @param parentElement
-     * @instance
-     * @memberof OSH.UI.MultiDialogView
-     */
-    appendView:function(parentElement,properties) {
-        //console.log(this.popContentDiv);
-        //remove from parent
-        var divToAdd = document.getElementById(parentElement);
-
-        // check the visibility of the div
-        if(divToAdd.style.display === "none") {
-            divToAdd.style.display = "block";
-        }
-
-
-        var extraDiv = document.createElement("div");
-        extraDiv.setAttribute("class","pop-extra-el");
-
-        var i = document.createElement("i");
-        i.setAttribute("class","fa fa-caret-right pop-extra-collapse fa-2x");
-
-        i.onclick = function() {
-            if(i.className.indexOf("fa-caret-down") == -1){
-                i.className = "fa fa-caret-down pop-extra-show fa-2x";
-            } else {
-                i.className = "fa fa-caret-right pop-extra-collapse fa-2x";
-            }
-        };
-        extraDiv.appendChild(i);
-        extraDiv.appendChild(divToAdd);
-        this.popExtraDiv.appendChild(extraDiv);
-
-    },
-
-    swap:function() {
-        var currentSwapValue = this.swapped;
-        this._super();
-
-        // hide extra stuff
-        if(!currentSwapValue) {
-            this.popExtraDiv.style.display = "none";
-        } else {
-            this.popExtraDiv.style.display = "block";
-        }
-    },
-
-    show: function(properties) {
-        this._super(properties);
-        //if(!isUndefinedOrNull(this.divToAdd) && this.divToAdd.style.display === "none") {
-        //   this.divToAdd.style.display = "block";
-        //  }
-    }
-});
-/***************************** BEGIN LICENSE BLOCK ***************************
-
- The contents of this file are subject to the Mozilla Public License, v. 2.0.
- If a copy of the MPL was not distributed with this file, You can obtain one
- at http://mozilla.org/MPL/2.0/.
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- for the specific language governing rights and limitations under the License.
-
- Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
-
- Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
-
- ******************************* END LICENSE BLOCK ***************************/
-
-/**
- * @class
- * @classdesc
- */
-OSH.UI.Loading = BaseClass.extend({
-    initialize: function () {
-        var loadingDiv = document.createElement("div");
-        loadingDiv.setAttribute("class",'loading-container');
-
-        OSH.EventManager.observe(OSH.EventManager.EVENT.LOADING_START,function(event){
-            var htmlVar="";
-            htmlVar += "	<div class=\"loading-dot-container\">";
-            htmlVar += "	<div class=\"loading-dot-section-1\"><span class=\"loading-label\">Buffering<\/span><\/div>";
-            htmlVar += "	<div class=\"loading-dot-section-2\">";
-            htmlVar += "	<div class=\"loading-dot\"><\/div>";
-            htmlVar += "	<div class=\"loading-dot\"><\/div>";
-            htmlVar += "	<div class=\"loading-dot\"><\/div>";
-            htmlVar += "	</div>";
-            htmlVar += "	<\/div>";
-
-            loadingDiv.innerHTML = htmlVar;
-            document.body.appendChild(loadingDiv);
-        });
-
-        OSH.EventManager.observe(OSH.EventManager.EVENT.LOADING_STOP,function(event){
-            document.body.removeChild(loadingDiv);
-        });
-    }
-});
-
-new OSH.UI.Loading();
-/***************************** BEGIN LICENSE BLOCK ***************************
-
- The contents of this file are subject to the Mozilla Public License, v. 2.0.
- If a copy of the MPL was not distributed with this file, You can obtain one
- at http://mozilla.org/MPL/2.0/.
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- for the specific language governing rights and limitations under the License.
-
- Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
-
- Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
-
- ******************************* END LICENSE BLOCK ***************************/
-
-/**
- * @classdesc
- * @class
- * @type {OSH.UI.View}
- * @augments OSH.UI.View
- * @example
- var rangeSlider = new OSH.UI.Panel.RangeSliderPanel("rangeSlider-container",{
-        startTime: "2015-02-16T07:58:00Z",
-        endTime: "2015-02-16T08:09:00Z",
-        refreshRate:1, // rate of data received
-        dataSourcesId: [someDataSource.id],
- });
- */
-OSH.UI.Panel.RangeSliderPanel = OSH.UI.View.extend({
-	initialize: function (parentElementDivId, options) {
-		this._super(parentElementDivId, [], options);
-
-		this.slider = document.createElement("div");
-		var activateButtonDiv = document.createElement("div");
-		var aTagActivateButton = document.createElement("a");
-		activateButtonDiv.appendChild(aTagActivateButton);
-
-
-		this.slider.setAttribute("class","osh-rangeslider-slider");
-		activateButtonDiv.setAttribute("class","osh-rangeslider-control");
-
-		var self = this;
-
-		activateButtonDiv.addEventListener("click",function(event) {
-			if(activateButtonDiv.className.indexOf("osh-rangeslider-control-select") > -1) {
-				activateButtonDiv.setAttribute("class","osh-rangeslider-control");
-				self.deactivate();
-			} else {
-				activateButtonDiv.setAttribute("class","osh-rangeslider-control-select");
-				self.activate();
-			}
-		});
-		document.getElementById(this.divId).appendChild(this.slider);
-		document.getElementById(this.divId).appendChild(activateButtonDiv);
-
-		var startTime = new Date().getTime();
-		this.endTime = new Date("2055-01-01T00:00:00Z").getTime(); //01/01/2055
-		this.slider.setAttribute('disabled', true);
-
-		this.dataSourcesId = [];
-
-		this.multi = false;
-		// compute a refresh rate
-		this.dataCount = 0;
-		this.refreshRate = 10;
-
-		if(typeof options != "undefined") {
-			if(typeof options.startTime != "undefined") {
-				startTime = new Date(options.startTime).getTime();
-				//slider.removeAttribute('disabled');
-			}
-
-			if(typeof options.endTime != "undefined") {
-				this.endTime = new Date(options.endTime).getTime();
-			}
-
-			if(typeof options.dataSourcesId != "undefined") {
-				this.dataSourcesId = options.dataSourcesId;
-			}
-			if(typeof options.refreshRate != "undefined") {
-				this.refreshRate = options.refreshRate;
-			}
-
-		}
-
-		noUiSlider.create(this.slider, {
-			start: [startTime,this.endTime]/*,timestamp("2015-02-16T08:09:00Z")]*/,
-			range: {
-				min: startTime,
-				max: this.endTime
-			},
-			//step:  1000* 60* 60,
-			format: wNumb({
-				decimals: 0
-			}),
-			behaviour: 'drag',
-			connect: true,
-			tooltips: [
-				wNumb({
-					decimals: 1,
-					edit:function( value ){
-						var date = new Date(parseInt(value)).toISOString();
-						return date.split("T")[1].split("Z")[0];
-					}
-				}),
-				wNumb({
-					decimals: 1,
-					edit:function( value ){
-						var date = new Date(parseInt(value)).toISOString();
-						return date.split("T")[1].split("Z")[0];
-					}
-				})
-			],
-			pips: {
-				mode: 'positions',
-				values: [5,25,50,75],
-				density: 1,
-				//stepped: true,
-				format: wNumb({
-					edit:function( value ){
-						return new Date(parseInt(value)).toISOString().replace(".000Z", "Z");
-					}
-				})
-			}
-		});
-
-		//noUi-handle noUi-handle-lower
-		// start->update->end
-		this.slider.noUiSlider.on("slide", function (values, handle) {
-			self.update = true;
-		});
-
-		// listen for DataSourceId
-		OSH.EventManager.observe(OSH.EventManager.EVENT.CURRENT_MASTER_TIME, function (event) {
-			var filterOk = true;
-
-			if(self.dataSourcesId.length > 0) {
-				if(self.dataSourcesId.indexOf(event.dataSourceId) < 0) {
-					filterOk = false;
-				}
-            }
-
-			if(filterOk && !self.lock && ((++self.dataCount)%self.refreshRate == 0)) {
-				self.slider.noUiSlider.set([event.timeStamp]);
-				self.dataCount = 0;
-			}
-		});
-	},
-
-	/**
-	 * @instance
-	 * @memberof OSH.UI.Panel.RangeSliderPanel
-	 */
-	deactivate:function() {
-		this.slider.setAttribute('disabled', true);
-		this.lock = false;
-		if(this.update) {
-			var values = this.slider.noUiSlider.get();
-			OSH.EventManager.fire(OSH.EventManager.EVENT.DATASOURCE_UPDATE_TIME, {
-				startTime: new Date(parseInt(values[0])).toISOString(),
-				endTime: new Date(parseInt(values[1])).toISOString()
-			});
-		}
-		this.update = false;
-	},
-
-	/**
-	 * @instance
-	 * @memberof OSH.UI.Panel.RangeSliderPanel
-	 */
-	activate: function() {
-		this.slider.removeAttribute('disabled');
-		this.lock = true;
-	}
-});
-/***************************** BEGIN LICENSE BLOCK ***************************
-
- The contents of this file are subject to the Mozilla Public License, v. 2.0.
- If a copy of the MPL was not distributed with this file, You can obtain one
- at http://mozilla.org/MPL/2.0/.
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- for the specific language governing rights and limitations under the License.
-
- Copyright (C) 2015-2017 Mathieu Dhainaut. All Rights Reserved.
-
- Author: Mathieu Dhainaut <mathieu.dhainaut@gmail.com>
-
- ******************************* END LICENSE BLOCK ***************************/
-
-/**
  *
  * @class
  * @classdesc
@@ -8601,56 +15227,36 @@ OSH.UI.View.PtzTaskingView = OSH.UI.View.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", {
-    dataSourceId: videoDataSource.id,
+ var videoView = new OSH.UI.View.FFMPEGView("videoContainer-id", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "H264 ViDEO",
+        entityId:entityId
+    }], {
     css: "video",
     cssSelected: "video-selected",
     name: "Video",
-    useWorker:true,
-    useWebWorkerTransferableData: false // this is because you can speed up the data transfert between main script and web worker
-                                            by using transferable data. Note that can cause problems if you data is attempted to use anywhere else.
-                                            See the not below for more details(*).
+    useWorker:true
 });
-
- (*)The transferableData actually transfers the ownership of the object to or from the web worker.
- It's like passing by reference where a copy isn't made. The difference between it and the normal pass-by-reference
- is that the side that transferred the data can no longer access it. In that case, the use of the data must be UNIQUE, that means
- you cannot use the data for anything else (like another viewer).
-
- The non transferable data is a copy of the data to be made before being sent to the worker. That could be slow for a large amount of data.
  */
-OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
-    initialize: function (parentElementDivId, options) {
-        this._super(parentElementDivId, [], options);
-
-        this.fps = 0;
-        var width = "640";
-        var height = "480";
-
-        this.nbFrames = 0;
-        /*
-         for 1920 x 1080 @ 25 fps = 7 MB/s
-         1 frame = 0.28MB
-         178 frames = 50MB
-         */
-        this.FLUSH_LIMIT  = 200;
-
-        this.statistics = {
-            videoStartTime: 0,
-            videoPictureCounter: 0,
-            windowStartTime: 0,
-            windowPictureCounter: 0,
-            fps: 0,
-            fpsMin: 1000,
-            fpsMax: -1000,
-            fpsSinceStart: 0
-        };
+OSH.UI.View.FFMPEGView = OSH.UI.View.VideoView.extend({
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
         this.useWorker = OSH.Utils.isWebWorker();
         this.resetCalled = true;
-        this.useTransferableData = true;
+        this.useWebWorkerTransferableData = false;
 
-        if (typeof options != "undefined") {
+        var width = 1920;
+        var height = 1080;
+
+        if (!isUndefinedOrNull(options)) {
             if (options.width) {
                 width = options.width;
             }
@@ -8659,9 +15265,9 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
                 height = options.height;
             }
 
-            this.useWorker = (typeof options.useWorker != "undefined") && (options.useWorker) && (OSH.Utils.isWebWorker());
+            this.useWorker = (!isUndefinedOrNull(options.useWorker)) && (options.useWorker) && (OSH.Utils.isWebWorker());
 
-            if(options.adjust) {
+            if(!isUndefinedOrNull(options.adjust) && options.adjust) {
                 var divElt = document.getElementById(this.divId);
                 if(divElt.offsetWidth < width) {
                     width = divElt.offsetWidth;
@@ -8671,25 +15277,19 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
                 }
             }
 
-            if(options.useWebWorkerTransferableData) {
+            if(!isUndefinedOrNull(options.useWebWorkerTransferableData) &&  options.useWebWorkerTransferableData) {
                 this.useWebWorkerTransferableData = options.useWebWorkerTransferableData;
             }
         }
 
-
         // create webGL canvas
         this.yuvCanvas = new YUVCanvas({width: width, height: height, contextOptions: {preserveDrawingBuffer: true}});
         var domNode = document.getElementById(this.divId);
+
         domNode.appendChild(this.yuvCanvas.canvasElement);
 
         // add selection listener
         var self = this;
-        OSH.EventManager.observeDiv(this.divId, "click", function (event) {
-            OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
-                dataSourcesIds: [self.dataSourceId],
-                entityId: self.entityId
-            });
-        });
 
         if (this.useWorker) {
             this.initFFMPEG_DECODER_WORKER();
@@ -8700,13 +15300,14 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
 
     /**
      *
-     * @param dataSourceId
-     * @param data
+     * @param styler
      * @instance
      * @memberof OSH.UI.View.FFMPEGView
      */
-    setData: function (dataSourceId, data) {
-        var pktData = data.data;
+    updateFrame: function (styler) {
+        this._super(styler);
+
+        var pktData = styler.frame;
         var pktSize = pktData.length;
 
         this.resetCalled = false;
@@ -8715,34 +15316,36 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
             this.decodeWorker(pktSize, pktData);
         } else {
             var decodedFrame = this.decode(pktSize, pktData);
-            this.displayFrame(decodedFrame);
-            this.update = false;
+            if(!isUndefinedOrNull(decodedFrame)) {
+                // adjust canvas size to fit to the decoded frame
+                if(decodedFrame.frame_width !== this.yuvCanvas.width) {
+                    this.yuvCanvas.canvasElement.width = decodedFrame.frame_width;
+                    this.yuvCanvas.width = decodedFrame.frame_width;
+                }
+                if(decodedFrame.frame_height !== this.yuvCanvas.height) {
+                    this.yuvCanvas.canvasElement.height = decodedFrame.frame_height;
+                    this.yuvCanvas.height = decodedFrame.frame_height;
+                }
+
+                this.yuvCanvas.drawNextOuptutPictureGL({
+                    yData: decodedFrame.frameYData,
+                    yDataPerRow: decodedFrame.frame_width,
+                    yRowCnt: decodedFrame.frame_height,
+                    uData: decodedFrame.frameUData,
+                    uDataPerRow: decodedFrame.frame_width / 2,
+                    uRowCnt: decodedFrame.frame_height / 2,
+                    vData: decodedFrame.frameVData,
+                    vDataPerRow: decodedFrame.frame_width / 2,
+                    vRowCnt: decodedFrame.frame_height / 2
+                });
+
+                this.updateStatistics();
+                this.onAfterDecoded();
+            }
         }
+
         //check for flush
         this.checkFlush();
-    },
-
-
-    checkFlush: function() {
-        if(!this.useWorker && this.nbFrames >= this.FLUSH_LIMIT) {
-            this.nbFrames = 0;
-            _avcodec_flush_buffers(this.av_ctx);
-        }
-    },
-    /**
-     *
-     * @param $super
-     * @param dataSourceIds
-     * @param entityId
-     * @instance
-     * @memberof OSH.UI.View.FFMPEGView
-     */
-    selectDataView: function (dataSourceIds, entityId) {
-        if (dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-            document.getElementById(this.divId).setAttribute("class", this.css + " " + this.cssSelected);
-        } else {
-            document.getElementById(this.divId).setAttribute("class", this.css);
-        }
     },
 
 
@@ -8768,49 +15371,6 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
         });
     },
 
-    /**
-     * @instance
-     * @memberof OSH.UI.View.FFMPEGView
-     */
-    updateStatistics: function () {
-        var s = this.statistics;
-        s.videoPictureCounter += 1;
-        s.windowPictureCounter += 1;
-        var now = Date.now();
-        if (!s.videoStartTime) {
-            s.videoStartTime = now;
-        }
-        var videoElapsedTime = now - s.videoStartTime;
-        s.elapsed = videoElapsedTime / 1000;
-        if (videoElapsedTime < 1000) {
-            return;
-        }
-
-        if (!s.windowStartTime) {
-            s.windowStartTime = now;
-            return;
-        } else if ((now - s.windowStartTime) > 1000) {
-            var windowElapsedTime = now - s.windowStartTime;
-            var fps = (s.windowPictureCounter / windowElapsedTime) * 1000;
-            s.windowStartTime = now;
-            s.windowPictureCounter = 0;
-
-            if (fps < s.fpsMin) s.fpsMin = fps;
-            if (fps > s.fpsMax) s.fpsMax = fps;
-            s.fps = fps;
-        }
-
-        var fps = (s.videoPictureCounter / videoElapsedTime) * 1000;
-        s.fpsSinceStart = fps;
-    },
-
-    /**
-     * @instance
-     * @memberof OSH.UI.View.FFMPEGView
-     */
-    onAfterDecoded: function () {
-    },
-
     //-- FFMPEG DECODING PART
 
     //-------------------------------------------------------//
@@ -8828,61 +15388,38 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
         this.worker = new Worker(window.OSH.BASE_WORKER_URL+'/osh-UI-FFMPEGViewWorker.js');
 
         var self = this;
-        var decodedFrame;
-
-        function release(decodedFrame) {
-            self.worker.postMessage({
-                data: decodedFrame,
-                release:true
-            }, [
-                decodedFrame.y.buffer,
-                decodedFrame.u.buffer,
-                decodedFrame.v.buffer
-            ]);
-        }
-
         this.worker.onmessage = function (e) {
-            if(e.data !== null) {
-                decodedFrame = e.data.data;
-                this.displayFrame(e.data.width,e.data.height,decodedFrame);
+            var decodedFrame = e.data;
 
-                release(decodedFrame);
+            if (!this.resetCalled) {
+                self.yuvCanvas.canvasElement.drawing = true;
+                // adjust canvas size to fit to the decoded frame
+                if(decodedFrame.frame_width != self.yuvCanvas.width) {
+                    self.yuvCanvas.canvasElement.width = decodedFrame.frame_width;
+                    self.yuvCanvas.width = decodedFrame.frame_width;
+                }
+                if(decodedFrame.frame_height != self.yuvCanvas.height) {
+                    self.yuvCanvas.canvasElement.height = decodedFrame.frame_height;
+                    self.yuvCanvas.height = decodedFrame.frame_height;
+                }
+
+                self.yuvCanvas.drawNextOuptutPictureGL({
+                    yData: decodedFrame.frameYData,
+                    yDataPerRow: decodedFrame.frame_width,
+                    yRowCnt: decodedFrame.frame_height,
+                    uData: decodedFrame.frameUData,
+                    uDataPerRow: decodedFrame.frame_width / 2,
+                    uRowCnt: decodedFrame.frame_height / 2,
+                    vData: decodedFrame.frameVData,
+                    vDataPerRow: decodedFrame.frame_width / 2,
+                    vRowCnt: decodedFrame.frame_height / 2
+                });
+                self.yuvCanvas.canvasElement.drawing = false;
+
+                self.updateStatistics();
+                self.onAfterDecoded();
             }
         }.bind(this);
-        this.worker.onerror = function (e) {
-          console.error(e);
-        };
-    },
-
-    displayFrame:function(width,height,decodedFrame) {
-        if (!this.resetCalled) {
-            this.yuvCanvas.canvasElement.drawing = true;
-            // adjust canvas size to fit to the decoded frame
-            if(width != this.yuvCanvas.width) {
-                this.yuvCanvas.canvasElement.width = width;
-                this.yuvCanvas.width = width;
-            }
-            if(height != this.yuvCanvas.height) {
-                this.yuvCanvas.canvasElement.height = height;
-                this.yuvCanvas.height = height;
-            }
-
-            this.yuvCanvas.drawNextOuptutPictureGL({
-                yData: decodedFrame.y,
-                yDataPerRow: width,
-                yRowCnt: height,
-                uData: decodedFrame.u,
-                uDataPerRow: width / 2,
-                uRowCnt: height / 2,
-                vData: decodedFrame.v,
-                vDataPerRow: width / 2,
-                vRowCnt: height / 2
-            });
-            this.yuvCanvas.canvasElement.drawing = false;
-
-            this.updateStatistics();
-            this.onAfterDecoded();
-        }
     },
 
     /**
@@ -8893,25 +15430,26 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
      * @memberof OSH.UI.View.FFMPEGView
      */
     decodeWorker: function (pktSize, pktData) {
-        // the transferableData actually transfer the ownership of the object to or from the web worker.
-        // It's like passing by reference where a copy isn't made.
-        // The difference between it and the normal pass-by-reference is that the side that transferred the data can no longer access it.
+        var data = {
+            pktSize: pktSize,
+            pktData: pktData.buffer,
+            byteOffset: pktData.byteOffset
+        };
 
         if (this.useWebWorkerTransferableData) {
-            this.worker.postMessage({data:pktData,release:false}, [pktData.buffer]);
+            this.worker.postMessage(data, [data.pktData]);
         } else {
             // no transferable data
             // a copy of the data to be made before being sent to the worker. That could be slow for a large amount of data.
-
-            var noTransferableObjData = {
-                data: pktData,
-                byteOffset: pktData.byteOffset,
-                release:false
-            };
-
-            this.worker.postMessage(noTransferableObjData);
+            this.worker.postMessage(data);
         }
+    },
 
+    checkFlush: function() {
+        if(!this.useWorker && this.nbFrames >= this.FLUSH_LIMIT) {
+            this.nbFrames = 0;
+            _avcodec_flush_buffers(this.av_ctx);
+        }
     },
 
     //-------------------------------------------------------//
@@ -8959,6 +15497,8 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
         // init decode frame function
         this.got_frame = Module._malloc(4);
         this.maxPktSize = 1024 * 50;
+
+
     },
 
     /**
@@ -8970,102 +15510,50 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
      * @memberof OSH.UI.View.FFMPEGView
      */
     decode: function (pktSize, pktData) {
-        if(!this.update) {
-            this.update = true;
-            if (pktSize > this.maxPktSize) {
-                // dealloc old allocation
-                Module._free(this.av_pktData);
-                this.av_pktData = Module._malloc(pktSize);
-                Module.setValue(this.av_pkt + 24, this.av_pktData, '*');
-                this.maxPktSize = pktSize;
-            }
-
-            /*// prepare packet
-             Module.setValue(this.av_pkt + 28, pktSize, 'i32');
-             Module.writeArrayToMemory(pktData, this.av_pktData);
-
-             // decode next frame
-             var len = _avcodec_decode_video2(this.av_ctx, this.av_frame, this.got_frame, this.av_pkt);
-             if (len < 0) {
-             console.log("Error while decoding frame");
-             return;
-             }
-
-             if (Module.getValue(this.got_frame, 'i8') == 0) {
-             //console.log("No frame");
-             return;
-             }
-
-             var decoded_frame = this.av_frame;
-             var frame_width = Module.getValue(decoded_frame + 68, 'i32');
-             var frame_height = Module.getValue(decoded_frame + 72, 'i32');
-             //console.log("Decoded Frame, W=" + frame_width + ", H=" + frame_height);
-
-             // copy Y channel to canvas
-             var frameYDataPtr = Module.getValue(decoded_frame, '*');
-             var frameUDataPtr = Module.getValue(decoded_frame + 4, '*');
-             var frameVDataPtr = Module.getValue(decoded_frame + 8, '*');
-
-             return {
-             frame_width: frame_width,
-             frame_height: frame_height,
-             frameYDataPtr: frameYDataPtr,
-             frameUDataPtr: frameUDataPtr,
-             frameVDataPtr: frameVDataPtr,
-             frameYData: new Uint8Array(Module.HEAPU8.buffer, frameYDataPtr, frame_width * frame_height),
-             frameUData: new Uint8Array(Module.HEAPU8.buffer, frameUDataPtr, frame_width / 2 * frame_height / 2),
-             frameVData: new Uint8Array(Module.HEAPU8.buffer, frameVDataPtr, frame_width / 2 * frame_height / 2)
-             };*/
-            var self = this;
-            // prepare packet
-            Module.setValue(self.av_pkt + 28, pktSize, 'i32');
-
-            Module.writeArrayToMemory(pktData, self.av_pktData);
-
-            // decode next frame
-            var len = _avcodec_decode_video2(self.av_ctx, self.av_frame, self.got_frame, self.av_pkt);
-            if (len < 0) {
-                console.log("Error while decoding frame");
-                return null;
-            }
-
-            if (Module.getValue(self.got_frame, 'i8') == 0) {
-                //console.log("No frame");
-                return null;
-            }
-
-            var decoded_frame = self.av_frame;
-            var frame_width = Module.getValue(decoded_frame + 68, 'i32');
-            var frame_height = Module.getValue(decoded_frame + 72, 'i32');
-            //console.log("Decoded Frame, W=" + frame_width + ", H=" + frame_height);
-
-            // copy Y channel to canvas
-            var frameYDataPtr = Module.getValue(decoded_frame, '*');
-            var frameUDataPtr = Module.getValue(decoded_frame + 4, '*');
-            var frameVDataPtr = Module.getValue(decoded_frame + 8, '*');
-
-
-            try {
-                var arrY = new Uint8Array(Module.HEAPU8.buffer, frameYDataPtr, frame_width * frame_height);
-                var arrU = new Uint8Array(Module.HEAPU8.buffer, frameUDataPtr, frame_width / 2 * frame_height / 2);
-                var arrV = new Uint8Array(Module.HEAPU8.buffer, frameVDataPtr, frame_width / 2 * frame_height / 2);
-
-                return {
-                    frame_width: frame_width,
-                    frame_height: frame_height,
-                    frameYDataPtr: frameYDataPtr,
-                    frameUDataPtr: frameUDataPtr,
-                    frameVDataPtr: frameVDataPtr,
-                    frameYData: arrY,
-                    frameUData: arrU,
-                    frameVData: arrV
-                };
-            } catch (e) {
-                console.error(e);
-                return null;
-            }
+        if(pktSize > this.maxPktSize) {
+            this.av_pkt = Module._malloc(96);
+            this.av_pktData = Module._malloc(pktSize);
+            _av_init_packet(this.av_pkt);
+            Module.setValue(this.av_pkt + 24, this.av_pktData, '*');
+            this.maxPktSize = pktSize;
         }
-    },
+        // prepare packet
+        Module.setValue(this.av_pkt + 28, pktSize, 'i32');
+        Module.writeArrayToMemory(pktData, this.av_pktData);
+
+        // decode next frame
+        var len = _avcodec_decode_video2(this.av_ctx, this.av_frame, this.got_frame, this.av_pkt);
+        if (len < 0) {
+            console.log("Error while decoding frame");
+            return;
+        }
+
+        if (Module.getValue(this.got_frame, 'i8') == 0) {
+            //console.log("No frame");
+            return;
+        }
+
+        var decoded_frame = this.av_frame;
+        var frame_width = Module.getValue(decoded_frame + 68, 'i32');
+        var frame_height = Module.getValue(decoded_frame + 72, 'i32');
+        //console.log("Decoded Frame, W=" + frame_width + ", H=" + frame_height);
+
+        // copy Y channel to canvas
+        var frameYDataPtr = Module.getValue(decoded_frame, '*');
+        var frameUDataPtr = Module.getValue(decoded_frame + 4, '*');
+        var frameVDataPtr = Module.getValue(decoded_frame + 8, '*');
+
+        return {
+            frame_width: frame_width,
+            frame_height: frame_height,
+            frameYDataPtr: frameYDataPtr,
+            frameUDataPtr: frameUDataPtr,
+            frameVDataPtr: frameVDataPtr,
+            frameYData: new Uint8Array(Module.HEAPU8.buffer, frameYDataPtr, frame_width * frame_height),
+            frameUData: new Uint8Array(Module.HEAPU8.buffer, frameUDataPtr, frame_width / 2 * frame_height / 2),
+            frameVData: new Uint8Array(Module.HEAPU8.buffer, frameVDataPtr, frame_width / 2 * frame_height / 2)
+        };
+    }
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
 
@@ -9089,9 +15577,9 @@ OSH.UI.View.FFMPEGView = OSH.UI.View.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  */
-OSH.UI.View.H264View = OSH.UI.View.extend({
-	initialize : function(parentElementDivId, options) {
-		this._super(parentElementDivId,[],options);
+OSH.UI.View.H264View = OSH.UI.View.VideoView.extend({
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
 		var width = "640";
 		var height = "480";
@@ -9126,15 +15614,6 @@ OSH.UI.View.H264View = OSH.UI.View.extend({
 		this.video.setAttribute("height", height);
 		var domNode = document.getElementById(this.divId);
 		domNode.appendChild(this.video);
-
-		// adds listener
-		var self = this;
-		OSH.EventManager.observeDiv(this.divId,"click",function(event){
-			OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-				dataSourcesIds: [self.dataSourceId],
-				entityId : self.entityId
-			});
-		});
 	},
 
 	/**
@@ -9147,14 +15626,15 @@ OSH.UI.View.H264View = OSH.UI.View.extend({
 		this.avcWs.decode(fullNal);
 	},
 
-	/**
-	 *
-	 * @param dataSourceId
-	 * @param data
-	 * @instance
-	 * @memberof OSH.UI.View.H264View
-	 */
-	setData : function(dataSourceId, data) {
+    /**
+     *
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.View.H264View
+     */
+    updateFrame: function (styler) {
+        this._super(styler);
+
 		this.computeFullNalFromRaw(data.data, function(nal) {
 			var nalType = nal[0] & 0x1F;
 			//7 => PPS
@@ -9219,22 +15699,6 @@ OSH.UI.View.H264View = OSH.UI.View.extend({
 				}
 			}
 		}
-	},
-
-	/**
-	 *
-	 * @param $super
-	 * @param dataSourceIds
-	 * @param entityId
-	 * @instance
-	 * @memberof OSH.UI.View.H264View
-	 */
-	selectDataView: function(dataSourceIds,entityId) {
-	    if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-	      document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
-	    } else {
-	      document.getElementById(this.divId).setAttribute("class",this.css);
-	    }
 	}
 });
 /***************************** BEGIN LICENSE BLOCK ***************************
@@ -9259,85 +15723,71 @@ OSH.UI.View.H264View = OSH.UI.View.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
-var videoView = new OSH.UI.View.MjpegView("containerId", {
-    dataSourceId: datasource.id,
-    entityId : entity.id,
+ var videoView = new OSH.UI.View.MjpegView("containerId", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "H264 ViDEO",
+        entityId:entityId
+    }],{
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
 });
  */
-OSH.UI.View.MjpegView = OSH.UI.View.extend({
-  initialize: function(parentElementDivId,options) {
-    this._super(parentElementDivId,[],options);
+OSH.UI.View.MjpegView = OSH.UI.View.VideoView.extend({
+    initialize: function (divId, viewItems,options) {
+        this._super(divId, viewItems,options);
 
-    // creates video tag element
-    this.imgTag = document.createElement("img");
-    this.imgTag.setAttribute("id", "dataview-"+OSH.Utils.randomUUID());
+        // creates video tag element
+        this.imgTag = document.createElement("img");
+        this.imgTag.setAttribute("id", "dataview-" + OSH.Utils.randomUUID());
 
-    // rotation option
-    this.rotation = 0;
-    if (typeof(options) != "undefined" && typeof(options.rotation) != "undefined") {
-        this.rotation = options.rotation*Math.PI/180;
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = 640;
-        this.canvas.height = 480;
-        var ctx = this.canvas.getContext('2d');
-        ctx.translate(0, 480) ;
-        ctx.rotate(this.rotation);
-        document.getElementById(this.divId).appendChild(this.canvas);
-    } else {
-        // appends <img> tag to <div>
-        document.getElementById(this.divId).appendChild(this.imgTag);
+        // rotation option
+        this.rotation = 0;
+        if (!isUndefinedOrNull(options) && !isUndefinedOrNull(options.rotation)) {
+            this.rotation = options.rotation * Math.PI / 180;
+            this.canvas = document.createElement('canvas');
+            this.canvas.width = 640;
+            this.canvas.height = 480;
+            var ctx = this.canvas.getContext('2d');
+            ctx.translate(0, 480);
+            ctx.rotate(this.rotation);
+            document.getElementById(this.divId).appendChild(this.canvas);
+        } else {
+            // appends <img> tag to <div>
+            document.getElementById(this.divId).appendChild(this.imgTag);
+        }
+    },
+
+    /**
+     *
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.View.MjpegView
+     */
+    updateFrame: function (styler) {
+        this._super(styler);
+        var oldBlobURL = this.imgTag.src;
+        this.imgTag.src = styler.frame;
+        window.URL.revokeObjectURL(oldBlobURL);
+
+        this.updateStatistics();
+        this.onAfterDecoded();
+    },
+
+    /**
+     * @instance
+     * @memberof OSH.UI.View.MjpegView
+     */
+    reset: function () {
+        this.imgTag.src = "";
     }
-
-    // adds listener
-    var self = this;
-    OSH.EventManager.observeDiv(this.divId,"click",function(event){
-      OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-        dataSourcesIds: [self.dataSourceId],
-        entityId : self.entityId
-      });
-    });
-  },
-
-  /**
-   *
-   * @param $super
-   * @param dataSourceId
-   * @param data
-   * @instance
-   * @memberof OSH.UI.View.MjpegView
-   */
-  setData: function(dataSourceId,data) {
-      var oldBlobURL = this.imgTag.src;
-      this.imgTag.src = data.data;
-      window.URL.revokeObjectURL(oldBlobURL);
-  },
-
-  /**
-   *
-   * @param $super
-   * @param dataSourceIds
-   * @param entityId
-   * @instance
-   * @memberof OSH.UI.View.MjpegView
-   */
-  selectDataView: function(dataSourceIds,entityId) {
-    if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-      document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
-    } else {
-      document.getElementById(this.divId).setAttribute("class",this.css);
-    }
-  },
-
-  /**
-   * @instance
-   * @memberof OSH.UI.View.MjpegView
-   */
-  reset: function() {
-      this.imgTag.src = "";
-  }
 });
 
 
@@ -9363,137 +15813,142 @@ OSH.UI.View.MjpegView = OSH.UI.View.extend({
  * @type {OSH.UI.View}
  * @augments OSH.UI.View
  * @example
- var videoView = new OSH.UI.View.Mp4View("videoContainer-id", {
-    dataSourceId: videoDataSource.id,
+ var videoView = new OSH.UI.View.Mp4View("videoContainer-id", [{
+        styler: new OSH.UI.Styler.Video({
+            frameFunc: {
+                dataSourceIds: [videoDataSource.id],
+                handler: function (rec, timestamp, options) {
+                    return rec;
+                }
+            }
+        }),
+        name: "MP4 ViDEO",
+        entityId:entityId
+    }]
+    , {
     css: "video",
     cssSelected: "video-selected",
     name: "Video"
  });
  */
-OSH.UI.View.Mp4View = OSH.UI.View.extend({
-  initialize: function(parentElementDivId,options) {
-    this._super(parentElementDivId,[],options);
+OSH.UI.View.Mp4View = OSH.UI.View.VideoView.extend({
+    initialize: function (divId, viewItems, options) {
+        this._super(divId, viewItems, options);
 
-    var width = "640";
-    var height = "480";
+        var width = "640";
+        var height = "480";
 
-    var width = "640";
-    var height = "480";
+        // creates video tag element
+        this.video = document.createElement("video");
+        this.video.setAttribute("control", '');
 
-    this.codecs = "avc1.64001E";
-    //this.codecs="avc1.42401F";
-    //this.codecs = 'avc1.42E01E';
+        // appends <video> tag to <div>
+        document.getElementById(this.divId).appendChild(this.video);
 
-      if(typeof options != "undefined" ) {
-      if (options.css) {
-        this.css = options.css;
-      }
+        this.init = false;
+        this.mp4box = new MP4Box();
+    },
 
-      //this.codecs="avc1.42401F";
+    /**
+     *
+     * @param styler
+     * @instance
+     * @memberof OSH.UI.View.Mp4View
+     */
+    updateFrame: function (styler) {
+        var frame = styler.frame;
+        if (!this.init) {
+            this.init = true;
+            frame.fileStart = 0;
 
-      if (options.codecs) {
-        this.codecs = options.codecs;
-      }
+            var self = this;
+
+            this.mp4box.onError = function (e) {
+                console.error("MP4 error");
+            };
+            this.mp4box.onReady = function (info) {
+                OSH.Asserts.checkArrayIndex(info.tracks, 0);
+                self.createMediaSource(info.tracks[0],function(sourcebuffer){
+                    self.sourcebuffer = sourcebuffer;
+                });
+            };
+            self.mp4box.appendBuffer(frame);
+            self.mp4box.flush();
+        } else if(!isUndefinedOrNull(this.sourcebuffer)){
+            console.log("append");
+            if (this.sourcebuffer.updating || this.queue.length > 0) {
+                this.queue.push(frame);
+            } else {
+                this.sourcebuffer.appendBuffer(frame);
+            }
+        }
+    },
+
+    createMediaSource: function (mp4track,callback) {
+        if (!'MediaSource' in window) {
+            throw new ReferenceError('There is no MediaSource property in window object.');
+        }
+
+        var track_id = mp4track.id;
+        var codec = mp4track.codec;
+        var mime = 'video/mp4; codecs=\"' + codec + '\"';
+
+        if (!MediaSource.isTypeSupported(mime)) {
+            console.log('Can not play the media. Media of MIME type ' + mime + ' is not supported.');
+            throw ('Media of type ' + mime + ' is not supported.');
+        }
+
+        this.queue = [];
+        var mediaSource = new MediaSource();
+        this.video.src =  window.URL.createObjectURL(mediaSource);
+
+        mediaSource.addEventListener('sourceopen', function(e) {
+            mediaSource.duration = 10000000;
+            var playPromise = this.video.play();
+
+            // In browsers that don’t yet support this functionality,
+            // playPromise won’t be defined.
+
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    // Automatic playback started!
+                }).catch(function(error) {
+                    // Automatic playback failed.
+                    // Show a UI element to let the user manually start playback.
+                });
+            }
+
+
+            /**
+             * avc1.42E01E: H.264 Constrained Baseline Profile Level 3
+             avc1.4D401E: H.264 Main Profile Level 3
+             avc1.64001E: H.264 High Profile Level 3
+             */
+            var sourcebuffer = mediaSource.addSourceBuffer(mime);
+
+            sourcebuffer.addEventListener('updatestart', function(e) {
+                /*console.log('updatestart: ' + mediaSource.readyState);*/
+                if(this.queue.length > 0 && !this.buffer.updating) {
+                    sourcebuffer.appendBuffer(this.queue.shift());
+                }
+            }.bind(this));
+            sourcebuffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
+            sourcebuffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
+
+            sourcebuffer.addEventListener('updateend', function() { // Note: Have tried 'updateend'
+                if(this.queue.length > 0) {
+                    sourcebuffer.appendBuffer(this.queue.shift());
+                }
+            }.bind(this));
+
+            callback(sourcebuffer);
+        }.bind(this), false);
+
+        mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState);*/ });
+        mediaSource.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
+
     }
 
-    // creates video tag element
-    this.video = document.createElement("video");
-    this.video.setAttribute("control", '');
-    // appends <video> tag to <div>
-    document.getElementById(this.divId).appendChild(this.video);
-
-    // adds listener
-    var self = this;
-    OSH.EventManager.observeDiv(this.divId,"click",function(event){
-      OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW,{
-        dataSourcesIds: [self.dataSourceId],
-        entityId : self.entityId
-      });
-    });
-
-    // creates MediaSource object
-    this.mediaSource = new MediaSource();
-    this.buffer = null;
-    this.queue = [];
-
-    this.video.src = window.URL.createObjectURL(this.mediaSource);
-
-    this.mediaSource.addEventListener('sourceopen', function(e) {
-      this.mediaSource.duration = 10000000;
-      this.video.play();
-
-        /**
-         * avc1.42E01E: H.264 Constrained Baseline Profile Level 3
-           avc1.4D401E: H.264 Main Profile Level 3
-           avc1.64001E: H.264 High Profile Level 3
-         */
-      this.buffer = this.mediaSource.addSourceBuffer('	video/mp4; codecs="avc1.64001E"; profiles="isom,iso2,avc1,iso6,mp41"');
-
-      var mediaSource = this.mediaSource;
-
-      this.buffer.addEventListener('updatestart', function(e) {
-        /*console.log('updatestart: ' + mediaSource.readyState);*/
-        if(this.queue.length > 0 && !this.buffer.updating) {
-          this.buffer.appendBuffer(this.queue.shift());
-        }
-      }.bind(this));
-      this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
-      this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
-
-      this.buffer.addEventListener('updateend', function() { // Note: Have tried 'updateend'
-        if(this.queue.length > 0) {
-          this.buffer.appendBuffer(this.queue.shift());
-        }
-      }.bind(this));
-    }.bind(this), false);
-
-     var mediaSource = this.mediaSource;
-
-    this.mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState);*/ });
-    this.mediaSource.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
-
-    OSH.EventManager.observeDiv(this.divId, "click", function (event) {
-        OSH.EventManager.fire(OSH.EventManager.EVENT.SELECT_VIEW, {
-            dataSourcesIds: [self.dataSourceId],
-            entityId: self.entityId
-        });
-    });
-
-  },
-
-  /**
-   *
-   * @param dataSourceId
-   * @param data
-   * @instance
-   * @memberof OSH.UI.View.Mp4View
-   */
-  setData: function(dataSourceId,data) {
-      if (this.buffer.updating || this.queue.length > 0) {
-        this.queue.push(data.data);
-      } else {
-        this.buffer.appendBuffer(data.data);
-      }
-      /*if(!this.buffer.updating) {
-          this.buffer.appendBuffer(data.data);
-      }*/
-  },
-
-  /**
-   *
-   * @param $super
-   * @param dataSourceIds
-   * @param entityId
-   * @instance
-   * @memberof OSH.UI.View.Mp4View
-   */
-  selectDataView: function(dataSourceIds, entityId) {
-	  if(dataSourceIds.indexOf(this.dataSourceId) > -1 || (typeof this.entityId != "undefined") && this.entityId == entityId) {
-		  document.getElementById(this.divId).setAttribute("class",this.css+" "+this.cssSelected);
-	  } else {
-          document.getElementById(this.divId).setAttribute("class",this.css);
-	  }
-  }
 });
