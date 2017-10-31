@@ -66,10 +66,10 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
             this.properties.frame.datasourceIdx = 0;
         }
 
-        var dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
+        this.dsListBoxId = OSH.Helper.HtmlHelper.addHTMLObjectWithLabelListBox(this.contentElt, "Data Source", this.options.datasources);
         this.observableListBoxId = OSH.Helper.HtmlHelper.addHTMLListBox(this.contentElt, "Observable", []);
 
-        if(!this.loadObservable(dsListBoxId,this.observableListBoxId)) {
+        if(!this.loadObservable(this.dsListBoxId,this.observableListBoxId)) {
             this.properties.frame.observableIdx = 0;
         }
 
@@ -77,7 +77,7 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
         var self = this;
         if(!isUndefinedOrNull(properties)) {
             OSH.Helper.HtmlHelper.onDomReady(function () {
-                var dsTag = document.getElementById(dsListBoxId);
+                var dsTag = document.getElementById(self.dsListBoxId);
 
                 var idx = -1;
                 for(var i=0; i < dsTag.options.length;i++) {
@@ -115,7 +115,9 @@ OSH.UI.Panel.VideoPanel = OSH.UI.Panel.StylerPanel.extend({
         OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.observableIdx);
         OSH.Asserts.checkIsDefineOrNotNull(this.properties.frame.datasourceIdx);
 
-        var currentDatasource = this.options.datasources[this.properties.frame.datasourceIdx];
+        var dsSelectedIdx = document.getElementById(this.dsListBoxId).options.selectedIndex;
+
+        var currentDatasource = this.options.datasources[dsSelectedIdx];
 
 
         var observableIdx = document.getElementById(this.observableListBoxId).options.selectedIndex;

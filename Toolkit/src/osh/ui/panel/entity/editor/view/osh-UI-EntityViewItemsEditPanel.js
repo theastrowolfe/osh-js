@@ -203,7 +203,7 @@ OSH.UI.Panel.EntityViewItemsEditPanel = OSH.UI.Panel.EntityEditViewPanel.extend(
         var editViewDialog = new OSH.UI.Panel.SaveDialogPanel("", {
             draggable: true,
             css: "dialog-edit-view", //TODO: create unique class for all the views
-            name: "Edit Styler",
+            title: "Edit Styler",
             show:true,
             dockable: false,
             closeable: true,
